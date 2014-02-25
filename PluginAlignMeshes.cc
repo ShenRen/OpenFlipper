@@ -66,11 +66,11 @@ void PluginAlignMeshes::rotate(TriMeshObject& _object) {
     data.col(i) = Vector3d(tmp[0], tmp[1], tmp[2]);
   }
 
-  MatrixXd covar = (data * data.transpose()) / (double)mesh.n_vertices();
+  Matrix3d covar = (data * data.transpose()) / (double)mesh.n_vertices();
 
-  JacobiSVD<MatrixXd> svd(covar, ComputeThinU | ComputeThinV);
+  JacobiSVD<Matrix3d> svd(covar, ComputeThinU | ComputeThinV);
 
-  const MatrixXd& u = svd.matrixU();
+  const Matrix3d& u = svd.matrixU();
 
   Eigen::Vector3d v0 = u.col(0);
   Eigen::Vector3d v1 = u.col(1);

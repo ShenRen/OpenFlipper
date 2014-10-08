@@ -18,9 +18,50 @@ void PluginAlignMeshes::initializePlugin() {
   emit addToolbox("Align Meshes", toolBox_);
 
   connect(toolBox_->alignMeshesButton, SIGNAL(pressed()), SLOT(alignMeshes()));
+  connect(toolBox_->scaleToUnitCubeButton, SIGNAL(pressed()), SLOT(scaleToUnitCube()));
 }
 
 void PluginAlignMeshes::pluginsInitialized() {
+
+}
+
+void PluginAlignMeshes::scaleToUnitCube() {
+
+  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH); o_it
+      != PluginFunctions::objectsEnd(); ++o_it) {
+    TriMeshObject* tri_object = PluginFunctions::triMeshObject(*o_it);
+
+    if (!tri_object)
+      continue;
+
+    moveToMean(*tri_object);
+
+    ACG::Vec3d min(DBL_MAX);
+    ACG::Vec3d max(-DBL_MAX);
+
+    TriMesh& mesh = *tri_object->mesh();
+    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
+      min.minimize(mesh.point(*v_it));
+      max.maximize(mesh.point(*v_it));
+    }
+
+    const ACG::Vec3d diagonal = max - min;
+
+    OpenMesh::MPropHandleT<ACG::Vec3d> origDiagonal;
+    if (!mesh.get_property_handle(origDiagonal, "origDiagonal"))
+      mesh.add_property(origDiagonal, "origDiagonal");
+
+    mesh.mproperty(origDiagonal).set_persistent(true);
+    mesh.property(origDiagonal) = diagonal;
+
+    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
+      mesh.point(*v_it)[0] /= diagonal[0];
+      mesh.point(*v_it)[1] /= diagonal[1];
+      mesh.point(*v_it)[2] /= diagonal[2];
+    }
+
+    emit updatedObject(tri_object->id(), UPDATE_ALL);
+  }
 
 }
 

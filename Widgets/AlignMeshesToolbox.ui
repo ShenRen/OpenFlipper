@@ -23,6 +23,13 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="scaleToUnitCubeButton">
+       <property name="text">
+        <string>Scale to Unit Cube</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

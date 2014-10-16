@@ -16,6 +16,13 @@
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="scaleToUnitCubeUniformButton">
+       <property name="text">
+        <string>Scale to Unit Cube Uniformly</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="alignMeshesButton">
        <property name="text">
@@ -23,10 +30,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="scaleToUnitCubeButton">
+     <item row="2" column="0">
+      <widget class="QPushButton" name="scaleToUnitCubeNonUniformButton">
        <property name="text">
-        <string>Scale to Unit Cube</string>
+        <string>Scale to Unit Cube Non-Uniformly</string>
        </property>
       </widget>
      </item>

@@ -18,14 +18,15 @@ void PluginAlignMeshes::initializePlugin() {
   emit addToolbox("Align Meshes", toolBox_);
 
   connect(toolBox_->alignMeshesButton, SIGNAL(pressed()), SLOT(alignMeshes()));
-  connect(toolBox_->scaleToUnitCubeButton, SIGNAL(pressed()), SLOT(scaleToUnitCube()));
+  connect(toolBox_->scaleToUnitCubeUniformButton, SIGNAL(pressed()), SLOT(scaleToUnitCubeUniform()));
+  connect(toolBox_->scaleToUnitCubeNonUniformButton, SIGNAL(pressed()), SLOT(scaleToUnitCubeNonUniform()));
 }
 
 void PluginAlignMeshes::pluginsInitialized() {
 
 }
 
-void PluginAlignMeshes::scaleToUnitCube() {
+void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
 
   for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH); o_it
       != PluginFunctions::objectsEnd(); ++o_it) {
@@ -47,6 +48,8 @@ void PluginAlignMeshes::scaleToUnitCube() {
 
     const ACG::Vec3d diagonal = max - min;
 
+    const double maxDiag = std::max(std::max(diagonal[0],diagonal[1]),diagonal[2]);
+
     OpenMesh::MPropHandleT<ACG::Vec3d> origDiagonal;
     if (!mesh.get_property_handle(origDiagonal, "origDiagonal"))
       mesh.add_property(origDiagonal, "origDiagonal");
@@ -59,6 +62,52 @@ void PluginAlignMeshes::scaleToUnitCube() {
       mesh.point(*v_it)[1] /= diagonal[1];
       mesh.point(*v_it)[2] /= diagonal[2];
     }
+
+    moveCenterOfBBToOrigin(*tri_object);
+
+    emit updatedObject(tri_object->id(), UPDATE_ALL);
+  }
+
+}
+
+void PluginAlignMeshes::scaleToUnitCubeUniform() {
+
+  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH); o_it
+      != PluginFunctions::objectsEnd(); ++o_it) {
+    TriMeshObject* tri_object = PluginFunctions::triMeshObject(*o_it);
+
+    if (!tri_object)
+      continue;
+
+    moveToMean(*tri_object);
+
+    ACG::Vec3d min(DBL_MAX);
+    ACG::Vec3d max(-DBL_MAX);
+
+    TriMesh& mesh = *tri_object->mesh();
+    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
+      min.minimize(mesh.point(*v_it));
+      max.maximize(mesh.point(*v_it));
+    }
+
+    const ACG::Vec3d diagonal = max - min;
+
+    const double maxDiag = std::max(std::max(diagonal[0],diagonal[1]),diagonal[2]);
+
+    OpenMesh::MPropHandleT<ACG::Vec3d> origDiagonal;
+    if (!mesh.get_property_handle(origDiagonal, "origDiagonal"))
+      mesh.add_property(origDiagonal, "origDiagonal");
+
+    mesh.mproperty(origDiagonal).set_persistent(true);
+    mesh.property(origDiagonal) = diagonal;
+
+    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
+      mesh.point(*v_it)[0] /= maxDiag;
+      mesh.point(*v_it)[1] /= maxDiag;
+      mesh.point(*v_it)[2] /= maxDiag;
+    }
+
+    moveCenterOfBBToOrigin(*tri_object);
 
     emit updatedObject(tri_object->id(), UPDATE_ALL);
   }
@@ -77,6 +126,25 @@ void PluginAlignMeshes::alignMeshes() {
 
       emit updatedObject(tri_object->id(), UPDATE_ALL);
     }
+  }
+}
+
+void PluginAlignMeshes::moveCenterOfBBToOrigin(TriMeshObject& _object) {
+
+  TriMesh& mesh = *_object.mesh();
+
+  ACG::Vec3d min(DBL_MAX);
+  ACG::Vec3d max(-DBL_MAX);
+  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
+    min.minimize(mesh.point(*v_it));
+    max.maximize(mesh.point(*v_it));
+  }
+
+  const ACG::Vec3d diag = max - min;
+  const ACG::Vec3d center = min + 0.5*diag;
+
+  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
+    mesh.point(*v_it) -= center;
   }
 }
 

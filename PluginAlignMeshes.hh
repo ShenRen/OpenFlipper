@@ -61,7 +61,8 @@ public slots:
   QString version() { return QString("1.0"); }
 
   void alignMeshes();
-  void scaleToUnitCube();
+  void scaleToUnitCubeUniform();
+  void scaleToUnitCubeNonUniform();
 
 private slots:
 
@@ -70,6 +71,7 @@ private slots:
   void pluginsInitialized();
 
 private:
+  void moveCenterOfBBToOrigin(TriMeshObject& _object);
   void moveToMean(TriMeshObject& _object);
   void rotate(TriMeshObject& _object);
 

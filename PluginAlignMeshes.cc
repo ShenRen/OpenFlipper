@@ -63,7 +63,7 @@ void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
       mesh.point(*v_it)[2] /= diagonal[2];
     }
 
-    moveCenterOfBBToOrigin(*tri_object);
+    moveToMean(*tri_object);
 
     emit updatedObject(tri_object->id(), UPDATE_ALL);
   }
@@ -107,7 +107,7 @@ void PluginAlignMeshes::scaleToUnitCubeUniform() {
       mesh.point(*v_it)[2] /= maxDiag;
     }
 
-    moveCenterOfBBToOrigin(*tri_object);
+    moveToMean(*tri_object);
 
     emit updatedObject(tri_object->id(), UPDATE_ALL);
   }

@@ -111,6 +111,7 @@ availableDrawModes() const
 {
   return (DrawModes::POINTS |
 	  DrawModes::WIREFRAME |
+	  DrawModes::EDGES |
 	  DrawModes::SOLID_FLAT_SHADED);
 }
 
@@ -369,11 +370,21 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 
   bool shaded = false,
     smooth = false,
-    wires = _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_WIREFRAME) >= 0, 
-    points = _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POINT) >= 0,
-    edges = _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_EDGE) >= 0, 
-    halfedges = _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_HALFEDGE) >= 0, 
-    faces = _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POLYGON) >= 0;
+    wires = ((this->drawMode() == DrawModes::DEFAULT) ||
+            this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_WIREFRAME) >= 0 ||
+            _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_WIREFRAME) >= 0),
+    points = ((this->drawMode() == DrawModes::DEFAULT) ||
+            this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POINT) >= 0 ||
+            _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POINT) >= 0),
+    edges = (this->drawMode() == DrawModes::DEFAULT ||
+            this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_EDGE) >= 0 ||
+            _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_EDGE) >= 0),
+    halfedges = ((this->drawMode() == DrawModes::DEFAULT) ||
+            this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_HALFEDGE) >= 0 ||
+            _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_HALFEDGE) >= 0),
+    faces = ((this->drawMode() == DrawModes::DEFAULT) ||
+            this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POLYGON) >= 0 ||
+            _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POLYGON) >= 0);
 
   for (unsigned int i = 0; i < _drawMode.getNumLayers(); ++i)
   {

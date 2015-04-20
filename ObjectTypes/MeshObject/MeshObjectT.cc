@@ -231,6 +231,9 @@
     statusNode_->set_point_size(4.0);
     statusNode_->set_color(ACG::Vec4f(1.0f,0.0f,0.0f,1.0f));
     statusNode_->set_base_color(ACG::Vec4f(1.0f,0.0f,0.0f,1.0f));
+    // Status nodes are handled specially by their StatusViewNodeT parent which
+    // is why they get a NONE draw mode.
+    statusNode_->drawMode(ACG::SceneGraph::DrawModes::NONE);
 
     // Node showing modeling region
     areaNode_ = new ACG::SceneGraph::StatusNodeT<MeshT, AreaNodeMod<MeshT> >(*mesh_, 0, "NEW AreaNode for mesh ");
@@ -238,6 +241,9 @@
     areaNode_->enable_alpha_test(0.5);
     areaNode_->set_point_size(7.0);
     areaNode_->set_color(ACG::Vec4f(0.4f, 0.4f, 1.0f, 1.0f));
+    // Status nodes are handled specially by their StatusViewNodeT parent which
+    // is why they get a NONE draw mode.
+    areaNode_->drawMode(ACG::SceneGraph::DrawModes::NONE);
 
     // Node showing handle region
     handleNode_ = new ACG::SceneGraph::StatusNodeT<MeshT, HandleNodeMod<MeshT> >(*mesh_, 0, "NEW HandleNode for mesh ");
@@ -246,6 +252,9 @@
     handleNode_->set_line_width(2.0);
     handleNode_->set_point_size(7.0);
     handleNode_->set_color(ACG::Vec4f(0.2f, 1.0f, 0.2f, 1.0f));
+    // Status nodes are handled specially by their StatusViewNodeT parent which
+    // is why they get a NONE draw mode.
+    handleNode_->drawMode(ACG::SceneGraph::DrawModes::NONE);
 
     // Node showing feature selection
     featureNode_ = new ACG::SceneGraph::StatusNodeT<MeshT, FeatureNodeMod<MeshT> >(*mesh_, 0, "NEW FeatureNode for mesh ");
@@ -255,6 +264,9 @@
     featureNode_->set_point_size(7.0);
     featureNode_->set_color(ACG::Vec4f(1.0f, 0.2f, 1.0f, 1.0f));
     featureNode_->set_base_color(ACG::Vec4f(1.0f, 0.2f, 1.0f, 1.0f));
+    // Status nodes are handled specially by their StatusViewNodeT parent which
+    // is why they get a NONE draw mode.
+    featureNode_->drawMode(ACG::SceneGraph::DrawModes::NONE);
 
     // Link the status nodes to the draw mesh of the mesh below them to reuse its buffers
     if (meshNode_) {

@@ -274,7 +274,7 @@ inline const char *_getExtensionString() {
 
 /** Check if the extension given by a std::string is supported by the current OpenGL extension
 */
-inline bool checkExtensionSupported( std::string _extension )  {
+inline bool checkExtensionSupported( const std::string& _extension )  {
     /**
      * Cache glGetString(...) output because depending on the graphics driver
      * it might return 0 the second time we call it.

@@ -157,6 +157,11 @@ void IRenderer::addRenderObject(ACG::RenderObject* _renderObject)
         for (std::map<size_t,RenderObject::Texture>::const_iterator it = _renderObject->textures().begin();
           it != _renderObject->textures().end(); ++it)
         {
+#ifdef GL_ARB_texture_buffer_object
+          if (it->second.type == GL_TEXTURE_BUFFER)
+            continue; // skip texture buffers, for which testing for mipmaps would generate an error
+#endif
+
           glBindTexture(it->second.type, it->second.id);
 
           GLint minFilter = GL_NONE;
@@ -222,7 +227,8 @@ void IRenderer::addRenderObject(ACG::RenderObject* _renderObject)
         {
           // check for normals
           if (!_renderObject->vertexDecl->findElementByUsage(VERTEX_USAGE_NORMAL))
-            std::cout << "warning: missing normals for lighting in renderobject: " << _renderObject->debugName << std::endl;
+            std::cout << "warning: missing normals for lighting in renderobject: " << _renderObject->debugName << std::endl
+                      << "         Set shadeMode to SG_SHADE_UNLIT or provide normals!" << std::endl;
         }
 
         if (_renderObject->shaderDesc.textured())

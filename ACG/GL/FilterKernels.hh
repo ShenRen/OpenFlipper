@@ -48,6 +48,7 @@
 #include <ACG/GL/gl.hh>
 
 #include <QStringList>
+#include <QImage>
 #include <vector>
 
 
@@ -388,6 +389,9 @@ public:
 
   /// dump samples as point cloud in obj format
   void dumpSamples(const char* _filename);
+
+  /// plot samples on qt image
+  void plotSamples(QImage* _image);
 
 private:
 

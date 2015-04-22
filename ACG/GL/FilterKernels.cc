@@ -50,6 +50,8 @@
 
 #include "FilterKernels.hh"
 
+#include <QPainter>
+
 #include <fstream>
 
 
@@ -660,6 +662,56 @@ bool PoissonBlurFilter::execute( GLuint _srcTex, float _kernelScale )
   }
 
   return false;
+}
+
+void PoissonBlurFilter::plotSamples( QImage* _image )
+{
+  // cross radius of samples in image
+  const int crossRadius = 2;
+
+  if (_image)
+  {
+    int w = _image->width(),
+      h = _image->height();
+
+    _image->fill(qRgb(255,255,255));
+
+    // draw outer circle
+    QPainter plotter;
+    plotter.begin(_image);
+    plotter.setPen(QPen(qRgb(0,0,0)));
+    plotter.drawEllipse(0, 0, _image->width()-1, _image->height()-1);
+    plotter.end();
+
+    // draw samples
+    for (int i = 0; i < numSamples(); ++i)
+    {
+      // map sample pos to [0,1]
+      Vec2f s = samples_[i];
+      s /= radius_;
+      s = s * 0.5f + Vec2f(0.5f, 0.5f);
+
+      // map to [0, imageSize]
+      s *= Vec2f(w-1,h-1);
+
+      // draw cross for samples
+      Vec2i pc(s[0] + 0.5f, s[1] + 0.5f); // pixel center
+
+      for (int k = -crossRadius; k <= crossRadius; ++k)
+      {
+        for (int mirror = 0; mirror < 2; ++mirror)
+        {
+          Vec2i p = pc + Vec2i(k * (mirror ? -1 : 1),k);
+
+          // clamp to image size
+          p[0] = std::min(std::max(p[0], 0), w-1);
+          p[1] = std::min(std::max(p[1], 0), h-1);
+
+          _image->setPixel(p[0], p[1], qRgb(255, 0, 0));
+        }
+      }
+    }
+  }
 }
 
 

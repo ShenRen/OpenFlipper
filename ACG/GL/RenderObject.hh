@@ -291,10 +291,10 @@ struct ACGDLLEXPORT RenderObject
     GLuint id;
     GLenum type;
     bool shadow;
-    Texture():
-      id(0),
-      type(GL_TEXTURE_2D),
-      shadow(false){}
+    Texture(GLuint _id = 0, GLenum _type = GL_TEXTURE_2D, bool _shadow = false):
+      id(_id),
+      type(_type),
+      shadow(_shadow){}
   };
 
 

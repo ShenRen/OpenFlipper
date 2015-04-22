@@ -97,10 +97,11 @@ public:
   void createKnots(unsigned int _splineDeg, unsigned int _dim);
 
   inline std::vector< Scalar >& getKnotvector() {return knots_;}
+  inline const std::vector< Scalar >& getKnotvector() const { return knots_; }
 
-  inline unsigned int size() {return knots_.size();}
+  inline unsigned int size() const {return knots_.size();}
 
-  inline Scalar getKnot(unsigned int _index) {
+  inline Scalar getKnot(unsigned int _index) const {
     assert(_index < knots_.size());
     return knots_.at(_index);
   }

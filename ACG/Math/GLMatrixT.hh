@@ -123,11 +123,11 @@ public:
        * movq   $0x0,(%rsp)
        *
        */
-      memcpy(this->mat_ + 0, col1.data(), sizeof(double) * 3);
+      memcpy(this->mat_ + 0, col1.data(), sizeof(Scalar) * 3);
       this->mat_[3] = 0;
-      memcpy(this->mat_ + 4, col2.data(), sizeof(double) * 3);
+      memcpy(this->mat_ + 4, col2.data(), sizeof(Scalar) * 3);
       this->mat_[7] = 0;
-      memcpy(this->mat_ + 8, col3.data(), sizeof(double) * 3);
+      memcpy(this->mat_ + 8, col3.data(), sizeof(Scalar) * 3);
       for (int i = 11; i < 15; ++i) this->mat_[i] = 0;
       this->mat_[15] = 1;
   }

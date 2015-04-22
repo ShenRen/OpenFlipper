@@ -59,8 +59,33 @@
 #include <ObjectTypes/MeshObject/MeshObjectT.hh>
 #include <ObjectTypes/PolyMesh/PolyMeshTypes.hh>
 
-/// Typedef for a Meshobject containing a poly mesh
-typedef MeshObject< PolyMesh >    PolyMeshObject;
+/// Type for a Meshobject containing a poly mesh
+class DLLEXPORTONLY PolyMeshObject : public MeshObject< PolyMesh > {
+
+public:
+  /** \brief copy constructor
+   *
+   *  Create a copy of this object
+   */
+  PolyMeshObject(const PolyMeshObject& _object);
+
+  /** \brief Constructor
+  *
+  * This is the standard constructor for MeshObjects. As triangle and Poly Meshes are handled by this class, the
+  * typeId is passed to the MeshObject to specify it.
+  *
+  * @param _typeId   This is the type Id the Object will use. Should be typeId("TriangleMesh") or typeId("PolyMesh")
+  */
+  PolyMeshObject(DataType _typeId);
+
+  /// destructor
+  virtual ~PolyMeshObject();
+
+ public:
+    /// Refine picking on triangle meshes
+    ACG::Vec3d refinePick(ACG::SceneGraph::PickTarget _pickTarget, const ACG::Vec3d _hitPoint, const ACG::Vec3d _start , const ACG::Vec3d _dir,  const unsigned int _targetIdx  );
+
+};
 
 #include <ObjectTypes/PolyMesh/PluginFunctionsPolyMesh.hh>
 

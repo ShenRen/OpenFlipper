@@ -73,7 +73,6 @@ TriMeshObject::~TriMeshObject() {
 /// Refine picking on triangle meshes
 ACG::Vec3d TriMeshObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget, const ACG::Vec3d _hitPoint, const ACG::Vec3d _start , const ACG::Vec3d _dir,  const unsigned int _targetIdx  ) {
   if ( _pickTarget == ACG::SceneGraph::PICK_FACE) {
-    std::cerr << "Refine Face picking" << std::endl;
 
     // get picked face handle
     TriMesh::FaceHandle fh = mesh()->face_handle(_targetIdx);
@@ -95,23 +94,45 @@ ACG::Vec3d TriMeshObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget, co
     TriMesh::Scalar t,u,v;
     if ( ACG::Geometry::triangleIntersection( _start, _dir, p1 , p2 , p3 , t , u , v) ) {
       hitpointNew = _start + t * _dir;
-    } else {
-      std::cerr << "Refine Picking failed" << std::endl;
     }
 
-
-
-
-
-    std::cerr << "Refine on Triangle meshes" << std::endl;
-    std::cerr << "Original: " <<  _hitPoint << std::endl;
-    std::cerr << "MousePos : " << _start << std::endl;
-    std::cerr << "Update:   " <<  hitpointNew << std::endl;
-
     return hitpointNew;
-
   }
-  std::cerr << "No Refine on Triangle meshes" << std::endl;
+
+  if ( _pickTarget == ACG::SceneGraph::PICK_EDGE) {
+    // get picked edge handle
+    TriMesh::EdgeHandle eh = mesh()->edge_handle(_targetIdx);
+    if(eh.is_valid())
+    {
+      TriMesh::HalfedgeHandle heh = mesh()->halfedge_handle(eh,0);
+
+      //get vertices of the edge
+      TriMesh::VertexHandle vhbegin = mesh()->to_vertex_handle(heh);
+      TriMesh::VertexHandle vhend = mesh()->from_vertex_handle(heh);
+      ACG::Vec3d edgeStart = mesh()->point(vhbegin);
+      ACG::Vec3d edgeEnd = mesh()->point(vhend);
+
+      //retrieve the point on the edge that is closest to the backprojected hitpoint
+      ACG::Vec3d hitPointNew;
+      ACG::Geometry::distPointLineSquared(_hitPoint,edgeStart,edgeEnd,&hitPointNew);
+
+
+      return hitPointNew;
+    }
+  }
+
+  if ( _pickTarget == ACG::SceneGraph::PICK_VERTEX) {
+    // get picked vertex handle
+    TriMesh::VertexHandle vh = mesh()->vertex_handle(_targetIdx);
+    if(vh.is_valid())
+    {
+      ACG::Vec3d hitpointNew = mesh()->point(vh);
+
+      //just return the vertex position
+      return hitpointNew;
+    }
+  }
+
   return _hitPoint;
 }
 

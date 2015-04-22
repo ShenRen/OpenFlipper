@@ -50,7 +50,12 @@
 namespace ACG {
 
 
-
+/** \brief Find the span of a parameter value.
+  *
+  * @param _t parameter value
+  * @param _degree spline degree
+  * @param _knots knotvector
+*/
 template<typename Scalar>
 Vec2i
 bsplineSpan(Scalar _t,
@@ -58,8 +63,16 @@ bsplineSpan(Scalar _t,
   const std::vector<Scalar>& _knots);
 
 
-
-/// compute derivatives of the basis functions in a given span
+/** \brief Evaluate basis functions in a span
+  *
+  * Uses a fast algorithm to compute all basis functions in a span.
+  * The output vector _N must have enough space to hold _span[1] - _span[0] values.
+  *
+  * @param _N output basis function values
+  * @param _span span of the parameter _t
+  * @param _t parameter value
+  * @param _knots knotvector
+*/
 template<typename Scalar>
 void
 bsplineBasisFunctions( std::vector<Scalar>& _N,
@@ -69,7 +82,18 @@ bsplineBasisFunctions( std::vector<Scalar>& _N,
 
 
 
-/// compute derivatives of the basis functions in a given span
+/** \brief Compute derivatives of basis functions in a span
+  *
+  * Uses a fast algorithm to compute all derivatives of basis functions in a span.
+  * The output vector _ders must have enough space to hold _span[1] - _span[0] values.
+  *
+  * @param _ders output derivative values of all basis functions in the span
+  * @param _span span of the parameter _t
+  * @param _t parameter value
+  * @param _der order of derivative (ie. first, second, third order...)
+  * @param _knots knotvector
+  * @param _functionVals output basis function values, null is accepted (optional)
+  */
 template<typename Scalar>
 void
 bsplineBasisDerivatives( std::vector<Scalar>& _ders,
@@ -80,6 +104,17 @@ bsplineBasisDerivatives( std::vector<Scalar>& _ders,
   std::vector<Scalar>* _functionVals);
 
 
+/** \brief Evaluate a single basis function
+  *
+  * Uses the recursive definition of the basis function.
+  * This is slower than using bsplineBasisFunctions() for all values in a span.
+  *
+  * @param _i index of basis function
+  * @param _degree spline degree
+  * @param _t parameter value
+  * @param _knots knotvector
+  * @return basis function value
+*/
 template<typename Scalar>
 Scalar
 bsplineBasisFunction(int _i,
@@ -87,7 +122,18 @@ bsplineBasisFunction(int _i,
   Scalar _t,
   const std::vector<Scalar>& _knots);
 
-
+/** \brief Compute derivative of a single basis function
+  *
+  * Uses the recursive definition of the basis function.
+  * This is slower than using bsplineBasisDerivatives() for all values in a span.
+  *
+  * @param _i index of basis function
+  * @param _degree spline degree
+  * @param _t parameter value
+  * @param _der order of derivative
+  * @param _knots knotvector
+  * @return derivative of basis function value
+*/
 template<typename Scalar>
 Scalar
 bsplineBasisDerivative(int _i,

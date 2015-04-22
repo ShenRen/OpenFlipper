@@ -145,6 +145,10 @@ public:
   QString geometryTemplateFile;
   QString fragmentTemplateFile;
 
+  // preprocessor macros for the shaders
+  // these are added to all shaders directly after the #version directive
+  QStringList macros;
+
   /// convert ShaderGenDesc to string format for debugging
   QString toString() const;
 
@@ -226,7 +230,10 @@ public:
     if (tessControlTemplateFile != _rhs.tessControlTemplateFile)
       return false;
 
-    if (_rhs.tessEvaluationTemplateFile != _rhs.tessEvaluationTemplateFile)
+    if (tessEvaluationTemplateFile != _rhs.tessEvaluationTemplateFile)
+      return false;
+
+    if (macros != _rhs.macros)
       return false;
 
     if (numLights)
@@ -543,6 +550,11 @@ public:
    * \endcode
    */
   void addDefine(QString _define);
+
+  /** \brief Add a list of preprocessor macros
+   *
+   */
+  void addMacros(const QStringList& _macros);
 
   /** \brief Check for define
    *

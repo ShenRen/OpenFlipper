@@ -486,6 +486,18 @@ void ShaderGenerator::addDefine(QString _def)
   addStringToList(_def, &genDefines_, "#define ");
 }
 
+void ShaderGenerator::addMacros(const QStringList& _macros)
+{
+  // prepend macros to the "defines" list
+
+  // QStringList reverse_iterator:
+  typedef std::reverse_iterator<QStringList::const_iterator> QStringListReverseIterator;
+  QStringListReverseIterator rbegin( _macros.end() ), rend( _macros.begin() );
+
+  for (QStringListReverseIterator it = rbegin; it != rend; ++it)
+    genDefines_.push_front(*it);
+}
+
 bool ShaderGenerator::hasDefine(QString _define) const
 {
   if (genDefines_.contains(_define))
@@ -1048,6 +1060,9 @@ void ShaderProgGenerator::initGenDefines(ShaderGenerator* _gen)
   }
 
   _gen->addDefine("SG_ALPHA g_vMaterial.y");
+
+
+  _gen->addMacros(desc_.macros);
 }
 
 
@@ -1147,7 +1162,7 @@ void ShaderProgGenerator::addVertexBeginCode(QStringList* _code)
   //       this can be done via shader modifiers or templates
   if (ioDesc_.inputTexCoord_)
   {
-    if (desc_.textureTypes().begin()->second.type == GL_TEXTURE_3D) {
+    if (!desc_.textureTypes().empty() && desc_.textureTypes().begin()->second.type == GL_TEXTURE_3D) {
       _code->push_back("vec3 sg_vTexCoord = inTexCoord;");
     } else {
       _code->push_back("vec2 sg_vTexCoord = inTexCoord;");

@@ -34,9 +34,9 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision: 18604 $                                                       *
- *   $Author: akathrein $                                                      *
- *   $Date: 2014-05-05 16:29:36 +0200 (Mon, 05 May 2014) $                   *
+ *   $Revision$                                                       *
+ *   $Author$                                                      *
+ *   $Date$                   *
  *                                                                           *
 \*===========================================================================*/
 
@@ -81,7 +81,7 @@ bsplineSpan(Scalar _t,
   Scalar upperBound = _knots[hi];
 
   if (_t >= upperBound)
-    return hi - 1;
+    return Vec2i(hi-1-_degree, hi - 1);
 
   int mid = (lo + hi) >> 1;
 

@@ -72,7 +72,7 @@ namespace GLSL {
     public:
       Shader(GLenum shaderType);
       virtual ~Shader();
-      void setSource(StringList source);
+      void setSource(const StringList& source);
       void setSource(const QStringList& source);
 
       // FIXME implement StringList getSource();

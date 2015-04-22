@@ -104,7 +104,7 @@ namespace GLSL {
 
   /** \brief Upload the source of the shader.
   */
-  void Shader::setSource(StringList source)  {
+  void Shader::setSource(const StringList& source)  {
 
     if ( this->m_shaderId == 0 ) {
       std::cerr << "shader not initialized" << std::endl;

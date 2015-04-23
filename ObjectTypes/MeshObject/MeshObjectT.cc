@@ -458,12 +458,6 @@
   }
 
 
-  template < class MeshT  >
-  BaseObject* MeshObject< MeshT >::copy() {
-    MeshObject< MeshT >* object = new MeshObject< MeshT >(*this );
-    return dynamic_cast< BaseObject* >(object);
-  }
-
   // ===============================================================================
   // Visualization
   // ===============================================================================

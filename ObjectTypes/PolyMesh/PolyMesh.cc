@@ -27,6 +27,11 @@ PolyMeshObject::~PolyMeshObject() {
 
 }
 
+BaseObject* PolyMeshObject::copy() {
+  PolyMeshObject* object = new PolyMeshObject(*this );
+  return object;
+}
+
 /// Refine picking on triangle meshes
 ACG::Vec3d PolyMeshObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget, const ACG::Vec3d _hitPoint, const ACG::Vec3d _start , const ACG::Vec3d _dir,  const unsigned int _targetIdx  ) {
   if ( _pickTarget == ACG::SceneGraph::PICK_FACE) {

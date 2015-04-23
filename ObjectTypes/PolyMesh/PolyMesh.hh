@@ -81,6 +81,11 @@ public:
   /// destructor
   virtual ~PolyMeshObject();
 
+  /** return a full copy of this object ( All scenegraph nodes will be created )
+   *  but the object will not be a part of the object tree.
+   */
+  BaseObject* copy();
+
  public:
     /// Refine picking on triangle meshes
     ACG::Vec3d refinePick(ACG::SceneGraph::PickTarget _pickTarget, const ACG::Vec3d _hitPoint, const ACG::Vec3d _start , const ACG::Vec3d _dir,  const unsigned int _targetIdx  );

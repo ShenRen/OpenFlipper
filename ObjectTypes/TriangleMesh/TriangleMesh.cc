@@ -70,6 +70,11 @@ TriMeshObject::~TriMeshObject() {
 
 }
 
+BaseObject* TriMeshObject::copy() {
+  TriMeshObject* object = new TriMeshObject(*this );
+  return object;
+}
+
 /// Refine picking on triangle meshes
 ACG::Vec3d TriMeshObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget, const ACG::Vec3d _hitPoint, const ACG::Vec3d _start , const ACG::Vec3d _dir,  const unsigned int _targetIdx  ) {
   if ( _pickTarget == ACG::SceneGraph::PICK_FACE) {

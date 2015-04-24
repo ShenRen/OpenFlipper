@@ -58,6 +58,8 @@ directory.
 <li> Get Visual Studio 2008/2010 </li>
 <li> Get and Install Qt ( >= 4.8.6 , Visual Studio Version matching your installation ) </li>
 <li> Set the QTDIR Variable to your Qt Installation directory:<br />
+<li> For Qt5, you need to add the value "%QTDIR%/bin" to the "Path" variable. Keep in mind: The "QTDIR" variable is the path which includes the "bin", "include", "lib", ... directories.
+
 <br />
      <b>Windows Vista/7:</b> <br />
      Open the Control Panel<br />

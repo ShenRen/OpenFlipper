@@ -89,8 +89,11 @@ bool QtBaseViewer::pick( SceneGraph::PickTarget _pickTarget,
                   x = _mousePos.x(),
                   y = h - _mousePos.y();
     GLint         viewport[4] = {0,0,w,h};
-    GLuint        selectionBuffer[ SELECTION_BUFFER_SIZE ],
-                  nameBuffer[ NAME_STACK_SIZE ];
+    GLuint        nameBuffer[ NAME_STACK_SIZE ];
+
+    // reduce stack usage
+    std::vector<GLuint> selectionBuffer(SELECTION_BUFFER_SIZE);
+
 
     // Initialize name buffer
     nameBuffer[0] = 0;
@@ -103,11 +106,18 @@ bool QtBaseViewer::pick( SceneGraph::PickTarget _pickTarget,
     // prepare GL state
     makeCurrent();
 
-    glSelectBuffer( SELECTION_BUFFER_SIZE, selectionBuffer );
+    glSelectBuffer( SELECTION_BUFFER_SIZE, &selectionBuffer[0] );
     glRenderMode(GL_SELECT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPickMatrix((GLdouble) x, (GLdouble) y, 3, 3, viewport);
+//    gluPickMatrix((GLdouble) x, (GLdouble) y, 3, 3, viewport);
+    // gluPickMatrix implementation as in mesa3d
+    // Translate and scale the picked region to the entire window
+    const float deltax = 3.0f, deltay = 3.0f;
+    glTranslatef(float(viewport[2] - 2 * (x - viewport[0])) / deltax, 
+      float(viewport[3] - 2 * (y - viewport[1])) / deltay, 0.0f);
+    glScalef(viewport[2] / deltax, viewport[3] / deltay, 1.0);
+
     glMultMatrixd(projection.get_raw_data());
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixd(modelview.get_raw_data());
@@ -131,7 +141,7 @@ bool QtBaseViewer::pick( SceneGraph::PickTarget _pickTarget,
     // process hit record
     if ( hits > 0 )
     {
-      GLuint *ptr = selectionBuffer,
+      GLuint *ptr = &selectionBuffer[0],
       num_names,
       z,
       min_z=~(0u),

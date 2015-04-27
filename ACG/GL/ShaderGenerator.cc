@@ -349,19 +349,19 @@ void ShaderGenerator::defineIOAbstraction( const DefaultIODesc* _iodesc, bool _v
     {
       addDefine(QString(SG_INPUT_POSVS) + QString(" ") + inputPrefix_ + QString("PosVS"));
       if (!_fs)
-        addDefine(QString(SG_OUTPUT_POSVS) + QString(" ") + inputPrefix_ + QString("PosVS"));
+        addDefine(QString(SG_OUTPUT_POSVS) + QString(" ") + outputPrefix_ + QString("PosVS"));
     }
 
     if (_iodesc->passPosOS_)
     {
       addDefine(QString(SG_INPUT_POSOS) + QString(" ") + inputPrefix_ + QString("PosOS"));
       if (!_fs)
-        addDefine(QString(SG_OUTPUT_POSOS) + QString(" ") + inputPrefix_ + QString("PosOS"));
+        addDefine(QString(SG_OUTPUT_POSOS) + QString(" ") + outputPrefix_ + QString("PosOS"));
     }
 
     addDefine(QString(SG_INPUT_POSCS) + QString(" ") + inputPrefix_ + QString("PosCS"));
     if (!_fs)
-      addDefine(QString(SG_OUTPUT_POSCS) + QString(" ") + inputPrefix_ + QString("PosCS"));
+      addDefine(QString(SG_OUTPUT_POSCS) + QString(" ") + outputPrefix_ + QString("PosCS"));
 
     if (_iodesc->passNormalVS_)
     {

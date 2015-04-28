@@ -830,10 +830,18 @@ void InfoMeshObjectPlugin::slotObjectUpdated( int _identifier , const UpdateType
   }
 
   // We only show the information in the status bar if one target mesh is selected.
-  if ( PluginFunctions::targetCount() ==1 ) {
+  if ( PluginFunctions::targetCount() == 1 ) {
 
     BaseObjectData* object;
     PluginFunctions::getObject(_identifier,object);
+
+    // The object that caused the update is not a target anymore.
+    // Therefore we need to get the remaining target by iteration.
+    if ( object && !object->target() ) {
+      for ( PluginFunctions::ObjectIterator o_it = PluginFunctions::ObjectIterator(PluginFunctions::TARGET_OBJECTS);  o_it != PluginFunctions::objectsEnd(); ++o_it ) {
+        object = *o_it;
+      }
+    }
 
     // We only need to update something, if the updated object is the target object
     if (object && object->target() ) {
@@ -865,9 +873,11 @@ void InfoMeshObjectPlugin::slotObjectUpdated( int _identifier , const UpdateType
 
     }
 
+    //infoBar_->hideCounts();
+
   } else {
     // Display only count information
-    if ( PluginFunctions::targetCount() > 0 ) {
+    if ( PluginFunctions::targetCount() > 1 ) {
       infoBar_->showTargetCount( PluginFunctions::targetCount() );
     } else
       infoBar_->hideCounts();
@@ -886,6 +896,7 @@ void InfoMeshObjectPlugin::slotObjectSelectionChanged( int _identifier ){
 void InfoMeshObjectPlugin::slotAllCleared(){
   if ( infoBar_ )
     infoBar_->hideCounts();
+
 }
 
 #if QT_VERSION < 0x050000

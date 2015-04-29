@@ -56,7 +56,7 @@
 
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/BasePlugin/InformationInterface.hh>
-
+#include <OpenFlipper/BasePlugin/LoadSaveInterface.hh>
 #include <OpenFlipper/BasePlugin/StatusbarInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 #include <OpenFlipper/common/Types.hh>
@@ -73,13 +73,14 @@
  
   Plugin to visualize information about objects in the scene
 */
-class InfoMeshObjectPlugin : public QObject, BaseInterface, InformationInterface, LoggingInterface, StatusbarInterface
+class InfoMeshObjectPlugin : public QObject, BaseInterface, InformationInterface, LoggingInterface, StatusbarInterface, LoadSaveInterface
 {
   Q_OBJECT
       Q_INTERFACES(BaseInterface)
       Q_INTERFACES(InformationInterface)
       Q_INTERFACES(LoggingInterface)
       Q_INTERFACES(StatusbarInterface)
+      Q_INTERFACES(LoadSaveInterface)
 
 #if QT_VERSION >= 0x050000
   Q_PLUGIN_METADATA(IID "org.OpenFlipper.Plugins.Plugin-MeshObjectInfo")
@@ -106,6 +107,9 @@ class InfoMeshObjectPlugin : public QObject, BaseInterface, InformationInterface
     void slotObjectSelectionChanged( int _identifier );
     void slotAllCleared();
     
+    // LoadSaveInterface
+    void objectDeleted( int _identifier );
+
     void noguiSupported( ) {} ;
 
     // InformationInterface
@@ -133,6 +137,9 @@ class InfoMeshObjectPlugin : public QObject, BaseInterface, InformationInterface
     
     template< class MeshT >
     void printMeshInfo( MeshT* _mesh, int _id, unsigned int _face, ACG::Vec3d& _hitPoint );
+
+    /// Slot that updates the visualization
+    void updateData( int _identifier , const UpdateType& _type, const bool deleted);
 
 //===========================================================================
 /** @name Scripting Functions

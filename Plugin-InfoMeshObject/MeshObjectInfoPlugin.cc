@@ -823,73 +823,97 @@ bool InfoMeshObjectPlugin::getEdgeLengths(int _id, double &min, double &max, dou
 
 //------------------------------------------------------------------------------
 
-void InfoMeshObjectPlugin::slotObjectUpdated( int _identifier , const UpdateType& _type){
+void InfoMeshObjectPlugin::updateData( int _identifier , const UpdateType& _type, const bool _deleted){
 
   if ( !infoBar_ ) {
-    return;
-  }
+     return;
+   }
 
-  // We only show the information in the status bar if one target mesh is selected.
-  if ( PluginFunctions::targetCount() == 1 ) {
+  BaseObjectData* object;
+  PluginFunctions::getObject(_identifier,object);
 
-    BaseObjectData* object;
-    PluginFunctions::getObject(_identifier,object);
+   // We only show the information in the status bar if one target mesh is selected or
+   // If 2 targets where selected, where one is deleted which was target
+   if ( PluginFunctions::targetCount() == 1 || ( _deleted && (PluginFunctions::targetCount() == 2) && object && object->target() ) ) {
 
-    // The object that caused the update is not a target anymore.
-    // Therefore we need to get the remaining target by iteration.
-    if ( object && !object->target() ) {
-      for ( PluginFunctions::ObjectIterator o_it = PluginFunctions::ObjectIterator(PluginFunctions::TARGET_OBJECTS);  o_it != PluginFunctions::objectsEnd(); ++o_it ) {
-        object = *o_it;
-      }
-    }
+     // The object that caused the update is not a target anymore.
+     // Therefore we need to get the remaining target by iteration.
+     // If something was deleted, we might see this object here, so make sure, to not take the one with the same id as the deleted one
+     if ( object && !object->target() ) {
+       for ( PluginFunctions::ObjectIterator o_it = PluginFunctions::ObjectIterator(PluginFunctions::TARGET_OBJECTS);  o_it != PluginFunctions::objectsEnd(); ++o_it ) {
+         if ( !_deleted || ( o_it->id() != _identifier ) ) {
+           object = *o_it;
+           break;
+         }
+       }
+     }
 
-    // We only need to update something, if the updated object is the target object
-    if (object && object->target() ) {
+     // We only need to update something, if the updated object is the target object
+     if (object && object->target() ) {
 
-      if (object->dataType(DATA_TRIANGLE_MESH)){
+       if (object->dataType(DATA_TRIANGLE_MESH)){
 
-        TriMesh* mesh = PluginFunctions::triMesh(object);
+         TriMesh* mesh = PluginFunctions::triMesh(object);
 
-        infoBar_->vertices->setText( QLocale::system().toString( qulonglong(mesh->n_vertices()) ) );
-        infoBar_->edges->setText( QLocale::system().toString( qulonglong(mesh->n_edges()) ) );
-        infoBar_->faces->setText( QLocale::system().toString( qulonglong(mesh->n_faces()) ) );
+         infoBar_->vertices->setText( QLocale::system().toString( qulonglong(mesh->n_vertices()) ) );
+         infoBar_->edges->setText( QLocale::system().toString( qulonglong(mesh->n_edges()) ) );
+         infoBar_->faces->setText( QLocale::system().toString( qulonglong(mesh->n_faces()) ) );
 
-        infoBar_->showCounts();
+         infoBar_->showCounts();
 
-        return;
-      }
+         return;
+       }
 
-      if (object->dataType(DATA_POLY_MESH)){
+       if (object->dataType(DATA_POLY_MESH)){
 
-        PolyMesh* mesh = PluginFunctions::polyMesh(object);
+         PolyMesh* mesh = PluginFunctions::polyMesh(object);
 
-        infoBar_->vertices->setText( QLocale::system().toString( qulonglong(mesh->n_vertices()) ) );
-        infoBar_->edges->setText( QLocale::system().toString( qulonglong(mesh->n_edges()) ) );
-        infoBar_->faces->setText( QLocale::system().toString( qulonglong(mesh->n_faces()) ) );
+         infoBar_->vertices->setText( QLocale::system().toString( qulonglong(mesh->n_vertices()) ) );
+         infoBar_->edges->setText( QLocale::system().toString( qulonglong(mesh->n_edges()) ) );
+         infoBar_->faces->setText( QLocale::system().toString( qulonglong(mesh->n_faces()) ) );
 
-        infoBar_->showCounts();
-        return;
-      }
+         infoBar_->showCounts();
+         return;
+       }
 
-    }
+     }
 
-    //infoBar_->hideCounts();
+     infoBar_->hideCounts();
 
-  } else {
-    // Display only count information
-    if ( PluginFunctions::targetCount() > 1 ) {
-      infoBar_->showTargetCount( PluginFunctions::targetCount() );
-    } else
-      infoBar_->hideCounts();
-  }
+   } else {
+     // Display only count information
+     if ( (PluginFunctions::targetCount() > 1) && object ) {
+       if ( _deleted && object->target() ) {
+         infoBar_->showTargetCount( PluginFunctions::targetCount() - 1);
+       } else {
+         infoBar_->showTargetCount( PluginFunctions::targetCount() );
+       }
+     } else
+       infoBar_->hideCounts();
+   }
+
+}
+
+//------------------------------------------------------------------------------
+
+void InfoMeshObjectPlugin::slotObjectUpdated( int _identifier , const UpdateType& _type){
+
+  updateData(_identifier,_type,false);
 
 }
 
 //------------------------------------------------------------------------------
 
 void InfoMeshObjectPlugin::slotObjectSelectionChanged( int _identifier ){
-  slotObjectUpdated( _identifier , UPDATE_ALL );
+  updateData(_identifier,UPDATE_ALL,false);
 }
+
+//------------------------------------------------------------------------------
+
+void InfoMeshObjectPlugin::objectDeleted( int _identifier ){
+  updateData(_identifier,UPDATE_ALL,true);
+}
+
 
 //------------------------------------------------------------------------------
 

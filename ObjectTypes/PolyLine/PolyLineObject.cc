@@ -238,14 +238,8 @@ ACG::Vec3d PolyLineObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget,
 
     int eh;
 
-    if(line()->vertex_ehandles_available())
-    {
-      eh = line()->vertex_ehandle(_targetIdx);
-    }
-    else
-    {
       eh = _targetIdx;
-    }
+
 
     if(eh >= 0 && eh < (int)line()->n_edges())
     {
@@ -264,7 +258,7 @@ ACG::Vec3d PolyLineObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget,
 
   if ( _pickTarget == ACG::SceneGraph::PICK_VERTEX) {
     // get picked vertex handle
-    int vh = line()->vertex_vhandle(_targetIdx);
+    int vh = _targetIdx;
     if(vh>=0 && vh < (int)line()->n_vertices())
     {
       ACG::Vec3d hitpointNew = line()->point(vh);

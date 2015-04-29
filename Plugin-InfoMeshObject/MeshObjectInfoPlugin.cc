@@ -832,9 +832,17 @@ void InfoMeshObjectPlugin::updateData( int _identifier , const UpdateType& _type
   BaseObjectData* object;
   PluginFunctions::getObject(_identifier,object);
 
+  // Last object that is target has been removed.
+  if ( _deleted && object && object->target() && (PluginFunctions::targetCount() == 1) ) {
+    infoBar_->hideCounts();
+    return;
+  }
+
    // We only show the information in the status bar if one target mesh is selected or
    // If 2 targets where selected, where one is deleted which was target
    if ( PluginFunctions::targetCount() == 1 || ( _deleted && (PluginFunctions::targetCount() == 2) && object && object->target() ) ) {
+
+
 
      // The object that caused the update is not a target anymore.
      // Therefore we need to get the remaining target by iteration.

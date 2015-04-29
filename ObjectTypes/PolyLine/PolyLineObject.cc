@@ -221,4 +221,60 @@ bool PolyLineObject::pickingEnabled() {
   return lineNode_->pickingEnabled();
 }
 
+/// Refine picking on triangle meshes
+ACG::Vec3d PolyLineObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget,
+                             const ACG::Vec3d _hitPoint,
+                             const ACG::Vec3d _start ,
+                             const ACG::Vec3d _dir,
+                             const unsigned int _targetIdx )
+{
+  if ( _pickTarget == ACG::SceneGraph::PICK_FACE) {
+    //don't refine polyLine faces
+    return _hitPoint;
+  }
+
+  if ( _pickTarget == ACG::SceneGraph::PICK_EDGE) {
+    // get picked edge handle
+
+    int eh;
+
+    if(line()->vertex_ehandles_available())
+    {
+      eh = line()->vertex_ehandle(_targetIdx);
+    }
+    else
+    {
+      eh = _targetIdx;
+    }
+
+    if(eh >= 0 && eh < (int)line()->n_edges())
+    {
+      //get vertices of the edge
+      ACG::Vec3d edgeStart = line()->point((eh+1)%line()->n_vertices());
+      ACG::Vec3d edgeEnd = line()->point(eh);
+
+      //retrieve the point on the edge that is closest to the backprojected hitpoint
+      ACG::Vec3d hitPointNew;
+      ACG::Geometry::distPointLineSquared(_hitPoint,edgeStart,edgeEnd,&hitPointNew);
+
+
+      return hitPointNew;
+    }
+  }
+
+  if ( _pickTarget == ACG::SceneGraph::PICK_VERTEX) {
+    // get picked vertex handle
+    int vh = line()->vertex_vhandle(_targetIdx);
+    if(vh>=0 && vh < (int)line()->n_vertices())
+    {
+      ACG::Vec3d hitpointNew = line()->point(vh);
+
+      //just return the vertex position
+      return hitpointNew;
+    }
+  }
+
+  return _hitPoint;
+}
+
 //=============================================================================

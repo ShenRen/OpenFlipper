@@ -136,6 +136,14 @@ class DLLEXPORT PolyLineObject : public BaseObjectData {
 
     /// Check if picking is enabled for this Object
     bool pickingEnabled();
+
+
+    /// Refine picking on triangle meshes
+    ACG::Vec3d refinePick(ACG::SceneGraph::PickTarget _pickTarget,
+                                 const ACG::Vec3d _hitPoint,
+                                 const ACG::Vec3d _start ,
+                                 const ACG::Vec3d _dir,
+                                 const unsigned int _targetIdx );
     
   /** @} */  
     

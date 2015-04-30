@@ -216,6 +216,11 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     
     BaseNode* primaryNode();
 
+    ACG::SceneGraph::SelectionNodeT<MeshT>*  statusNode() {return statusNode_;}
+    ACG::SceneGraph::StatusNodeT<MeshT, AreaNodeMod<MeshT> >*  areaNode() {return areaNode_;}
+    ACG::SceneGraph::StatusNodeT<MeshT, HandleNodeMod<MeshT> >* handleNode() {return handleNode_;}
+    ACG::SceneGraph::StatusNodeT<MeshT, FeatureNodeMod<MeshT> >*  featureNode() {return featureNode_;}
+
   private :
     /// Status Node for a mesh, visualizing the selection state of a mesh
     ACG::SceneGraph::SelectionNodeT<MeshT>*  statusNode_;

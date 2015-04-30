@@ -56,6 +56,7 @@
 #include <OpenFlipper/BasePlugin/INIInterface.hh>
 #include <OpenFlipper/BasePlugin/ScriptInterface.hh>
 #include <OpenFlipper/BasePlugin/SelectionInterface.hh>
+#include <OpenFlipper/BasePlugin/OptionsInterface.hh>
 
 #include <OpenFlipper/common/Types.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
@@ -64,11 +65,13 @@
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
+#include <ACG/QtWidgets/QtColorChooserButton.hh>
+
 #include "ConversionDialog.hh"
 
 class MeshObjectSelectionPlugin : public QObject, BaseInterface, KeyInterface, LoadSaveInterface,
             INIInterface, BackupInterface, ScriptInterface, LoggingInterface, SelectionInterface,
-            MouseInterface
+            MouseInterface, OptionsInterface
 {
     Q_OBJECT
     Q_INTERFACES(BaseInterface)
@@ -80,6 +83,7 @@ class MeshObjectSelectionPlugin : public QObject, BaseInterface, KeyInterface, L
     Q_INTERFACES(LoggingInterface)
     Q_INTERFACES(LoadSaveInterface)
     Q_INTERFACES(SelectionInterface)
+    Q_INTERFACES(OptionsInterface)
 
 #if QT_VERSION >= 0x050000
   Q_PLUGIN_METADATA(IID "org.OpenFlipper.Plugins.Plugin-SelectionMeshObject")
@@ -173,7 +177,16 @@ private slots:
     // MouseInterface
     void slotMouseWheelEvent(QWheelEvent* event, std::string const& mode);
 
+    // LoadSaveInterface
+    void addedEmptyObject( int _id );
+
 public:
+
+    // OptionsInterface
+    bool initializeOptionsWidget(QWidget*& _widget);
+
+private slots:
+    void applyOptions();
 
     // BaseInterface
     QString name() {
@@ -190,6 +203,9 @@ public:
     //===========================================================================
 private:
     
+    // set and saves the colors of the specified nodes
+    void setColorValues(const ACG::Vec4f& _status, const ACG::Vec4f& _handle, const ACG::Vec4f& _region, const ACG::Vec4f& _feature);
+
     /// Set descriptions for local public slots
     void updateSlotDescriptions();
     
@@ -206,6 +222,9 @@ private slots:
     
     /// Show selection conversion dialog
     void conversionRequested();
+
+    /// sets the default color values for selection/handle/region/feature nodes for all objects of this type
+    void setDefaultColorValues();
 
     /** @} */
     
@@ -552,6 +571,17 @@ private:
     QVector<QPoint> volumeLassoPoints_;
 
     ConversionDialog* conversionDialog_;
+
+    /// Options
+    QtColorChooserButton*       colorButtonSelection_;
+    QtColorChooserButton*       colorButtonArea_;
+    QtColorChooserButton*       colorButtonHandle_;
+    QtColorChooserButton*       colorButtonFeature_;
+
+    ACG::Vec4f statusColor_;
+    ACG::Vec4f areaColor_;
+    ACG::Vec4f handleColor_;
+    ACG::Vec4f featureColor_;
 
     /** @} */
 

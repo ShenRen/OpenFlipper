@@ -43,6 +43,7 @@
 #include "MeshObjectSelectionPlugin.hh"
 
 #include <set>
+#include <sstream>
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
@@ -1965,6 +1966,214 @@ int MeshObjectSelectionPlugin::createMeshFromSelection(int _objectId, PrimitiveT
     emit log(LOGERR, tr("DataType not supported"));
     return -1;
   }
+}
+
+void MeshObjectSelectionPlugin::setColorValues(const ACG::Vec4f& _status, const ACG::Vec4f& _handle, const ACG::Vec4f& _area, const ACG::Vec4f& _feature)
+{
+  if (OpenFlipper::Options::gui())
+  {
+    colorButtonSelection_->setColor(QColor::fromRgbF(_status[0],_status[1],_status[2],_status[3]));
+    colorButtonHandle_->setColor(QColor::fromRgbF(_handle[0], _handle[1], _handle[2], _handle[3]));
+    colorButtonArea_->setColor(QColor::fromRgbF(_area[0],_area[1],_area[2],_area[3]));
+    colorButtonFeature_->setColor(QColor::fromRgbF(_feature[0],_feature[1],_feature[2],_feature[3]));
+  }
+
+  for (PluginFunctions::ObjectIterator o_iter(PluginFunctions::ALL_OBJECTS, DATA_POLY_MESH); o_iter != PluginFunctions::objectsEnd(); ++o_iter)
+  {
+    PolyMeshObject* poly = PluginFunctions::polyMeshObject(*o_iter);
+    poly->statusNode()->set_color(_status);
+    poly->statusNode()->set_base_color(_status);
+
+    poly->handleNode()->set_color(_handle);
+    poly->handleNode()->set_base_color(_handle);
+
+    poly->areaNode()->set_color(_area);
+    poly->areaNode()->set_base_color(_area);
+
+    poly->featureNode()->set_color(_feature);
+    poly->featureNode()->set_base_color(_feature);
+  }
+
+  for (PluginFunctions::ObjectIterator o_iter(PluginFunctions::ALL_OBJECTS, DATA_TRIANGLE_MESH); o_iter != PluginFunctions::objectsEnd(); ++o_iter)
+  {
+    TriMeshObject* tri = PluginFunctions::triMeshObject(*o_iter);
+    tri->statusNode()->set_color(_status);
+    tri->statusNode()->set_base_color(_status);
+
+    tri->handleNode()->set_color(_handle);
+    tri->handleNode()->set_base_color(_handle);
+
+    tri->areaNode()->set_color(_area);
+    tri->areaNode()->set_base_color(_area);
+
+    tri->featureNode()->set_color(_feature);
+    tri->featureNode()->set_base_color(_feature);
+  }
+
+  std::stringstream sstream;
+  sstream << _status;
+  OpenFlipperQSettings().setValue("SelectionMeshObject/StatusColor",QString(sstream.str().c_str()));
+  sstream.str("");
+  sstream.clear();
+
+  sstream << _handle;
+  OpenFlipperQSettings().setValue("SelectionMeshObject/HandleColor",QString(sstream.str().c_str()));
+  sstream.str("");
+  sstream.clear();
+
+  sstream << _area;
+  OpenFlipperQSettings().setValue("SelectionMeshObject/AreaColor",QString(sstream.str().c_str()));
+  sstream.str("");
+  sstream.clear();
+
+  sstream << _feature;
+  OpenFlipperQSettings().setValue("SelectionMeshObject/FeatureColor",QString(sstream.str().c_str()));
+
+  statusColor_ = _status;
+  areaColor_ = _area;
+  handleColor_ = _handle;
+  featureColor_ = _feature;
+
+  emit updateView();
+}
+
+
+void MeshObjectSelectionPlugin::setDefaultColorValues()
+{
+  const ACG::Vec4f statusColor = ACG::Vec4f(1.0f,0.0f,0.0f,1.0f);
+  const ACG::Vec4f areaColor = ACG::Vec4f(0.4f, 0.4f, 1.0f, 1.0f);
+  const ACG::Vec4f handleColor = ACG::Vec4f(0.2f, 1.0f, 0.2f, 1.0f);
+  const ACG::Vec4f featureColor = ACG::Vec4f(1.0f, 0.2f, 1.0f, 1.0f);
+
+  setColorValues(statusColor, handleColor, areaColor, featureColor);
+}
+
+bool MeshObjectSelectionPlugin::initializeOptionsWidget(QWidget*& _widget)
+{
+  _widget = new QWidget();
+  QVBoxLayout* vLayout = new QVBoxLayout();
+  QHBoxLayout* hLayout = new QHBoxLayout();
+
+  colorButtonSelection_ = new QtColorChooserButton();
+  hLayout->addWidget(new QLabel("Selection Color: "));
+  hLayout->addWidget(colorButtonSelection_);
+  vLayout->addLayout(hLayout);
+
+  hLayout = new QHBoxLayout();
+  colorButtonHandle_ = new QtColorChooserButton();
+  hLayout->addWidget(new QLabel("Handle Color: "));
+  hLayout->addWidget(colorButtonHandle_);
+  vLayout->addLayout(hLayout);
+
+  hLayout = new QHBoxLayout();
+  colorButtonFeature_ = new QtColorChooserButton();
+  hLayout->addWidget(new QLabel("Feature Color: "));
+  hLayout->addWidget(colorButtonFeature_);
+  vLayout->addLayout(hLayout);
+
+  hLayout = new QHBoxLayout();
+  colorButtonArea_= new QtColorChooserButton();
+  hLayout->addWidget(new QLabel("Area Color: "));
+  hLayout->addWidget(colorButtonArea_);
+  vLayout->addLayout(hLayout);
+
+  hLayout = new QHBoxLayout();
+  QPushButton* restoreDefault = new QPushButton();
+  connect(restoreDefault, SIGNAL(clicked()), this, SLOT(setDefaultColorValues()));
+  restoreDefault->setText("Restore Default");
+  hLayout->addWidget(restoreDefault);
+  hLayout->addStretch();
+  vLayout->addLayout(hLayout);
+
+  _widget->setLayout(vLayout);
+
+  std::string statusStr = OpenFlipperQSettings().value("SelectionMeshObject/StatusColor",QString()).toString().toStdString();
+  std::string handleStr = OpenFlipperQSettings().value("SelectionMeshObject/HandleColor",QString()).toString().toStdString();
+  std::string featureStr = OpenFlipperQSettings().value("SelectionMeshObject/FeatureColor",QString()).toString().toStdString();
+  std::string areaStr = OpenFlipperQSettings().value("SelectionMeshObject/AreaColor",QString()).toString().toStdString();
+  if (statusStr.empty() || handleStr.empty() || featureStr.empty() || areaStr.empty())
+  {
+    setDefaultColorValues();
+  }
+  else
+  {
+    ACG::Vec4f statusColor;
+    ACG::Vec4f areaColor;
+    ACG::Vec4f handleColor;
+    ACG::Vec4f featureColor;
+
+    std::stringstream sstream;
+
+    sstream.str(statusStr);
+    sstream >> statusColor;
+
+    sstream.str("");
+    sstream.clear();
+    sstream.str(handleStr);
+    sstream >> handleColor;
+
+    sstream.str("");
+    sstream.clear();
+    sstream.str(featureStr);
+    sstream >> featureColor;
+
+    sstream.str("");
+    sstream.clear();
+    sstream.str(areaStr);
+    sstream >> areaColor;
+
+    setColorValues(statusColor, handleColor, areaColor, featureColor);
+  }
+
+  return true;
+}
+
+void MeshObjectSelectionPlugin::applyOptions()
+{
+  const ACG::Vec4f statusColor = ACG::Vec4f(colorButtonSelection_->color().redF(),colorButtonSelection_->color().greenF(),colorButtonSelection_->color().blueF(),1.f);
+  const ACG::Vec4f areaColor = ACG::Vec4f(colorButtonArea_->color().redF(),colorButtonArea_->color().greenF(),colorButtonArea_->color().blueF(),1.f);
+  const ACG::Vec4f handleColor = ACG::Vec4f(colorButtonHandle_->color().redF(),colorButtonHandle_->color().greenF(),colorButtonHandle_->color().blueF(),1.f);
+  const ACG::Vec4f featureColor = ACG::Vec4f(colorButtonFeature_->color().redF(),colorButtonFeature_->color().greenF(),colorButtonFeature_->color().blueF(),1.f);
+
+  setColorValues(statusColor, handleColor, areaColor, featureColor);
+}
+
+void MeshObjectSelectionPlugin::addedEmptyObject(int _id )
+{
+  PolyMeshObject* polyObj = 0;
+  TriMeshObject* triObj = 0;
+
+  triObj = PluginFunctions::triMeshObject(_id);
+  polyObj = PluginFunctions::polyMeshObject(_id);
+
+  if (triObj)
+  {
+    triObj->statusNode()->set_color(statusColor_);
+    triObj->statusNode()->set_base_color(statusColor_);
+
+    triObj->handleNode()->set_color(handleColor_);
+    triObj->handleNode()->set_base_color(handleColor_);
+
+    triObj->areaNode()->set_color(areaColor_);
+    triObj->areaNode()->set_base_color(areaColor_);
+
+    triObj->featureNode()->set_color(featureColor_);
+    triObj->featureNode()->set_base_color(featureColor_);
+  }else if (polyObj)
+  {
+    polyObj->statusNode()->set_color(statusColor_);
+    polyObj->statusNode()->set_base_color(statusColor_);
+
+    polyObj->handleNode()->set_color(handleColor_);
+    polyObj->handleNode()->set_base_color(handleColor_);
+
+    polyObj->areaNode()->set_color(areaColor_);
+    polyObj->areaNode()->set_base_color(areaColor_);
+
+    polyObj->featureNode()->set_color(featureColor_);
+    polyObj->featureNode()->set_base_color(featureColor_);
+  }
+
 }
 
 

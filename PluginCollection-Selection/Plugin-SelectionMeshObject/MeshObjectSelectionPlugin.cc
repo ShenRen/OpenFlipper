@@ -1976,38 +1976,39 @@ void MeshObjectSelectionPlugin::setColorValues(const ACG::Vec4f& _status, const 
     colorButtonHandle_->setColor(QColor::fromRgbF(_handle[0], _handle[1], _handle[2], _handle[3]));
     colorButtonArea_->setColor(QColor::fromRgbF(_area[0],_area[1],_area[2],_area[3]));
     colorButtonFeature_->setColor(QColor::fromRgbF(_feature[0],_feature[1],_feature[2],_feature[3]));
-  }
 
-  for (PluginFunctions::ObjectIterator o_iter(PluginFunctions::ALL_OBJECTS, DATA_POLY_MESH); o_iter != PluginFunctions::objectsEnd(); ++o_iter)
-  {
-    PolyMeshObject* poly = PluginFunctions::polyMeshObject(*o_iter);
-    poly->statusNode()->set_color(_status);
-    poly->statusNode()->set_base_color(_status);
 
-    poly->handleNode()->set_color(_handle);
-    poly->handleNode()->set_base_color(_handle);
+    for (PluginFunctions::ObjectIterator o_iter(PluginFunctions::ALL_OBJECTS, DATA_POLY_MESH); o_iter != PluginFunctions::objectsEnd(); ++o_iter)
+    {
+      PolyMeshObject* poly = PluginFunctions::polyMeshObject(*o_iter);
+      poly->statusNode()->set_color(_status);
+      poly->statusNode()->set_base_color(_status);
 
-    poly->areaNode()->set_color(_area);
-    poly->areaNode()->set_base_color(_area);
+      poly->handleNode()->set_color(_handle);
+      poly->handleNode()->set_base_color(_handle);
 
-    poly->featureNode()->set_color(_feature);
-    poly->featureNode()->set_base_color(_feature);
-  }
+      poly->areaNode()->set_color(_area);
+      poly->areaNode()->set_base_color(_area);
 
-  for (PluginFunctions::ObjectIterator o_iter(PluginFunctions::ALL_OBJECTS, DATA_TRIANGLE_MESH); o_iter != PluginFunctions::objectsEnd(); ++o_iter)
-  {
-    TriMeshObject* tri = PluginFunctions::triMeshObject(*o_iter);
-    tri->statusNode()->set_color(_status);
-    tri->statusNode()->set_base_color(_status);
+      poly->featureNode()->set_color(_feature);
+      poly->featureNode()->set_base_color(_feature);
+    }
 
-    tri->handleNode()->set_color(_handle);
-    tri->handleNode()->set_base_color(_handle);
+    for (PluginFunctions::ObjectIterator o_iter(PluginFunctions::ALL_OBJECTS, DATA_TRIANGLE_MESH); o_iter != PluginFunctions::objectsEnd(); ++o_iter)
+    {
+      TriMeshObject* tri = PluginFunctions::triMeshObject(*o_iter);
+      tri->statusNode()->set_color(_status);
+      tri->statusNode()->set_base_color(_status);
 
-    tri->areaNode()->set_color(_area);
-    tri->areaNode()->set_base_color(_area);
+      tri->handleNode()->set_color(_handle);
+      tri->handleNode()->set_base_color(_handle);
 
-    tri->featureNode()->set_color(_feature);
-    tri->featureNode()->set_base_color(_feature);
+      tri->areaNode()->set_color(_area);
+      tri->areaNode()->set_base_color(_area);
+
+      tri->featureNode()->set_color(_feature);
+      tri->featureNode()->set_base_color(_feature);
+    }
   }
 
   std::stringstream sstream;
@@ -2140,6 +2141,9 @@ void MeshObjectSelectionPlugin::applyOptions()
 
 void MeshObjectSelectionPlugin::addedEmptyObject(int _id )
 {
+  if (OpenFlipper::Options::nogui())
+    return;
+
   PolyMeshObject* polyObj = 0;
   TriMeshObject* triObj = 0;
 

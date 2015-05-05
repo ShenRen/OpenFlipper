@@ -176,7 +176,7 @@ RenderObject::RenderObject()
   proj(modelview),
   vertexArrayObject(0),
   vertexBuffer(0), indexBuffer(0), sysmemIndexBuffer(0),
-  primitiveMode(GL_TRIANGLES), numIndices(0), indexOffset(0), indexType(GL_UNSIGNED_INT),
+  primitiveMode(GL_TRIANGLES), patchVertices(0), numIndices(0), indexOffset(0), indexType(GL_UNSIGNED_INT),
   numInstances(0),
   vertexDecl(0), 
   culling(true), blending(false), alphaTest(false),
@@ -185,6 +185,9 @@ RenderObject::RenderObject()
   alphaFunc(GL_ALWAYS), alphaRef(0.0f),
   blendSrc(GL_SRC_ALPHA), blendDest(GL_ONE_MINUS_SRC_ALPHA),
   depthRange(0.0f, 1.0f), 
+
+  patchDefaultInnerLevel(1.0f, 1.0f),
+  patchDefaultOuterLevel(1.0f, 1.0f, 1.0f, 1.0f),
 
   diffuse(0.6f, 0.6f, 0.6f), ambient(0.1f, 0.1f, 0.1f),
   specular(0.0f, 0.0f, 0.0f), emissive(0.05f, 0.05f, 0.05f),
@@ -222,7 +225,8 @@ QString RenderObject::toString() const
     "GL_LINES_ADJACENCY",
     "GL_LINE_STRIP_ADJACENCY",
     "GL_TRIANGLES_ADJACENCY",
-    "GL_TRIANGLE_STRIP_ADJACENCY"
+    "GL_TRIANGLE_STRIP_ADJACENCY",
+    "GL_PATCHES"
   };
 
   const char* fillModeString[] = 
@@ -247,20 +251,28 @@ QString RenderObject::toString() const
   QString result;
   QTextStream resultStrm(&result);
 
+
+#if !defined(GL_VERSION_3_2)
+  const GLenum maxSupportedPrimitiveMode = GL_POLYGON;
+#elif !defined(GL_ARB_tessellation_shader)
+  const GLenum maxSupportedPrimitiveMode = GL_TRIANGLE_STRIP_ADJACENCY;
+#else
+  const GLenum maxSupportedPrimitiveMode = GL_PATCHES;
+#endif
+
   resultStrm << "name: " << debugName
              << "\ndebugID: " << debugID
              << "\npriority: " << priority
-
-#ifdef ARCH_DARWIN
-             << "\nprimitiveMode: " << (primitiveMode <= GL_POLYGON ? primitiveString[primitiveMode] : "undefined")
-#else
-             << "\nprimitiveMode: " << (primitiveMode <= GL_TRIANGLE_STRIP_ADJACENCY ? primitiveString[primitiveMode] : "undefined")
-#endif
-
+             << "\nprimitiveMode: " << (primitiveMode <= maxSupportedPrimitiveMode ? primitiveString[primitiveMode] : "undefined")
              << "\nfillMode: " << fillModeString[fillMode - GL_POINT]
              << "\nnumIndices: " << numIndices
              << "\nindexOffset: " << indexOffset;
 
+
+#ifdef GL_ARB_tessellation_shader
+  if (primitiveMode == GL_PATCHES)
+    resultStrm << "\npatchVertices: " << patchVertices;
+#endif
 
   resultStrm << "\nvao-id: " << vertexArrayObject
              << "\nvbo-id: " << vertexBuffer
@@ -388,6 +400,11 @@ bool RenderObject::isDefaultLineObject() const
     shaderDesc.fragmentTemplateFile == "Wireframe/gl42/fragment.tpl");
 }
 
+void RenderObject::resetLineRendering()
+{
+  shaderDesc.geometryTemplateFile.clear();
+}
+
 void RenderObject::setupPointRendering( float _pointSize, const Vec2f& _screenSize )
 {
   shaderDesc.geometryTemplateFile = "PointSize/geometry.tpl";
@@ -403,6 +420,11 @@ bool RenderObject::isDefaultPointObject() const
     shaderDesc.fragmentTemplateFile == "PointSize/fragment.tpl";
 }
 
+void RenderObject::resetPointRendering()
+{
+  shaderDesc.geometryTemplateFile.clear();
+  shaderDesc.fragmentTemplateFile.clear();
+}
 
 
 

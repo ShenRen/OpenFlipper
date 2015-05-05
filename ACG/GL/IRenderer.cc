@@ -250,6 +250,53 @@ void IRenderer::addRenderObject(ACG::RenderObject* _renderObject)
       // Why is alpha blending not work?
       if (fabsf(_renderObject->alpha - 1.0f) > 1e-3f && !(_renderObject->alphaTest || _renderObject->blending))
         std::cout << "warning: alpha value != 1 but no alpha blending or testing enabled in renderobject: " << _renderObject->debugName << std::endl;
+
+
+#ifdef GL_ARB_tessellation_shader
+      // Trying to render with tessellation shaders?
+      const bool tessellationActive = !_renderObject->shaderDesc.tessControlTemplateFile.isEmpty() || !_renderObject->shaderDesc.tessEvaluationTemplateFile.isEmpty();
+      bool tryToFixPatchInfo = false;
+      if (tessellationActive && _renderObject->primitiveMode != GL_PATCHES)
+      {
+        std::cout << "error: tessellation shaders are not used with GL_PATCHES primitiveType in renderobject: " << _renderObject->debugName << std::endl;
+        tryToFixPatchInfo = true;
+      }
+
+      if (tessellationActive && !_renderObject->patchVertices)
+      {
+        std::cout << "error: undefined patch size for tessellation in renderobject: " << _renderObject->debugName << std::endl;
+        tryToFixPatchInfo = true;
+      }
+
+      if (tryToFixPatchInfo)
+      {
+        if (_renderObject->primitiveMode == GL_POINTS)
+        {
+          _renderObject->primitiveMode = GL_PATCHES;
+          _renderObject->patchVertices = 1;
+          std::cout << "warning: attempting to draw with patchVertices = 1 for tessellation in renderobject: " << _renderObject->debugName << std::endl;
+        }
+        else if (_renderObject->primitiveMode == GL_LINES)
+        {
+          _renderObject->primitiveMode = GL_PATCHES;
+          _renderObject->patchVertices = 2;
+          std::cout << "warning: attempting to draw with patchVertices = 2 for tessellation in renderobject: " << _renderObject->debugName << std::endl;
+        }
+        else if (_renderObject->primitiveMode == GL_TRIANGLES)
+        {
+          _renderObject->primitiveMode = GL_PATCHES;
+          _renderObject->patchVertices = 3;
+          std::cout << "warning: attempting to draw with patchVertices = 3 for tessellation in renderobject: " << _renderObject->debugName << std::endl;
+        }
+        else if (_renderObject->primitiveMode == GL_QUADS)
+        {
+          _renderObject->primitiveMode = GL_PATCHES;
+          _renderObject->patchVertices = 4;
+          std::cout << "warning: attempting to draw with patchVertices = 4 for tessellation in renderobject: " << _renderObject->debugName << std::endl;
+        }
+      }
+
+#endif
     }
 
 
@@ -888,6 +935,24 @@ void IRenderer::drawObject(ACG::RenderObject* _obj)
       noIndices = false;
 
     glPolygonMode(GL_FRONT_AND_BACK, _obj->fillMode);
+
+    // tessellation info
+    bool tessellationActive = !(_obj->shaderDesc.tessControlTemplateFile.isEmpty() && _obj->shaderDesc.tessEvaluationTemplateFile.isEmpty());
+#ifdef GL_ARB_tessellation_shader
+    if (tessellationActive)
+    {
+      glPatchParameteri(GL_PATCH_VERTICES, _obj->patchVertices);
+
+      if (_obj->shaderDesc.tessControlTemplateFile.isEmpty())
+      {
+        glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, _obj->patchDefaultInnerLevel.data());
+        glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, _obj->patchDefaultOuterLevel.data());
+      }
+    }
+#else
+    if (tessellationActive)
+      std::cout << "error: tessellation shaders cannot be used with the outdated glew version" << std::endl;
+#endif
 
     if (noIndices) {
       if (_obj->numInstances <= 0)

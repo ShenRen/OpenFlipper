@@ -177,9 +177,12 @@ struct ACGDLLEXPORT RenderObject
    *  PrimitiveType must be one of the following:
    *  GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_TRIANGLE_STRIP,
    *  GL_TRIANGLE_FAN, GL_TRIANGLES, GL_QUAD_STRIP, GL_QUADS, GL_POLYGON,
-   *  GL_TRIANGLES_ADJACENCY, GL_LINES_ADJACENCY
+   *  GL_TRIANGLES_ADJACENCY, GL_LINES_ADJACENCY, GL_PATCHES
    */
   GLenum primitiveMode;
+
+  /// patch size if primitiveMode is GL_PATCHES for rendering with tessellation shaders
+  unsigned int patchVertices; // GL_PATCH_VERTICES
 
   /// Number indices to render
   unsigned int numIndices;
@@ -244,6 +247,13 @@ struct ACGDLLEXPORT RenderObject
   GLenum blendSrc, blendDest; //!< glBlendFunc: GL_SRC_ALPHA, GL_ZERO, GL_ONE, GL_ONE_MINUS_SRC_ALPHA ...
 
   Vec2f depthRange; //!< glDepthRange: (znear, zmax)
+
+  // ---------------------------
+  // default tessellation lod, if only a tess-eval, but no tess-control shader is specified
+  // this is ignored otherwise
+
+  Vec2f patchDefaultInnerLevel; // GL_PATCH_DEFAULT_INNER_LEVEL
+  Vec4f patchDefaultOuterLevel; // GL_PATCH_DEFAULT_OUTER_LEVEL
 
   // ---------------------------
   /// material definitions
@@ -423,6 +433,9 @@ public:
   /// Test if the object is rendered with one of the default line thickness methods
   bool isDefaultLineObject() const;
 
+  /// Reset shader template names blocked by line rendering
+  void resetLineRendering();
+
   /** \brief Setup rendering of circle points
    *
    * Use default quad extrusion shader.
@@ -433,6 +446,9 @@ public:
 
   /// Test if the object is rendered with one of the default point extension methods
   bool isDefaultPointObject() const;
+
+  /// Reset shader template names blocked by point rendering
+  void resetPointRendering();
 
 
 

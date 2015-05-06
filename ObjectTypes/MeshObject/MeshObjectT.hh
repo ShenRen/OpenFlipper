@@ -216,10 +216,25 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     
     BaseNode* primaryNode();
 
-    ACG::SceneGraph::SelectionNodeT<MeshT>*  statusNode() {return statusNode_;}
-    ACG::SceneGraph::StatusNodeT<MeshT, AreaNodeMod<MeshT> >*  areaNode() {return areaNode_;}
-    ACG::SceneGraph::StatusNodeT<MeshT, HandleNodeMod<MeshT> >* handleNode() {return handleNode_;}
-    ACG::SceneGraph::StatusNodeT<MeshT, FeatureNodeMod<MeshT> >*  featureNode() {return featureNode_;}
+    /// set color for selection
+    void setSelectionColor(const ACG::Vec4f& _color);
+    /// get color for selection. returns -1 vector, if handle node does not exists
+    ACG::Vec4f selectionColor() const;
+
+    /// set color for areas
+    void setAreaColor(const ACG::Vec4f& _color);
+    /// get color for areas. returns -1 vector, if handle node does not exists
+    ACG::Vec4f areaColor() const;
+
+    /// set color for features
+    void setFeatureColor(const ACG::Vec4f& _color);
+    /// get color for features. returns -1 vector, if handle node does not exists
+    ACG::Vec4f featureColor() const;
+
+    /// set color for handles
+    void setHandleColor(const ACG::Vec4f& _color);
+    /// get color for handles. returns -1 vector, if handle node does not exists
+    ACG::Vec4f handleColor() const;
 
   private :
     /// Status Node for a mesh, visualizing the selection state of a mesh

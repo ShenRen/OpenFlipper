@@ -461,6 +461,80 @@
   // ===============================================================================
   // Visualization
   // ===============================================================================
+  template < class MeshT  >
+  void MeshObject< MeshT >::setSelectionColor(const ACG::Vec4f& _color)
+  {
+    if (statusNode_)
+    {
+      statusNode_->set_color(_color);
+      statusNode_->set_base_color(_color);
+    }
+  }
+
+  template < class MeshT  >
+  ACG::Vec4f MeshObject< MeshT >::selectionColor() const
+  {
+    if (statusNode_)
+      return statusNode_->base_color();
+    else
+      return ACG::Vec4f(-1.f,-1.f,-1.f,-1.f);
+  }
+
+  template < class MeshT  >
+  void MeshObject< MeshT >::setAreaColor(const ACG::Vec4f& _color)
+  {
+    if (areaNode_)
+    {
+      areaNode_->set_color(_color);
+      areaNode_->set_base_color(_color);
+    }
+  }
+  template < class MeshT  >
+  ACG::Vec4f MeshObject< MeshT >::areaColor() const
+  {
+    if (areaNode_)
+      return areaNode_->base_color();
+    else
+      return ACG::Vec4f(-1.f,-1.f,-1.f,-1.f);
+  }
+
+  template < class MeshT  >
+  void MeshObject< MeshT >::setFeatureColor(const ACG::Vec4f& _color)
+  {
+    if (featureNode_)
+    {
+      featureNode_->set_color(_color);
+      featureNode_->set_base_color(_color);
+    }
+  }
+  template < class MeshT  >
+  ACG::Vec4f MeshObject< MeshT >::featureColor() const
+  {
+    if (featureNode_)
+      return featureNode_->base_color();
+    else
+      return ACG::Vec4f(-1.f,-1.f,-1.f,-1.f);
+  }
+
+  template < class MeshT  >
+  void MeshObject< MeshT >::setHandleColor(const ACG::Vec4f& _color)
+  {
+    if (handleNode_)
+    {
+      handleNode_->set_color(_color);
+      handleNode_->set_base_color(_color);
+    }
+  }
+  template < class MeshT  >
+  ACG::Vec4f MeshObject< MeshT >::handleColor() const
+  {
+    if (handleNode_)
+      return handleNode_->base_color();
+    else
+      return ACG::Vec4f(-1.f,-1.f,-1.f,-1.f);
+  }
+
+
   /** Returns a pointer to the texture node
   * @return Pointer to the texture node
   */

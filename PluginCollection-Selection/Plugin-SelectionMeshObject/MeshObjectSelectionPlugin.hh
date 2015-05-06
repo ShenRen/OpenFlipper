@@ -203,8 +203,8 @@ private slots:
     //===========================================================================
 private:
     
-    // set and saves the colors of the specified nodes
-    void setColorValues(const ACG::Vec4f& _status, const ACG::Vec4f& _handle, const ACG::Vec4f& _region, const ACG::Vec4f& _feature);
+    // update and saves new color values for area node/selecion noe etc.
+    void updateColorValues();
 
     /// Set descriptions for local public slots
     void updateSlotDescriptions();

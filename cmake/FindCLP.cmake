@@ -4,6 +4,18 @@
 #  CLP_INCLUDE_DIRS - The CLP include directories
 #  CLP_LIBRARIES - The libraries needed to use CLP
 
+
+# I8 Search paths for windows libraries
+if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2012/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
+endif()
+
 if (CLP_INCLUDE_DIR)
   # in cache already
   set(CLP_FOUND TRUE)
@@ -18,17 +30,18 @@ find_path(CLP_INCLUDE_DIR
                  "/usr/include/coin"
                  "C:\\libs\\clp\\include"
                  "C:\\libs\\cbc\\include"
+				 "${VS_SEARCH_PATH}CBC-2.9.4/Clp/include"
           )
 
 find_library( CLP_LIBRARY 
-              NAMES Clp
-
+              NAMES Clp libClp
               PATHS "$ENV{CLP_DIR}/lib"
                     "$ENV{CBC_DIR}/lib" 
                     "/usr/lib"
                     "/usr/lib/coin"
                     "C:\\libs\\clp\\lib"
                     "C:\\libs\\cbc\\lib"
+					"${VS_SEARCH_PATH}CBC-2.9.4/Clp/lib"
               )
 
 set(CLP_INCLUDE_DIRS "${CLP_INCLUDE_DIR}" )

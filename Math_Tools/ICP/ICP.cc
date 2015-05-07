@@ -179,6 +179,79 @@ icp(const std::vector< VectorT >& _points1 , const std::vector< VectorT >& _poin
    _scale2 *= _scale2;
 }
 
+template < typename VectorT , typename QuaternionT >
+void
+icp(const std::vector< VectorT >& _points1 , const std::vector< VectorT >& _points2  , VectorT& _cog1 ,  VectorT& _cog2 , QuaternionT& _rotation )
+{
+   // compute Mean of Points
+   _cog1 = center_of_gravity(_points1);
+   _cog2 = center_of_gravity(_points2);
+
+   double Sxx = 0.0;
+   double Sxy = 0.0;
+   double Sxz = 0.0;
+   double Syx = 0.0;
+   double Syy = 0.0;
+   double Syz = 0.0;
+   double Szx = 0.0;
+   double Szy = 0.0;
+   double Szz = 0.0;
+
+    for ( uint i = 0 ; i < _points1.size() ; ++i  ) {
+      Sxx += ( _points1[i][0] - _cog1[0] ) * ( _points2[i][0] - _cog2[0] );
+      Sxy += ( _points1[i][0] - _cog1[0] ) * ( _points2[i][1] - _cog2[1] );
+      Sxz += ( _points1[i][0] - _cog1[0] ) * ( _points2[i][2] - _cog2[2] );
+
+      Syx += ( _points1[i][1] - _cog1[1] ) * ( _points2[i][0] - _cog2[0] );
+      Syy += ( _points1[i][1] - _cog1[1] ) * ( _points2[i][1] - _cog2[1] );
+      Syz += ( _points1[i][1] - _cog1[1] ) * ( _points2[i][2] - _cog2[2] );
+
+      Szx += ( _points1[i][2] - _cog1[2] ) * ( _points2[i][0] - _cog2[0] );
+      Szy += ( _points1[i][2] - _cog1[2] ) * ( _points2[i][1] - _cog2[1] );
+      Szz += ( _points1[i][2] - _cog1[2] ) * ( _points2[i][2] - _cog2[2] );
+   }
+
+   gmm::dense_matrix<double> N; gmm::resize(N,4,4); gmm::clear(N);
+   N(0,0) = Sxx + Syy + Szz;
+   N(0,1) = Syz - Szy;
+   N(0,2) = Szx - Sxz;
+   N(0,3) = Sxy - Syx;
+
+   N(1,0) = Syz - Szy;
+   N(1,1) = Sxx - Syy - Szz;
+   N(1,2) = Sxy + Syx;
+   N(1,3) = Szx + Sxz;
+
+   N(2,0) = Szx - Sxz;
+   N(2,1) = Sxy + Syx;
+   N(2,2) = -Sxx + Syy - Szz;
+   N(2,3) = Syz + Szy;
+
+   N(3,0) = Sxy - Syx;
+   N(3,1) = Szx + Sxz;
+   N(3,2) = Syz + Szy;
+   N(3,3) = -Sxx - Syy + Szz;
+
+   std::vector< double > eigval; eigval.resize(4);
+   gmm::dense_matrix< double > eigvect; gmm::resize(eigvect, 4,4); gmm::clear(eigvect);
+   gmm::symmetric_qr_algorithm(N, eigval, eigvect);
+
+   int gr = 0;
+   double max = -FLT_MAX;
+   for (int i = 0; i < 4; i++)
+   if (eigval[i] > max)
+   {
+      gr = i;
+      max = eigval[i];
+   }
+
+   _rotation[0] = eigvect(0,gr);
+   _rotation[1] = eigvect(1,gr);
+   _rotation[2] = eigvect(2,gr);
+   _rotation[3] = eigvect(3,gr);
+
+}
+
 
 //=============================================================================
 

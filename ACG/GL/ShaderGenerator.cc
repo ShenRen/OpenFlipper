@@ -1283,7 +1283,8 @@ void ShaderProgGenerator::buildTessControlShader()
   // the generator provides an IO mapping function and adds default uniforms to this stage
   // - template is necessary
   // - combination/modification of tess-control shader is not supported
-  // - template may call sg_MapIO(inId, gl_InvocationID) somewhere in code to take care of default IO pass-through
+  // - template may call sg_MapIO(inId) somewhere in code to take care of default IO pass-through
+  //         this function reads elements from gl_in[inID] and writes them to elements of gl_out[gl_InvocationID]
   //         inId can be gl_InvocationID if the patch size is not modified
 
   delete tessControl_;
@@ -1317,11 +1318,11 @@ void ShaderProgGenerator::buildTessControlShader()
   // add simple io passthrough mapper
 
   {
-    mainCode.push_back("void sg_MapIO(const int inIdx, const int outIdx)");
+    mainCode.push_back("void sg_MapIO(const int inIdx)");
     mainCode.push_back("{");
 
     // built-in IO
-    mainCode.push_back("gl_out[outIdx].gl_Position = gl_in[inIdx].gl_Position;");
+    mainCode.push_back("gl_out[gl_InvocationID].gl_Position = gl_in[inIdx].gl_Position;");
     
     // custom IO
     for (int i = 0; i < tessControl_->getNumInputs(); ++i)
@@ -1329,7 +1330,7 @@ void ShaderProgGenerator::buildTessControlShader()
       QString inputName = tessControl_->getInputName(i);
       QString outputName = tessControl_->getIOMapName(i);
 
-      QString outputAssignCode = outputName + QString("[outIdx] = ") + inputName + QString("[inIdx];");
+      QString outputAssignCode = outputName + QString("[gl_InvocationID] = ") + inputName + QString("[inIdx];");
 
       mainCode.push_back(outputAssignCode);
     }

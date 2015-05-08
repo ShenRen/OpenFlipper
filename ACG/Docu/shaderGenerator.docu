@@ -194,10 +194,10 @@ void sg_MapIO(int inIdx)
 
 Tess-control shader:
 \code
-void sg_MapIO(int inIdx, int outIdx)
+void sg_MapIO(int inIdx)
 {
-  gl_out[outIdx].gl_Position = gl_in[inIdx].gl_Position;
-  gl_out[outIdx].SG_OUTPUT_X = gl_in[inIdx].SG_INPUT_X
+  gl_out[gl_InvocationID].gl_Position = gl_in[inIdx].gl_Position;
+  gl_out[gl_InvocationID].SG_OUTPUT_X = gl_in[inIdx].SG_INPUT_X
 }
 \endcode
 

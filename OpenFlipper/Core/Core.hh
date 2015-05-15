@@ -729,6 +729,8 @@ public slots:
     void setView(QString view);
     void setViewAndWindowGeometry(QString view);
 
+    /** @} */
+
    //===========================================================================
     /** @name Scripting functions for controlling view modes
     * @{ */

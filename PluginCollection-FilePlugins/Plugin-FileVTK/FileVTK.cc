@@ -73,21 +73,13 @@
 #include <algorithm>
 
 //-----------------------------------------------------------------------------------------------------
-namespace{
-  template<typename T>
-  class HasSeen : public std::unary_function <T, bool>
-  {
-  public:
-    HasSeen () : seen_ () { }
+void remove_duplicated_vertices(std::vector<quint32>& _indices)
+{
+  std::vector<quint32>::iterator endIter = _indices.end();
+  for (std::vector<quint32>::iterator iter = _indices.begin(); iter != endIter; ++iter)
+    endIter = std::remove(iter+1, endIter, *(iter));
 
-    bool operator ()(const T& i) const
-    {
-      return (!seen_.insert(i).second);
-    }
-
-  private:
-    mutable std::set<T> seen_;
-  };
+  _indices.erase(endIter,_indices.end());
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1971,41 +1963,9 @@ bool FileVTKPlugin::loadMeshPolygons(QString _spec,QTextStream& _in,MeshT*& _mes
         if ( _in.status() == QTextStream::Ok ) {
 
           //check, if there exists duplicate vertices inside of the face
-          //std::vector< quint32 >::iterator newEndIter = std::remove_if(indices.begin(),indices.end(),HasSeen<int>(seen));
-          size_t dublicatedIndices = std::count_if(indices.begin(),indices.end(),HasSeen<int>());
-          bool skipFace = false;
-          if (dublicatedIndices != 0)
-          {
-            //if so, check, if it is only a degenerated face
-            //remove all consecutive vertices which are equal
-            std::vector< quint32 >::iterator endIter = indices.end();
-            std::vector< quint32 >::iterator adjIter = std::adjacent_find(indices.begin(),endIter);
-            while( adjIter != indices.end() )
-            {
-              indices.erase(adjIter);
-              --dublicatedIndices;
-              adjIter = std::adjacent_find(indices.begin(),indices.end());
-            }
+          remove_duplicated_vertices(indices);
 
-            if (dublicatedIndices != 0)
-            {
-              //remove circles (e.g. indices: 1 2 3 2 1 -> 1 2 3)
-              const std::vector< quint32 >::iterator endCheckVertices = indices.begin()+dublicatedIndices;
-              const std::vector< quint32 >::iterator missIter = std::mismatch(indices.begin(),endCheckVertices,indices.rbegin()).first;
-
-              skipFace = (missIter != endCheckVertices);
-              //skip face, if no match was found, otherwise, delete the circle
-              if (!skipFace)
-                indices.erase(indices.begin(),endCheckVertices);
-
-            }
-            if (!skipFace)
-              emit log(LOGWARN,tr("Repair and add degenerated face!"));
-            else
-              emit log(LOGERR,tr("Face uses same Vertex several times. Can not restore. Skip."));
-          }
-
-          if (!skipFace)
+          if (indices.size() >= 3)
           {
             CellType cell;
             cell.type = 7; // VTK_POLYGON

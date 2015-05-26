@@ -62,6 +62,7 @@
 #include "FileOBJ.hh"
 
 #include <iostream>
+#include <algorithm>
 
 
 // Defines for the type handling drop down box
@@ -73,20 +74,6 @@
 //-----------------------------------------------------------------------------
 // help functions
 namespace{
-  template<typename T>
-  class HasSeen : public std::unary_function <T, bool>
-  {
-  public:
-    HasSeen () : seen_ () { }
-
-    bool operator ()(const T& i) const
-    {
-      return (!seen_.insert(i).second);
-    }
-
-  private:
-    mutable std::set<T> seen_;
-  };
 
   float getFloat( QTextStream& _source)
   {
@@ -215,7 +202,11 @@ namespace{
 
 void remove_duplicated_vertices(VHandles& _indices)
 {
-  _indices.erase(std::remove_if(_indices.begin(),_indices.end(),HasSeen<int>()),_indices.end());
+  VHandles::iterator endIter = _indices.end();
+  for (VHandles::iterator iter = _indices.begin(); iter != endIter; ++iter)
+    endIter = std::remove(iter+1, endIter, *(iter));
+
+  _indices.erase(endIter,_indices.end());
 }
 
 //-----------------------------------------------------------------------------

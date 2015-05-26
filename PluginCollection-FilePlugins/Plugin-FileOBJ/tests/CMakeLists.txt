@@ -11,5 +11,6 @@ if(BUILD_TESTING)
   # ========================================================================
   run_single_object_file_mesh_test("fileobj" "Plugin-FileOBJ/covering-branch.obj" "fileMeshTest.ofs")
   run_single_object_file_mesh_test("fileobj" "Plugin-FileOBJ/triangle2D_only_points.obj" "fileMeshTest.ofs")
+  run_single_object_file_mesh_test("fileobj" "Plugin-FileOBJ/cube_degenerated_faces.obj" "fileMeshTest.ofs")
 
 endif()

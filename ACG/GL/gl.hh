@@ -54,6 +54,7 @@
 
 #include <cstdlib>
 #include <sstream>
+#include <iostream>
 
 
 #if defined(ARCH_DARWIN)

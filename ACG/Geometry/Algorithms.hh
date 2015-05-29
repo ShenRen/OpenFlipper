@@ -52,6 +52,7 @@
 #include <cfloat>
 #include <ACG/Math/VectorT.hh>
 #include <vector>
+#include <iostream>
 
 
 namespace ACG {

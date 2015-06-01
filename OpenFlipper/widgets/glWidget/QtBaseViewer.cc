@@ -2265,13 +2265,14 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
     // 16 samples per pixel as we want a nice snapshot. If this is not supported
     // it will fall back to the maximal supported number of samples
     format.setSamples(samples);
+
+    makeCurrent();
     QFramebufferObject fb(w,h,format);    
 
     if ( fb.isValid() ){
 
       const GLuint prevFbo = ACG::GLState::getFramebufferDraw();
 
-      makeCurrent();
       ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, fb.handle());
       
       // Turn alpha on if demanded

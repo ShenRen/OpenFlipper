@@ -60,6 +60,7 @@
 #include "DrawModes.hh"
 #include <ACG/GL/VertexDeclaration.hh>
 #include <vector>
+#include <limits>
 
 //== NAMESPACES ===============================================================
 
@@ -170,7 +171,7 @@ public:
   /// get line width used by the picking renderer. Defaults to line_width().
   float picking_line_width() const
   {
-    return (picking_line_width_ != NAN) ? picking_line_width_ : line_width();
+      return (picking_line_width_ != std::numeric_limits<float>::infinity()) ? picking_line_width_ : line_width();
   }
 
   /// number of points

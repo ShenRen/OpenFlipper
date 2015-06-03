@@ -67,7 +67,7 @@ LineNode::LineNode( LineMode     _mode,
                     BaseNode*    _parent,
                      std::string  _name ) :
    MaterialNode(_parent, _name, MaterialNode::BaseColor | MaterialNode::LineWidth),
-   picking_line_width_(NAN),
+   picking_line_width_(std::numeric_limits<float>::infinity()),
    line_mode_(_mode),
    draw_always_on_top (false),
    prev_depth_(GL_LESS),

@@ -67,6 +67,7 @@ LineNode::LineNode( LineMode     _mode,
                     BaseNode*    _parent,
                      std::string  _name ) :
    MaterialNode(_parent, _name, MaterialNode::BaseColor | MaterialNode::LineWidth),
+   picking_line_width_(NAN),
    line_mode_(_mode),
    draw_always_on_top (false),
    prev_depth_(GL_LESS),
@@ -363,6 +364,88 @@ leave(GLState& _state , const DrawModes::DrawMode& _drawMode)
   }
 
   MaterialNode::leave(_state, _drawMode);
+}
+
+//----------------------------------------------------------------------------
+
+void LineNode::pick(GLState&  _state , PickTarget _target)
+{
+  if (n_points() == 0)
+    return;
+
+  // Bind the vertex array
+  ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+  ACG::GLState::vertexPointer( &(points_)[0] );
+  ACG::GLState::enableClientState(GL_VERTEX_ARRAY);
+
+  const unsigned int n_edges = n_points() - 1;
+
+  switch (_target)
+  {
+    case PICK_EDGE:
+    {
+      _state.pick_set_maximum (n_edges);
+      pick_edges(_state, 0);
+      break;
+    }
+
+    case PICK_ANYTHING:
+    {
+      _state.pick_set_maximum (n_edges);
+      pick_edges(_state, 0);
+      break;
+    }
+
+    default:
+      break;
+  }
+
+  //Disable the vertex array
+  ACG::GLState::disableClientState(GL_VERTEX_ARRAY);
+}
+
+//----------------------------------------------------------------------------
+
+void LineNode::pick_edges(GLState& _state, unsigned int _offset)
+{
+  // Check if we have any edges to draw (% 0 causes division by zero on windows)
+  if (n_points() < 2)
+    return;
+
+  const float line_width_old = _state.line_width();
+  _state.set_line_width(picking_line_width());
+  _state.pick_set_name (0);
+
+  glDepthRange(0.0, 0.99);
+
+  if (line_mode_ == PolygonMode)
+  {
+    const unsigned int n_edges = n_points() - 1;
+    for (unsigned int i = 0; i < n_edges; ++i)
+    {
+      _state.pick_set_name(i + _offset);
+      glBegin(GL_LINES);
+      glArrayElement(i);
+      glArrayElement(i + 1);
+      glEnd();
+    }
+  }
+  else if (line_mode_ == LineSegmentsMode)
+  {
+    const unsigned int n_edges = n_points() / 2;
+    for (unsigned int i = 0; i < n_edges; ++i)
+    {
+      _state.pick_set_name(i + _offset);
+      glBegin(GL_LINES);
+      glArrayElement(2*i);
+      glArrayElement(2*i + 1);
+      glEnd();
+    }
+  }
+
+  glDepthRange(0.0, 1.0);
+
+  _state.set_line_width(line_width_old);
 }
 
 //----------------------------------------------------------------------------

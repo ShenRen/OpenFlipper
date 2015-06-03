@@ -132,9 +132,12 @@ public:
   /// reset depth function to what it was before enter()
   void leave(GLState& _state, const DrawModes::DrawMode& _drawMode);
 
+  /// Draw the line using the GL picking name stack
+  void pick(GLState&  _state , PickTarget _target);
 
   /// reserve mem for _n lines
   void reserve_lines(unsigned int _n) { points_.reserve(2*_n); }
+
   /// reserve mem for _n points
   void reserve_points(unsigned int _n) { points_.reserve(_n); }
 
@@ -161,6 +164,14 @@ public:
 
   /// add color 4f (only for LineMode == LineSegmentsMode)
   void add_color(const Color4f _c);
+
+  /// set line width used by the picking renderer
+  void set_picking_line_width(float _width) { picking_line_width_ = _width; }
+  /// get line width used by the picking renderer. Defaults to line_width().
+  float picking_line_width() const
+  {
+    return (picking_line_width_ != NAN) ? picking_line_width_ : line_width();
+  }
 
   /// number of points
   size_t n_points() const { return points_.size(); }
@@ -200,8 +211,16 @@ public:
   void getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
 
 protected:
+
+  void pick_vertices(GLState& _state);
+  void pick_edges (GLState& _state, unsigned int _offset);
+
   /// creates the vbo only if update was requested
   void createVBO();
+
+  /// Line width used by the picking renderer. If this is not set (i.e. NAN),
+  /// line_width() is used instead.
+  float picking_line_width_;
 
   PointVector   points_;
   ColorVector   colors_;

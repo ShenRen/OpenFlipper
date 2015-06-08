@@ -61,6 +61,7 @@
 
 #include <cfloat>
 #include <ACG/Geometry/Algorithms.hh>
+#include <ACG/Math/BSplineBasis.hh>
 
 //== NAMESPACES ===============================================================
 
@@ -284,13 +285,18 @@ curvePoint(Scalar _u)
 
   assert(_u >= lower() && _u <= upper());
 
-  int n = n_control_points(); // number of control points
   int p = degree();           // spline degree
+
+  Vec2i span = ACG::bsplineSpan(_u, p, knotvector_.getKnotvector());
+
+  // eval non-zero basis functions
+  std::vector<Scalar> N(p+1);
+  ACG::bsplineBasisFunctions(N, span, _u, knotvector_.getKnotvector());
 
   Point point = Point(0.0, 0.0, 0.0);
 
-  for (int i = 0; i < n; ++i) // TODO use span
-    point += get_control_point(i) * basisFunction(i, p, _u);
+  for (int i = 0; i <= p; ++i)
+    point += get_control_point(span[0] + i) * N[i];
 
   return point;
 }
@@ -304,18 +310,18 @@ derivativeCurvePoint(Scalar _u, unsigned int _der)
 {
   assert(_u >= lower() && _u <= upper());
 
-  int n = n_control_points(); // number of control points
   int p = degree();           // spline degree
+
+  Vec2i span = ACG::bsplineSpan(_u, p, knotvector_.getKnotvector());
+
+  // eval non-zero basis functions
+  std::vector<Scalar> dNdu(p+1);
+  ACG::bsplineBasisDerivatives(dNdu, span, _u, 1, knotvector_.getKnotvector(), 0);
 
   Point point = Point(0.0, 0.0, 0.0);
 
-  for (int i = 0; i < n; i++)
-  {
-    typename BSplineCurveT<PointT>::Scalar bf = derivativeBasisFunction(i, p, _u, _der);
-//     std::cout << "i = " << i << ": p_i = " << get_control_point(i) << ", derivative BF = " << bf << std::endl;
-    point += get_control_point(i) * bf;
-//     point += get_control_point(i) * derivativeBasisFunction(i, p, _u, _der);
-  }
+  for (int i = 0; i <= p; ++i)
+    point += get_control_point(i + span[0]) * dNdu[i];
 
   return point;
 }
@@ -438,7 +444,7 @@ deBoorAlgorithm( double _u)
 template <class PointT>
 typename BSplineCurveT<PointT>::Scalar
 BSplineCurveT<PointT>::
-lower()
+lower() const
 {
   return knotvector_(degree());
 }
@@ -448,7 +454,7 @@ lower()
 template <class PointT>
 typename BSplineCurveT<PointT>::Scalar
 BSplineCurveT<PointT>::
-upper()
+upper() const
 {
   return knotvector_(knotvector_.size() - 1 - degree());
 }

@@ -61,6 +61,11 @@
 #include <QGLWidget>
 
 #include <QImage>
+
+
+#include <ACG/GL/globjects.hh>
+#include <ACG/GL/VertexDeclaration.hh>
+
 //== FORWARDDECLARATIONS ======================================================
 
 //== NAMESPACES ===============================================================
@@ -115,8 +120,13 @@ class BSplineSurfaceNodeT : public BaseNode
     arb_texture_used_(false),
     arb_texture_repeat_(false),
     arb_texture_repeat_u_(1.0),
-    arb_texture_repeat_v_(1.0)
-
+    arb_texture_repeat_v_(1.0),
+    surfaceIndexCount_(0),
+    invalidateSurfaceMesh_(true),
+    controlNetSelIndices_(0),
+    controlNetLineIndices_(0),
+    invalidateControlNetMesh_(true),
+    invalidateControlNetMeshSel_(true)
   {
     cylinder_    = new GLCylinder(16, 1, 1.0f, true, true);
     sphere_      = new GLSphere(5, 5);
@@ -126,14 +136,9 @@ class BSplineSurfaceNodeT : public BaseNode
   /// Destructor
   ~BSplineSurfaceNodeT()
   {
-    if (cylinder_)
-      delete cylinder_;
-
-    if (sphere_)
-      delete sphere_;
-
-    if (fancySphere_)
-      delete fancySphere_;
+    delete cylinder_;
+    delete sphere_;
+    delete fancySphere_;
   }
 
   enum BSplineDrawMode {
@@ -164,8 +169,14 @@ class BSplineSurfaceNodeT : public BaseNode
   /// draw lines and normals
   void draw(GLState& _state, const DrawModes::DrawMode& _drawMode);
 
+  /// create render objects
+  void getRenderObjects(IRenderer* _renderer, GLState& _state , const DrawModes::DrawMode& _drawMode , const Material* _mat);
+
   /// picking
   void pick(GLState& _state, PickTarget _target);
+
+  /// update vertex buffer for rendering
+  void updateGeometry();
 
   void set_rendering_resolution(int _res){resolution_ = _res;};
 
@@ -215,7 +226,7 @@ private:
 
   void render(GLState& _state, bool _fill);
 
-  void drawSurface(GLState& _state, bool _fill);
+  void drawSurface(GLState& _state, bool _fill = true);
   
   void drawTexturedSurface(GLState& _state, GLuint _texture_idx);
 
@@ -249,6 +260,18 @@ private:
   
   ACG::Vec4f generateHighlightColor(ACG::Vec4f _color);
   
+  /// update vertex + index buffer of surface mesh
+  void updateSurfaceMesh(int _vertexCountU = 50, int _vertexCountV = 50);
+
+  /// update vertex + index buffer of control net mesh
+  void updateControlNetMesh();
+
+  /// update index buffer of selected control points
+  void updateControlNetMeshSel();
+
+  /// update texture resources for gpu-based spline evaluation
+  void updateTexBuffers();
+
 private:
 
   BSplineSurface& bsplineSurface_;
@@ -302,6 +325,29 @@ private:
   GLCylinder* cylinder_;
   GLSphere* sphere_;
   GLSphere* fancySphere_;
+
+
+  // surface mesh
+  GeometryBuffer surfaceVBO_;
+  IndexBuffer surfaceIBO_;
+  VertexDeclaration surfaceDecl_;
+  int surfaceIndexCount_;
+  bool invalidateSurfaceMesh_;
+
+  // control net mesh
+  GeometryBuffer controlNetVBO_;
+  IndexBuffer controlNetSelIBO_;
+  int controlNetSelIndices_;
+  IndexBuffer controlNetLineIBO_;
+  int controlNetLineIndices_;
+  VertexDeclaration controlNetDecl_;
+  bool invalidateControlNetMesh_;
+  bool invalidateControlNetMeshSel_;
+
+  // GPU based evaluation
+  TextureBuffer knotTexBufferU_;
+  TextureBuffer knotTexBufferV_;
+  Texture2D controlPointTex_;
 };
 
 //=============================================================================

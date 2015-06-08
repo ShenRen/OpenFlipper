@@ -61,6 +61,7 @@
 
 #include <cfloat>
 #include <ACG/Geometry/Algorithms.hh>
+#include <ACG/Math/BSplineBasis.hh>
 
 //== NAMESPACES ===============================================================
 
@@ -73,11 +74,10 @@ BSplineSurfaceT<PointT>::
 BSplineSurfaceT( unsigned int _degm, unsigned int _degn )
 : dimm_(0),
   dimn_(0),
-  degree_m_(_degm),
-  degree_n_(_degn),
   ref_count_cpselections_(0),
   ref_count_eselections_(0)
 {
+  set_degree(_degm, _degn);
 }
 
 //-----------------------------------------------------------------------------
@@ -487,8 +487,109 @@ surfacePoint(double _u, double _v)
   Vec2i span_m(spanm(_u));
   Vec2i span_n(spann(_v));
 
-  for (int i = 0; i <  (int)n_control_points_m(); ++i)
-    for (int j = 0; j <  (int)n_control_points_n(); ++j)
+
+  std::vector<Scalar> basisFuns_m(pm+1);
+  std::vector<Scalar> basisFuns_n(pn+1);
+
+  // evaluate basis functions
+  ACG::bsplineBasisFunctions(basisFuns_m, span_m, _u, knotvector_m_.getKnotvector());
+  ACG::bsplineBasisFunctions(basisFuns_n, span_n, _v, knotvector_n_.getKnotvector());
+
+  // compute surface point
+
+  for (int i = span_m[0]; i <= span_m[1]; ++i)
+    for (int j = span_n[0]; j <= span_n[1]; ++j)
+      point += control_net_[i][j] * basisFuns_m[i-span_m[0]] * basisFuns_n[j - span_n[0]];
+
+  return point;
+}
+
+//-----------------------------------------------------------------------------
+
+template <class PointT>
+void 
+BSplineSurfaceT<PointT>::
+surfacePointNormal( Point& _pt, Point& _normal, double _u, double _v )
+{
+  double epsilon = 0.0000001;
+
+  if (_u > upperu() && _u < upperu()+epsilon)
+    _u = upperu();
+
+  if (_v > upperv() && _v < upperv()+epsilon)
+    _v = upperv();
+
+  assert(_u >= loweru() && _u <= upperu());
+  assert(_v >= lowerv() && _v <= upperv());
+
+  int pm = degree_m();
+  int pn = degree_n();
+
+  _pt = Point(0.0, 0.0, 0.0);
+
+  Vec2i span_m(spanm(_u));
+  Vec2i span_n(spann(_v));
+
+
+  std::vector<Scalar> basisFuns_m(pm+1);
+  std::vector<Scalar> ders_m(pm+1);
+  std::vector<Scalar> basisFuns_n(pn+1);
+  std::vector<Scalar> ders_n(pn+1);
+
+  // evaluate basis functions
+  ACG::bsplineBasisDerivatives(ders_m, span_m, _u, 1, knotvector_m_.getKnotvector(), &basisFuns_m);
+  ACG::bsplineBasisDerivatives(ders_n, span_n, _v, 1, knotvector_n_.getKnotvector(), &basisFuns_n);
+
+
+  // compute surface point and tangents
+
+  Point dpdu = Point(0,0,0);
+  Point dpdv = Point(0,0,0);
+
+  for (int i = 0; i <= pm; ++i)
+  {
+    for (int j = 0; j <= pn; ++j)
+    {
+      Point cp = control_net_[i + span_m[0]][j + span_n[0]];
+
+      _pt += cp * (basisFuns_m[i] * basisFuns_n[j]);
+
+      dpdu += cp * (ders_m[i] * basisFuns_n[j]);
+      dpdv += cp * (basisFuns_m[i] * ders_n[j]);
+    }
+  }
+
+  _normal = (dpdu % dpdv).normalize();
+}
+
+//-----------------------------------------------------------------------------
+
+template <class PointT>
+PointT
+BSplineSurfaceT<PointT>::
+surfacePoint_rec(double _u, double _v)
+{
+  double epsilon = 0.0000001;
+
+  if (_u > upperu() && _u < upperu()+epsilon)
+    _u = upperu();
+
+  if (_v > upperv() && _v < upperv()+epsilon)
+    _v = upperv();
+
+  assert(_u >= loweru() && _u <= upperu());
+  assert(_v >= lowerv() && _v <= upperv());
+
+  int pm = degree_m();
+  int pn = degree_n();
+
+  Point point = Point(0.0, 0.0, 0.0);
+
+  Vec2i span_m(spanm(_u));
+  Vec2i span_n(spann(_v));
+
+  for (int i = span_m[0]; i <= span_m[1]; ++i)
+    for (int j = span_n[0]; j <= span_n[1]; ++j)
       point += control_net_[i][j] * basisFunction(knotvector_m_, i, pm, _u) * basisFunction(knotvector_n_, j, pn, _v);
 
   return point;
@@ -550,16 +651,16 @@ derivativeSurfacePoint(double _u, double _v, int _derm, int _dern)
   Vec2i span_m(spanm(_u));
   Vec2i span_n(spann(_v));
 
+  std::vector<Scalar> ders_m(pm+1);
+  std::vector<Scalar> ders_n(pn+1);
 
-//   for (int i = 0; i < n_control_points_m(); i++)
-//     for (int j = 0; j < n_control_points_n(); j++)
-//       point += control_net_[i][j] * derivativeBasisFunction(knotvector_m_, i, pm, _u, _derm)
-//                                   * derivativeBasisFunction(knotvector_n_, j, pn, _v, _dern);
+  ACG::bsplineBasisDerivatives<Scalar>(ders_m, span_m, _u, _derm, knotvector_m_.getKnotvector(), 0);
+  ACG::bsplineBasisDerivatives<Scalar>(ders_n, span_n, _v, _dern, knotvector_n_.getKnotvector(), 0);
 
   for (int i = span_m[0]; i <= span_m[1]; i++)
     for (int j = span_n[0]; j <= span_n[1]; j++)
-      point += control_net_[i][j] * derivativeBasisFunction(knotvector_m_, i, pm, _u, _derm)
-                                  * derivativeBasisFunction(knotvector_n_, j, pn, _v, _dern);
+      point += control_net_[i][j] * ders_m[i - span_m[0]] * ders_n[j - span_n[0]];
+
 
   return point;
 }
@@ -574,8 +675,8 @@ normalSurfacePoint(double _u, double _v)
   assert(_u >= loweru() && _u <= upperu());
   assert(_v >= lowerv() && _v <= upperv());
 
-  Point derivu( derivativeSurfacePoint(_u,_v,1,0));
-  Point derivv( derivativeSurfacePoint(_u,_v,0,1));
+  Point derivu = derivativeSurfacePoint(_u,_v,1,0);
+  Point derivv = derivativeSurfacePoint(_u,_v,0,1);
 
   Point normal( (derivu%derivv).normalize());
 
@@ -589,19 +690,22 @@ typename BSplineSurfaceT<PointT>::Scalar
 BSplineSurfaceT<PointT>::
 derivativeBasisFunction(Knotvector & _knotvector, int _i, int _n, double _t, int _der)
 {
+  assert(_n >= 0);
+  assert(_i >= 0);
+
   if (_der == 0)
     return basisFunction(_knotvector, _i, _n, _t);
 
-  double Nin1 = derivativeBasisFunction(_knotvector, _i,   _n-1, _t, _der-1);
-  double Nin2 = derivativeBasisFunction(_knotvector, _i+1, _n-1, _t, _der-1);
+  Scalar Nin1 = derivativeBasisFunction(_knotvector, _i,   _n-1, _t, _der-1);
+  Scalar Nin2 = derivativeBasisFunction(_knotvector, _i+1, _n-1, _t, _der-1);
 
-  double fac1 = 0;
-  if ( (_knotvector(_i+_n)-_knotvector(_i)) !=0 )
-    fac1 = double(_n) / (_knotvector(_i+_n)-_knotvector(_i));
+  Scalar fac1 = 0;
+  if ( fabs(_knotvector(_i+_n)-_knotvector(_i)) > 1e-6 )
+    fac1 = Scalar(_n) / (_knotvector(_i+_n)-_knotvector(_i));
 
-  double fac2 = 0;
-  if ( (_knotvector(_i+_n+1)-_knotvector(_i+1)) !=0 )
-    fac2 = double(_n) / (_knotvector(_i+_n+1)-_knotvector(_i+1));
+  Scalar fac2 = 0;
+  if ( fabs(_knotvector(_i+_n+1)-_knotvector(_i+1)) > 1e-6 )
+    fac2 = Scalar(_n) / (_knotvector(_i+_n+1)-_knotvector(_i+1));
 
   return (fac1*Nin1 - fac2*Nin2);
 }
@@ -651,20 +755,7 @@ ACG::Vec2i
 BSplineSurfaceT<PointT>::
 spanm(double _t)
 {
-  unsigned int i(0);
-
-//   if (i > knotvector_m_.size() - degree_m() - 1)
-//     i = degree_m();
-
-  if (_t >= upperu())
-    i = dimm_ - 1;
-  else
-  {
-    while (_t >= knotvector_m_(i)) i++;
-    while (_t < knotvector_m_(i))  i--;
-  }
-
-  return ACG::Vec2i(i-degree_m(), i);
+  return ACG::bsplineSpan(_t, degree_m(), knotvector_m_.getKnotvector());
 }
 
 //-----------------------------------------------------------------------------
@@ -674,20 +765,7 @@ ACG::Vec2i
 BSplineSurfaceT<PointT>::
 spann(double _t)
 {
-  unsigned int i(0);
-
-//   if (i > knotvector_n_.size() - degree_n() - 1)
-//     i = degree_n();
-
-  if (_t >= upperv())
-    i = dimn_-1;
-  else
-  {
-    while (_t >= knotvector_n_(i)) i++;
-    while (_t < knotvector_n_(i))  i--;
-  }
-
-  return Vec2i(i-degree_n(), i);
+  return ACG::bsplineSpan(_t, degree_n(), knotvector_n_.getKnotvector());
 }
 
 //-----------------------------------------------------------------------------

@@ -60,6 +60,10 @@
 
 #include <QGLWidget>
 
+#include <ACG/GL/globjects.hh>
+#include <ACG/GL/VertexDeclaration.hh>
+
+
 //== FORWARDDECLARATIONS ======================================================
 
 //== NAMESPACES ===============================================================
@@ -108,7 +112,14 @@ public:
     knot_selection_texture_idx_(0),
     knot_selection_texture_res_(256),
     controlPointSelectionTexture_valid_(false),
-    knotVectorSelectionTexture_valid_(false)
+    knotVectorSelectionTexture_valid_(false),
+    curveLineVertices_(0),
+    invalidateCurveLine_(true),
+    controlPointSelCount_(0),
+    controlEdgeSelCount_(0),
+    invalidateControlPointVBO_(true),
+    invalidateControlPointSelIBO_(true),
+    invalidateControlEdgeSelIBO_(true)
   {
     drawMode(DrawModes::WIREFRAME | DrawModes::POINTS);
 
@@ -202,6 +213,8 @@ private:
   
   void render(GLState& _state, bool _fill, DrawModes::DrawMode _drawMode);
   
+  void getRenderObjects(IRenderer* _renderer, GLState& _state , const DrawModes::DrawMode& _drawMode , const Material* _mat);
+
   /// Renders the control polygon
   void drawControlPolygon(DrawModes::DrawMode _drawMode, GLState& _state);
   
@@ -241,7 +254,19 @@ private:
   /// generates a color to highlight the curve from the given color
   ACG::Vec4f generateHighlightColor(ACG::Vec4f _color);
 
-  
+  /// update curve line buffer for drawing
+  void updateCurveBuffer(int _numVertices = 50);
+
+  /// update control point buffer for visualization
+  void updateControlPointBuffer();
+
+  /// update control point selection buffer for visualization
+  void updateControlPointSelBuffer();
+
+  /// update control edge selection buffer for visualization
+  void updateControlEdgeSelBuffer();
+
+
 private:
 
   BSplineCurve& bsplineCurve_;
@@ -289,6 +314,25 @@ private:
   GLCylinder* cylinder_;
   GLSphere* sphere_;
   GLSphere* fancySphere_;
+
+
+  // curve line buffers
+  GeometryBuffer curveLineVBO_;
+  VertexDeclaration curveLineDecl_;
+  int curveLineVertices_;
+  bool invalidateCurveLine_; 
+
+
+  // control-point buffers
+  GeometryBuffer controlPointVBO_;
+  VertexDeclaration controlPointDecl_;
+  IndexBuffer controlPointSelIBO_;
+  int controlPointSelCount_;
+  IndexBuffer controlEdgeSelIBO_;
+  int controlEdgeSelCount_;
+  bool invalidateControlPointVBO_;
+  bool invalidateControlPointSelIBO_;
+  bool invalidateControlEdgeSelIBO_;
 };
 
 

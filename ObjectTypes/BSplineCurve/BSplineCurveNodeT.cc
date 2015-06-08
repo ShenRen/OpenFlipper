@@ -55,8 +55,10 @@
 #include "BSplineCurveNodeT.hh"
 #include <ACG/GL/gl.hh>
 #include <ACG/GL/GLError.hh>
+#include <ACG/GL/IRenderer.hh>
 #include <ACG/Utils/VSToolsT.hh>
 #include <vector>
+#include <OpenMesh/Core/Utils/vector_cast.hh>
 
 
 //== NAMESPACES ===============================================================
@@ -159,6 +161,112 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 //----------------------------------------------------------------------------
 
 template <class BSplineCurve>
+void 
+BSplineCurveNodeT<BSplineCurve>::
+getRenderObjects( IRenderer* _renderer, GLState& _state , const DrawModes::DrawMode& _drawMode , const Material* _mat )
+{
+  // check if textures are still valid
+  if (    bspline_selection_draw_mode_ == CONTROLPOINT
+    && controlPointSelectionTexture_valid_ == false)
+    updateControlPointSelectionTexture(_state);
+
+  if (    bspline_selection_draw_mode_ == KNOTVECTOR
+    && knotVectorSelectionTexture_valid_ == false)
+    updateKnotVectorSelectionTexture(_state);
+
+  // update vbo
+  updateCurveBuffer();
+
+  // init base object
+  RenderObject ro;
+  ro.initFromState(&_state);
+  ro.depthTest = true;
+
+  ro.vertexBuffer = curveLineVBO_.id();
+  ro.vertexDecl = &curveLineDecl_;
+
+
+  // create object for each layer
+  for (size_t i = 0; i < _drawMode.getNumLayers(); ++i)
+  {
+    const DrawModes::DrawModeProperties* props = _drawMode.getLayer(i);
+
+    ro.setupShaderGenFromDrawmode(props);
+
+    if (props->primitive() == DrawModes::PRIMITIVE_POINT)
+    {
+      ro.glDrawArrays(GL_POINTS, 0, curveLineVertices_);
+      _renderer->addRenderObject(&ro);
+    }
+    else if (props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)
+    {
+      ro.glDrawArrays(GL_LINE_STRIP, 0, curveLineVertices_);
+      _renderer->addRenderObject(&ro);
+    }
+  }
+
+  // create objects for the control polygon (includes selection on the polygon)
+  if (render_control_polygon_)
+  {
+    updateControlPointBuffer();
+    updateControlPointSelBuffer();
+    updateControlEdgeSelBuffer();
+
+    ro.vertexBuffer = controlPointVBO_.id();
+    ro.vertexDecl = &controlPointDecl_;
+
+    ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+    ro.shaderDesc.clearTextures();
+    ro.shaderDesc.vertexColors = false;
+
+
+    Vec3f highlightColor = OpenMesh::vector_cast<Vec3f, Vec4f>(generateHighlightColor(polygon_color_));
+    Vec3f polygonColor = OpenMesh::vector_cast<Vec3f, Vec4f>(polygon_color_);
+    
+
+    Vec2f screenSize = Vec2f(_state.viewport_width(), _state.viewport_height());
+
+    // edge-selection
+    if (controlEdgeSelCount_)
+    {
+      ro.emissive = highlightColor;
+      ro.setupLineRendering(2.0f * _state.line_width(), screenSize);
+
+      ro.indexBuffer = controlEdgeSelIBO_.id();
+      ro.glDrawElements(GL_LINES, 2 * controlEdgeSelCount_, GL_UNSIGNED_INT, 0);
+      _renderer->addRenderObject(&ro);
+    }
+
+    // all line segments
+    ro.emissive = polygonColor;
+    ro.setupLineRendering(_state.line_width(), screenSize);
+    ro.glDrawArrays(GL_LINE_STRIP, 0, bsplineCurve_.n_control_points());
+    _renderer->addRenderObject(&ro);
+
+    ro.resetLineRendering();
+
+    // point selection
+    if (controlPointSelCount_)
+    {
+      ro.emissive = highlightColor;
+      ro.setupPointRendering(10.0f, screenSize);
+
+      ro.indexBuffer = controlPointSelIBO_.id();
+      ro.glDrawElements(GL_POINTS, controlPointSelCount_, GL_UNSIGNED_INT, 0);
+      _renderer->addRenderObject(&ro);
+    }
+
+    // all points
+    ro.emissive = polygonColor;
+    ro.setupPointRendering(_state.point_size() + 4.0f, screenSize);
+    ro.glDrawElements(GL_POINTS, bsplineCurve_.n_control_points(), GL_UNSIGNED_INT, 0);
+    _renderer->addRenderObject(&ro);
+  }
+}
+
+//----------------------------------------------------------------------------
+
+template <class BSplineCurve>
 void
 BSplineCurveNodeT<BSplineCurve>::
 render(GLState& _state, bool /*_fill*/, DrawModes::DrawMode _drawMode)
@@ -202,50 +310,15 @@ void
 BSplineCurveNodeT<BSplineCurve>::
 drawCurve(GLState& /*_state*/)
 {
-  int numKnots = bsplineCurve_.n_knots();
-  GLfloat *knots = new GLfloat[numKnots];
-  for (int i = 0; i < numKnots; ++i)
-    knots[i] = bsplineCurve_.get_knot(i);
+  updateCurveBuffer();
 
-  const int numCPs = bsplineCurve_.n_control_points();
-  
-  // check for incomplete curve
-  if (numCPs < (int)bsplineCurve_.degree() + 1) {
-    delete[] knots;
-    return;
-  }
+  curveLineVBO_.bind();
+  curveLineDecl_.activateFixedFunction();
 
-  GLfloat *ctlpoints = new GLfloat[numCPs * 3];
-  for (int i = 0; i < numCPs; ++i)
-  {
-    Vec3d p = bsplineCurve_.get_control_point(i);
-    ctlpoints[i * 3 + 0] = (GLfloat)p[0];
-    ctlpoints[i * 3 + 1] = (GLfloat)p[1];
-    ctlpoints[i * 3 + 2] = (GLfloat)p[2];
-  }
+  glDrawArrays(GL_LINE_STRIP, 0, curveLineVertices_);
 
-  int order = bsplineCurve_.degree() + 1;
- 
-  GLUnurbsObj *theNurb;
-  theNurb = gluNewNurbsRenderer();
-
-  #ifdef WIN32
-    gluNurbsCallback(theNurb, GLU_ERROR, (void (__stdcall *)(void))(&nurbsErrorCallback) );
-  #else
-    gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) (&nurbsErrorCallback) );  
-  #endif
-
-  gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
-  gluNurbsProperty(theNurb, GLU_SAMPLING_TOLERANCE, 5.0);
-
-  gluBeginCurve(theNurb);
-  gluNurbsCurve(theNurb, numKnots, knots, 3, ctlpoints, order, GL_MAP1_VERTEX_3);
-  gluEndCurve(theNurb);
-
-  gluDeleteNurbsRenderer(theNurb);
-
-  delete[] knots;
-  delete[] ctlpoints;
+  curveLineDecl_.deactivateFixedFunction();
+  curveLineVBO_.unbind();
 }
 
 //----------------------------------------------------------------------------
@@ -293,9 +366,16 @@ void
 BSplineCurveNodeT<BSplineCurve>::
 drawControlPolygon(DrawModes::DrawMode _drawMode, GLState& _state)
 {
+  updateControlPointBuffer();
+  updateControlPointSelBuffer();
+  updateControlEdgeSelBuffer();
+
   // remember current base color
   Vec4f base_color_old = _state.base_color();
   
+  controlPointVBO_.bind();
+  controlPointDecl_.activateFixedFunction();
+
   // draw line segments
   if (_drawMode & DrawModes::WIREFRAME)
   {
@@ -308,18 +388,9 @@ drawControlPolygon(DrawModes::DrawMode _drawMode, GLState& _state)
       glColor(generateHighlightColor(polygon_color_));
       glLineWidth(2*line_width_old);
 
-      glBegin(GL_LINES);
-      // draw bspline control polygon
-      int num_edges = (int)(bsplineCurve_.n_control_points()) - 1;
-      for (int i = 0; i < num_edges; ++i) // #edges
-      {
-        if( bsplineCurve_.edge_selection(i))
-        {
-          glVertex(bsplineCurve_.get_control_point( i    % bsplineCurve_.n_control_points()));
-          glVertex(bsplineCurve_.get_control_point((i+1) % bsplineCurve_.n_control_points()));
-        }
-      }
-      glEnd();
+      controlEdgeSelIBO_.bind();
+      glDrawElements(GL_LINES, 2 * controlEdgeSelCount_, GL_UNSIGNED_INT, 0);
+      controlEdgeSelIBO_.unbind();
 
       glLineWidth(line_width_old);
     }
@@ -332,11 +403,7 @@ drawControlPolygon(DrawModes::DrawMode _drawMode, GLState& _state)
 
 
     // draw bspline control polygon
-    glBegin(GL_LINE_STRIP);
-    
-    for (unsigned int i = 0; i< bsplineCurve_.n_control_points(); ++i)
-      glVertex(bsplineCurve_.get_control_point(i % bsplineCurve_.n_control_points()));
-    glEnd();
+    glDrawArrays(GL_LINE_STRIP, 0, bsplineCurve_.n_control_points());
     
 //     glLineWidth(line_width_old);
   }
@@ -346,7 +413,7 @@ drawControlPolygon(DrawModes::DrawMode _drawMode, GLState& _state)
   if ((_drawMode & DrawModes::POINTS) && render_control_polygon_)
   {
     // draw selection
-    if( bsplineCurve_.controlpoint_selections_available())
+    if (controlPointSelCount_)
     {
       // save old values
       float point_size_old = _state.point_size();
@@ -354,14 +421,9 @@ drawControlPolygon(DrawModes::DrawMode _drawMode, GLState& _state)
       glColor(generateHighlightColor(polygon_color_));
       glPointSize(10);
 
-      glBegin(GL_POINTS);
-      // draw control polygon
-      for (unsigned int i = 0; i < bsplineCurve_.n_control_points(); ++i)
-      {
-        if( bsplineCurve_.controlpoint_selection(i))
-          glVertex(bsplineCurve_.get_control_point(i) );
-      }
-      glEnd();
+      controlPointSelIBO_.bind();
+      glDrawElements(GL_POINTS, controlPointSelCount_, GL_UNSIGNED_INT, 0);
+      controlPointSelIBO_.unbind();
 
       glPointSize(point_size_old);
     }
@@ -371,14 +433,15 @@ drawControlPolygon(DrawModes::DrawMode _drawMode, GLState& _state)
     float point_size_old = _state.point_size();
     glPointSize(point_size_old + 4);
 
-    glBegin(GL_POINTS);
-    for (unsigned int i=0; i< bsplineCurve_.n_control_points(); ++i)
-      glVertex(bsplineCurve_.get_control_point(i));
-    glEnd();
+    glDrawArrays(GL_POINTS, 0, bsplineCurve_.n_control_points());
 
     glPointSize(point_size_old);
   }
   
+
+  controlPointDecl_.deactivateFixedFunction();
+  controlPointVBO_.unbind();
+
   // reset olf color
   glColor( base_color_old );
 }
@@ -502,6 +565,9 @@ void
 BSplineCurveNodeT<BSplineCurve>::
 updateGeometry()
 {
+  invalidateCurveLine_ = true;
+  invalidateControlPointVBO_ = true;
+
   curve_samples_.clear();
 
   std::pair< Vec3d, Vec4f > sample;
@@ -709,6 +775,9 @@ updateControlPointSelectionTexture(GLState& _state)
 {
   create_cp_selection_texture(_state);
   controlPointSelectionTexture_valid_ = true;
+
+  // vbo containing the control points needs updating
+  invalidateControlPointSelIBO_ = true;
 }
 
 //----------------------------------------------------------------------------
@@ -991,97 +1060,196 @@ void
 BSplineCurveNodeT<BSplineCurve>::
 draw_textured_nurbs( GLState& /*_state*/)
 {
-  int numKnots     = bsplineCurve_.n_knots();
-  const int numCPs = bsplineCurve_.n_control_points();
-  int order        = bsplineCurve_.degree() + 1;
+  updateCurveBuffer();
 
-  // gluNurbsSurface seems to crash for knots = 0
-  if (!numKnots)
+  curveLineVBO_.bind();
+  curveLineDecl_.activateFixedFunction();
+
+  glDrawArrays(GL_LINE_STRIP, 0, curveLineVertices_);
+
+  curveLineDecl_.deactivateFixedFunction();
+  curveLineVBO_.unbind();
+}
+
+//----------------------------------------------------------------------------
+
+template <class BSplineCurve>
+void
+BSplineCurveNodeT<BSplineCurve>::
+updateCurveBuffer(int _numVertices)
+{
+  if (!invalidateCurveLine_)
     return;
 
-  // get knotvector
-  GLfloat *knots = new GLfloat[numKnots];
-  for (int i = 0; i < numKnots; ++i)
-    knots[i] = bsplineCurve_.get_knot(i);
-
-  int numCPs_dummy = 2;
-  GLfloat *ctlpoints = new GLfloat[numCPs * numCPs_dummy * 3]; // dummy cps = 2
-  for (int i = 0; i < numCPs; ++i)
+  // create vertex declaration if uninitialized
+  if (!curveLineDecl_.getNumElements())
   {
-    Vec3d p = bsplineCurve_.get_control_point(i);
-    
-    for (int j = 0; j < numCPs_dummy; ++j)
-    {
-      int idx0 = i * numCPs_dummy * 3 + j * 3 + 0;
-      int idx1 = i * numCPs_dummy * 3 + j * 3 + 1;
-      int idx2 = i * numCPs_dummy * 3 + j * 3 + 2;
-      ctlpoints[idx0] = (GLfloat)p[0];
-      ctlpoints[idx1] = (GLfloat)p[1];
-      ctlpoints[idx2] = (GLfloat)p[2];
-    }
+    curveLineDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
+    curveLineDecl_.addElement(GL_FLOAT, 1, VERTEX_USAGE_TEXCOORD);
+  }
+
+  // vbo memory:
+  //  float3 pos
+  //  float  texcoord
+  std::vector<float> vboData(_numVertices * 4);
+
+  for (int i = 0; i < _numVertices; ++i)
+  {
+    // param in [0, 1]
+    typename BSplineCurve::Scalar u01 = typename BSplineCurve::Scalar(i) / typename BSplineCurve::Scalar(_numVertices - 1);
+
+    // map to actual range
+    typename BSplineCurve::Scalar u = (1 - u01) * bsplineCurve_.lower() + u01 * bsplineCurve_.upper();
+
+    // evaluate curve point
+    typename BSplineCurve::Point pos = bsplineCurve_.curvePoint(u);
+
+    // store pos
+    for (int k = 0; k < 3; ++k)
+      vboData[i*4 + k] = pos[k];
+
+    // store texcoord
+    vboData[i*4 + 3] = u01;
   }
 
 
-  GLUnurbsObj *theNurb;
-  theNurb = gluNewNurbsRenderer();
+  curveLineVBO_.del();
+  if (_numVertices)
+    curveLineVBO_.upload(vboData.size() * 4, &vboData[0], GL_STATIC_DRAW);
 
-  #ifdef WIN32
-    gluNurbsCallback(theNurb, GLU_ERROR, (void (__stdcall *)(void))(&nurbsErrorCallback) );
-  #else
-    gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) (&nurbsErrorCallback) );  
-  #endif
 
-  // draw filled
-  // use GLU_OUTLINE_POLYGON instead of GLU_FILL since otherwise linewith is 0 when rendered from the side
-//   gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
-  gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON ); 
+  curveLineVertices_ = _numVertices;
 
-  #ifdef GLU_OBJECT_PARAMETRIC_ERROR
-    // object space -> fixed (non-adaptive) sampling
-    gluNurbsProperty(theNurb, GLU_SAMPLING_METHOD, GLU_OBJECT_PARAMETRIC_ERROR);
-  #else
-    gluNurbsProperty(theNurb, GLU_SAMPLING_METHOD,   GLU_PARAMETRIC_ERROR);
-  #endif
+  invalidateCurveLine_ = false;
+}
 
-  gluNurbsProperty(theNurb, GLU_PARAMETRIC_TOLERANCE, 0.2f);
+//----------------------------------------------------------------------------
 
-  // get min/max knots of domain defining patch (partition of unity)
-  float  minu( knots[bsplineCurve_.degree()]);
-  float  maxu( knots[numKnots  - order]);
-  
-  float  minv = 0.0;
-  float  maxv = 1.0;
-  
-  // control points of 2d texture ((0,0), (0,1), (1,0), (1,1) )
-  GLfloat   tcoords[8] = {0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0};
+template <class BSplineCurve>
+void
+BSplineCurveNodeT<BSplineCurve>::
+updateControlPointBuffer()
+{
+  if (!invalidateControlPointVBO_)
+    return;
 
-  // knots of domain, over which tcoords shall be linearly interpolated
-  GLfloat   tknots[4] = {minu, minu, maxu, maxu};
-  GLfloat   sknots[4] = {minv, minv, maxv, maxv};
-  
-  // begin drawing nurbs
-  gluBeginSurface(theNurb);
-  
-  // first enable texture coordinate mapping
-  gluNurbsSurface(theNurb, 4, tknots, 4, sknots, 2*2, 2, &tcoords[0], 2, 2, GL_MAP2_TEXTURE_COORD_2); 
+  // create vertex declaration if uninitialized
+  if (!controlPointDecl_.getNumElements())
+    controlPointDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
 
-  // draw surface (dummy direction
-  int order_dummy = 1+1; // linear dummy
-  int numKnots_dummy = 4;
-  GLfloat *knots_dummy = new GLfloat[numKnots_dummy]; 
-  knots_dummy[0] = 0.0; 
-  knots_dummy[1] = 0.0;
-  knots_dummy[2] = 1.0;
-  knots_dummy[3] = 1.0;
-  
-  gluNurbsSurface(theNurb, numKnots, knots, numKnots_dummy, knots_dummy, numCPs_dummy * 3, 3, ctlpoints, order, order_dummy, GL_MAP2_VERTEX_3);
-  gluEndSurface(theNurb);
+  int numCP = bsplineCurve_.n_control_points();
 
-  gluDeleteNurbsRenderer(theNurb);
+  // vbo memory:
+  //  float3 pos
+  std::vector<float> vboData(numCP * 3);
 
-  delete[] knots;
-  delete[] knots_dummy;
-  delete[] ctlpoints;
+  for (int i = 0; i < numCP; ++i)
+  {
+    typename BSplineCurve::Point pos = bsplineCurve_.get_control_point(i);
+    for (int k = 0; k < 3; ++k)
+      vboData[i*3 + k] = pos[k];
+  }
+
+  controlPointVBO_.del();
+  if (numCP)
+    controlPointVBO_.upload(vboData.size() * 4, &vboData[0], GL_STATIC_DRAW);
+
+  invalidateControlPointVBO_ = false;
+}
+
+//----------------------------------------------------------------------------
+
+template <class BSplineCurve>
+void
+BSplineCurveNodeT<BSplineCurve>::
+updateControlPointSelBuffer()
+{
+  if (!invalidateControlPointSelIBO_)
+    return;
+
+  controlPointSelIBO_.del();
+
+  if (bsplineCurve_.controlpoint_selections_available())
+  {
+    int numCP = bsplineCurve_.n_control_points();
+
+    // count # selected points
+    int numSel = 0;
+    for (int i = 0; i < numCP; ++i)
+    {
+      if (bsplineCurve_.controlpoint_selection(i))
+        ++numSel;
+    }
+
+    // save count for draw call
+    controlPointSelCount_ = numSel;
+
+
+    if (numSel)
+    {
+      // create array
+      std::vector<int> iboData(numSel);
+      numSel = 0;
+      for (int i = 0; i < numCP; ++i)
+      {
+        if (bsplineCurve_.controlpoint_selection(i))
+          iboData[numSel++] = i;
+      }
+
+      controlPointSelIBO_.upload(numSel * 4, &iboData[0], GL_STATIC_DRAW);
+    }
+  }
+
+  invalidateControlPointSelIBO_ = false;
+}
+
+//----------------------------------------------------------------------------
+
+template <class BSplineCurve>
+void
+BSplineCurveNodeT<BSplineCurve>::
+updateControlEdgeSelBuffer()
+{
+  if (!invalidateControlEdgeSelIBO_)
+    return;
+
+  controlEdgeSelIBO_.del();
+
+  if (bsplineCurve_.edge_selections_available())
+  {
+    int numCP = bsplineCurve_.n_control_points();
+    int numE = numCP - 1;
+
+    // count # selected edges
+    int numSel = 0;
+    for (int i = 0; i < numE; ++i)
+    {
+      if (bsplineCurve_.edge_selection(i))
+        ++numSel;
+    }
+
+    // save count for draw call
+    controlEdgeSelCount_ = numSel;
+
+    if (numSel)
+    {
+      // create array
+      std::vector<int> iboData(numSel * 2);
+      numSel = 0;
+      for (int i = 0; i < numE; ++i)
+      {
+        if (bsplineCurve_.edge_selection(i))
+        {
+          iboData[numSel++] = i;
+          iboData[numSel++] = (i+1)%numCP;
+        }
+      }
+
+      controlEdgeSelIBO_.upload(numSel * 4, &iboData[0], GL_STATIC_DRAW);
+    }
+  }
+
+  invalidateControlEdgeSelIBO_ = false;
 }
 
 //----------------------------------------------------------------------------

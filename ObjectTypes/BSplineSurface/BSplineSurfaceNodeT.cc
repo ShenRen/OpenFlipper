@@ -55,8 +55,10 @@
 #include "BSplineSurfaceNodeT.hh"
 #include <ACG/GL/gl.hh>
 #include <ACG/GL/GLError.hh>
+#include <ACG/GL/IRenderer.hh>
 #include <ACG/Utils/VSToolsT.hh>
 #include <vector>
+
 
 
 //== NAMESPACES ===============================================================
@@ -103,6 +105,161 @@ availableDrawModes() const
 
   return drawModes;
 }
+
+
+//----------------------------------------------------------------------------
+
+template <class BSplineSurfaceType>
+void
+BSplineSurfaceNodeT<BSplineSurfaceType>::
+getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode, const Material* _mat)
+{
+  // check if textures are still valid
+  if (    bspline_selection_draw_mode_ == CONTROLPOINT
+    && controlPointSelectionTexture_valid_ == false)
+    updateControlPointSelectionTexture(_state);
+  if (    bspline_selection_draw_mode_ == KNOTVECTOR
+    && knotVectorSelectionTexture_valid_ == false)
+    updateKnotVectorSelectionTexture(_state);
+
+
+  for (size_t i = 0; i < _drawMode.getNumLayers(); ++i)
+  {
+    const DrawModes::DrawModeProperties* props = _drawMode.getLayer(i);
+
+
+    RenderObject ro;
+    ro.initFromState(&_state);
+    ro.setupShaderGenFromDrawmode(props);
+    ro.depthTest = true;
+
+
+    if (props->primitive() == DrawModes::PRIMITIVE_POLYGON || props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)
+    {
+      updateSurfaceMesh();
+
+      ro.vertexBuffer = surfaceVBO_.id();
+      ro.indexBuffer = surfaceIBO_.id();
+      ro.vertexDecl = &surfaceDecl_;
+
+      if (props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)
+        ro.fillMode = GL_LINE;
+      else
+        ro.fillMode = GL_FILL;
+
+      bool tessellationMode = ACG::openGLVersion(4, 0) && Texture::supportsTextureBuffer();
+
+      if (tessellationMode)
+      {
+        // dynamic lod tessellation and spline evaluation on gpu
+
+        if (!controlPointTex_.is_valid())
+          updateTexBuffers();
+
+        ro.shaderDesc.tessControlTemplateFile = "BSpline/tesscontrol_lod.glsl";
+        ro.shaderDesc.tessEvaluationTemplateFile = "BSpline/tesseval_lod.glsl";
+
+
+        QString shaderMacro;
+
+        shaderMacro.sprintf("#define BSPLINE_DEGREE_U %i", bsplineSurface_.degree_m());
+        ro.shaderDesc.macros.push_back(shaderMacro);
+
+        shaderMacro.sprintf("#define BSPLINE_DEGREE_V %i", bsplineSurface_.degree_n());
+        ro.shaderDesc.macros.push_back(shaderMacro);
+
+        shaderMacro.sprintf("#define BSPLINE_KNOTVEC_U %i", bsplineSurface_.degree_m() * 2 + 1);
+        ro.shaderDesc.macros.push_back(shaderMacro);
+
+        shaderMacro.sprintf("#define BSPLINE_KNOTVEC_V %i", bsplineSurface_.degree_n() * 2 + 1);
+        ro.shaderDesc.macros.push_back(shaderMacro);
+
+
+        ro.setUniform("controlPointTex", int(1));
+        ro.setUniform("knotBufferU", int(2));
+        ro.setUniform("knotBufferV", int(3));
+
+        ro.setUniform("uvRange", Vec4f(bsplineSurface_.loweru(), bsplineSurface_.upperu(),
+          bsplineSurface_.lowerv(), bsplineSurface_.upperv()));
+
+        ro.addTexture(RenderObject::Texture(controlPointTex_.id(), GL_TEXTURE_2D), 1, false);
+        ro.addTexture(RenderObject::Texture(knotTexBufferU_.id(), GL_TEXTURE_BUFFER), 2, false);
+        ro.addTexture(RenderObject::Texture(knotTexBufferV_.id(), GL_TEXTURE_BUFFER), 3, false);
+      }
+
+      if (tessellationMode)
+        ro.patchVertices = 3;
+
+      ro.glDrawElements(tessellationMode ? GL_PATCHES : GL_TRIANGLES, surfaceIndexCount_, GL_UNSIGNED_INT, 0);
+
+      _renderer->addRenderObject(&ro);
+    }
+  }
+
+  // draw the control net (includes selection on the net)
+  if (render_control_net_)
+  {
+    // update if necessary
+    updateControlNetMesh();
+    updateControlNetMeshSel();
+
+    // setup base renderobject for unlit point and line rendering
+    RenderObject ro;
+    ro.initFromState(&_state);
+    ro.depthTest = true;
+    ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+
+    ro.vertexBuffer = controlNetVBO_.id();
+    ro.vertexDecl = &controlNetDecl_;
+
+    Vec2f screenSize = Vec2f(_state.viewport_width(), _state.viewport_height());
+
+    // selected control points
+    if (controlNetSelIndices_)
+    {
+      ro.name = "BSplineSurface_ControlPointSel";
+
+      ro.setupPointRendering(10.0f, screenSize);
+
+      Vec4f selColor = generateHighlightColor(controlnet_color_);
+      ro.emissive = Vec3f(selColor[0], selColor[1], selColor[2]);
+
+      ro.indexBuffer = controlNetSelIBO_.id();
+
+      ro.glDrawElements(GL_POINTS, controlNetSelIndices_, GL_UNSIGNED_INT, 0);
+
+      _renderer->addRenderObject(&ro);
+    }
+
+    // all control points
+    {
+      ro.name = "BSplineSurface_ControlPoint";
+      ro.setupPointRendering(_state.point_size() + 4.0f, screenSize);
+
+      ro.emissive = Vec3f(controlnet_color_[0], controlnet_color_[1], controlnet_color_[2]);
+
+      GLsizei numPoints = bsplineSurface_.n_control_points_m() * bsplineSurface_.n_control_points_n();
+      ro.glDrawArrays(GL_POINTS, 0, numPoints);
+
+      _renderer->addRenderObject(&ro);
+    }
+
+    ro.resetPointRendering();
+
+    // all line segments
+    {
+      ro.name = "BSplineSurface_ControlNetLines";
+      ro.setupLineRendering(_state.line_width() + 2.0f, screenSize);
+
+      ro.indexBuffer = controlNetLineIBO_.id();
+
+      ro.glDrawElements(GL_LINES, controlNetLineIndices_, GL_UNSIGNED_INT, 0);
+
+      _renderer->addRenderObject(&ro);
+    }
+  }
+}
+
 
 //----------------------------------------------------------------------------
 
@@ -292,84 +449,20 @@ void
 BSplineSurfaceNodeT<BSplineSurfaceType>::
 drawSurface(GLState& _state, bool _fill)
 {
-  int numKnots_m = bsplineSurface_.n_knots_m();
-  int numKnots_n = bsplineSurface_.n_knots_n();
+  updateSurfaceMesh();
 
-  GLfloat *knots_m = new GLfloat[numKnots_m];
-  for (int i = 0; i < numKnots_m; ++i)
-    knots_m[i] = bsplineSurface_.get_knot_m(i);
+  surfaceVBO_.bind();
+  surfaceIBO_.bind();
 
-  GLfloat *knots_n = new GLfloat[numKnots_n];
-  for (int i = 0; i < numKnots_n; ++i)
-    knots_n[i] = bsplineSurface_.get_knot_n(i);
+  surfaceDecl_.activateFixedFunction();
 
-  const int numCPs_m = bsplineSurface_.n_control_points_m();
-  const int numCPs_n = bsplineSurface_.n_control_points_n();
+  // draw
+  glDrawElements(GL_TRIANGLES, surfaceIndexCount_, GL_UNSIGNED_INT, 0);
 
-  GLfloat *ctlpoints = new GLfloat[numCPs_m * numCPs_n * 3];
-  for (int i = 0; i < numCPs_m; ++i)
-  {
-    for (int j = 0; j < numCPs_n; ++j)
-    {
-      Vec3d p = bsplineSurface_(i,j);
-      int idx0 = i * numCPs_n * 3 + j * 3 + 0;
-      int idx1 = i * numCPs_n * 3 + j * 3 + 1;
-      int idx2 = i * numCPs_n * 3 + j * 3 + 2;
-      ctlpoints[idx0] = (GLfloat)p[0];
-      ctlpoints[idx1] = (GLfloat)p[1];
-      ctlpoints[idx2] = (GLfloat)p[2];
-    }
-  }
+  surfaceDecl_.deactivateFixedFunction();
 
-  int order_m = bsplineSurface_.degree_m() + 1;
-  int order_n = bsplineSurface_.degree_n() + 1;
-
-
-  int lineWidth = (int)_state.line_width();
-  glLineWidth(lineWidth);
-
-  GLUnurbsObj *theNurb;
-  theNurb = gluNewNurbsRenderer();
-
-  #ifdef WIN32
-    gluNurbsCallback(theNurb, GLU_ERROR, (void (__stdcall *)(void))(&nurbsErrorCallback) );
-  #else
-    gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) (&nurbsErrorCallback) );  
-  #endif
-
-  if (_fill)
-    gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
-  else
-    gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON );
-
-
-  // set sampling method
-  if (adaptive_sampling_)
-  {
-    // screen space -> adaptive subdivision
-    gluNurbsProperty(theNurb, GLU_SAMPLING_TOLERANCE, 50.0);
-  }
-  else
-  {
-    #ifdef GLU_OBJECT_PARAMETRIC_ERROR
-      // object space -> fixed (non-adaptive) sampling
-      gluNurbsProperty(theNurb, GLU_SAMPLING_METHOD, GLU_OBJECT_PARAMETRIC_ERROR);
-    #else
-      gluNurbsProperty(theNurb, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
-    #endif
-    gluNurbsProperty(theNurb, GLU_PARAMETRIC_TOLERANCE, 0.2f);
-  }
-
-
-  gluBeginSurface(theNurb);
-  gluNurbsSurface(theNurb, numKnots_m, knots_m, numKnots_n, knots_n, numCPs_n * 3, 3, ctlpoints, order_m, order_n, GL_MAP2_VERTEX_3);
-  gluEndSurface(theNurb);
-
-  gluDeleteNurbsRenderer(theNurb);
-
-  delete[] knots_m;
-  delete[] knots_n;
-  delete[] ctlpoints;
+  surfaceIBO_.unbind();
+  surfaceVBO_.unbind();
 }
 
 //----------------------------------------------------------------------------
@@ -404,7 +497,7 @@ drawTexturedSurface(GLState& _state, GLuint _texture_idx)
   
   ACG::GLState::bindTexture( GL_TEXTURE_2D, _texture_idx);
 
-  draw_textured_nurbs( _state);
+  drawSurface( _state);
 
   ACG::GLState::bindTexture( GL_TEXTURE_2D, 0);
   ACG::GLState::disable(GL_TEXTURE_2D);
@@ -430,10 +523,19 @@ drawControlNet(GLState& _state)
   ACG::GLState::disable(GL_LIGHTING);
   ACG::GLState::shadeModel(GL_FLAT);
 
+
+  // update controlnet buffers
+  updateControlNetMesh();
+  updateControlNetMeshSel();
+
+  // bind vbo containing all control points
+  controlNetVBO_.bind();
+  controlNetDecl_.activateFixedFunction();
+
   // draw points
   
   // draw selection
-  if( bsplineSurface_.controlpoint_selections_available())
+  if (controlNetSelIndices_)
   {
     // save old values
     float point_size_old = _state.point_size();
@@ -442,19 +544,9 @@ drawControlNet(GLState& _state)
     glPointSize(10);
 //     glPointSize(point_size_old+2);
 
-    glBegin(GL_POINTS);
-    // draw control polygon
-    for (unsigned int i = 0; i < bsplineSurface_.n_control_points_m(); ++i)
-    {
-      for (unsigned int j = 0; j < bsplineSurface_.n_control_points_n(); ++j)
-      {
-        if( bsplineSurface_.controlpoint_selection(i, j))
-          glVertex(bsplineSurface_(i,j));
-      }
-    }
-    glEnd();
-
-    glPointSize(point_size_old);
+    // selected points are in index buffer
+    controlNetSelIBO_.bind();
+    glDrawElements(GL_POINTS, controlNetSelIndices_, GL_UNSIGNED_INT, 0);
   }
 
   // draw all points
@@ -463,11 +555,8 @@ drawControlNet(GLState& _state)
   float point_size_old = _state.point_size();
   glPointSize(point_size_old + 4);
   
-  glBegin(GL_POINTS);
-  for (unsigned int i = 0; i < bsplineSurface_.n_control_points_m(); ++i)
-    for (unsigned int j = 0; j < bsplineSurface_.n_control_points_n(); ++j)
-      glVertex(bsplineSurface_(i, j));
-  glEnd();
+  GLsizei numControlPoints = bsplineSurface_.n_control_points_m() * bsplineSurface_.n_control_points_n();
+  glDrawArrays(GL_POINTS, 0, numControlPoints);
 
   glPointSize((int)point_size_old);
   
@@ -512,27 +601,14 @@ drawControlNet(GLState& _state)
   float line_width_old = _state.line_width();
   glLineWidth(line_width_old+2.0);
 
-  glBegin(GL_LINES);
-  // draw bspline control net
-  for (unsigned int i = 0; i < bsplineSurface_.n_control_points_m(); ++i)
-  {
-    for (int j = 0; j < (int)bsplineSurface_.n_control_points_n() - 1; ++j)
-    {
-      glVertex(bsplineSurface_(i, j  ));
-      glVertex(bsplineSurface_(i, j+1));
-    }
-  }
+  controlNetLineIBO_.bind();
+  glDrawElements(GL_LINES, controlNetLineIndices_, GL_UNSIGNED_INT, 0);
 
-  for (int j = 0; j < (int)bsplineSurface_.n_control_points_n(); ++j)
-  {
-    for (int i = 0; i < (int)bsplineSurface_.n_control_points_m() - 1; ++i)
-    {
-    glVertex(bsplineSurface_(i,  j));
-    glVertex(bsplineSurface_(i+1,j));
-    }
-  }
 
-  glEnd();
+  // restore gl states
+  controlNetDecl_.deactivateFixedFunction();
+  controlNetLineIBO_.unbind();
+  controlNetVBO_.unbind();
 
   glColor( base_color_old );
   glLineWidth(line_width_old);
@@ -628,6 +704,17 @@ drawFancyControlNet(GLState& _state)
   glColor( base_color_old );
 
   glPopAttrib();
+}
+
+//----------------------------------------------------------------------------
+
+template <class BSplineSurfaceType>
+void 
+BSplineSurfaceNodeT<BSplineSurfaceType>::
+updateGeometry()
+{
+  invalidateSurfaceMesh_ = true;
+  invalidateControlNetMesh_ = true;
 }
 
 //----------------------------------------------------------------------------
@@ -753,7 +840,7 @@ pick_spline( GLState& _state )
     ACG::GLState::bindTexture( GL_TEXTURE_2D, pick_texture_idx_);
   }
 
-  draw_textured_nurbs( _state);
+  drawSurface(_state);
 
   ACG::GLState::bindTexture( GL_TEXTURE_2D, 0);
   ACG::GLState::disable(GL_TEXTURE_2D);
@@ -772,7 +859,7 @@ pick_surface( GLState& _state, unsigned int _offset )
 
   // pick the whole surface
   _state.pick_set_name ( _offset );
-  drawSurface( _state, true);
+  drawSurface( _state);
 
   adaptive_sampling_ = sampling_mode_backup;
 }
@@ -833,6 +920,9 @@ updateControlPointSelectionTexture(GLState& _state)
 {
   create_cp_selection_texture(_state);
   controlPointSelectionTexture_valid_ = true;
+
+  // also update index buffer for rendering selections
+  invalidateControlNetMeshSel_ = true;
 }
 
 //----------------------------------------------------------------------------
@@ -1242,108 +1332,6 @@ set_arb_texture( const QImage& _texture, bool _repeat, float _u_repeat, float _v
 //----------------------------------------------------------------------------
 
 template <class BSplineSurfaceType>
-void
-BSplineSurfaceNodeT<BSplineSurfaceType>::
-draw_textured_nurbs( GLState& /*_state*/)
-{
-  int numKnots_m = bsplineSurface_.n_knots_m();
-  int numKnots_n = bsplineSurface_.n_knots_n();
-
-  const int numCPs_m = bsplineSurface_.n_control_points_m();
-  const int numCPs_n = bsplineSurface_.n_control_points_n();
-
-  int order_m = bsplineSurface_.degree_m() + 1;
-  int order_n = bsplineSurface_.degree_n() + 1;
-
-  GLfloat *knots_m = new GLfloat[numKnots_m];
-  for (int i = 0; i < numKnots_m; ++i)
-    knots_m[i] = bsplineSurface_.get_knot_m(i);
-
-  GLfloat *knots_n = new GLfloat[numKnots_n];
-  for (int i = 0; i < numKnots_n; ++i)
-    knots_n[i] = bsplineSurface_.get_knot_n(i);
-
-  
-  GLfloat *ctlpoints = new GLfloat[numCPs_m * numCPs_n * 3];
-  for (int i = 0; i < numCPs_m; ++i)
-  {
-    for (int j = 0; j < numCPs_n; ++j)
-    {
-      Vec3d p = bsplineSurface_(i,j);
-      int idx0 = i * numCPs_n * 3 + j * 3 + 0;
-      int idx1 = i * numCPs_n * 3 + j * 3 + 1;
-      int idx2 = i * numCPs_n * 3 + j * 3 + 2;
-      ctlpoints[idx0] = (GLfloat)p[0];
-      ctlpoints[idx1] = (GLfloat)p[1];
-      ctlpoints[idx2] = (GLfloat)p[2];
-    }
-  }
-
-  GLUnurbsObj *theNurb;
-  theNurb = gluNewNurbsRenderer();
-
-  #ifdef WIN32
-    gluNurbsCallback(theNurb, GLU_ERROR, (void (__stdcall *)(void))(&nurbsErrorCallback) );
-  #else
-    gluNurbsCallback(theNurb, GLU_ERROR, (GLvoid (*)()) (&nurbsErrorCallback) );  
-  #endif
-
-  // draw filled
-  gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
-
-  #ifdef GLU_OBJECT_PARAMETRIC_ERROR
-    // object space -> fixed (non-adaptive) sampling
-    gluNurbsProperty(theNurb, GLU_SAMPLING_METHOD, GLU_OBJECT_PARAMETRIC_ERROR);
-  #else
-    gluNurbsProperty(theNurb, GLU_SAMPLING_METHOD,   GLU_PARAMETRIC_ERROR);
-  #endif
-
-  gluNurbsProperty(theNurb, GLU_PARAMETRIC_TOLERANCE, 0.2f);
-
-  // get min/max knots of domain defining patch (partition of unity)
-  float  minu( knots_m[bsplineSurface_.degree_m()]);
-  float  minv( knots_n[bsplineSurface_.degree_n()]);
-  float  maxu( knots_m[numKnots_m  - order_m]);
-  float  maxv( knots_n[numKnots_n  - order_n]);
-
-  // control points of 2d texture ((0,0), (0,1), (1,0), (1,1) )
-  GLfloat   tcoords[8] = {0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0};
-/*
-  if( arb_texture_repeat_ && arb_texture_used_ ) {
-    tcoords[0] = 0.0;
-    tcoords[1] = 0.0;
-    tcoords[2] = 0.0;
-    tcoords[3] = arb_texture_repeat_v_*(maxv-minv);
-    tcoords[4] = arb_texture_repeat_u_*(maxu-minu);
-    tcoords[5] = 0.0;
-    tcoords[6] = arb_texture_repeat_u_*(maxu-minu);
-    tcoords[7] = arb_texture_repeat_v_*(maxv-minv);
-  }
-*/
-  // knots of domain, over which tcoords shall be linearly interpolated
-  GLfloat   tknots[4] = {minu, minu, maxu, maxu};
-  GLfloat   sknots[4] = {minv, minv, maxv, maxv};
-
-  // begin drawing nurbs
-  gluBeginSurface(theNurb);
-
-  // first enable texture coordinate mapping
-  gluNurbsSurface(theNurb, 4, tknots, 4, sknots, 2*2, 2, &tcoords[0], 2, 2, GL_MAP2_TEXTURE_COORD_2); 
-
-  // draw surface
-  gluNurbsSurface(theNurb, numKnots_m, knots_m, numKnots_n, knots_n, numCPs_n * 3, 3, ctlpoints, order_m, order_n, GL_MAP2_VERTEX_3);
-  gluEndSurface(theNurb);
-
-  gluDeleteNurbsRenderer(theNurb);
-
-  delete[] knots_m;
-  delete[] knots_n;
-  delete[] ctlpoints;
-}
-
-//----------------------------------------------------------------------------
-
-template <class BSplineSurfaceType>
 ACG::Vec4f
 BSplineSurfaceNodeT<BSplineSurfaceType>::
 generateHighlightColor(ACG::Vec4f _color)
@@ -1359,6 +1347,348 @@ generateHighlightColor(ACG::Vec4f _color)
   
   return Vec4f( c1, c2, c3, _color[3]);
 }
+
+//----------------------------------------------------------------------------
+
+template <class BSplineSurfaceType>
+void
+BSplineSurfaceNodeT<BSplineSurfaceType>::
+updateSurfaceMesh(int _vertexCountU, int _vertexCountV)
+{
+  if (!invalidateSurfaceMesh_)
+    return;
+
+  surfaceVBO_.del();
+  surfaceIBO_.del();
+
+  // vertex layout:
+  //  float3 pos
+  //  float3 normal
+  //  float2 texcoord
+  //  + debug info (optional)
+
+  // provide expected values of bspline evaluation steps for debugging in shader
+  const bool provideDebugInfo = false;
+
+  if (!surfaceDecl_.getNumElements())
+  {
+    surfaceDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
+    surfaceDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_NORMAL);
+    surfaceDecl_.addElement(GL_FLOAT, 2, VERTEX_USAGE_TEXCOORD);
+
+    if (provideDebugInfo)
+    {
+      surfaceDecl_.addElement(GL_FLOAT, 2, VERTEX_USAGE_SHADER_INPUT, size_t(0), "a2v_span");
+      surfaceDecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "a2v_bvu");
+      surfaceDecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "a2v_bvv");
+    }
+  }
+
+  // create vertex buffer
+
+  int numU = _vertexCountU,
+    numV = _vertexCountV;
+
+  GLsizeiptr vboSize = numU * numV * surfaceDecl_.getVertexStride(); // bytes
+  std::vector<float> vboData(vboSize / 4); // float: 4 bytes
+
+  // write counter
+  int elementOffset = 0;
+
+  for (int i = 0; i < numU; ++i)
+  {
+    // param in [0, 1]
+    float u01 = float(i) / float(numU - 1);
+    
+    // map to actual range
+    float u = (1 - u01) * bsplineSurface_.loweru() + u01 * bsplineSurface_.upperu();
+
+    for (int k = 0; k < numV; ++k)
+    {
+      // param in [0, 1]
+      float v01 = float(k) / float(numV - 1);
+
+      // map to actual range
+      float v = (1 - v01) * bsplineSurface_.lowerv() + v01 * bsplineSurface_.upperv();
+        
+      // evaluate
+      Point pos, normal;
+      bsplineSurface_.surfacePointNormal(pos, normal, u, v);
+
+      // store pos
+      for (int m = 0; m < 3; ++m)
+        vboData[elementOffset++] = float(pos[m]);
+
+      // store normal
+      for (int m = 0; m < 3; ++m)
+        vboData[elementOffset++] = float(normal[m]);
+
+      // store texcoord
+      vboData[elementOffset++] = u01;
+      vboData[elementOffset++] = v01;
+
+
+      if (provideDebugInfo)
+      {
+        // debug elements
+        Vec2i span_u = bsplineSurface_.spanm(u);
+        Vec2i span_v = bsplineSurface_.spann(u);
+        vboData[elementOffset++] = span_u[1];
+        vboData[elementOffset++] = span_v[1];
+
+        std::vector<typename Point::value_type> bvu(std::max(4, bsplineSurface_.degree_m() + 1), 0);
+        std::vector<typename Point::value_type> bvv(std::max(4, bsplineSurface_.degree_n() + 1), 0);
+        bsplineBasisFunctions<typename Point::value_type>(bvu, span_u, u, bsplineSurface_.get_knotvector_m().getKnotvector());
+        bsplineBasisFunctions<typename Point::value_type>(bvv, span_v, v, bsplineSurface_.get_knotvector_n().getKnotvector());
+
+        for (int m = 0; m < 4; ++m) vboData[elementOffset++] = bvu[m];
+        for (int m = 0; m < 4; ++m) vboData[elementOffset++] = bvv[m];
+      }
+    }
+  }
+
+  if (vboSize)
+    surfaceVBO_.upload(vboSize, &vboData[0], GL_STATIC_DRAW);
+
+  vboData.clear();
+
+
+
+  // create index buffer
+  int numIndices = (numU - 1) * (numV - 1) * 6;
+  std::vector<int> iboData(numIndices);
+
+  // index counter
+  int idxOffset = 0;
+
+  for (int k = 0; k < numV - 1; ++k)
+  {
+    for (int i = 0; i < numU - 1; ++i)
+    {
+      /* 
+      ccw quad tessellation:
+      c---d
+      | / | 
+      |/  |
+      a---b
+      */
+
+      iboData[idxOffset++] = k * numU + i;
+      iboData[idxOffset++] = (k+1) * numU + i;
+      iboData[idxOffset++] = (k+1) * numU + i + 1;
+
+      iboData[idxOffset++] = k * numU + i;
+      iboData[idxOffset++] = (k+1) * numU + i+1;
+      iboData[idxOffset++] = k * numU + i + 1;
+    }
+  }
+
+  if (numIndices)
+    surfaceIBO_.upload(numIndices * 4, &iboData[0], GL_STATIC_DRAW);
+
+
+  surfaceIndexCount_ = numIndices;
+
+
+  invalidateSurfaceMesh_ = false;
+}
+
+//----------------------------------------------------------------------------
+
+template <class BSplineSurfaceType>
+void
+BSplineSurfaceNodeT<BSplineSurfaceType>::
+updateControlNetMesh()
+{
+  if (!invalidateControlNetMesh_)
+    return;
+
+  // vertex layout:
+  //  float3 pos
+
+  if (!controlNetDecl_.getNumElements())
+    controlNetDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
+
+  int numU = bsplineSurface_.n_control_points_m(),
+    numV = bsplineSurface_.n_control_points_n();
+
+  // create vertex buffer
+  GLsizeiptr vboSize = bsplineSurface_.n_control_points_m() *  bsplineSurface_.n_control_points_n() * controlNetDecl_.getVertexStride(); // bytes
+  std::vector<float> vboData(vboSize / 4); // float: 4 bytes
+
+  // write counter
+  int elementOffset = 0;
+
+  for (int k = 0; k < numV; ++k)
+  {
+    for (int i = 0; i < numU; ++i)
+    {
+      Point pt = bsplineSurface_.get_control_point(i, k);
+      for (int m = 0; m < 3; ++m) 
+        vboData[elementOffset++] = pt[m];
+    }
+  }
+
+  if (vboSize)
+    controlNetVBO_.upload(vboSize, &vboData[0], GL_STATIC_DRAW);
+
+  vboData.clear();
+
+
+
+  // create index buffer for line segments
+  //  horizontal + vertical cross lines, 2 indices per segment
+  int numIndices = 2 *( (numU - 1) * (numV) +  (numU) * (numV - 1) );
+  std::vector<int> iboData(numIndices);
+
+  // index counter
+  int idxOffset = 0;
+
+  // horizontal lines
+  for (int k = 0; k < numV; ++k)
+  {
+    for (int i = 0; i < numU - 1; ++i)
+    {
+      iboData[idxOffset++] = k * numU + i;
+      iboData[idxOffset++] = k * numU + i + 1;
+    }
+  }
+
+  // vertical lines
+  for (int k = 0; k < numV - 1; ++k)
+  {
+    for (int i = 0; i < numU; ++i)
+    {
+      iboData[idxOffset++] = k * numU + i;
+      iboData[idxOffset++] = (k+1) * numU + i;
+    }
+  }
+
+  if (numIndices)
+    controlNetLineIBO_.upload(numIndices * 4, &iboData[0], GL_STATIC_DRAW);
+
+
+  controlNetLineIndices_ = numIndices;
+
+
+  invalidateControlNetMesh_ = false;
+}
+
+//----------------------------------------------------------------------------
+
+
+template <class BSplineSurfaceType>
+void
+BSplineSurfaceNodeT<BSplineSurfaceType>::
+updateControlNetMeshSel()
+{
+  if (!invalidateControlNetMeshSel_)
+    return;
+
+  controlNetSelIBO_.del();
+
+  if (bsplineSurface_.controlpoint_selections_available())
+  {
+    int numU = bsplineSurface_.n_control_points_m(),
+      numV = bsplineSurface_.n_control_points_n();
+
+    // count # selected points
+    int numSel = 0;
+    for (int k = 0; k < numV; ++k)
+    {
+      for (int i = 0; i < numU; ++i)
+      {
+        if (bsplineSurface_.controlpoint_selection(i, k))
+          ++numSel;
+      }
+    }
+
+    // save count for draw call
+    controlNetSelIndices_ = numSel;
+
+
+    if (numSel)
+    {
+      // create array
+      std::vector<int> iboData(numSel);
+      numSel = 0;
+      for (int k = 0; k < numV; ++k)
+      {
+        for (int i = 0; i < numU; ++i)
+        {
+          if (bsplineSurface_.controlpoint_selection(i, k))
+          {
+            // see vertex indexing of vbo in updateControlNetMesh()
+            // they are in "row-mayor" order
+            iboData[numSel++] = k * numU + i;
+          }
+        }
+      }
+
+      controlNetSelIBO_.upload(numSel * 4, &iboData[0], GL_STATIC_DRAW);
+    }
+  }
+
+  invalidateControlNetMeshSel_ = false;
+}
+
+//----------------------------------------------------------------------------
+
+template <class BSplineSurfaceType>
+void 
+BSplineSurfaceNodeT<BSplineSurfaceType>::
+updateTexBuffers()
+{
+  size_t knotBufSizeU = bsplineSurface_.get_knots_m().size();
+  size_t knotBufSizeV = bsplineSurface_.get_knots_n().size();
+
+  size_t numControlPointsU = bsplineSurface_.n_control_points_m();
+  size_t numControlPointsV = bsplineSurface_.n_control_points_n();
+  size_t controlPointBufSize = numControlPointsU * numControlPointsV;
+
+  if (knotBufSizeU)
+  {
+    std::vector<float> knotBufU(knotBufSizeU);
+
+    for (size_t i = 0; i < knotBufSizeU; ++i)
+      knotBufU[i] = float(bsplineSurface_.get_knot_m(i));
+
+    knotTexBufferU_.setBufferData(knotBufSizeU * 4, &knotBufU[0], GL_R32F);
+  }
+
+  if (knotBufSizeV)
+  {
+    std::vector<float> knotBufV(knotBufSizeV);
+
+    for (size_t i = 0; i < knotBufSizeV; ++i)
+      knotBufV[i] = float(bsplineSurface_.get_knot_n(i));
+
+    knotTexBufferV_.setBufferData(knotBufSizeV * 4, &knotBufV[0], GL_R32F);
+  }
+
+
+  if (controlPointBufSize)
+  {
+    std::vector<float> controlPointBuf(controlPointBufSize * 3);
+
+    for (size_t y = 0; y < numControlPointsV; ++y)
+    {
+      for (size_t x = 0; x < numControlPointsU; ++x)
+      {
+        Point cp = bsplineSurface_.get_control_point(x, y);
+        controlPointBuf[(y * numControlPointsU + x) * 3 + 0] = cp[0];
+        controlPointBuf[(y * numControlPointsU + x) * 3 + 1] = cp[1];
+        controlPointBuf[(y * numControlPointsU + x) * 3 + 2] = cp[2];
+      }
+    }
+
+    controlPointTex_.bind();
+    controlPointTex_.parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST); // disable filtering
+    controlPointTex_.parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    controlPointTex_.setData(0, GL_RGB32F, numControlPointsU, numControlPointsV, GL_RGB, GL_FLOAT, &controlPointBuf[0]);
+  }
+}
+
 
 //=============================================================================
 } // namespace SceneGraph

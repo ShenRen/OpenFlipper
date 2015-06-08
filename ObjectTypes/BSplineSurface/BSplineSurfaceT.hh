@@ -298,6 +298,27 @@ public:
   */
   Point surfacePoint(double _u, double _v);
 
+  /** \brief Evaluates a spline surface at parameters _u and _v
+   *
+   * Computes surface point and normal at the same time (optimized).
+   *
+   * @param _point point output
+   * @param _normal normal output
+   * @param _u the parameter in u direction
+   * @param _v the parameter in v direction
+   * \return the surface point
+  */
+  void surfacePointNormal(Point& _pt, Point& _normal, double _u, double _v);
+
+  /** \brief Evaluates a spline surface at parameters _u and _v
+   *
+   * Slower version of surfacePoint(), which evaluates the basis functions recursively.
+   *
+   * @param _u the parameter in u direction
+   * @param _v the parameter in v direction
+   * \return the surface point
+  */
+  Point surfacePoint_rec(double _u, double _v);
 
   /** \brief Returns the _derm'th derivative of a spline surface
    *
@@ -441,7 +462,6 @@ private:
   Knotvector knotvector_n_; ///< Knotvector in n direction
 
   ControlNet control_net_;
-
 
 private: // private properties
 

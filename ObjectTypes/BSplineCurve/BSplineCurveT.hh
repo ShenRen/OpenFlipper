@@ -163,10 +163,10 @@ public:
   unsigned int n_control_points() const {return control_polygon_.size();};
 
   /// Returns the number of knots
-  unsigned int n_knots() { return knotvector_.size(); };
+  unsigned int n_knots() const { return knotvector_.size(); };
 
   /// Returns the spline degree
-  unsigned int degree() {return degree_;};
+  unsigned int degree() const {return degree_;};
 
   /// Sets the spline degree
   void set_degree(unsigned int _degree) {degree_ = _degree;};
@@ -218,16 +218,14 @@ public:
   Scalar derivativeBasisFunction(int _i, int _n, Scalar _t, int _der);
 
 
-private: // private functions
+public:
 
   /// Returns the lower parameter
-  Scalar lower();
+  Scalar lower() const;
 
   /// Returns the upper parameter
-  Scalar upper();
+  Scalar upper() const;
 
-
-public :
 
   // request properties
   void request_controlpoint_selections() { request_prop( ref_count_cpselections_, cpselections_);}

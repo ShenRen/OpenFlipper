@@ -237,6 +237,8 @@ update(UpdateType _type)
     // mark textures as invalid
     splineSurfaceNode()->cpSelectionTextureValid(false);
     splineSurfaceNode()->knotSelectionTextureValid(false);
+
+    splineSurfaceNode()->updateGeometry();
   }
   else 
   {
@@ -245,6 +247,9 @@ update(UpdateType _type)
       // mark textures as invalid
       splineSurfaceNode()->cpSelectionTextureValid(false);
       splineSurfaceNode()->knotSelectionTextureValid(false);
+
+      if (_type.contains(UPDATE_GEOMETRY))
+        splineSurfaceNode()->updateGeometry();
     }
     else if (_type.contains(UPDATE_SELECTION_VERTICES))
       splineSurfaceNode()->cpSelectionTextureValid(false);

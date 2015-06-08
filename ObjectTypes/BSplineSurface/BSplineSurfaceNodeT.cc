@@ -147,6 +147,9 @@ getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMod
       else
         ro.fillMode = GL_FILL;
 
+      GLenum roPrimitives = GL_TRIANGLES;
+
+#ifdef GL_ARB_tessellation_shader
       bool tessellationMode = ACG::openGLVersion(4, 0) && Texture::supportsTextureBuffer();
 
       if (tessellationMode)
@@ -185,14 +188,18 @@ getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMod
         ro.addTexture(RenderObject::Texture(controlPointTex_.id(), GL_TEXTURE_2D), 1, false);
         ro.addTexture(RenderObject::Texture(knotTexBufferU_.id(), GL_TEXTURE_BUFFER), 2, false);
         ro.addTexture(RenderObject::Texture(knotTexBufferV_.id(), GL_TEXTURE_BUFFER), 3, false);
-      }
 
+        roPrimitives = GL_PATCHES;
+      }
+      
       if (tessellationMode)
         ro.patchVertices = 3;
+#endif
 
-      ro.glDrawElements(tessellationMode ? GL_PATCHES : GL_TRIANGLES, surfaceIndexCount_, GL_UNSIGNED_INT, 0);
+      ro.glDrawElements(roPrimitives, surfaceIndexCount_, GL_UNSIGNED_INT, 0);
 
       _renderer->addRenderObject(&ro);
+
     }
   }
 
@@ -1667,6 +1674,7 @@ updateTexBuffers()
   }
 
 
+#ifdef GL_VERSION_3_0
   if (controlPointBufSize)
   {
     std::vector<float> controlPointBuf(controlPointBufSize * 3);
@@ -1687,6 +1695,7 @@ updateTexBuffers()
     controlPointTex_.parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     controlPointTex_.setData(0, GL_RGB32F, numControlPointsU, numControlPointsV, GL_RGB, GL_FLOAT, &controlPointBuf[0]);
   }
+#endif
 }
 
 

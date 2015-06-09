@@ -46,6 +46,7 @@
 #include <ACG/Math/VectorT.hh>
 
 #include <map>
+#include <iostream>
 #include <vector>
 
 const PropertyNameListModel::TypeInfoWrapper PropertyNameListModel::proptype_bool =

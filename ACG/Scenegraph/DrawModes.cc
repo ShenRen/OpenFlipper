@@ -56,6 +56,7 @@
 #include "BaseNode.hh"
 
 #include <algorithm>
+#include <sstream>
 
 
 //== NAMESPACES ============================================================== 

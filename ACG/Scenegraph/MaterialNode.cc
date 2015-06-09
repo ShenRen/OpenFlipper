@@ -57,6 +57,7 @@
 #include "DrawModes.hh"
 
 #include <cstdio>
+#include <sstream>
 
 #include <Qt>
 

@@ -52,6 +52,9 @@
 
 //== INCLUDES =================================================================
 
+#include <ACG/Config/ACGDefines.hh>
+
+
 #if defined(ARCH_DARWIN)
 
   #include <glut.h>
@@ -250,11 +253,11 @@ inline void ACG::GLState::texcoordPointer(GLint n, GLenum t, GLsizei s, const GL
 
 /** Check if the extension given by a std::string is supported by the current OpenGL extension
 */
-bool checkExtensionSupported( const std::string& _extension ) ;
+bool ACGDLLEXPORT checkExtensionSupported( const std::string& _extension ) ;
 
 /** Check if OpenGL Version is greater or equal than the given values
 */
-bool openGLVersion( const int _major, const int _minor  );
+bool ACGDLLEXPORT openGLVersion( const int _major, const int _minor  );
 
 
 //=============================================================================

@@ -60,6 +60,7 @@
 #include <ACG/GL/gl.hh>
 #include <ACG/Config/ACGDefines.hh>
 #include <iostream>
+#include <string>
 
 //=============================================================================
 //

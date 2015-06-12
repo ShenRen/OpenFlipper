@@ -342,6 +342,9 @@ public:
   // test for clear_texture support
   static bool supportsClearTexture();
 
+  // test for hardware accelerated mip map generation
+  static bool supportsGenerateMipmap();
+
 private:
 
   GLenum target, unit;
@@ -392,6 +395,15 @@ class ACGDLLEXPORT Texture2D : public Texture
 public:
   Texture2D(GLenum unit=GL_NONE);
 
+  // Enable automatic mipmap generation (either on gpu or cpu).
+  // The mipmap chain is generated the next time the base level of the texture is changed.
+  // So this should be called after bind() but before setData()!
+  // returns true if the hardware supports this feature, false if it runs in software mode
+  bool autogenerateMipMaps();
+
+  // Disabled automatic generation of the mip map chain
+  void disableAutogenerateMipMaps();
+
   // initialize and set texture data via glTexImage2D
   void setData(GLint _level, GLint _internalFormat, GLsizei _width, GLsizei _height, GLenum _format, GLenum _type, const GLvoid* _data);
 
@@ -417,10 +429,26 @@ public:
   bool getData(GLint _level, void* _dst);
   bool getData(GLint _level, std::vector<char>& _dst);
 
+  // check if there is enough mem space to allocate a texture of requested size and format
+  static bool checkTextureMem(GLenum _internalFormat, GLsizei _width, GLsizei _height, 
+    GLenum _format);
+
+private:
+
+  // build mipmap chain on cpu
+  void buildMipMaps(GLenum _internalfmt,
+    GLint _width,
+    GLint _height,
+    GLenum _format,
+    GLenum _type,
+    const void* _data);
+
 private:
 
   GLsizei width_, height_;
   GLenum format_, type_;
+
+  bool buildMipsCPU_;
 };
 
 

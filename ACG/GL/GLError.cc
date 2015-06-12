@@ -78,13 +78,6 @@ std::string glErrorToString( GLenum _error ) {
 }
 
 
-void nurbsErrorCallback(GLenum errorCode)
-{
-  const GLubyte *estring;
-  estring = gluErrorString(errorCode);
-  std::cerr << "Nurbs Error: " << estring << std::endl;;
-}
-
 //=============================================================================
 }  // namespace ACG
 //=============================================================================

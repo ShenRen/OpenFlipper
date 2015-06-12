@@ -48,10 +48,6 @@
 #include <QImage>
 #include <QGLWidget>
 
-#ifdef GLI_FOUND
-#include <gli/gli.hpp>
-#endif
-
 namespace ACG {
 
 
@@ -213,6 +209,23 @@ bool Texture::supportsClearTexture()
   return status > 0;
 }
 
+bool Texture::supportsGenerateMipmap()
+{
+  static int status = -1;
+
+  if (status < 0)
+  {
+#if defined(GL_SGIS_generate_mipmap)
+    status = checkExtensionSupported("GL_SGIS_generate_mipmap");
+#else
+    // symbol missing, install latest glew version
+    status = 0;
+#endif
+  }
+
+  return status > 0;
+}
+
 //-----------------------------------------------------------------------------
 
 
@@ -296,9 +309,38 @@ bool Texture1D::getData( GLint _level, std::vector<char>& _dst ) {
 Texture2D::Texture2D(GLenum unit)
   : Texture(GL_TEXTURE_2D, unit),
   width_(0), height_(0),
-  format_(0), type_(0)
+  format_(0), type_(0),
+  buildMipsCPU_(false)
 {}
 
+//-----------------------------------------------------------------------------
+
+bool Texture2D::autogenerateMipMaps()
+{
+#ifdef GL_SGIS_generate_mipmap
+  if (supportsGenerateMipmap())
+  {
+    parameter(GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+    return true;
+  }
+#endif
+  // hardware accelerated generation is not available, fall back to software implementation
+  buildMipsCPU_ = true;
+  return false;
+}
+
+//-----------------------------------------------------------------------------
+
+void Texture2D::disableAutogenerateMipMaps()
+{
+#ifdef GL_SGIS_generate_mipmap
+  if (supportsGenerateMipmap())
+    parameter(GL_GENERATE_MIPMAP_SGIS, GL_FALSE);
+#endif
+  buildMipsCPU_ = false;
+}
+
+//-----------------------------------------------------------------------------
 
 void Texture2D::setData(GLint _level, 
   GLint _internalFormat, 
@@ -313,7 +355,10 @@ void Texture2D::setData(GLint _level,
 
   bind();
 
-  glTexImage2D(GL_TEXTURE_2D, _level, _internalFormat, _width, _height, 0, _format, _type, _data);
+  if (buildMipsCPU_ && _level == 0)
+    buildMipMaps(_internalFormat, _width, _height, _format, _type, _data);
+  else
+    glTexImage2D(GL_TEXTURE_2D, _level, _internalFormat, _width, _height, 0, _format, _type, _data);
 
   width_ = _width;
   height_ = _height;
@@ -372,6 +417,197 @@ bool Texture2D::getData( GLint _level, std::vector<char>& _dst ) {
   return false;
 }
 
+template<class T>
+void Texture2D_buildMipMaps_DataInterpreter(Vec4f* _dst, int _numChannels, int _srcOffset, const void* _src)
+{
+  const T* dataT = static_cast<const T*>(_src);
+
+  for (int i = 0; i < _numChannels; ++i)
+    (*_dst)[i] = float(dataT[_srcOffset + i]);
+}
+
+void Texture2D::buildMipMaps( GLenum _internalfmt, 
+  GLint _width, 
+  GLint _height,
+  GLenum _format,
+  GLenum _type, 
+  const void* _data )
+{
+//   gluBuild2DMipmaps(_target, _internalfmt, _width, _height, _format, _type, _data);
+//   return;
+// 
+  if (_data)
+  {
+    GLFormatInfo finfo(_internalfmt);
+
+    if (finfo.isValid() && (finfo.isFloat() || finfo.isNormalized()))
+    {
+      int numChannels = finfo.channelCount();
+
+
+      // avoid quantization error for smaller mipmaps
+      // -> treat image data as floats instead of normalized ubytes
+
+
+      // compute number of mipmaps
+
+      Vec2i curSize = Vec2i(_width, _height);
+      int curOffset = 0;
+
+      std::vector<int> mipMemsize(1, 0);
+      std::vector<Vec2i> mipSize(1, curSize);
+      // mipmap count is usually a small number, so push_back() shouldn't be problematic
+      mipMemsize.reserve(16);
+      mipSize.reserve(16);
+
+      int numMips = 1; // first level
+
+      // downscale width and height by 2 until 1x1 texture
+      while (curSize[0] > 1 || curSize[1] > 1)
+      {
+        for (int k = 0; k < 2; ++k)
+          curSize[k] = std::max(1, curSize[k] >> 1);
+
+        // tex dimension
+        mipSize.push_back(curSize);
+
+        // size in bytes
+        int numPixels = curSize[0] * curSize[1];
+        mipMemsize.push_back(numPixels * numChannels * 4);
+
+        ++numMips;
+      }
+
+      // compute size in bytes required for the complete mipmap chain starting at level 1
+      std::vector<int> mipOffset; // offset in bytes
+      mipOffset.reserve(16);
+      int totalMemSize = 0;
+      for (int mipID = 0; mipID < numMips; ++mipID)
+      {
+        mipOffset.push_back(totalMemSize);
+        totalMemSize += mipMemsize[mipID];
+      }
+
+
+      // alloc memory block for the mipmaps
+      std::vector<float> mipData(totalMemSize / 4);
+
+      // downsample
+      for (int mipID = 1; mipID < numMips; ++mipID)
+      {
+        Vec2i srcSize = mipSize[mipID-1];
+        Vec2i dstSize = mipSize[mipID];
+
+        int srcOffset = mipOffset[mipID-1];
+        int dstOffset = mipOffset[mipID];
+
+        int dstNumPixels = dstSize[0] * dstSize[1];
+
+        // loop is parallelizable, but synchronization overhead is too high
+// #ifdef USE_OPENMP
+// #pragma omp parallel for
+// #endif // USE_OPENMP
+        for (int dstPixel = 0; dstPixel < dstNumPixels; ++dstPixel)
+        {
+          int x = dstPixel % dstSize[0];
+          int y = dstPixel / dstSize[0];
+
+          Vec4f pixelData[4];
+
+          Vec2i srcPixelPos[4] =
+          {
+            Vec2i(x * 2, y * 2), Vec2i(x * 2 + 1, y * 2),
+            Vec2i(x * 2, y * 2 + 1), Vec2i(x * 2 + 1, y * 2 + 1)
+          };
+
+          Vec4f avgColor = Vec4f(0.0f, 0.0f, 0.0f, 0.0f);
+
+          // load the four source pixels
+          for (int srcPixel = 0; srcPixel < 4; ++srcPixel)
+          {
+            // init with black
+            pixelData[srcPixel] = Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+
+            // clamp pixel position 
+            srcPixelPos[srcPixel][0] = std::min(srcPixelPos[srcPixel][0], srcSize[0] - 1);
+            srcPixelPos[srcPixel][1] = std::min(srcPixelPos[srcPixel][1], srcSize[1] - 1);
+
+            // linear position of 2d pixel pos, row-major
+            int srcPixelPosLinear = srcSize[0] * srcPixelPos[srcPixel][1] + srcPixelPos[srcPixel][0];
+
+            // interpret pixel of the input image based on type
+            if (mipID == 1)
+            {
+              switch ( _type )
+              {
+              case GL_DOUBLE: Texture2D_buildMipMaps_DataInterpreter<double>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data); break;
+              case GL_FLOAT: Texture2D_buildMipMaps_DataInterpreter<float>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data); break;
+              case GL_INT: Texture2D_buildMipMaps_DataInterpreter<int>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data); break;
+              case GL_UNSIGNED_INT: Texture2D_buildMipMaps_DataInterpreter<unsigned int>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data); break;
+              case GL_SHORT: Texture2D_buildMipMaps_DataInterpreter<short>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data); break;
+              case GL_UNSIGNED_SHORT: Texture2D_buildMipMaps_DataInterpreter<unsigned short>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data); break;
+              case GL_BYTE:
+                {
+                  Texture2D_buildMipMaps_DataInterpreter<char>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data);
+
+                  if (finfo.isNormalized())
+                    pixelData[srcPixel] /= 127.0f;
+                } break;
+              case GL_UNSIGNED_BYTE:
+                {
+                  Texture2D_buildMipMaps_DataInterpreter<unsigned char>(pixelData + srcPixel, numChannels, srcPixelPosLinear * numChannels, _data);
+
+                  if (finfo.isNormalized())
+                    pixelData[srcPixel] /= 255.0f;
+                } break;
+
+              default: std::cerr << "MipMaps: unknown data type: " << _type << std::endl;
+              }
+            }
+            else
+            {
+              // load from previously computed mipmap
+
+              for (int c = 0; c < numChannels; ++c)
+                pixelData[srcPixel][c] = mipData[srcOffset/4 + srcPixelPosLinear * numChannels + c];
+            }
+
+            avgColor += pixelData[srcPixel];
+          }
+
+          avgColor *= 0.25f;
+
+          // store average of the source pixels
+          int dstPixelPosLinear = y * dstSize[0] + x;
+          for (int c = 0; c < numChannels; ++c)
+            mipData[dstOffset / 4 + dstPixelPosLinear * numChannels + c] = avgColor[c];
+        }
+
+      }
+
+
+      // upload mipmaps to gpu
+
+      for (int mipID = 0; mipID < numMips; ++mipID)
+      {
+        // inpute image at level 0
+        const void* mipDataPtr = _data;
+        GLenum mipDataType = _type;
+
+        if (mipID > 0)
+        {
+          // downsampled image at lower levels
+          // these are stored as float textures in memory
+          // glTexImage2D converts float data to the requested internal format
+          mipDataPtr = &mipData[mipOffset[mipID] / 4];
+          mipDataType = GL_FLOAT;
+        }
+
+        glTexImage2D(getTarget(), mipID, _internalfmt, mipSize[mipID][0], mipSize[mipID][1], 0, _format, mipDataType, mipDataPtr);
+      }
+    }
+  }
+}
 
 
 bool Texture2D::loadFromFile( const std::string& _filename, GLenum _minFilter, GLenum _magFilter )
@@ -389,80 +625,18 @@ bool Texture2D::loadFromFile( const std::string& _filename, GLenum _minFilter, G
   {
     bind();
 
-#if GLI_VERSION == 51
+    QImage qtex;
 
-    if (_filename.find(".dds") != _filename.npos)
+    if (qtex.load(_filename.c_str()))
     {
-      gli::texture2D glitex(gli::load_dds(_filename.c_str()));
-      assert(!glitex.empty());
+      success = true;
 
-      if(gli::is_compressed(glitex.format()))
-      {
-        for(gli::texture2D::size_type lod = 0; lod < glitex.levels(); ++lod)
-        {
-          glCompressedTexSubImage2D(GL_TEXTURE_2D,
-            GLint(lod),
-            0, 0,
-            GLsizei(glitex[lod].dimensions().x),
-            GLsizei(glitex[lod].dimensions().y),
-            GLenum(gli::internal_format(glitex.format())),
-            GLsizei(glitex[lod].size()),
-            glitex[lod].data());
-        }
+      if (mipmaps)
+        autogenerateMipMaps();
 
-        success = true;
+      QImage gltex = QGLWidget::convertToGLFormat ( qtex );
 
-        if (mipmaps && glitex.levels() <= 1 && (glitex.dimensions().x > 1 || glitex.dimensions().y > 1))
-        {
-          std::cout << "error: texture required mipmaps  " << _filename << std::endl;
-          success = false;
-        }
-      }
-      else
-      {
-        if (glitex.levels() > 1 || !mipmaps)
-        {
-          for(gli::texture2D::size_type lod = 0; lod < glitex.levels(); ++lod)
-          {
-            setData(GLint(lod),
-              GLenum(gli::internal_format(glitex.format())),
-              GLsizei(glitex[lod].dimensions().x), GLsizei(glitex[lod].dimensions().y),
-              GLenum(gli::external_format(glitex.format())),
-              GLenum(gli::type_format(glitex.format())),
-              glitex[lod].data());
-          }
-
-          success = true;
-        }
-        else
-        {
-          success = !gluBuild2DMipmaps(GL_TEXTURE_2D,
-            GLenum(gli::internal_format(glitex.format())),
-            GLsizei(glitex.dimensions().x), GLsizei(glitex.dimensions().y),
-            GLenum(gli::external_format(glitex.format())),
-            GLenum(gli::type_format(glitex.format())),
-            glitex.data());
-        }
-      } 
-
-    }
-    else
-#endif
-
-    {
-      QImage qtex;
-      
-      if (qtex.load(_filename.c_str()))
-      {
-        QImage gltex = QGLWidget::convertToGLFormat ( qtex );
-
-        success = true;
-
-        if (mipmaps)
-          success = !gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, gltex.width(), gltex.height(), GL_RGBA, GL_UNSIGNED_BYTE, gltex.bits());
-        else
-          setData(0, GL_RGBA, gltex.width(), gltex.height(), GL_RGBA, GL_UNSIGNED_BYTE, gltex.bits());
-      }
+      setData(0, GL_RGBA, gltex.width(), gltex.height(), GL_RGBA, GL_UNSIGNED_BYTE, gltex.bits());
     }
 
   }
@@ -527,7 +701,33 @@ void Texture2D::loadRandom( GLint _internalFormat, GLsizei _width, GLsizei _heig
   }
 }
 
+bool Texture2D::checkTextureMem( GLenum _internalFormat, GLsizei _width, GLsizei _height, GLenum _format)
+{
+  GLuint t = 0;
+  glGenTextures(1, &t);
 
+  bool res = false;
+
+  if (t)
+  {
+    GLint savedTex = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &savedTex);
+
+
+    glBindTexture(GL_TEXTURE_2D, t);
+    glTexImage2D(GL_PROXY_TEXTURE_2D, 0, _internalFormat, _width, _height, 0, _format, GL_FLOAT, 0);
+
+    GLint w = 0;
+    glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+    if (w) 
+      res = true;
+
+    glBindTexture(GL_TEXTURE_2D, savedTex);
+    glDeleteTextures(1, &t);
+  }
+
+  return res;
+}
 
 //-----------------------------------------------------------------------------
 

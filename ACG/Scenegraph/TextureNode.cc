@@ -57,7 +57,6 @@
 #include "DrawModes.hh"
 #include <QGLWidget>
 
-
 //== NAMESPACES ===============================================================
 
 
@@ -95,9 +94,7 @@ TextureNode::TextureNode( BaseNode*            _parent,
 TextureNode::~TextureNode()
 {
   for (std::vector<TextureInfo>::iterator texturesIt = textures_.begin(); texturesIt != textures_.end(); ++texturesIt) {
-    if ( glIsTexture( texturesIt->id ) ) {
-      glDeleteTextures( 1, &(texturesIt->id) );
-    }
+    delete texturesIt->tex;
   }
   textures_.clear();
 }
@@ -210,8 +207,9 @@ void TextureNode::setTextureDataGL (  GLuint _textureId,
   
   applyGLSettings();
 
-  // copy texture to GL
-  ACG::GLState::bindTexture( GL_TEXTURE_2D, textures_[_textureId].id );
+  Texture2D* tex = textures_[_textureId].tex;
+
+  tex->bind();
 
   if ( mipmapping_ )
     textures_[_textureId].mipmapAvailable = true;
@@ -221,31 +219,16 @@ void TextureNode::setTextureDataGL (  GLuint _textureId,
   applyTextureParameters(_textureId);
 
   // Load the image
-  if ( mipmapping_globally_active_ && mipmapping_ ) {
-    gluBuild2DMipmaps( _target ,
-                       GL_RGBA ,
-                       _width ,
-                       _height ,
-                       _format ,
-                       _type,
-                       _data);
-
-  } else {
-    glTexImage2D(_target,              // target
-                  0,                   // level
-                  GL_RGBA,             // internal format
-                  _width,              // width  (2^n)
-                  _height,             // height (2^m)
-                  0,                   // border
-                  _format,             // format
-                  _type,               // type
-                  _data );             // pointer to pixels
-  }
+  if ( mipmapping_globally_active_ && mipmapping_ )
+    tex->autogenerateMipMaps();
   
-  // Fill texture info struct width information
-  textures_[_textureId].target      = _target;
-  textures_[_textureId].width       = _width;
-  textures_[_textureId].height      = _height;
+  tex->setData( 0,                   // level
+                GL_RGBA,             // internal format
+                _width,              // width  (2^n)
+                _height,             // height (2^m)
+                _format,             // format
+                _type,               // type
+                _data );             // pointer to pixels
   
   // Unbind until we use it
   ACG::GLState::bindTexture(GL_TEXTURE_2D,0);
@@ -263,21 +246,25 @@ void TextureNode::updateMipmaps(bool _mipmap) {
 
   for(unsigned int i = 1; i < textures_.size(); ++i) {
 
+    Texture2D* tex = textures_[i].tex;
+
     // Bind texture
-    ACG::GLState::bindTexture( GL_TEXTURE_2D, textures_[i].id );
+    tex->bind();
 
     // size in bytes of level 0 texture
-    size_t bufferSize = textures_[i].width*textures_[i].height*4;
+    size_t bufferSize = textures_[i].tex->getWidth() * textures_[i].tex->getHeight()*4;
 
     if(_mipmap && bufferSize) {
 
       // Get pixel data out of texture memory
       GLubyte* buffer = new GLubyte[bufferSize];
-      glGetTexImage(textures_[i].target, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+//      glGetTexImage(textures_[i].target, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+      tex->getData(0, buffer);
 
       // Build mipmap
-      gluBuild2DMipmaps(textures_[i].target, GL_RGBA, textures_[i].width, textures_[i].height,
-        GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+      tex->autogenerateMipMaps();
+      tex->setData(0, tex->getInternalFormat(), tex->getWidth(), tex->getHeight(),
+        tex->getFormat(), tex->getType(), buffer);
 
       delete [] buffer;
     }
@@ -299,10 +286,7 @@ TextureNode::set_texture(const unsigned char * _image, int _width, int _height)
   checkEmpty();
 
   // enough texture mem?
-  glTexImage2D( GL_PROXY_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-  GLint width;
-  glGetTexLevelParameteriv( GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width );
-  if ( width == 0 ) {
+  if ( !Texture2D::checkTextureMem(GL_RGBA, _width, _height, GL_RGBA) ) {
     std::cerr << "Can't load texture";
     return;
   }
@@ -352,10 +336,7 @@ TextureNode::set_texture(const QImage& _image)
   }
 
   // enough texture mem?
-  glTexImage2D( GL_PROXY_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-  GLint testWidth;
-  glGetTexLevelParameteriv( GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &testWidth );
-  if ( testWidth == 0 ) {
+  if ( !Texture2D::checkTextureMem(GL_RGBA, tex_w, tex_h, GL_RGBA) ) {
     std::cerr << "Can't load texture TextureNode::set_texture" << std::endl;
     return;
   }
@@ -373,17 +354,13 @@ TextureNode::set_texture(const float * _image, int _width, int _height )
   checkEmpty();
 
   // enough texture mem?
-  glTexImage2D( GL_PROXY_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_FLOAT, 0 );
-  GLint width;
-  glGetTexLevelParameteriv( GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width );
-  if ( width == 0 ) {
+  if ( !Texture2D::checkTextureMem(GL_RGBA, _width, _height, GL_RGBA) ) {
     std::cerr << "Can't load texture TextureNode::set_texture" << std::endl;
     return;
   }
 
   // Set the image
   setTextureDataGL(activeTexture_,GL_TEXTURE_2D,_width,_height,GL_RGBA,GL_FLOAT,_image);
-
 }
 
 //----------------------------------------------------------------------------
@@ -395,7 +372,9 @@ void TextureNode::checkEmpty() {
     textures_.resize(1);
     activeTexture_ = 0;
 //     textures_[activeTexture_].id = 0;
-    glGenTextures( 1, &(textures_[activeTexture_].id ) );
+    Texture2D* t = new Texture2D();
+    t->gen();
+    textures_[activeTexture_].tex = t;
   }
 
 }
@@ -405,7 +384,7 @@ void TextureNode::checkEmpty() {
 int TextureNode::available( GLuint _id  ) {
   // If the texture is found in the array return its id otherwise -1
   for ( uint i = 0 ; i < textures_.size(); ++i )
-    if ( textures_[i].id == _id )
+    if ( textures_[i].tex->id() == _id )
       return i;
 
   return -1;
@@ -488,7 +467,7 @@ TextureNode::add_texture(const QImage& _image)
   textures_.resize(textures_.size()+1);  // can't push_back, because glGenTextures needs a pointer
 
   // Generate new texture
-  glGenTextures(1, &( textures_.back().id ) );
+  textures_.back().tex = new Texture2D();
 
   activeTexture_ = int(textures_.size() - 1);
 
@@ -496,7 +475,7 @@ TextureNode::add_texture(const QImage& _image)
   set_texture(_image);
 
   // return the id of the new texture
-  return textures_.back().id;
+  return textures_.back().tex->id();
 }
 
 
@@ -530,7 +509,7 @@ void TextureNode::enter(GLState& _state , const DrawModes::DrawMode& _drawmode)
       }
       
       if ( !textures_.empty() ) {
-        ACG::GLState::bindTexture( GL_TEXTURE_2D, textures_[activeTexture_].id );
+        textures_[activeTexture_].tex->bind();
       }
       glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, tex_mode_ );
 
@@ -570,7 +549,7 @@ void TextureNode::leavePick(GLState& /*_state*/, PickTarget /*_target*/, const D
 
 GLuint TextureNode::activeTexture()
 {
-  return textures_[activeTexture_].id;
+  return textures_[activeTexture_].tex->id();
 }
 
 //----------------------------------------------------------------------------

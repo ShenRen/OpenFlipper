@@ -433,7 +433,7 @@ void GLState::perspective( double _fovY, double _aspect,
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
-    gluPerspective(_fovY, _aspect, _n, _f);
+    glLoadMatrixd(projection_.data());
     glMatrixMode(GL_MODELVIEW);
   }
 
@@ -501,15 +501,7 @@ void GLState::lookAt( const Vec3d& _eye,
   if (updateGL_)
   {
     makeCurrent();
-    gluLookAt(_eye[0],
-	      _eye[1],
-	      _eye[2],
-	      _center[0],
-	      _center[1],
-	      _center[2],
-	      _up[0],
-	      _up[1],
-	      _up[2]);
+    glLoadMatrixd(modelview_.data());
   }
 
   update_matrices();
@@ -633,7 +625,9 @@ void GLState::mult_matrix( const GLMatrixd& _m, const GLMatrixd& _inv_m,
 //-----------------------------------------------------------------------------
 
 
-void GLState::update_matrices()
+void GLState::update_matrices(bool _changedModelView,
+  bool _changedProjection,
+  bool _changedViewport)
 {
   forward_projection_   = window2viewport_;
   forward_projection_  *= projection_;
@@ -1734,7 +1728,7 @@ int GLState::getBufferTargetIndex(GLenum _target)
 void GLState::bindBuffer(GLenum _target, GLuint _buffer)
 {
   int idx = getBufferTargetIndex(_target);
-  if (!glBufferTargetLock_[idx])
+  if (idx >= 0 && !glBufferTargetLock_[idx])
   {
 #ifdef GLSTATE_AVOID_REDUNDANT_GLCALLS
     if (stateStack_.back().glBufferTargetState_[idx] != _buffer)
@@ -1991,7 +1985,7 @@ void GLState::bindFramebuffer(GLenum _target, GLuint _framebuffer)
   case GL_READ_FRAMEBUFFER: i = 1; break;
   }
 
-  if (!framebufferLock_[i])
+  if (i >= 0 && !framebufferLock_[i])
   {
 #ifdef GLSTATE_AVOID_REDUNDANT_GLCALLS
     if (stateStack_.back().framebuffers_[i] != _framebuffer)

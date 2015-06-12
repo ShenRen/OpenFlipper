@@ -1107,7 +1107,9 @@ public:
 private: //--------------------------------------------------------------------
 
   // update forward projection and backward projection matrices
-  void update_matrices();
+  void update_matrices(bool _changedModelView = true, 
+    bool _changedProjection = true, 
+    bool _changedViewport = true);
 
 
   // matrix stacks

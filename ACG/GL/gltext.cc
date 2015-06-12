@@ -47,6 +47,7 @@
 //== INCLUDES =================================================================
 
 #include "gltext.hh"
+#include <ACG/Math/GLMatrixT.hh>
 
 //=============================================================================
 
@@ -80,8 +81,12 @@ void glText( const Vec2i&        _pos,
   // set raster pos
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
-  glLoadIdentity();
-  gluOrtho2D(0.0, (GLfloat) viewport[2], 0.0, (GLfloat) viewport[3]);
+  GLMatrixf orthoProj;
+  orthoProj.identity();
+  orthoProj.ortho(0.0f, float(viewport[2]), 0.0f, float(viewport[3]), -1.0f, 1.0f);
+  glLoadMatrixf(orthoProj.data());
+
+
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();

@@ -59,7 +59,6 @@
 
   #include <glut.h>
   #include <OpenGL/gl.h>
-  #include <OpenGL/glu.h>
 
 #elif defined(WIN32)
 
@@ -74,7 +73,6 @@
 
   #include <GL/glut.h>
   #include <GL/gl.h>
-  #include <GL/glu.h>
 
 #endif
 

@@ -104,8 +104,6 @@ inline void glCheckErrors()
   }
 }
 
-void ACGDLLEXPORT nurbsErrorCallback(GLenum errorCode);
-
 //=============================================================================
 }  // namespace ACG
 //=============================================================================

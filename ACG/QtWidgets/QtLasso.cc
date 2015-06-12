@@ -55,6 +55,7 @@
 #include "QtLasso.hh"
 #include "QtColorTranslator.hh"
 #include "../GL/gl.hh"
+#include "../Math/GLMatrixT.hh"
 
 // stdc++
 #include <list>
@@ -120,8 +121,11 @@ slotMouseEvent(QMouseEvent* _event)
 
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
-  glLoadIdentity();
-  gluOrtho2D(0, width-1, 0, height-1);
+  GLMatrixf orthoProj;
+  orthoProj.identity();
+  orthoProj.ortho(0.0f, float(width-1), 0.0f, float(height-1), -1.0f, 1.0f);
+  glLoadMatrixf(orthoProj.data());
+
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();

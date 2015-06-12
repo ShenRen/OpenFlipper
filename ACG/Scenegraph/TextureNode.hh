@@ -59,6 +59,8 @@
 
 #include "BaseNode.hh"
 
+#include <ACG/GL/globjects.hh>
+
 #include <string>
 #include <QImage>
 
@@ -285,16 +287,19 @@ private:
   class TextureInfo {
     public:
       TextureInfo():
-      id(0),
-      mipmapAvailable(false),
-      width(0),
-      height(0) {}
+//       id(0),
+      tex(0),
+      mipmapAvailable(false)
+//       width(0),
+//       height(0)
+      {}
 
-      GLuint id;
-      GLenum target;
+      Texture2D* tex;
+//       GLuint id;
+//       GLenum target;
       bool mipmapAvailable;
-      int width;
-      int height;
+//       int width;
+//       int height;
   };
 
   void setTextureDataGL ( GLuint _textureId,

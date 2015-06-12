@@ -578,21 +578,6 @@ void CoreWidget::showAboutWidget( ) {
   }
 
 
-  // =====================================================================================
-  // glu Information
-  // =====================================================================================
-  aboutWidget_->OpenFlipperAbout->append("\n");
-  aboutWidget_->OpenFlipperAbout->setCurrentFont(boldFont);
-  aboutWidget_->OpenFlipperAbout->append(tr("Glu Specific Info:"));
-  aboutWidget_->OpenFlipperAbout->setCurrentFont(standardFont);
-  
-  QString gluVersion = QString((const char *)gluGetString(GLU_VERSION));
-  aboutWidget_->OpenFlipperAbout->append(tr("GLU Version:\t") + gluVersion);
-  
-  aboutWidget_->OpenFlipperAbout->append(tr("Supported GLU Extensions:"));
-  QString gluExtensions = QString((const char*)gluGetString(GLU_EXTENSIONS));
-  aboutWidget_->OpenFlipperAbout->append(gluExtensions);
-  
   
   aboutWidget_->OpenFlipperAbout->moveCursor(QTextCursor::Start);
   

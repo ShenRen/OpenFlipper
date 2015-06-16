@@ -50,6 +50,7 @@
 #include <ObjectTypes/PolyLine/PolyLineBezierSplineData.hh>
 
 #define CREATE_CUT_POLYLINE "Create Polyline"
+#define CREATE_CUT_POLYLINES "Create Polylines"
 
 //== CLASS DEFINITION =========================================================
 
@@ -241,6 +242,9 @@ private :
     /// Called by Toolbar to enable pick mode
     void slotSetPolyLineMode(QAction* _action);
 
+    /// Called by Toolbar to enable pick mode
+    void slotSetPolyLinesMode(QAction* _action);
+
   /** @} */
 
   //===========================================================================
@@ -261,6 +265,7 @@ private :
     QAction*      mergeAction_;
     QAction*      splitAction_;
     QAction*      cutAction_;
+    QAction*      cutMultipleAction_;
 
   private slots:
 
@@ -276,10 +281,14 @@ private :
 
   private:
 
-  /// get the points from the intersection between mesh and plane
+  /// get the points from the closest connected intersection between mesh and plane
   template< class MeshT > std::vector< ACG::Vec3d >
   getIntersectionPoints ( MeshT* _mesh, uint _fh, ACG::Vec3d _planeNormal ,
                           ACG::Vec3d _planePoint, bool& _closed );
+
+  /// get all points from the intersection between mesh and plane
+  template< class MeshT > std::vector< std::vector< ACG::Vec3d > >
+  getMultipleIntersectionPoints( MeshT* _mesh, ACG::Vec3d _planeNormal , ACG::Vec3d _planePoint );
 
   /// get an edge of the mesh that is cut by the plane
   template< class MeshT >
@@ -297,10 +306,16 @@ public slots:
   /// Generates a polyLine of a plane intersection
   int generatePolyLineFromCut( int _objectId, Vector _planePoint, Vector _planeNormal, int _polyLineId = -1 );
 
+  /// Generates a polyLine of a plane intersection
+  std::vector<int> generatePolyLinesFromCut( int _objectId, Vector _planePoint, Vector _planeNormal );
+
 private slots:
 
   /// Scissor Button was hit
   void slotScissorButton();
+
+  /// Scissor Button for multiple polylines was hit
+  void slotScissorLinesButton();
 
   /// Generate PolyLine after the cutPlane has been drawn
   void slotTriggerCutPlaneSelect();

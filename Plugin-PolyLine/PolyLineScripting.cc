@@ -109,3 +109,98 @@ int PolyLinePlugin::generatePolyLineFromCut( int _objectId, Vector _planePoint, 
     return polyLineId;
 }
 
+
+
+/** \brief Generates polyLines from a plane intersection
+*
+*
+* @param _objectId id of the target object
+* @param _planePoint a point on the cut plane
+* @param _planeNormal the normal of the cut plane
+* @return returns the ids of the polyLine
+*/
+std::vector<int> PolyLinePlugin::generatePolyLinesFromCut( int _objectId, Vector _planePoint, Vector _planeNormal) {
+
+  // List of generated lines
+  std::vector<int> lines;
+
+
+  // get object
+  BaseObjectData *obj;
+  PluginFunctions::getObject(_objectId, obj);
+
+  if (obj == 0){
+    emit log(LOGERR,tr("Unable to get object"));
+    return lines;
+  }
+
+  //get the intersection points
+
+  std::vector< std::vector< ACG::Vec3d > > linePoints;
+  bool closed = false;
+  if ( obj->dataType(DATA_TRIANGLE_MESH) ) {
+
+    TriMesh* mesh = PluginFunctions::triMesh(obj);
+
+    if ( mesh == 0 ) {
+      emit log(LOGERR,tr("Unable to get mesh"));
+      return lines;
+    }
+
+    // get all intersection points
+    linePoints = getMultipleIntersectionPoints( mesh, _planeNormal , _planePoint);
+
+  } else {
+
+    PolyMesh* mesh = PluginFunctions::polyMesh(obj);
+
+    if ( mesh == 0 ) {
+      emit log(LOGERR,tr("Unable to get mesh"));
+      return lines;
+    }
+
+    // get all intersection points
+    linePoints = getMultipleIntersectionPoints( mesh, _planeNormal , _planePoint);
+  }
+
+
+  // No lines found?
+  if ( linePoints.empty() )  {
+    emit log(LOGERR,tr("No cut lines found."));
+    return lines;
+  }
+
+
+  for ( unsigned int i = 0 ; i < linePoints.size(); ++i ) {
+
+    if ( linePoints[i].empty() )
+      continue;
+
+    //generate a polyLine from the intersection Points
+    int polyLineId = -1;
+
+    // add new polyline
+    emit addEmptyObject(DATA_POLY_LINE,polyLineId);
+
+    // get current polylineobject
+    BaseObjectData *polyLineObj;
+    PluginFunctions::getObject(polyLineId, polyLineObj);
+
+    // get polyline object
+    PolyLineObject* currentPolyLine = PluginFunctions::polyLineObject(polyLineObj);
+
+    currentPolyLine->line()->clear();
+
+    for ( unsigned int j = 0 ; j < linePoints[i].size(); ++j )
+      currentPolyLine->line()->add_point( (PolyLine::Point) linePoints[i][j] );
+
+    currentPolyLine->line()->set_closed(closed);
+    currentPolyLine->target(true);
+
+    lines.push_back(polyLineId);
+
+  }
+
+
+  return lines;
+}

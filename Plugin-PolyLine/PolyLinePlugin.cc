@@ -226,7 +226,7 @@ slotMouseEvent( QMouseEvent* _event )
       default:
         break;
     }
-  } else if (PluginFunctions::pickMode() == CREATE_CUT_POLYLINE) {
+  } else if ( (PluginFunctions::pickMode() == CREATE_CUT_POLYLINE) || (PluginFunctions::pickMode() == CREATE_CUT_POLYLINES) ) {
     planeSelect_->slotMouseEvent(_event);
   }
 }
@@ -266,6 +266,7 @@ slotPickModeChanged( const std::string& _mode)
 {
   polyLineAction_->setChecked(_mode == "PolyLine");
   cutAction_->setChecked( _mode == CREATE_CUT_POLYLINE );
+  cutMultipleAction_->setChecked( _mode == CREATE_CUT_POLYLINES );
 }
 
 
@@ -280,6 +281,7 @@ pluginsInitialized()
   emit addHiddenPickMode("PolyLine");
   emit setPickModeMouseTracking("PolyLine", true);
   emit addHiddenPickMode( CREATE_CUT_POLYLINE );
+  emit addHiddenPickMode( CREATE_CUT_POLYLINES );
 
   emit registerKey(Qt::Key_Return, Qt::NoModifier, tr("Terminate creation of poly line."), true);
   emit registerKey(Qt::Key_Return, Qt::ShiftModifier, tr("Terminate creation of poly line and create loop."), true);
@@ -306,6 +308,14 @@ pluginsInitialized()
   connect(cutAction_, SIGNAL(triggered()), this, SLOT(slotScissorButton()) );
   toolbar_->addAction(cutAction_);
   
+  // icon for polyline cutting of objects
+  cutMultipleAction_ = new QAction(tr("&Create polylines at intersection with plane"), this);
+  cutMultipleAction_->setCheckable( true );
+  cutMultipleAction_->setStatusTip(tr("Create polylines by specifying a plane with which the object is then intersected. The polylines will be created at the intersection."));
+  cutMultipleAction_->setIcon(QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"cut_polylines.png") );
+  connect(cutMultipleAction_, SIGNAL(triggered()), this, SLOT(slotScissorLinesButton()) );
+  toolbar_->addAction(cutMultipleAction_);
+
   connect(toolBarActions_, SIGNAL(triggered(QAction*)), this, SLOT(slotSetPolyLineMode(QAction*)) );
   
   emit addToolbar(toolbar_);
@@ -416,6 +426,17 @@ void PolyLinePlugin::slotScissorButton( )
     PluginFunctions::pickMode( CREATE_CUT_POLYLINE );
 }
 
+//------------------------------------------------------------------------------
+
+/** \brief Scissor Button was hit
+*
+*/
+void PolyLinePlugin::slotScissorLinesButton( )
+{
+    PluginFunctions::actionMode( Viewer::PickingMode );
+    PluginFunctions::pickMode( CREATE_CUT_POLYLINES );
+}
+
 //-----------------------------------------------------------------------------
 
 /** \brief Generate PolyLine after the cutPlane has been drawn
@@ -423,7 +444,8 @@ void PolyLinePlugin::slotScissorButton( )
 */
 void PolyLinePlugin::slotTriggerCutPlaneSelect( )
 {
-    using ACG::SceneGraph::LineNode;
+
+  using ACG::SceneGraph::LineNode;
 
   // Iterate over all selected objects
   BaseObjectData* object;
@@ -438,25 +460,50 @@ void PolyLinePlugin::slotTriggerCutPlaneSelect( )
     ACG::Vec3d point = planeSelect_->getSourcePoint();
     ACG::Vec3d normal = planeSelect_->getNormal();
 
-    int objectId = generatePolyLineFromCut(object->id(), point, normal);
+    if ( PluginFunctions::pickMode() == CREATE_CUT_POLYLINE) {
 
-    QString command = "generatePolyLineFromCut(" + QString::number(object->id()) + ",Vector("
-        + QString::number(point[0]) + "," + QString::number(point[1]) + "," + QString::number(point[2]) + "),Vector("
-        + QString::number(normal[0]) + "," + QString::number(normal[1]) + "," + QString::number(normal[2]) + "));";
-    emit scriptInfo(command);
+      int objectId = generatePolyLineFromCut(object->id(), point, normal);
 
-    //remove all other targets
-    for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,
-         DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH)); o_it != PluginFunctions::objectsEnd(); ++o_it) {
-      if (o_it->id() != object->id()) {
-        o_it->target(false);
+      QString command = "generatePolyLineFromCut(" + QString::number(object->id()) + ",Vector("
+          + QString::number(point[0]) + "," + QString::number(point[1]) + "," + QString::number(point[2]) + "),Vector("
+          + QString::number(normal[0]) + "," + QString::number(normal[1]) + "," + QString::number(normal[2]) + "));";
+      emit scriptInfo(command);
+
+      //remove all other targets
+      for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,
+          DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH)); o_it != PluginFunctions::objectsEnd(); ++o_it) {
+        if (o_it->id() != object->id()) {
+          o_it->target(false);
+        }
       }
+
+      // If we successfully created the polyline, we can inform the core about it.
+      if ( objectId != -1)
+        emit updatedObject(objectId,UPDATE_ALL);
+    } else {
+
+      std::vector <int> objectIds = generatePolyLinesFromCut(object->id(), point, normal);
+
+      QString command = "generatePolyLinesFromCut(" + QString::number(object->id()) + ",Vector("
+          + QString::number(point[0]) + "," + QString::number(point[1]) + "," + QString::number(point[2]) + "),Vector("
+          + QString::number(normal[0]) + "," + QString::number(normal[1]) + "," + QString::number(normal[2]) + "));";
+      emit scriptInfo(command);
+
+      //remove all other targets
+      for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,
+          DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH)); o_it != PluginFunctions::objectsEnd(); ++o_it) {
+        if (o_it->id() != object->id()) {
+          o_it->target(false);
+        }
+      }
+
+      for ( unsigned int i = 0 ; i < objectIds.size() ; ++i ) {
+        // If we successfully created the polyline, we can inform the core about it.
+        if ( objectIds[i] != -1)
+          emit updatedObject(objectIds[i],UPDATE_ALL);
+      }
+
     }
-
-    // If we successfully created the polyline, we can inform the core about it.
-    if ( objectId != -1)
-      emit updatedObject(objectId,UPDATE_ALL);
-
   }
 
 }
@@ -2048,8 +2095,6 @@ void
 PolyLinePlugin::
 slotEnablePickMode(QString _name)
 {
-  std::cerr << "slotEnablePickMode\n";
-
   PluginFunctions::pickMode("PolyLine");
   PluginFunctions::actionMode(Viewer::PickingMode);
 

@@ -242,9 +242,6 @@ private :
     /// Called by Toolbar to enable pick mode
     void slotSetPolyLineMode(QAction* _action);
 
-    /// Called by Toolbar to enable pick mode
-    void slotSetPolyLinesMode(QAction* _action);
-
   /** @} */
 
   //===========================================================================

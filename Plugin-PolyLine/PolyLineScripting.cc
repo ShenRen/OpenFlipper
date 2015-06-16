@@ -119,7 +119,7 @@ int PolyLinePlugin::generatePolyLineFromCut( int _objectId, Vector _planePoint, 
 * @param _planeNormal the normal of the cut plane
 * @return returns the ids of the polyLine
 */
-std::vector<int> PolyLinePlugin::generatePolyLinesFromCut( int _objectId, Vector _planePoint, Vector _planeNormal) {
+IdList PolyLinePlugin::generatePolyLinesFromCut( int _objectId, Vector _planePoint, Vector _planeNormal) {
 
   // List of generated lines
   std::vector<int> lines;

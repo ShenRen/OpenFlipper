@@ -307,7 +307,7 @@ public slots:
   int generatePolyLineFromCut( int _objectId, Vector _planePoint, Vector _planeNormal, int _polyLineId = -1 );
 
   /// Generates a polyLine of a plane intersection
-  std::vector<int> generatePolyLinesFromCut( int _objectId, Vector _planePoint, Vector _planeNormal );
+  IdList generatePolyLinesFromCut( int _objectId, Vector _planePoint, Vector _planeNormal );
 
 private slots:
 

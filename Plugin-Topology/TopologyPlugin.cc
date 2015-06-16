@@ -493,7 +493,7 @@ void TopologyPlugin::split_face(QMouseEvent* _event) {
    unsigned int     target_idx;
    ACG::Vec3d       hit_point;
 
-   BaseObjectData* object;
+   BaseObjectData* object = 0;
    if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),object, target_idx, true, &hit_point)) {
 
        if ( object != 0 ) {

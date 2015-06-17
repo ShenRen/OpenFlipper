@@ -60,6 +60,7 @@
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 
 #include <OpenFlipper/common/DataTypes.hh>
+#include <time.h>
 
 void Core::resetScenegraph( bool _resetTrackBall  ) {
 
@@ -503,7 +504,10 @@ void Core::slotLoad(QString _filename, int _pluginID) {
   }
 
   //load file
+  time_t start = clock();
   int id = supportedTypes()[_pluginID].plugin->loadObject(_filename);
+  time_t end = clock();
+  emit log(LOGINFO,tr("Loading %1 with Plugin %2 took %3 seconds.").arg(_filename).arg(supportedTypes()[_pluginID].name).arg((double)(end-start)/CLOCKS_PER_SEC) );
 
   if ( OpenFlipper::Options::gui() ) {
     if ( id != -1 )

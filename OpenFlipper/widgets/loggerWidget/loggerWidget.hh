@@ -74,7 +74,7 @@ class LoggerWidget : public QWidget
     *
     * Display log message of given logtype
     */
-    void append(QString _text, Logtype _type);
+    void append(const QString& _text, Logtype _type);
     
   protected:
 

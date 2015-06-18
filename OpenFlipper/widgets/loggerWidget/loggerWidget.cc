@@ -69,6 +69,7 @@ LoggerWidget::LoggerWidget( QWidget *parent)
   list_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
   list_->setFocusPolicy(Qt::NoFocus);
   list_->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  list_->setUniformItemSizes(true);
 
   QString path = OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator();
 
@@ -182,7 +183,7 @@ LoggerWidget::~LoggerWidget()
 //-------------------------------------------------------------------------------------
 
 /// Append a new logmessage to log viewer
-void LoggerWidget::append(QString _text, Logtype _type){
+void LoggerWidget::append(const QString& _text, Logtype _type){
  
   list_->addItem(_text);
 
@@ -228,7 +229,7 @@ void LoggerWidget::append(QString _text, Logtype _type){
   }
   
   // If the logger is hidden, we just ignore the update ... done by showEvent later
-  if ( isHidden() ) 
+  if ( isHidden() )
     return;
 
   // Remember that we have new logs to show

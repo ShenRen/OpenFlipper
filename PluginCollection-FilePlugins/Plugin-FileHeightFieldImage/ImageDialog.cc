@@ -76,8 +76,6 @@ ImageDialog::ImageDialog(QImage _image, QWidget *parent) :
 
   setMouseTracking ( true);
 
-  grabMouse();
-
 }
 
 

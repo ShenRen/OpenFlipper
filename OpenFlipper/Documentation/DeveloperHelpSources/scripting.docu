@@ -105,7 +105,7 @@
       decimater.decimate(id,constraints)
     \endcode
  
-  \section scripting_misc Miscellaneuos
+  \section scripting_misc Miscellaneous
      \subsection scripting_misc_path How to get the path of the current script?
        \code
          // The path of the currently executed script is stored in the ScriptPath variable.

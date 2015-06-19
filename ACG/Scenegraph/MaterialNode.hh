@@ -63,7 +63,7 @@
 
 namespace ACG {
 
-QVariantMap json_to_variant_map(QString json);
+QVariantMap ACGDLLEXPORT json_to_variant_map(QString json);
 
 namespace SceneGraph {
 

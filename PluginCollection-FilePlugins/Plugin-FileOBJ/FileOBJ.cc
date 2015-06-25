@@ -48,6 +48,7 @@
 
 #include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
+#include <OpenFlipper/Utils/Memory/RAMInfo.hh>
 
 #if QT_VERSION >= 0x050000 
   #include <QtWidgets>
@@ -63,6 +64,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <ACG/Utils/SmartPointer.hh>
 #include <OpenFlipper/Utils/FileIO/NumberParsing.hh>
 
 // Defines for the type handling drop down box
@@ -561,21 +563,31 @@ void FileOBJPlugin::addTextures(OBJImporter& _importer, int _objectID ){
   }
 }
 
-void FileOBJPlugin::readOBJFile(QString _filename, OBJImporter& _importer)
+void FileOBJPlugin::readOBJFile(QByteArray& _bufferedFile, QString _filename, OBJImporter& _importer)
 {
   QString path = QFileInfo(_filename).absolutePath();
+  ptr::shared_ptr<QTextStream> streamPointer;
+  ptr::shared_ptr<QFile> sourceFile;
 
-  //setup filestream
-
-  QFile sourceFile(_filename);
-  if(!sourceFile.open(QFile::ReadOnly))
+  ////setup filestream if not in memory
+  if (_bufferedFile.isNull())
   {
-    emit log(LOGERR, tr("readOBJFile : cannot open file %1").arg(_filename) );
-    return;
+      sourceFile.reset(new QFile(_filename) );
+	  if(!sourceFile->open(QFile::ReadOnly))
+	  {
+	    emit log(LOGERR, tr("readOBJFile : cannot open file %1").arg(_filename) );
+	    return;
+	  }
+	  //use the QTextStream and QString objects, since they seem to be more efficient when parsing strings.
+	  //especially regarding copy operations.
+      streamPointer.reset( new QTextStream(sourceFile.get()));
   }
-  //use the QTextStream and QString objects, since they seem to be more efficient when parsing strings.
-  //especially regarding copy operations.
-  QTextStream input(&sourceFile);
+  else
+  {
+      streamPointer.reset( new QTextStream(&_bufferedFile));
+  }
+  QTextStream input(streamPointer->device());
+  input.seek(0);
   QTextStream stream;
   QTextStream lineData;
   QTextStream tmp;
@@ -1251,18 +1263,27 @@ void FileOBJPlugin::readOBJFile(QString _filename, OBJImporter& _importer)
 }
 
 ///check file types and read general info like vertices
-void FileOBJPlugin::checkTypes(QString _filename, OBJImporter& _importer, QStringList& _includes)
+void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJImporter& _importer, QStringList& _includes)
 {
-  //setup filestream
-
-  QFile sourceFile(_filename);
-  if(!sourceFile.open(QFile::ReadOnly))
+  ptr::shared_ptr<QTextStream> streamPointer;
+  ptr::shared_ptr<QFile> sourceFile;
+  //setup filestream if not in memory
+  if (_bufferedFile.isNull() || _bufferedFile.isEmpty())
   {
-    emit log(LOGERR, tr("readOBJFile : cannot open file %1 while checking Types").arg(_filename) );
-    return;
-  }
 
-  QTextStream input( &sourceFile );
+    sourceFile.reset(new QFile(_filename));
+    if(!sourceFile->open(QFile::ReadOnly))
+    {
+      emit log(LOGERR, tr("readOBJFile : cannot open file %1 while checking Types").arg(_filename) );
+      return;
+    }
+    streamPointer.reset(new QTextStream(sourceFile.get()));
+  }
+  else
+  {
+    streamPointer.reset(new QTextStream(&_bufferedFile));
+  }
+  QTextStream input(streamPointer->device());
   QTextStream stream;
   QTextStream lineData;
   QTextStream tmp;
@@ -1698,7 +1719,9 @@ void FileOBJPlugin::checkTypes(QString _filename, OBJImporter& _importer, QStrin
   }
 
   if (TriMeshCount == 0 && PolyMeshCount == 0)
+  {
     return;
+  }
 
   if (forceTriangleMesh_){
     _importer.forceMeshType( OBJImporter::TRIMESH );
@@ -1747,6 +1770,7 @@ void FileOBJPlugin::checkTypes(QString _filename, OBJImporter& _importer, QStrin
     }
 
   }
+
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1758,8 +1782,24 @@ int FileOBJPlugin::loadObject(QString _filename) {
   //included filenames
   QStringList includes;
 
+  QFile sourceFile(_filename);
+  if (!sourceFile.open(QFile::ReadOnly))
+  {
+	  emit log(LOGERR, tr("readOBJFile : cannot open file %1 while checking Types").arg(_filename));
+	  return -1;
+  }
+  QByteArray bufferedFile = QByteArray();
+  //load the entire file to ram if we have at least double the size as free memory.
+  //otherwise the bytearray stays null and the file is read when it is processed.
+  unsigned long freeMem = Utils::Memory::queryFreeRAM();
+  unsigned long fs = sourceFile.size() / 1024 / 1024;
+  if (freeMem >= 2*fs)
+  {
+   bufferedFile = sourceFile.readAll();
+  }
+
   //preprocess file and store types in ObjectOptions
-  checkTypes( _filename, importer, includes );
+  checkTypes( bufferedFile, _filename, importer, includes );
 
   IdList objIDs;
 
@@ -1787,7 +1827,7 @@ int FileOBJPlugin::loadObject(QString _filename) {
   }
 
   //then parse the obj
-  readOBJFile( _filename, importer );
+  readOBJFile( bufferedFile, _filename, importer );
 
   // finish up
   importer.finish();
@@ -2021,7 +2061,6 @@ int FileOBJPlugin::loadObject(QString _filename) {
 
 //   if ( topLevelObj )
 //     OpenFlipper::Options::loadingSettings(false);
-
   return returnID;
 }
 

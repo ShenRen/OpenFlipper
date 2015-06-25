@@ -171,10 +171,10 @@ class FileOBJPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
   private:
 
     /// Reader functions
-    void checkTypes(QString _filename, OBJImporter& _importer, QStringList& _includes);
+    void checkTypes(QByteArray& _bufferedFile, QString _filename, OBJImporter& _importer, QStringList& _includes);
 
     bool readMaterial(QString _filename, OBJImporter& _importer);
-    void readOBJFile(QString _filename, OBJImporter& _importer);
+    void readOBJFile(QByteArray& _bufferedFile, QString _filename, OBJImporter& _importer);
     void createAllGroupObjects(OBJImporter& _importer);
     //void addNewObject(OBJImporter& _importer, QString _name );
     template <class MeshT>

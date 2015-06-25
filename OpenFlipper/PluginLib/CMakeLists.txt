@@ -82,10 +82,7 @@ set (directories
   ../INIFile
   ../widgets/glWidget
   ../publicWidgets/objectSelectionWidget
-  ../widgets/filePicker
-  ../Utils/Memory 
-  ../Utils/FileIO
-  ../Utils/Memory/procps
+  ../widgets/filePicker 
 )
 
 # collect all header,source and ui files
@@ -113,9 +110,6 @@ endif ()
 #=======================================================
 # Create library
 #=======================================================
-
-
-add_definitions( -DPROCPS_ENABLED )
 
 if (QT5_FOUND)
   acg_add_library (OpenFlipperPluginLib SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})

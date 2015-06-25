@@ -45,9 +45,34 @@
 #include "MemInfo.hh"
 #include <ACG/GL/gl.hh>
 #include <QtGlobal>
-#include <OpenFlipper/Utils/Memory/RAMInfo.hh>
 
-// GPU Memory information
+// Main Memory information
+#ifdef WIN32
+#elif defined ARCH_DARWIN
+#else
+#include <sys/sysinfo.h>
+//Info class returned by sysinfo
+//struct sysinfo {
+//  long uptime;              /* Sekunden seit dem letzten Systemstart */
+//  unsigned long loads[3];   /* 1, 5 und 15 minütige Systemlast */
+//  unsigned long totalram;   /* nutzbare Hauptspeichergröße */
+//  unsigned long freeram;    /* verfügbare Speichergröße */
+//  unsigned long sharedram;  /* Größe des gemeinsamen Speichers */
+//  unsigned long bufferram;  /* von Puffern benutzter Speicher */
+//  unsigned long totalswap;  /* Größe des Auslagerungsspeichers */
+//  unsigned long freeswap;   /* verfügbarer Auslagerungsspeicher */
+//  unsigned short procs;     /* Aktuelle Prozesszahl */
+//  unsigned long totalhigh;  /* Gesamtgröße des oberen Speicherbereichs */
+//  unsigned long freehigh;   /* verfügbarer oberer Speicherbereich */
+//  unsigned int mem_unit;    /* Größe der Speichereinheit in Byte */
+//  char _f[20-2*sizeof(long)-sizeof(int)]; /* Auffüllung auf 64 bytes */
+//};
+#endif
+
+#if PROCPS_ENABLED
+#include "procps/sysinfo.h"
+#endif
+
 #define GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX   0x9048
 #define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX 0x9049
 
@@ -139,11 +164,43 @@ void MemInfoPlugin::cpuMemoryInfoUpdate() {
 
   if (mainMemBar_) {
 
-    Utils::Memory::MemoryVacancy vac;
-    Utils::Memory::MemoryInfoUpdate(vac);
+    unsigned long totalRamMB   = 0;
+    unsigned long freeRamMB    = 0;
+    unsigned long bufferRamMB  = 0;
 
-    mainMemBar_->setRange(  0 , vac.totalRamMB  );
-    mainMemBar_->setValue( vac.totalRamMB-vac.freeRamMB-vac.bufferRamMB);
+    // Main Memory information
+    #ifdef WIN32 //Windows
+      // Define memory structure
+      MEMORYSTATUSEX ms;
+      // Set the size ( required according to spec ... why???? )
+      ms.dwLength = sizeof (ms);
+      // Get the info
+      GlobalMemoryStatusEx(&ms);
+
+	  totalRamMB = ms.ullTotalPhys/1024/1024;
+      freeRamMB  = ms.ullAvailPhys/1024/1024;
+
+    #elif defined ARCH_DARWIN // Apple
+    #elif PROCPS_ENABLED
+      meminfo();
+      totalRamMB = kb_main_total / 1024;
+      freeRamMB = kb_main_free / 1024;
+      bufferRamMB = (kb_main_buffers + kb_main_cached) / 1024;
+    #else // Linux
+
+      struct sysinfo sys_info;
+      sysinfo(&sys_info);
+
+
+
+      // Unit in bytes ; /1024 -> KB ; /1024 MB
+      totalRamMB  = sys_info.totalram  / 1024 / 1024 * sys_info.mem_unit;
+      freeRamMB   = sys_info.freeram   / 1024 / 1024 * sys_info.mem_unit;
+      bufferRamMB = sys_info.bufferram / 1024 / 1024 * sys_info.mem_unit; // Buffers get freed, if we don't have enough free ram
+    #endif
+
+    mainMemBar_->setRange(  0 , totalRamMB  );
+    mainMemBar_->setValue( totalRamMB-freeRamMB-bufferRamMB);
     setProgressBarStyleSheet(mainMemBar_);
   }
 }

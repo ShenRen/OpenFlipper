@@ -36,6 +36,7 @@
 
 // Main Memory information
 #ifdef WIN32
+#include <Windows.h>
 #elif defined ARCH_DARWIN
 #else
 #include <sys/sysinfo.h>

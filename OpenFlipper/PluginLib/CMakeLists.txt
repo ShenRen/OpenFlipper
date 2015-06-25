@@ -84,6 +84,7 @@ set (directories
   ../publicWidgets/objectSelectionWidget
   ../widgets/filePicker 
   ../Utils/FileIO
+  ../Utils/Memory
 )
 
 # collect all header,source and ui files

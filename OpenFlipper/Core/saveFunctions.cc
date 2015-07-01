@@ -137,8 +137,11 @@ void Core::saveObject( int _id, QString _filename, int _pluginID ) {
       coreWidget_->setStatus(ApplicationStatus::PROCESSING );
   }
 
+  time_t start = clock();
   //save object
   bool ok = supportedTypes()[_pluginID].plugin->saveObject(_id,_filename);
+  time_t end = clock();
+  emit log(LOGINFO,tr("Saving %1 with Plugin %2 took %3 seconds.").arg(_filename).arg(supportedTypes()[_pluginID].name).arg((double)(end-start)/CLOCKS_PER_SEC) );
 
   if ( OpenFlipper::Options::gui() ) {
     if (ok)

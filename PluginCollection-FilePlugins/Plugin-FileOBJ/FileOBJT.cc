@@ -160,7 +160,7 @@ Material& FileOBJPlugin::getMaterial(MeshT& _mesh, const OpenMesh::FaceHandle& _
     } else {
         QString texName;
         emit getCurrentTexture(_objId, texName);
-       // if(texName != "NONE")
+        if(texName != "NONE")
           emit textureIndex(texName, _objId, texIndex);
     }
 

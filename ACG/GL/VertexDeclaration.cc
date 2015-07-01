@@ -516,6 +516,9 @@ const VertexElement* VertexDeclaration::findElementByUsage(VERTEX_USAGE _usage) 
 
 unsigned int VertexDeclaration::getVertexStride(unsigned int i) const
 {
+  if (strideUserDefined_)
+    return vertexStride_;
+
   unsigned int vbo = getElement(i)->vbo_;
   std::map<unsigned int, unsigned int>::const_iterator it = vertexStridesVBO_.find(vbo);
 
@@ -536,6 +539,7 @@ void VertexDeclaration::clear()
   vertexStride_ = 0;
 
   elements_.clear();
+  vertexStridesVBO_.clear();
 }
 
 

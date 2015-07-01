@@ -50,6 +50,7 @@
 #include "OpenFlipper/widgets/loadWidget/loadWidget.hh"
 
 #include <OpenFlipper/common/DataTypes.hh>
+#include <time.h>
 
 //========================================================================================
 // ===  Public Slots (called by CoreWidget's File-Menu / Scripting / Plugins)    =========

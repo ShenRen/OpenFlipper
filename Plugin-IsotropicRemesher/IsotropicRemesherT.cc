@@ -64,7 +64,8 @@ void IsotropicRemesher< MeshT >::remesh( MeshT& _mesh, const double _targetEdgeL
     if (prgEmt_)
       prgEmt_->sendProgressSignal(10*i + 0);
 // std::cerr << "Iteration = " << i << std::endl;
-    splitLongEdges(_mesh, high);
+    for(int j = 0; j<15; j++)
+        splitLongEdges(_mesh, high);
     if (prgEmt_)
       prgEmt_->sendProgressSignal(10*i + 2);
     
@@ -385,7 +386,7 @@ IsotropicRemesher< MeshT >::findNearestPoint(const MeshT&                   _mes
                      pt2,
                      ptn );
 
-      if( d < d_best)
+      if( d < d_best && d >= 0.0)
       {
         d_best = d;
         p_best = ptn;

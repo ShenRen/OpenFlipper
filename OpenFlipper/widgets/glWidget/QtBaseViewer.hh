@@ -831,13 +831,6 @@ private:
                    unsigned int& _targetIdx,
                    ACG::Vec3d*   _hitPointPtr=0 );
 
-    /// pick using selection buffer
-    bool pickGL( ACG::SceneGraph::PickTarget _pickTarget,
-                 const QPoint& _mousePos,
-                 unsigned int& _nodeIdx,
-                 unsigned int& _targetIdx,
-                 ACG::Vec3d*   _hitPointPtr=0 );
-
     /// pick from cache
     int pickFromCache( ACG::SceneGraph::PickTarget _pickTarget,
                        const QPoint& _mousePos,

@@ -85,12 +85,6 @@ bool glViewer::pick( ACG::SceneGraph::PickTarget _pickTarget,
       rv = pickColor (_pickTarget, _mousePos, _nodeIdx, _targetIdx, _hitPointPtr);
 
     // printf ("ColorPicking took %d msec\n",time.restart ());
-    // rv = -1;
-    // node = _nodeIdx;
-    // target = _targetIdx;
-    if (rv < 0)
-      rv = pickGL (_pickTarget, _mousePos, _nodeIdx, _targetIdx, _hitPointPtr);
-    // printf ("GLPicking took %d msec\n",time.restart ());
 
     // if (rv > 0 && (node != _nodeIdx || target != _targetIdx))
     //   printf ("***** Picking difference Color %d/%d GL %d/%d\n",node, target, _nodeIdx, _targetIdx);
@@ -198,6 +192,8 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
   {
     if (pickCache_ && pickCache_->isBound ())
       pickCache_->release ();
+
+    std::cerr << "error - picking color stack invalid" << std::endl;
     return -1;
   }
 
@@ -271,7 +267,10 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
 
   // something wrong with the color stack ?
   if (rv.size () < 2)
+  {
+    std::cerr << "error - picking color not found in stack" << std::endl;
     return -1;
+  }
 
   _nodeIdx   = rv[1];
   _targetIdx = rv[0];
@@ -404,21 +403,6 @@ int glViewer::pickFromCache( ACG::SceneGraph::PickTarget _pickTarget,
   }
 
   return 1;
-}
-
-//-----------------------------------------------------------------------------
-
-bool glViewer::pickGL( ACG::SceneGraph::PickTarget _pickTarget,
-                       const QPoint&               _mousePos,
-                       unsigned int&               _nodeIdx,
-                       unsigned int&               _targetIdx,
-                       ACG::Vec3d*                 _hitPointPtr )
-{
-  ///@TODO: Remove that function alltogether.
-
-  std::cerr << "Error! OpenGL Picking via OpenGL Name stack is not supported anymore." << std::endl;
-
-  return false;
 }
 
 //-----------------------------------------------------------------------------

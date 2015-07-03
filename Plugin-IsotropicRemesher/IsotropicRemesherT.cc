@@ -64,8 +64,8 @@ void IsotropicRemesher< MeshT >::remesh( MeshT& _mesh, const double _targetEdgeL
     if (prgEmt_)
       prgEmt_->sendProgressSignal(10*i + 0);
 // std::cerr << "Iteration = " << i << std::endl;
-    for(int j = 0; j<15; j++)
-        splitLongEdges(_mesh, high);
+
+    splitLongEdges(_mesh, high);
     if (prgEmt_)
       prgEmt_->sendProgressSignal(10*i + 2);
     

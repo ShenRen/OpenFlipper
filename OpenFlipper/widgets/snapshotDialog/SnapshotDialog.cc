@@ -60,7 +60,8 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
   // Disable 'change resolution' button if
   // in viewer snapshot mode
   multisampling->setChecked(captureViewers_);
-  resButton->setDisabled(captureViewers_);
+  changeRes_wdgt->setVisible(!captureViewers_);
+  changeRes_pb->setEnabled(!captureViewers_);
   transparent->setDisabled(!captureViewers_);
   hideCoordsys->setDisabled(!captureViewers_);
   multisampling->setDisabled(!captureViewers_);
@@ -81,7 +82,7 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
 
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()) );
   connect(findButton, SIGNAL(clicked()), this, SLOT(findFile()) );
-  connect(resButton,  SIGNAL(clicked()), this, SLOT(slotChangeResolution()) );
+  connect(changeRes_pb,  SIGNAL(clicked()), this, SLOT(slotChangeResolution()) );
   connect(okButton,  SIGNAL(clicked()), this, SLOT(slotOk()) );
 
   connect(filename, SIGNAL(textChanged(const QString &)), this, SLOT(filenameChanged(const QString &)));

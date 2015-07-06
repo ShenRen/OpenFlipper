@@ -69,6 +69,8 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
   snapWidth->setValue(_w);
   snapHeight->setValue(_h);
   
+  warning_lb->setText("");
+
   // Load button states
   loadStates();
   
@@ -81,6 +83,8 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
   connect(findButton, SIGNAL(clicked()), this, SLOT(findFile()) );
   connect(resButton,  SIGNAL(clicked()), this, SLOT(slotChangeResolution()) );
   connect(okButton,  SIGNAL(clicked()), this, SLOT(slotOk()) );
+
+  connect(filename, SIGNAL(textChanged(const QString &)), this, SLOT(filenameChanged(const QString &)));
 }
 
 void SnapshotDialog::saveStates() {
@@ -184,4 +188,22 @@ void SnapshotDialog::findFile()
 
   if (ok)
     filename->setText( dialog.selectedFiles()[0] );
+}
+
+void SnapshotDialog::filenameChanged(const QString &new_filename) {
+    QFileInfo fi(new_filename);
+    if (!QFileInfo(fi.path()).isWritable()) {
+        static const char *style = "background: #ffffcc;";
+        filename->setStyleSheet(style);
+        warning_lb->setText(trUtf8("Warning: Folder not writable."));
+    } else if (fi.exists()) {
+        static const char *style = "background: #ffcccc;";
+        filename->setStyleSheet(style);
+        warning_lb->setText(trUtf8("Warning: File exists and will be "
+                "overwritten without further warning."));
+    } else {
+        static const char *style = "";
+        filename->setStyleSheet(style);
+        warning_lb->setText("");
+    }
 }

@@ -390,35 +390,107 @@ void CoreWidget::slotExaminerSnapshot() {
   }
 }
 
+static QString suggestSnapshotFilename(QString mostRecentPath) {
+    if (mostRecentPath.isEmpty()) {
+        mostRecentPath = QStringLiteral("%1%2snap.000000.png")
+            .arg(OpenFlipperSettings().value("Core/CurrentDir").toString())
+            .arg(QDir::separator());
+    }
+
+    QFileInfo fi(mostRecentPath);
+    QString path = fi.path();
+
+    if (!fi.exists() && QFileInfo(path).isWritable()) {
+#ifndef NDEBUG
+        std::cout << "suggestSnapshotFilename(): mostRecentPath feasible as "
+                "file name. Using it." << std::endl;
+#endif
+        return mostRecentPath;
+    }
+
+    if (!QFileInfo(path).isWritable()) {
+#ifndef NDEBUG
+        std::cout << "suggestSnapshotFilename(): Most recent path invalid. "
+                "Doesn't exist. Returning empty string." << std::endl;
+#endif
+        return QString::null;
+    }
+
+    QString base_name = fi.completeBaseName();
+    QString suffix = fi.suffix();
+
+    if (suffix.isEmpty())
+        suffix = "png";
+
+    QRegExp base_name_re("(\\D*)(\\d+)?(.*)");
+    base_name_re.setPatternSyntax(QRegExp::RegExp2);
+    if (!base_name_re.exactMatch(base_name)) {
+#ifndef NDEBUG
+        std::cout << "suggestSnapshotFilename(): Regexp didn't match. This "
+            "should be impossible." << std::endl;
+#endif
+        return QString::null;
+    }
+
+    QString pre = base_name_re.cap(1),
+            num = base_name_re.cap(2),
+            post = base_name_re.cap(3);
+
+#ifndef NDEBUG
+    std::cout << (QStringLiteral("suggestSnapshotFilename(): Decomposition of "
+        "\"%1\": \"%2\", \"%3\", \"%4\"")
+            .arg(base_name)
+            .arg(pre)
+            .arg(num)
+            .arg(post)).toStdString() << std::endl;
+#endif
+
+    if (pre.isEmpty() && num.isEmpty() && post.isEmpty()) {
+        pre = "snap.";
+    }
+
+    size_t num_len = num.length();
+    bool num_is_int;
+    int file_no = num.toInt(&num_is_int);
+    if (!num_is_int) {
+        file_no = 0;
+        num_len = 6;
+    }
+
+    size_t sanity_counter = 0;
+    for (; sanity_counter < 100000; ++file_no, ++sanity_counter) {
+        QString suggested_file_name =
+                QStringLiteral("%1%2%3%4%5.%6")
+                .arg(path)
+                .arg(QDir::separator())
+                .arg(pre)
+                .arg(file_no, num_len, 10, QLatin1Char('0'))
+                .arg(post)
+                .arg(suffix)
+                ;
+        QFileInfo suggested_fi(suggested_file_name);
+        if (!suggested_fi.exists()){
+#ifndef NDEBUG
+            std::cout << "suggestSnapshotFilename(): Found a feasible file "
+                    "name. Returning it." << std::endl;
+#endif
+            return suggested_file_name;
+        }
+    }
+
+#ifndef NDEBUG
+    std::cout << "suggestSnapshotFilename(): No luck incrementing file_no. "
+            "Aborting, returning empty string." << std::endl;
+#endif
+    return QString::null;
+}
+
 ///Take a snapshot of the whole application
 void CoreWidget::applicationSnapshotDialog() {
-
-  QFileInfo fi(snapshotName_);
-  
-  if (snapshotName_ == "")
-    fi.setFile( OpenFlipperSettings().value("Core/CurrentDir").toString() + QDir::separator() + "snap.png" );
-
-  // Add leading zeros
-  QString number = QString::number(snapshotCounter_);
-  while ( number.size() < 7 )
-    number = "0" + number;
-
-  QString suggest = fi.path() + QDir::separator() + fi.baseName() + "." + number + ".";
-
-  QString format="png";
-
-  if (fi.completeSuffix() == "ppm")
-    format="ppmraw";
-
-  if (fi.completeSuffix() == "jpg")
-    format="jpg";
-
-  suggest += format;
-
   int w = width();
   int h = height();
 
-  SnapshotDialog dialog(suggest, false, w, h, 0);
+  SnapshotDialog dialog(suggestSnapshotFilename(snapshotName_), false, w, h, 0);
   
   connect(&dialog, SIGNAL(resizeApplication(int,int)), this, SIGNAL(resizeApplication(int,int)) );
 
@@ -427,14 +499,9 @@ void CoreWidget::applicationSnapshotDialog() {
   if ( ok ){
     QString newName = dialog.filename->text();
 
-    if (newName != suggest){
+    OpenFlipperSettings().setValue("Core/CurrentDir", QFileInfo(newName).absolutePath() );
       
-      OpenFlipperSettings().setValue("Core/CurrentDir", QFileInfo(newName).absolutePath() );
-      
-      snapshotName_ = newName;
-      snapshotCounter_ = 1;
-    }else
-      snapshotCounter_++;
+    snapshotName_ = newName;
 
     //grabs only the widget (espacially in windows)
     //todo: deprecated in QT 5.0, use QScreen instead
@@ -465,61 +532,17 @@ void CoreWidget::applicationSnapshotDialog() {
 
 ///Take a snapshot of the whole application
 void CoreWidget::applicationSnapshot() {
-
-  QFileInfo fi(snapshotName_);
-
-  // Add leading zeros
-  QString number = QString::number(snapshotCounter_++);
-  while ( number.size() < 7 )
-    number = "0" + number;
-
-  QString suggest = fi.path() + QDir::separator() +fi.baseName() + "." + number + ".";
-
-  QString format="png";
-
-  if (fi.completeSuffix() == "ppm")
-    format="ppmraw";
-
-  if (fi.completeSuffix() == "jpg")
-    format="jpg";
-
-  suggest += format;
-
   // Write image asynchronously
   QImage* pic = new QImage(QPixmap::grabWindow( winId() ).toImage());
-  writeImageAsynchronously(pic, suggest);
+  writeImageAsynchronously(pic, suggestSnapshotFilename(snapshotName_));
 }
-
 
 ///Take a snapshot of all viewers
 void CoreWidget::viewerSnapshotDialog() {
-
-  QFileInfo fi(snapshotName_);
-  
-  if (snapshotName_ == "")
-    fi.setFile( OpenFlipperSettings().value("Core/CurrentDir").toString() + QDir::separator() + "snap.png" );
-
-  // Add leading zeros
-  QString number = QString::number(snapshotCounter_);
-  while ( number.size() < 7 )
-    number = "0" + number;
-
-  QString suggest = fi.path() + QDir::separator() + fi.baseName() + "." + number + ".";
-
-  QString format="png";
-
-  if (fi.completeSuffix() == "ppm")
-    format="ppmraw";
-
-  if (fi.completeSuffix() == "jpg")
-    format="jpg";
-
-  suggest += format;
-
   int w = glView_->width();
   int h = glView_->height();
   
-  SnapshotDialog dialog(suggest, true, w, h, 0);
+  SnapshotDialog dialog(suggestSnapshotFilename(snapshotName_), true, w, h, 0);
 
   if (!ACG::SceneGraph::Material::support_json_serialization())
       dialog.metaData_storeMatInfo_cb->setVisible(false);
@@ -529,16 +552,10 @@ void CoreWidget::viewerSnapshotDialog() {
   if (ok){
     QString newName = dialog.filename->text();
 
-    if (newName != suggest){
+    OpenFlipperSettings().setValue("Core/CurrentDir", QFileInfo(newName).absolutePath() );
       
-      OpenFlipperSettings().setValue("Core/CurrentDir", QFileInfo(newName).absolutePath() );
+    snapshotName_ = newName;
       
-      snapshotName_ = newName;
-      snapshotCounter_ = 1;
-      
-    }else
-      snapshotCounter_++;
-    
     QString comments;
     if (dialog.metaData_storeComments_cb->isChecked()) {
         comments = PluginFunctions::collectObjectComments(
@@ -719,27 +736,7 @@ void CoreWidget::viewerSnapshotDialog() {
 ///Take a snapshot of all viewers
 void CoreWidget::viewerSnapshot() {
 
-  QFileInfo fi(snapshotName_);
-
-  // Add leading zeros
-  QString number = QString::number(snapshotCounter_++);
-  while ( number.size() < 7 )
-    number = "0" + number;
-
-  QString suggest = fi.path() + QDir::separator() +fi.baseName() + "." + number + ".";
-
-  QString format="png";
-
-  if (fi.completeSuffix() == "ppm")
-    format="ppmraw";
-
-  if (fi.completeSuffix() == "jpg")
-    format="jpg";
-
-  suggest += format;
-
-
-  switch ( baseLayout_->mode() ){
+    switch ( baseLayout_->mode() ){
 
     case QtMultiViewLayout::SingleView:
     {
@@ -747,7 +744,7 @@ void CoreWidget::viewerSnapshot() {
 
       examiner_widgets_[PluginFunctions::activeExaminer()]->snapshot(*finalImage);
 
-      writeImageAsynchronously(finalImage, suggest);
+      writeImageAsynchronously(finalImage, suggestSnapshotFilename(snapshotName_));
 
       break;
     }
@@ -769,7 +766,7 @@ void CoreWidget::viewerSnapshot() {
     	painter.drawImage(QRectF(img[0].width()+2,         0, img[1].width(), img[1].height()),img[1],
     	              		QRectF(           0,             0, img[1].width(), img[1].height()) );
 
-    	writeImageAsynchronously(finalImage, suggest);
+    	writeImageAsynchronously(finalImage, suggestSnapshotFilename(snapshotName_));
 
     	break;
     }
@@ -798,7 +795,7 @@ void CoreWidget::viewerSnapshot() {
       painter.drawImage(QRectF(img0.width()+2, img0.height()+2, img3.width(), img3.height()),img3,
                         QRectF(           0,             0, img3.width(), img3.height()) );
 
-      writeImageAsynchronously(finalImage, suggest);
+      writeImageAsynchronously(finalImage, suggestSnapshotFilename(snapshotName_));
 
       break;
     }
@@ -826,7 +823,7 @@ void CoreWidget::viewerSnapshot() {
       painter.drawImage(QRectF(img0.width()+2, img1.height()+img2.height()+4, img3.width(),img3.height()),img3,
                         QRectF(           0,             0, img3.width(), img3.height()) );
 
-      writeImageAsynchronously(finalImage, suggest);
+      writeImageAsynchronously(finalImage, suggestSnapshotFilename(snapshotName_));
 
       break;
     }
@@ -836,9 +833,7 @@ void CoreWidget::viewerSnapshot() {
 }
 
 void CoreWidget::applicationSnapshotName(QString _name) {
-
   snapshotName_ = _name;
-  snapshotCounter_ = 0;
 }
 
 

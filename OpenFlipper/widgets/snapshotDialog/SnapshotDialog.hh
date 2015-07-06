@@ -74,6 +74,8 @@ class SnapshotDialog : public QDialog, public Ui::SnapshotDialog
     void saveStates();
     void loadStates();
 
+    void filenameChanged(const QString &new_filename);
+
   signals:
     void resizeApplication(int _width, int _height);
 };

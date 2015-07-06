@@ -291,7 +291,8 @@ public:
       if saved, the old window size will be written into _windowSize
       \note QSize(0,0) indicates that the window is maximized.
    */
-  void encodeView(QString& _view, const QSize& _windowSize = QSize(-1,-1), const int _toolBarWidth = -1);
+  void encodeView(QString& _view, const QSize& _windowSize = QSize(-1,-1),
+          const int _toolBarWidth = -1, const bool _make_c_string = false);
 
   /** Decode text representation of view encoded by encodeView() into
       the supplied output parameters.
@@ -403,7 +404,8 @@ public slots:
   /** if you want to save the windowSize, use the parameter
       \note QSize(0,0) indicates that the window is maximized
    */
-  void actionCopyView(const QSize &_windowSize = QSize(-1,-1), const int _splitterWidth = -1);
+  void actionCopyView(const QSize &_windowSize = QSize(-1,-1), const int _splitterWidth = -1,
+          const bool _make_c_string = false);
 
   void actionSetView(QString view);
 

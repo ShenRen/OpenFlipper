@@ -1149,30 +1149,43 @@ void glViewer::moveEvent (QGraphicsSceneMoveEvent *)
 
 //-----------------------------------------------------------------------------
 
-void glViewer::encodeView(QString& _view, const QSize& _windowSize /*= QSize()*/, const int _splitterWidth /*=-1*/)
+void glViewer::encodeView(QString& _view, const QSize& _windowSize /*= QSize()*/,
+        const int _splitterWidth /*=-1*/, const bool _make_c_string /*= false*/)
 {
   // Get current matrices
   const ACG::GLMatrixd m = glstate_->modelview();
   const ACG::GLMatrixd p = glstate_->projection();
 
+  static const char *line_delim_c = " \\\n";
+  static const char *line_delim_std = line_delim_c + 2;
+  const char *line_delim = _make_c_string ? line_delim_c : line_delim_std;
+
+  if (_make_c_string)
+      _view += "\"";
+
   // Add modelview matrix to output
-  _view += QString(COPY_PASTE_VIEW_START_STRING) + "\n";
-  _view += QString::number(m(0,0)) + " " + QString::number(m(0,1)) + " " + QString::number(m(0,2)) + " " + QString::number(m(0,3)) + "\n";
-  _view += QString::number(m(1,0)) + " " + QString::number(m(1,1)) + " " + QString::number(m(1,2)) + " " + QString::number(m(1,3)) + "\n";
-  _view += QString::number(m(2,0)) + " " + QString::number(m(2,1)) + " " + QString::number(m(2,2)) + " " + QString::number(m(2,3)) + "\n";
-  _view += QString::number(m(3,0)) + " " + QString::number(m(3,1)) + " " + QString::number(m(3,2)) + " " + QString::number(m(3,3)) + "\n";
+  _view += QString(COPY_PASTE_VIEW_START_STRING) + line_delim;
+  _view += QString::number(m(0,0)) + " " + QString::number(m(0,1)) + " " + QString::number(m(0,2)) + " " + QString::number(m(0,3)) + line_delim;
+  _view += QString::number(m(1,0)) + " " + QString::number(m(1,1)) + " " + QString::number(m(1,2)) + " " + QString::number(m(1,3)) + line_delim;
+  _view += QString::number(m(2,0)) + " " + QString::number(m(2,1)) + " " + QString::number(m(2,2)) + " " + QString::number(m(2,3)) + line_delim;
+  _view += QString::number(m(3,0)) + " " + QString::number(m(3,1)) + " " + QString::number(m(3,2)) + " " + QString::number(m(3,3)) + line_delim;
 
   // Add projection matrix to output
-  _view += QString::number(p(0,0)) + " " + QString::number(p(0,1)) + " " + QString::number(p(0,2)) + " " + QString::number(p(0,3)) + "\n";
-  _view += QString::number(p(1,0)) + " " + QString::number(p(1,1)) + " " + QString::number(p(1,2)) + " " + QString::number(p(1,3)) + "\n";
-  _view += QString::number(p(2,0)) + " " + QString::number(p(2,1)) + " " + QString::number(p(2,2)) + " " + QString::number(p(2,3)) + "\n";
-  _view += QString::number(p(3,0)) + " " + QString::number(p(3,1)) + " " + QString::number(p(3,2)) + " " + QString::number(p(3,3)) + "\n";
+  _view += QString::number(p(0,0)) + " " + QString::number(p(0,1)) + " " + QString::number(p(0,2)) + " " + QString::number(p(0,3)) + line_delim;
+  _view += QString::number(p(1,0)) + " " + QString::number(p(1,1)) + " " + QString::number(p(1,2)) + " " + QString::number(p(1,3)) + line_delim;
+  _view += QString::number(p(2,0)) + " " + QString::number(p(2,1)) + " " + QString::number(p(2,2)) + " " + QString::number(p(2,3)) + line_delim;
+  _view += QString::number(p(3,0)) + " " + QString::number(p(3,1)) + " " + QString::number(p(3,2)) + " " + QString::number(p(3,3)) + line_delim;
 
   // add gl width/height, current projection Mode and the ortho mode width to output
-  _view += QString::number(_windowSize.width()) + " " +  QString::number(_windowSize.height()) + " "  + QString::number(_splitterWidth)+ " " + QString::number(projectionMode_) + " " + QString::number(properties_.orthoWidth()) + "\n";
+  _view += QString::number(_windowSize.width()) + " " +  QString::number(_windowSize.height()) + " "  + QString::number(_splitterWidth)+ " " + QString::number(projectionMode_) + " " + QString::number(properties_.orthoWidth()) + line_delim;;
 
   // Add viewer size
-  _view += QString::fromUtf8("%1 %2\n").arg(size().width()).arg(size().height());
+  _view += QString::fromUtf8("%1 %2").arg(size().width()).arg(size().height());
+
+  if (_make_c_string)
+      _view += "\"";
+
+  _view += "\n";
 }
 
 
@@ -1320,10 +1333,11 @@ bool glViewer::decodeView(const QString& _view, QSize *_windowSize /*= NULL*/,
 //-----------------------------------------------------------------------------
 
 
-void glViewer::actionCopyView(const QSize &_windowSize /*= QSize(-1,-1)*/, const int _splitterWidth /*= -1*/)
+void glViewer::actionCopyView(const QSize &_windowSize /*= QSize(-1,-1)*/, const int _splitterWidth /*= -1*/,
+        const bool _make_c_string /*= false*/)
 {
   QString view;
-  encodeView(view,_windowSize,_splitterWidth);
+  encodeView(view,_windowSize,_splitterWidth, _make_c_string);
   QApplication::clipboard()->setText(view);
 }
 

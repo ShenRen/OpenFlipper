@@ -410,7 +410,7 @@ void CoreWidget::updatePopupMenuCoordsysNode(QMenu* _menu  , const int /*_part*/
   //====================================================================================================
 
   QAction* copyView = _menu->addAction(tr("Copy View"));
-  copyView->setToolTip(tr("Copy current view, window size and toolbar size to clipboard"));
+  copyView->setToolTip(tr("Copy current view, window size and toolbar size to clipboard. Hold Ctrl to generate C/C++/JavaScipt-Style string."));
   copyView->setIcon( QIcon(iconPath+"edit-copy.png") );
   connect(copyView, SIGNAL(triggered()), this, SLOT(slotCopyView()) );
 

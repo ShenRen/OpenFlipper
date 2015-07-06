@@ -1009,7 +1009,9 @@ void CoreWidget::slotCopyView( ) {
   else
     splitter_size = toolSplitter_->sizes()[0];
 
-  examiner_widgets_[PluginFunctions::activeExaminer()]->actionCopyView(size,splitter_size);
+  const bool make_c_string = (QApplication::keyboardModifiers() & Qt::ControlModifier);
+  examiner_widgets_[PluginFunctions::activeExaminer()]->actionCopyView(
+          size, splitter_size, make_c_string);
 }
 
 void CoreWidget::slotCoordSysVisibility(bool _visible){

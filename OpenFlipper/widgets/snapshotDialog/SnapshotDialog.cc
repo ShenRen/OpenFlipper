@@ -75,6 +75,10 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
   // Load button states
   loadStates();
   
+  if (keepAspect->isChecked()) {
+      snapHeight->setValue((int)((double)snapWidth->value() / aspect_));
+  }
+
   connect(snapWidth,  SIGNAL(valueChanged(int)), this, SLOT(snapWidthChanged(int)) );
   connect(snapHeight, SIGNAL(valueChanged(int)), this, SLOT(snapHeightChanged(int)) );
   connect(keepAspect, SIGNAL(stateChanged(int)), this, SLOT(keepAspectChanged()) );
@@ -136,7 +140,7 @@ void SnapshotDialog::keepAspectChanged() {
 
     if(keepAspect->isChecked()) {
         blockSpinBox_ = true;
-	snapHeight->setValue((int)((double)snapWidth->value() / aspect_));
+        snapHeight->setValue((int)((double)snapWidth->value() / aspect_));
         blockSpinBox_ = false;
     }
 }

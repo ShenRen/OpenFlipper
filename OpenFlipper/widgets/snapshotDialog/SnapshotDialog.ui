@@ -146,7 +146,7 @@
        </layout>
       </item>
       <item>
-       <widget class="QWidget" name="widget_2" native="true">
+       <widget class="QWidget" name="changeRes_wdgt" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <property name="margin">
           <number>0</number>
@@ -165,7 +165,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="resButton">
+          <widget class="QPushButton" name="changeRes_pb">
            <property name="toolTip">
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -419,7 +419,7 @@ Allowed values: any number between 2 and 16.</string>
   <tabstop>snapWidth</tabstop>
   <tabstop>snapHeight</tabstop>
   <tabstop>keepAspect</tabstop>
-  <tabstop>resButton</tabstop>
+  <tabstop>changeRes_pb</tabstop>
   <tabstop>transparent</tabstop>
   <tabstop>hideCoordsys</tabstop>
   <tabstop>multisampling</tabstop>

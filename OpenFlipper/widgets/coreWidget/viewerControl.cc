@@ -392,7 +392,7 @@ void CoreWidget::slotExaminerSnapshot() {
 
 static QString suggestSnapshotFilename(QString mostRecentPath) {
     if (mostRecentPath.isEmpty()) {
-        mostRecentPath = QStringLiteral("%1%2snap.000000.png")
+        mostRecentPath = QString("%1%2snap.000000.png")
             .arg(OpenFlipperSettings().value("Core/CurrentDir").toString())
             .arg(QDir::separator());
     }
@@ -437,7 +437,7 @@ static QString suggestSnapshotFilename(QString mostRecentPath) {
             post = base_name_re.cap(3);
 
 #ifndef NDEBUG
-    std::cout << (QStringLiteral("suggestSnapshotFilename(): Decomposition of "
+    std::cout << (QString("suggestSnapshotFilename(): Decomposition of "
         "\"%1\": \"%2\", \"%3\", \"%4\"")
             .arg(base_name)
             .arg(pre)
@@ -460,7 +460,7 @@ static QString suggestSnapshotFilename(QString mostRecentPath) {
     size_t sanity_counter = 0;
     for (; sanity_counter < 100000; ++file_no, ++sanity_counter) {
         QString suggested_file_name =
-                QStringLiteral("%1%2%3%4%5.%6")
+                QString("%1%2%3%4%5.%6")
                 .arg(path)
                 .arg(QDir::separator())
                 .arg(pre)

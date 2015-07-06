@@ -183,8 +183,6 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
         </layout>
-        <zorder>horizontalSpacer_4</zorder>
-        <zorder>resButton</zorder>
        </widget>
       </item>
      </layout>

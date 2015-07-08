@@ -392,7 +392,7 @@ void CoreWidget::slotExaminerSnapshot() {
 
 static QString suggestSnapshotFilename(QString mostRecentPath) {
     if (mostRecentPath.isEmpty()) {
-        mostRecentPath = QString("%1%2snap.000000.png")
+        mostRecentPath = QString("%1%2snap.0000000.png")
             .arg(OpenFlipperSettings().value("Core/CurrentDir").toString())
             .arg(QDir::separator());
     }

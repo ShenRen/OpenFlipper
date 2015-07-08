@@ -247,14 +247,6 @@ draw(GLState&  _state  , const DrawModes::DrawMode& _drawMode)
         GLboolean blendb;
         glGetBooleanv( GL_BLEND, &blendb);
         glEnable(GL_BLEND);
-
-        // blend func to blend alpha values of lines
-        GLint sblendfunc;
-        GLint dblendfunc;
-        glGetIntegerv( GL_BLEND_SRC_ALPHA, &sblendfunc );
-        glGetIntegerv( GL_BLEND_DST_ALPHA, &dblendfunc );
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
         // blend ontop of prev. drawn mesh
         GLboolean depthmaskb;
         glGetBooleanv( GL_DEPTH_WRITEMASK, &depthmaskb);
@@ -289,9 +281,6 @@ draw(GLState&  _state  , const DrawModes::DrawMode& _drawMode)
         // disable blending of lines
         if( blendb == GL_FALSE )
           glDisable(GL_BLEND);
-
-        // reset blend func
-        glBlendFunc( sblendfunc, dblendfunc );
 
         // enable depth mask
         if( depthmaskb == GL_TRUE )

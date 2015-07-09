@@ -390,7 +390,7 @@ void DepthPeeling::renderFrontPeeling(ACG::GLState* _glState,
       glEnable(GL_BLEND);
 
       glBlendEquation(GL_FUNC_ADD);
-      glBlendFuncSeparate(GL_DST_ALPHA, GL_ONE,
+      ACG::GLState::blendFuncSeparate(GL_DST_ALPHA, GL_ONE,
         GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
 
 
@@ -651,7 +651,7 @@ void DepthPeeling::renderDualPeeling(ACG::GLState* _glState, Viewer::ViewerPrope
       glDrawBuffer(colorBlendTarget);
 
       glBlendEquationEXT(GL_FUNC_ADD);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      ACG::GLState::blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
       // bind back color texture to slot 0
       glActiveTexture(GL_TEXTURE0);

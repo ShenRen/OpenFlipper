@@ -125,8 +125,8 @@ public:
   // iff a bit is set for a state, it is enabled in OpenGL
   std::bitset<0xFFFF+1> glStateEnabled_;
 
-  // element 0: sfactor, 1: dfactor
-  GLenum blendFuncState_[2];
+  // element 0: sfactor, 1: dfactor, 2 : alpha_sfactor, 3 : alpha_dfactor
+  GLenum blendFuncState_[4];
 
   GLenum blendEquationState_;
 
@@ -287,17 +287,35 @@ public:
 
 
   /// replaces glBlendFunc, supports locking
-  static void blendFunc(GLenum _sfactor, GLenum _dfactor);
+  static void blendFunc(GLenum _sfactor, GLenum _dfactor) { blendFuncSeparate(_sfactor, _dfactor, _sfactor, _dfactor); }
 
   /// get blend function, null-ptr safe
-  static void getBlendFunc(GLenum* _sfactor, GLenum* _dfactor);
+  static void getBlendFunc(GLenum* _sfactor, GLenum* _dfactor) { getBlendFuncSeparate(_sfactor, _dfactor, 0, 0); }
 
   /// lock blend func
-  static void lockBlendFunc() {blendFuncLock_ = true;}
+  static void lockBlendFunc() { lockBlendFuncSeparate(); }
   /// unlock blend func
-  static void unlockBlendFunc() {blendFuncLock_ = false;}
+  static void unlockBlendFunc() { unlockBlendFuncSeparate(); }
   /// get blend func locking state
-  static bool isBlendFuncLocked() {return blendFuncLock_;}
+  static bool isBlendFuncLocked() {return isBlendFuncSeparateLocked();}
+
+
+
+  /// replaces glBlendFuncSeparate, supports locking
+  static void blendFuncSeparate(GLenum _srcRGB, GLenum _dstRGB, GLenum _srcAlpha, GLenum _dstAlpha);
+
+  /// get blend function, null-ptr safe
+  static void getBlendFuncSeparate(GLenum* _srcRGB, GLenum* _dstRGB, GLenum* _srcAlpha, GLenum* _dstAlpha);
+
+  /// lock blend func
+  static void lockBlendFuncSeparate(bool _rgb = true, bool _alpha = true) { blendFuncSeparateLock_[0] = _rgb; blendFuncSeparateLock_[1] = _alpha; }
+  /// unlock blend func
+  static void unlockBlendFuncSeparate() { lockBlendFuncSeparate(false, false); }
+  /// get blend func locking state
+  static bool isBlendFuncSeparateLocked() { return blendFuncSeparateLock_[0] || blendFuncSeparateLock_[1]; }
+  static bool isBlendFuncSeparateColorLocked() { return blendFuncSeparateLock_[0]; }
+  static bool isBlendFuncSeparateAlphaLocked() { return blendFuncSeparateLock_[1]; }
+
 
   /// replaces glBlendEquation, supports locking
   static void blendEquation(GLenum _mode);
@@ -1197,7 +1215,7 @@ private: //--------------------------------------------------------------------
   // iff a bit is set for a state, it is locked
   static std::bitset<0xFFFF+1> glStateLock_;
 
-  static bool blendFuncLock_;
+  static bool blendFuncSeparateLock_[2];
   static bool blendEquationLock_;
   static bool blendColorLock_;
   static bool alphaFuncLock_;

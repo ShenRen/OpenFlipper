@@ -2316,9 +2316,15 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
 
       glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+      // adjust blend function for alpha channel
+      ACG::GLState::blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_ONE);
+      ACG::GLState::lockBlendFuncSeparate(false, true);
+
       glEnable(GL_MULTISAMPLE);
       paintGL();
       glFinish();
+
+      ACG::GLState::unlockBlendFuncSeparate();
 
       glDisable(GL_MULTISAMPLE);
 
@@ -2342,26 +2348,6 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
       glReadPixels(0,0,w,h,GL_BGRA,GL_UNSIGNED_INT_8_8_8_8_REV,reinterpret_cast<void*>(_image.bits()));
       _image = _image.mirrored(false,true);//convert from opengl to qt coordinates
 
-      if (_alpha)
-      {
-        QRgb backRGBA = qRgba(int(newBack[0] * 255.0f), int(newBack[1] * 255.0f), int(newBack[2] * 255.0f), 0);
-
-        // fix alpha channel
-        for (int i = 0; i < _image.width(); ++i)
-        {
-          for (int k = 0; k < _image.height(); ++k)
-          {
-            QRgb pix = _image.pixel(i, k);
-
-            // snap alpha channel to 255 for pixels different from the background color
-            if (pix != backRGBA)
-              pix |= 0xff000000;
-
-            _image.setPixel(i, k, pix);
-          }
-        }
-      }
-      
 
       //cleanup
       ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, prevFbo);

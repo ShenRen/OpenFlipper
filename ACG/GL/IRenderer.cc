@@ -922,7 +922,7 @@ void IRenderer::bindObjectRenderStates(ACG::RenderObject* _obj)
 
   //  ACG::GLState::shadeModel(_obj->shadeModel);
 
-  glBlendFunc(_obj->blendSrc, _obj->blendDest);
+  ACG::GLState::blendFunc(_obj->blendSrc, _obj->blendDest);
 }
 
 void IRenderer::drawObject(ACG::RenderObject* _obj)
@@ -1518,7 +1518,7 @@ void IRenderer::renderLineThicknessGL42()
 
     // enable alpha blending
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    ACG::GLState::blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     GLSL::Program* shaderComposite = ShaderCache::getInstance()->getProgram("ScreenQuad/screenquad.glsl", "Wireframe/gl42/composite.glsl", &macros);
 

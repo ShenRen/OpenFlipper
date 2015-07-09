@@ -668,11 +668,11 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
     ro.setMaterial(_mat);
 
 
-    ro.shaderDesc.vertexTemplateFile = ""; //QString(props->vertexShader().c_str());
-    ro.shaderDesc.geometryTemplateFile = ""; //QString(props->geometryShader().c_str());
-    ro.shaderDesc.fragmentTemplateFile = ""; //QString(props->fragmentShader().c_str());
+    ro.shaderDesc.vertexTemplateFile.clear(); //QString(props->vertexShader().c_str());
+    ro.shaderDesc.geometryTemplateFile.clear(); //QString(props->geometryShader().c_str());
+    ro.shaderDesc.fragmentTemplateFile.clear(); //QString(props->fragmentShader().c_str());
 
-    ro.shaderDesc.vertexColorsInterpolator = "";
+    ro.shaderDesc.vertexColorsInterpolator.clear();
 
     // ------------------------
     // 1. setup drawMesh based on property source
@@ -894,7 +894,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
 
         add_face_RenderObjects(_renderer, &ro, useNonIndexed);
 
-        ro.shaderDesc.vertexColorsInterpolator = "";
+        ro.shaderDesc.vertexColorsInterpolator.clear();
       } break;
     default: break;
     }

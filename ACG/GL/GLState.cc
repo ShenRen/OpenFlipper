@@ -76,7 +76,7 @@ const float    GLState::default_shininess(100.f);
 
 bool GLState::depthFuncLock_ = false;
 bool GLState::depthRangeLock_ = false;
-bool GLState::blendFuncLock_ = false;
+bool GLState::blendFuncSeparateLock_[2] = { false };
 bool GLState::blendEquationLock_ = false;
 bool GLState::blendColorLock_ = false;
 bool GLState::alphaFuncLock_ = false;
@@ -1335,11 +1335,26 @@ void GLState::syncFromGL()
   }
   
   GLint getparam;
+
+#ifdef GL_VERSION_1_4
+  glGetIntegerv(GL_BLEND_SRC_RGB, &getparam);
+  stateStack_.back().blendFuncState_[0] = getparam;
+
+  glGetIntegerv(GL_BLEND_DST_ALPHA, &getparam);
+  stateStack_.back().blendFuncState_[1] = getparam;
+
+  glGetIntegerv(GL_BLEND_SRC_ALPHA, &getparam);
+  stateStack_.back().blendFuncState_[2] = getparam;
+
+  glGetIntegerv(GL_BLEND_DST_ALPHA, &getparam);
+  stateStack_.back().blendFuncState_[3] = getparam;
+#else
   glGetIntegerv(GL_BLEND_SRC, &getparam);
   stateStack_.back().blendFuncState_[0] = getparam;
 
   glGetIntegerv(GL_BLEND_DST, &getparam);
   stateStack_.back().blendFuncState_[1] = getparam;
+#endif
 
 
   glGetIntegerv(GL_BLEND_EQUATION_RGB, &getparam);
@@ -1583,25 +1598,55 @@ bool GLState::isClientStateEnabled(GLenum _cap)
 //-----------------------------------------------------------------------------
 // blending functions
 
-void GLState::blendFunc(GLenum _sfactor, GLenum _dfactor)
+void GLState::blendFuncSeparate(GLenum _srcRGB, GLenum _dstRGB, GLenum _srcAlpha, GLenum _dstAlpha)
 {
-  if (!blendFuncLock_)
+  // fix parameters according to lock status
+  if (blendFuncSeparateLock_[0])
+  {
+    _srcRGB = stateStack_.back().blendFuncState_[0];
+    _dstRGB = stateStack_.back().blendFuncState_[1];
+  }
+
+  if (blendFuncSeparateLock_[1])
+  {
+    _srcAlpha = stateStack_.back().blendFuncState_[2];
+    _dstAlpha = stateStack_.back().blendFuncState_[3];
+  }
+
+  if (!blendFuncSeparateLock_[0] || !blendFuncSeparateLock_[1])
   {
 #ifdef GLSTATE_AVOID_REDUNDANT_GLCALLS
-    if (stateStack_.back().blendFuncState_[0] != _sfactor || stateStack_.back().blendFuncState_[1] != _dfactor)
+    if (stateStack_.back().blendFuncState_[0] != _srcRGB || stateStack_.back().blendFuncState_[1] != _dstRGB ||
+      stateStack_.back().blendFuncState_[2] != _srcAlpha || stateStack_.back().blendFuncState_[3] != _dstAlpha)
 #endif
     {
-      glBlendFunc(_sfactor, _dfactor);
-      stateStack_.back().blendFuncState_[0] = _sfactor;
-      stateStack_.back().blendFuncState_[1] = _dfactor;
+#ifdef GL_VERSION_1_4
+      // check if glew has loaded glBlendFuncSeparate already
+      if (glBlendFuncSeparate)
+        glBlendFuncSeparate(_srcRGB, _dstRGB, _srcAlpha, _dstAlpha);
+      else
+        glBlendFunc(_srcRGB, _dstRGB);
+      stateStack_.back().blendFuncState_[0] = _srcRGB;
+      stateStack_.back().blendFuncState_[1] = _dstRGB;
+      stateStack_.back().blendFuncState_[2] = _srcAlpha;
+      stateStack_.back().blendFuncState_[3] = _dstAlpha;
+#else
+      glBlendFunc(_srcRGB, _dstRGB);
+      stateStack_.back().blendFuncState_[0] = _srcRGB;
+      stateStack_.back().blendFuncState_[1] = _dstRGB;
+      stateStack_.back().blendFuncState_[2] = _srcRGB;
+      stateStack_.back().blendFuncState_[3] = _dstRGB;
+#endif
     }
   }
 }
 
-void GLState::getBlendFunc(GLenum* _sfactor, GLenum* _dfactor)
+void GLState::getBlendFuncSeparate(GLenum* _srcRGB, GLenum* _dstRGB, GLenum* _srcAlpha, GLenum* _dstAlpha)
 {
-  if (_sfactor) *_sfactor = stateStack_.back().blendFuncState_[0];
-  if (_dfactor) *_dfactor = stateStack_.back().blendFuncState_[1];
+  if (_srcRGB) *_srcRGB = stateStack_.back().blendFuncState_[0];
+  if (_dstRGB) *_dstRGB = stateStack_.back().blendFuncState_[1];
+  if (_srcAlpha) *_srcAlpha = stateStack_.back().blendFuncState_[2];
+  if (_dstAlpha) *_dstAlpha = stateStack_.back().blendFuncState_[3];
 }
 
 void GLState::blendEquation(GLenum _mode)

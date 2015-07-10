@@ -110,7 +110,8 @@ class BaseInterface {
       *
       *  Emit this Signal if the viewer widget in the main application should update the current view.
       *  If you do an updatedObject the core will trigger an update itself and you don't have to care
-      *  about it.
+      *  about it.\n
+      *  This signal can be called from any thread.\n
     */
     virtual void updateView() {};
 
@@ -120,7 +121,8 @@ class BaseInterface {
       *  If you changed the element itself (geometry, topology,..) you also have to emit this signal.\n
       *  Don't emit this Signal in BaseInterface::slotObjectUpdated() as this causes an endless Loop!!
       *  Give the id of the new object as parameter or -1 if you updated all objects or deleted an object.
-      *  For performance reasons try to always give the id and not -1!
+      *  For performance reasons try to always give the id and not -1!\n
+      *  This signal can be called from any thread.\n
       *
       *  @param _objectId Id of the object or -1 if referring to all or deleted objects.
       */
@@ -132,7 +134,8 @@ class BaseInterface {
       *  If you changed the element itself (geometry, topology,..) you also have to emit this signal.\n
       *  Don't emit this Signal in BaseInterface::slotObjectUpdated() as this causes an endless Loop!!
       *  Give the id of the new object as parameter or -1 if you updated all objects or deleted an object.
-      *  For performance reasons try to always give the id and not -1!
+      *  For performance reasons try to always give the id and not -1!\n
+      *  This signal can be called from any thread.\n
       *
       * @param _identifier id of the object or -1 if referring to all or deleted objects.
       * @param _type the type states which part of the object (topology, selection, ..) has to be updated
@@ -157,7 +160,9 @@ class BaseInterface {
       *   or that an existing object with the given id has been modified.
       *   If you store local information about one of these Objects, you should check if its still valid!\n
       *  Don't emit BaseInterface::updatedObject(int) in this slot as this causes an endless Loop!!
-      *   You don't need to call updateView as the core triggers a redraw itself.
+      *   You don't need to call updateView as the core triggers a redraw itself.\n
+      *   This slot will be executed on the main thread.\n
+      *
       *  @param _identifier Identifier of the updated/new object or -1 if one is deleted.
     */
     virtual void slotObjectUpdated( int _identifier ) {};
@@ -169,7 +174,9 @@ class BaseInterface {
       *   or that an existing object with the given id has been modified.
       *   If you store local information about one of these Objects, you should check if its still valid!\n
       *  Don't emit BaseInterface::updatedObject(int) in this slot as this causes an endless Loop!!
-      *   You don't need to call updateView as the core triggers a redraw itself.
+      *   You don't need to call updateView as the core triggers a redraw itself.\n
+      *   This slot will be executed on the main thread.\n
+      *
       *  @param _identifier Identifier of the updated/new object or -1 if one is deleted.
       *  @param _type the type states which part of the object (topology, selection, ..) had been updated
     */

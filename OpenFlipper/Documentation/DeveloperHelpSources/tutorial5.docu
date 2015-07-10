@@ -9,8 +9,11 @@ Note that when using threading there are a few things the developer has to be aw
 - The developer should be aware of the fact that threads run necessarily independent
   from the main thread (handling all of Qt's user interface elements). So accessing
   any of these gui objects won't be possible from within a thread. This means
-  in particular that logging, updating of views, etc. always has to be done via a queued
+  in general all signals to the OpenFlipper core and all PluginFunctions, always has to be done via a queued
   signal/slot connection between the thread function and the plugin.
+- In general, you cannot emit any OpenFlipper signal from other threads than the main thread.
+  However, some functions can be safely emitted. 
+  In this case, you will find a special remark in the documentation, e.g. \c LoggingInterface::log() or \c BaseInterface::updateView()
 - The developer will have to pay special attention to avoid race conditions
   and dead-lock situations himself since %OpenFlipper can obviously not keep track of this.
   

@@ -246,6 +246,10 @@ To use the ProcessInterface:
 <li> And add the signals or slots you want to use to your plugin class (You don't need to implement all of them)
 </ul>
 
+\note In general, OpenFlipper signals should not be emitted from other threads than the main thread. However, there are
+some signals, which are save to call outside of another thread. Some will block, until the main thread executed the function,
+some run asnyc. If a function is guaranteed to be threadsafe, you will find a note in the documentation e.g. \c LoggingInterface::log()
+
 \section processInterface_quickstart Quick example
 A quick example for stating a thread:
 

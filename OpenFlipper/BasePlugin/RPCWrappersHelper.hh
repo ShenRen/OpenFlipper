@@ -40,67 +40,46 @@
 *                                                                            *
 \*===========================================================================*/
 
+/**
+ * \file RPCWrappersHelper.hh
+ * private helper classes for the RPCWrappers *
+ * Usage is described in \ref RPCInterfacePage
+ */
 
+#ifndef RPCWRAPPERSHELPER_HH
+#define RPCWRAPPERSHELPER_HH
 
+#include <QtScript>
+#include <QObject>
+#include <OpenFlipper/common/Types.hh>
 
-//=============================================================================
-//
-//  CLASS MViewWidget - IMPLEMENTATION
-//
-//=============================================================================
-
-
-//== INCLUDES =================================================================
-
-#include "CoreWidget.hh"
-
-// -------------------- ACG
-#include "OpenFlipper/common/GlobalOptions.hh"
-
-//== IMPLEMENTATION ==========================================================
-
-/** \brief Slot writing everything to the Logger widget
- *
- * This slot has to be called by all loggers. It is used to serialize
- * and color the Output.
- *
- * @param _type Logtype (defines the color of the output)
- * @param _message The message for output
- **/
-void
-CoreWidget::
-slotLog(Logtype _type, QString _message) {
-
-  if (QThread::currentThread() != QApplication::instance()->thread())
+namespace RPC
+{
+  class DLLEXPORT RPCHelper : public QObject
   {
-    QMetaObject::invokeMethod(this,"slotLog",Qt::QueuedConnection, Q_ARG(Logtype, _type), Q_ARG(QString, _message));
-    return;
-  }
-  QColor textColor;
+    Q_OBJECT
+  public:
+    RPCHelper();
+    ~RPCHelper();
 
-  switch (_type) {
-    case LOGINFO:
-      textColor = QColor(0,160,0);
-      break;
-    case LOGOUT:
-      textColor = QColor(0,0,0);
-      break;
-    case LOGWARN:
-      textColor = QColor(160,160,0);
-      break;
-    case LOGERR:
-      textColor = QColor(250,0,0);
-      break;
-    case LOGSTATUS:
-      textColor = QColor(0,0,250);
-      break;
-  }
+  public slots:
+    /** \brief call a function provided by a plugin
+     *
+     * @param _plugin Plugin name ( Scripting name )
+     * @param _functionName Name of the remote function
+     */
+    QScriptValue callFunction(QScriptEngine* _engine, const QString& _plugin,const QString& _functionName);
 
-  logWidget_->append(_message, _type);
-
-  if (_type == LOGERR)
-    statusBar_->showMessage(_message,textColor, 4000);
-
+    /** \brief Call a function provided by a plugin getting multiple parameters
+     *
+     * This function gets the parameters which are converted to a QScriptValue on your own.
+     *
+     * @param _plugin Plugin name ( Scripting name of the plugin )
+     * @param _functionName Name of the remote function
+     * @param _parameters vector of scriptvalues containing the functions parameters in the right order
+     */
+    QScriptValue callFunction(QScriptEngine* _engine, const QString& _plugin,const QString& _functionName , const std::vector< QScriptValue >& _parameters);
+  };
 }
 
-//=============================================================================
+#endif

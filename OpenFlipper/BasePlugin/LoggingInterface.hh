@@ -45,6 +45,8 @@
 #ifndef LOGGINGINTERFACE_HH 
 #define LOGGINGINTERFACE_HH 
 
+#include <QMetaType>
+
 /** \file LoggingInterface.hh
 *
 * Interface for sending log messages to the log widget. \ref loggingInterfacePage
@@ -97,6 +99,7 @@ enum Logtype {  LOGSTATUS , /*!< Status log messages. Will be printed in blue in
                 LOGWARN   , /*!< Warning messages. Will be printed in yellow in the logwidget */
                 LOGERR      /*!< Error messages. Will be printed in red in the logwidget */
              };
+Q_DECLARE_METATYPE(Logtype)
 
 /** \brief Interface for all Plugins which do logging to the logging window of the framework
   * 
@@ -113,7 +116,8 @@ enum Logtype {  LOGSTATUS , /*!< Status log messages. Will be printed in blue in
 class LoggingInterface {
   
    signals :
-      /** Send a log message to the mainwindow of the widget
+      /** Send a log message to the mainwindow of the widget \n
+       * This signal can be called from any thread.\n
        *
        * @param _type Message type (LOGINFO,LOGOUT,LOGWARN,LOGERR)
        * @param _message Message to be displayed
@@ -121,7 +125,8 @@ class LoggingInterface {
       virtual void log(Logtype _type, QString _message) = 0;
       
       /** Send a log message to the mainwindow of the widget \n
-       * defaults to LOGOUT message type
+       * defaults to LOGOUT message type \n
+       * This signal can be called from any thread.\n
        *
        * @param _message Message to be displayed
        */

@@ -46,6 +46,7 @@
 
 #include <OpenFlipper/common/GlobalDefines.hh>
 #include <bitset>
+#include <QString>
 
 typedef std::bitset<64> UpdateTypeSet;
 
@@ -61,6 +62,8 @@ typedef std::bitset<64> UpdateTypeSet;
  */
 class DLLEXPORT UpdateType {
   public:
+    UpdateType();
+
     UpdateType(const UpdateType& _type);
     
     UpdateType(UpdateTypeSet _set);

@@ -429,6 +429,7 @@ signals:
 
       /// Called by a plugin if it creates a multitexture
       void slotMultiTextureAdded( QString _textureGroup , QString _name , QString _filename , int _id , int& _textureId );
+      void slotMultiTextureAdded( QString _textureGroup , QString _name , QString _filename , int _id , int* _textureId );
 
       /// Tell the plugins to update the given texture
       void slotUpdateTexture( QString _name , int _identifier);
@@ -980,6 +981,7 @@ private slots:
 
       /// Slot adding empty object of a given type
       void slotAddEmptyObject( DataType _type , int& _id );
+      void slotAddEmptyObject( DataType _type, int* _id);
 
       /// Slot copying an object
       void slotCopyObject( int _oldId , int& _newId );

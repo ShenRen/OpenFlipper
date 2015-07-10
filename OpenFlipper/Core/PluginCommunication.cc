@@ -186,6 +186,14 @@ void Core::slotObjectPropertiesChanged( int _id )
  * See in the documentation of the texture plugin interfaces for further detail.
 */
 void Core::slotAddTexture( QString _textureName , QString _filename, uint _dimension, int _id) {
+
+  if (QThread::currentThread() != QApplication::instance()->thread())
+  {
+    //execute method in main thread
+    QMetaObject::invokeMethod(this,"slotAddTexture",Qt::BlockingQueuedConnection, Q_ARG(QString, _textureName), Q_ARG(QString, _filename), Q_ARG(uint, _dimension), Q_ARG(int, _id));
+    return;
+  }
+
   if ( OpenFlipper::Options::doSlotDebugging() ) {
     if ( sender() != 0 ) {
       if ( sender()->metaObject() != 0 ) {
@@ -205,6 +213,13 @@ void Core::slotAddTexture( QString _textureName , QString _filename, uint _dimen
 */
 void Core::slotAddTexture( QString _textureName , QString _filename, uint _dimension) {
   
+  if (QThread::currentThread() != QApplication::instance()->thread())
+  {
+    //execute method in main thread
+    QMetaObject::invokeMethod(this,"slotAddTexture",Qt::BlockingQueuedConnection, Q_ARG(QString, _textureName), Q_ARG(QString, _filename), Q_ARG(uint, _dimension));
+    return;
+  }
+
   if ( OpenFlipper::Options::doSlotDebugging() ) {
     if ( sender() != 0 ) {
       if ( sender()->metaObject() != 0 ) {
@@ -236,9 +251,19 @@ void Core::slotUpdateTexture( QString _name , int _identifier){
   emit updateTexture(_name, _identifier);
 }
 
+void Core::slotMultiTextureAdded( QString _textureGroup , QString _name , QString _filename , int _id , int* _textureId ) {
+  slotMultiTextureAdded(_textureGroup, _name, _filename, _id, *_textureId);
+}
 
 void Core::slotMultiTextureAdded( QString _textureGroup , QString _name , QString _filename , int _id , int& _textureId ) {
   
+  if (QThread::currentThread() != QApplication::instance()->thread())
+  {
+    //execute method in main thread
+    QMetaObject::invokeMethod(this,"slotMultiTextureAdded",Qt::BlockingQueuedConnection, Q_ARG(QString, _textureGroup), Q_ARG(QString, _name), Q_ARG(QString, _filename), Q_ARG(int, _id), Q_ARG(int*, &_textureId));
+    return;
+  }
+
   if ( OpenFlipper::Options::doSlotDebugging() ) {
     if ( sender() != 0 ) {
       if ( sender()->metaObject() != 0 ) {

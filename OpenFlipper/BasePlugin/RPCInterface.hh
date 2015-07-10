@@ -145,6 +145,8 @@ To use the RPCInterface:
 <li> And add the signals or slots you want to use to your plugin class (You don't need to implement all of them)
 </ul>
 
+\note Multithreading: You can call any script function from any thread, but the script will be executed on the main thread.
+
 */
 
 

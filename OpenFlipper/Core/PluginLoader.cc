@@ -291,6 +291,9 @@ bool Core::checkSignal(QObject* _plugin , const char* _signalSignature) {
 void Core::loadPlugins()
 {
   
+  //regsiter custom datatypes for signal/slots
+  registerTypes();
+
   QString licenseTexts = "";
   
   //try to load plugins from new location
@@ -849,23 +852,23 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
     }
 
     if ( checkSignal(plugin,"updateView()") )
-      connect(plugin,SIGNAL(updateView()),this,SLOT(updateView()));
+      connect(plugin,SIGNAL(updateView()),this,SLOT(updateView()), Qt::AutoConnection);
 
 
     if ( checkSignal(plugin,"updatedObject(int)") && checkSignal(plugin,"updatedObject(int,const UpdateType&)") ){
       
       log(LOGERR,tr("Plugin uses deprecated and(!) new updatedObject. Only new updatedObject will be active."));
-      connect(plugin,SIGNAL(updatedObject(int,const UpdateType&)),this,SLOT(slotObjectUpdated(int,const UpdateType&)), Qt::DirectConnection);
+      connect(plugin,SIGNAL(updatedObject(int,const UpdateType&)),this,SLOT(slotObjectUpdated(int,const UpdateType&)), Qt::AutoConnection);
       
     } else {
 
       if ( checkSignal(plugin,"updatedObject(int)") ){
         log(LOGWARN,tr("Plugin uses deprecated updatedObject."));
-        connect(plugin,SIGNAL(updatedObject(int)),this,SLOT(slotObjectUpdated(int)), Qt::DirectConnection);
+        connect(plugin,SIGNAL(updatedObject(int)),this,SLOT(slotObjectUpdated(int)), Qt::AutoConnection);
       }
 
       if ( checkSignal(plugin,"updatedObject(int,const UpdateType&)") )
-        connect(plugin,SIGNAL(updatedObject(int,const UpdateType&)),this,SLOT(slotObjectUpdated(int,const UpdateType&)), Qt::DirectConnection);
+        connect(plugin,SIGNAL(updatedObject(int,const UpdateType&)),this,SLOT(slotObjectUpdated(int,const UpdateType&)), Qt::AutoConnection);
     }
 
     if ( checkSlot( plugin , "slotObjectUpdated(int)" ) && checkSlot( plugin , "slotObjectUpdated(int,const UpdateType&)" ) ){
@@ -1546,7 +1549,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"addTexture(QString,QString,uint)") )
       connect(plugin , SIGNAL(addTexture( QString , QString , uint )),
-              this   , SLOT(slotAddTexture(QString, QString, uint)),Qt::DirectConnection);
+              this   , SLOT(slotAddTexture(QString, QString, uint)),Qt::AutoConnection);
 
     if ( checkSlot( plugin , "slotTextureAdded(QString,QString,uint)" ) )
       connect(this   , SIGNAL(addTexture(QString,QString, uint)),
@@ -1554,7 +1557,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"updateTexture(QString,int)") )
       connect(plugin , SIGNAL(updateTexture( QString ,int )),
-              this   , SLOT(slotUpdateTexture(QString , int)),Qt::DirectConnection);
+              this   , SLOT(slotUpdateTexture(QString , int)),Qt::AutoConnection);
 
     if ( checkSlot( plugin , "slotUpdateTexture(QString,int)" ) )
       connect(this   , SIGNAL(updateTexture(QString ,int)),
@@ -1570,7 +1573,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"updatedTextures(QString,int)") )
       connect(plugin , SIGNAL(updatedTextures( QString , int )),
-              this   , SLOT(slotTextureUpdated( QString, int ) ),Qt::DirectConnection);
+              this   , SLOT(slotTextureUpdated( QString, int ) ),Qt::AutoConnection);
 
     if ( checkSlot( plugin , "slotTextureUpdated(QString,int)" ) )
       connect(this   , SIGNAL(updatedTextures( QString , int )),
@@ -1578,7 +1581,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"setTextureMode(QString,QString,int)") )
       connect(plugin , SIGNAL(setTextureMode(QString, QString, int )),
-              this   , SLOT(slotSetTextureMode(QString, QString, int )),Qt::DirectConnection );
+              this   , SLOT(slotSetTextureMode(QString, QString, int )),Qt::AutoConnection );
 
     if ( checkSlot( plugin , "slotSetTextureMode(QString,QString,int)" ) )
       connect(this   , SIGNAL(setTextureMode(QString, QString, int )),
@@ -1586,7 +1589,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"setTextureMode(QString,QString)") )
       connect(plugin , SIGNAL(setTextureMode(QString  ,QString )),
-              this   , SLOT(slotSetTextureMode(QString  ,QString )),Qt::DirectConnection );
+              this   , SLOT(slotSetTextureMode(QString  ,QString )),Qt::AutoConnection );
 
     if ( checkSlot( plugin , "slotSetTextureMode(QString,QString)" ) )
       connect(this   , SIGNAL(setTextureMode(QString  ,QString )),
@@ -1594,7 +1597,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"switchTexture(QString,int)") )
       connect(plugin , SIGNAL(switchTexture(QString, int )),
-              this   , SLOT(slotSwitchTexture(QString, int )),Qt::DirectConnection);
+              this   , SLOT(slotSwitchTexture(QString, int )),Qt::AutoConnection);
 
     if ( checkSlot( plugin , "slotSwitchTexture(QString,int)" ) )
       connect(this   , SIGNAL(switchTexture(QString, int )),
@@ -1602,7 +1605,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"switchTexture(QString)") )
       connect(plugin , SIGNAL(switchTexture(QString )),
-              this   , SLOT(slotSwitchTexture(QString )),Qt::DirectConnection);
+              this   , SLOT(slotSwitchTexture(QString )),Qt::AutoConnection);
 
     if ( checkSlot( plugin , "slotSwitchTexture(QString)" ) )
       connect(this   , SIGNAL(switchTexture(QString )),
@@ -1849,7 +1852,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     if ( checkSignal(plugin,"deleteObject(int)" ) )
       connect(plugin , SIGNAL( deleteObject( int ) ) ,
-              this   , SLOT( deleteObject( int ) ),Qt::DirectConnection);
+              this   , SLOT( deleteObject( int ) ),Qt::AutoConnection);
 
     if ( checkSignal(plugin,"deleteAllObjects()" ) )
       connect(plugin , SIGNAL( deleteAllObjects() ) ,

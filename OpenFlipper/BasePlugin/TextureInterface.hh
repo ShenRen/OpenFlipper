@@ -69,6 +69,7 @@ class TextureInterface {
       /** \brief Emit this Signal if a texture has been added (Property Name,filename,Dimension)
        *
        *  Emit this signal if a texture for a specific object has been added
+       *  This signal can be called from any thread.\n
        *
        *  @param  _name Name of the property which contains the tex coords (double or vec2d)
        *  @param _filename Filename of the texture (either local in OpenFlippers texture dir or global ( "./Textures/<name>")
@@ -80,6 +81,7 @@ class TextureInterface {
       /** \brief Emit this Signal if a texture has been added (Property Name,filename,Dimension)
        *
        *  Emit this signal if a global texture has been added
+       *  This signal can be called from any thread.\n
        *
        *  @param  _name Name of the property which contains the tex coords (double or vec2d)
        *  @param _filename Filename of the texture (either local in OpenFlippers texture dir or global ( "./Textures/<name>")
@@ -95,7 +97,8 @@ class TextureInterface {
        *  that should be painted in the multitexturing mode. This group does not
        *  have to exist on the first call but will be created automatically.
        *
-       *  The second parameter defines the single textures name used in the gui.
+       *  The second parameter defines the single textures name used in the gui.\n
+       *  This signal can be called from any thread.\n
        *
        *  @param _textureGroup Multitexturing group using this texture
        *  @param _name         Name of the property which contains the tex coords (double or vec2d)
@@ -106,6 +109,7 @@ class TextureInterface {
       virtual void addMultiTexture( QString _textureGroup , QString _name , QString _filename , int _id , int& _textureId ) {};
 
       /** \brief Tell Plugins to update the given texture for the given identifier
+       * This signal can be called from any thread.\n
        */
       virtual void updateTexture( QString _textureName  , int _identifier) {};
 
@@ -120,10 +124,12 @@ class TextureInterface {
       virtual void updatedTextures( QString , int ) {};
 
       /** \brief emit this signal if you want to switch the texture of a specific object
+       * This signal can be called from any thread.\n
        */
       virtual void switchTexture( QString _textureName , int _id  ) {};
 
       /** \brief emit this signal if you want to switch the global texture
+       * This signal can be called from any thread.\n
        */
       virtual void switchTexture( QString _textureName ) {};
 
@@ -156,6 +162,7 @@ class TextureInterface {
        *
        * Examples:\n
        * Pass texture without modification: abs=false,clamp=false,repeat=false,center=false,scale=false\n
+       * This signal can be called from any thread.\n
        *  @param _textureName Name of your Texture
        *  @param _mode colon separated String describing your settings (e.g. clamp,abs )
       */
@@ -164,6 +171,7 @@ class TextureInterface {
       /** \brief emit this signal if you want to set a special mode for this texture (Clamping,...)
        *
        * for info about the _mode parameter see setTextureMode(QString,QString)
+       * This signal can be called from any thread.\n
        *
        *  @param _textureName Name of your Texture
        *  @param _mode colon separated String describing your settings (e.g. clamp,abs )
@@ -281,6 +289,7 @@ class TextureInterface {
       virtual void slotTextureUpdated( QString _textureName , int _identifier ) {};
 
       /** \brief This slot is called when a plugin requests to switch an objects texture
+       * This signal can be called from any thread.\n
        *
        * @param _textureName Name of the Texture
        * @param _id id of an object
@@ -288,6 +297,7 @@ class TextureInterface {
       virtual void slotSwitchTexture( QString _textureName, int _id ) {};
 
       /** \brief This slot is called when a plugin requests to switch to a different texture mode
+       * This signal can be called from any thread.\n
        *
        * @param _textureName Name of the Texture
       */
@@ -310,7 +320,8 @@ class TextureInterface {
 
       /** \brief A texture has been added by a plugin.
        *
-       * This slot is called when a texture for a specific object has been added by a plugin.
+       * This slot is called when a texture for a specific object has been added by a plugin.\n
+       * This slot will be executed on the main thread.\n
        *
        * @param _textureName Name of the Added texture (has to be equal to the property name)
        * @param _filename Filename of the Texture Image to be used
@@ -321,7 +332,8 @@ class TextureInterface {
 
       /** \brief A texture has been added by a plugin.
        *
-       * This slot is called when a global texture has been added by a plugin.
+       * This slot is called when a global texture has been added by a plugin.\n
+       * This slot will be executed on the main thread.\n
        *
        * @param _textureName Name of the Added texture (has to be equal to the property name)
        * @param _filename Filename of the Texture Image to be used
@@ -334,7 +346,8 @@ class TextureInterface {
        * This slot is called when a multi Texture has been added by a plugin.
        *
        * A multi texture has a global name which is defined as the texture group and consists of
-       * mutliple sub textures which have their own names but are all used when the group is active.
+       * mutliple sub textures which have their own names but are all used when the group is active.\n
+       * This slot will be executed on the main thread.\n
        *
        * @param _textureGroup Name of the texture group that is associated with the texture.
        * @param _name      Name of the Added texture (has to be equal to the property name)

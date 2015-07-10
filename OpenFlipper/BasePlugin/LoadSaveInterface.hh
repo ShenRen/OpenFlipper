@@ -82,7 +82,8 @@ class LoadSaveInterface {
       virtual void load(QString _filename, DataType _type, int& _id) {};
 
 
-      /** Add an empty object of the given type
+      /** Add an empty object of the given type\n
+       * This signal can be called from any thread.\n
        *
        * @param _type Type to be created
        * @param _id Here the id of the loaded object is returned. id is -1 something went wrong
@@ -105,8 +106,8 @@ class LoadSaveInterface {
        */
       virtual void emptyObjectAdded( int _id ) {};
 
-      /** \brief Delete an object
-       *
+      /** \brief Delete an object\n
+       *  This signal can be called from any thread.\n
        * @param _id Id of the object
        */
       virtual void deleteObject( int _id ) {};
@@ -126,13 +127,15 @@ class LoadSaveInterface {
     /**  \brief A file has been opened
      *
      *  This slot is called if a file has been opened by the core.\n
+     *  This slot will be executed in the main thread.\n
      *  @param _id Id of the new object
      */
     virtual void fileOpened( int _id ) {};
 
     /**  \brief An empty object has been added
      *
-     *  This slot is called if an empty object has been added by the core.\n
+     *  Slot is called if an empty object has been added by the core.\n
+     *  This slot will be executed on the main thread.\n
      *  @param _id Id of the new object
      */
     virtual void addedEmptyObject( int _id ) {};
@@ -144,7 +147,9 @@ class LoadSaveInterface {
       * exists. All plugins get informed via this slot.\
       *
       * After this function got called for all plugins, the object is removed from the scene with all
-      * nodes attached to it and all PerObjectData attached to it.
+      * nodes attached to it and all PerObjectData attached to it.\n
+      *
+      * This slot will be executed on the main thread.
       *
       * @param _id Id of the object that is deleted.
       */

@@ -43,6 +43,9 @@
 
 #include <OpenFlipper/BasePlugin/RPCWrappers.hh>
 #include <iostream>
+#include "RPCWrappersHelper.hh"
+
+#include <QApplication>
 
 namespace RPC {
 
@@ -52,39 +55,51 @@ namespace RPC {
 static QScriptEngine* engine_;
 
 QScriptValue callFunction( QString _plugin, QString _functionName , std::vector< QScriptValue > _parameters ) {
+  RPCHelper h;
 
-  QString command = _plugin+"."+_functionName+ "(";
-  // Make the parameters available in the scripting environment
-  for ( uint i = 0 ; i < _parameters.size(); ++i ) {
-    engine_->globalObject().setProperty("ParameterData" + QString::number(i) , _parameters[i] );
-    command += "ParameterData" + QString::number(i);
-    if ( (i + 1) < _parameters.size() )
-      command+=",";
-  }
-  command += ")";
-
-  QScriptValue returnValue = engine_->evaluate(command);
-  if ( returnValue.isError() ) {
-    QString error = returnValue.toString();
-    std::cerr << "Error : " << error.toStdString() << std::endl;
-    return returnValue;
+  Qt::ConnectionType connection = Qt::DirectConnection;
+  if (h.thread() != QThread::currentThread())
+  {
+    h.moveToThread(QApplication::instance()->thread());
+    connection = Qt::QueuedConnection;
   }
 
-  return returnValue;
+  QScriptValue retVal;
+  if (!QMetaType::type("std::vector<QScriptValue>"))
+    qRegisterMetaType< std::vector< QScriptValue > >("ScriptParameters");
+
+  //call _functionName in main thread. blocks, if our function runs in another thread
+  QMetaObject::invokeMethod(&h, "callFunction", connection ,
+      Q_RETURN_ARG(QScriptValue, retVal),
+      Q_ARG(QScriptEngine*, engine_),
+      Q_ARG(QString, _plugin),
+      Q_ARG(QString, _functionName),
+      Q_ARG(std::vector< QScriptValue >, _parameters));
+
+  return retVal;
+
 }
 
 QScriptValue callFunction( QString _plugin, QString _functionName ) {
+  RPCHelper h;
 
-  QString command = _plugin+"."+_functionName+ "()";
-
-  QScriptValue returnValue = engine_->evaluate(command);
-  if ( returnValue.isError() ) {
-    QString error = returnValue.toString();
-    std::cerr << "Error : " << error.toStdString() << std::endl;
-    return returnValue;
+  Qt::ConnectionType connection = Qt::DirectConnection;
+  if (h.thread() != QThread::currentThread())
+  {
+    h.moveToThread(QApplication::instance()->thread());
+    connection = Qt::QueuedConnection;
   }
 
-  return returnValue;
+  QScriptValue retVal;
+
+  //call _functionName in main thread. blocks, if our function runs in another thread
+  QMetaObject::invokeMethod(&h, "callFunction", connection ,
+      Q_RETURN_ARG(QScriptValue, retVal),
+      Q_ARG(QScriptEngine*, engine_),
+      Q_ARG(QString, _plugin),
+      Q_ARG(QString, _functionName));
+
+  return retVal;
 }
 
 

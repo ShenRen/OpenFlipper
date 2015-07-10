@@ -63,7 +63,13 @@ static std::map< UpdateType , size_t > updateTypeToTypeInfo;
 */
 static UpdateType firstFreeID_(UPDATE_UNUSED);
 
-UpdateType::UpdateType(const UpdateType& _type) 
+UpdateType::UpdateType()
+:type_(0)
+{
+
+}
+
+UpdateType::UpdateType(const UpdateType& _type)
 :type_(_type.type_)
 {
   

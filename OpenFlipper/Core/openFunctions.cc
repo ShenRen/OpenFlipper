@@ -437,20 +437,32 @@ int Core::addEmptyObject( DataType _type ) {
 // ===             Open/Add-Empty Slots                       ============================
 //========================================================================================
 
-/// Slot for adding an empty object of given DataType
+void Core::slotAddEmptyObject( DataType _type, int* _id)
+{
+  slotAddEmptyObject(_type,*_id);
+}
+
 void Core::slotAddEmptyObject( DataType _type , int& _id ) {
-  
-  _id = addEmptyObject( _type );
-  
-  if ( OpenFlipper::Options::doSlotDebugging() ) {
-    if ( sender() != 0 ) {
-      if ( sender()->metaObject() != 0 ) {
-        emit log(LOGINFO,"slotAddEmptyObject( " + _type.name() + "," + QString::number(_id) +  tr(" ) called by ") +
-        QString( sender()->metaObject()->className() ) );
+
+
+  if (QThread::currentThread() != QApplication::instance()->thread())
+  {
+    //execute method in main thread
+    QMetaObject::invokeMethod(this,"slotAddEmptyObject",Qt::BlockingQueuedConnection, Q_ARG(DataType, _type), Q_ARG(int*, &_id));
+  }
+  else
+  {
+    _id = addEmptyObject( _type );
+    if ( OpenFlipper::Options::doSlotDebugging() ) {
+        if ( sender() != 0 ) {
+          if ( sender()->metaObject() != 0 ) {
+            emit log(LOGINFO,"slotAddEmptyObject( " + _type.name() + "," + QString::number(_id) +  tr(" ) called by ") +
+            QString( sender()->metaObject()->className() ) );
+          }
+        } else {
+          emit log(LOGINFO,"slotAddEmptyObject( " + _type.name() + ","  + QString::number(_id) +  tr(" ) called by Core") );
+        }
       }
-    } else {
-      emit log(LOGINFO,"slotAddEmptyObject( " + _type.name() + ","  + QString::number(_id) +  tr(" ) called by Core") );
-    }
   }
 }
 
@@ -573,6 +585,13 @@ void Core::slotLoad(QString _filename, DataType _type, int& _id) {
 
 /// Slot gets called after a file-plugin has opened an object
 void Core::slotFileOpened ( int _id ) {
+
+  if (QThread::currentThread() != QApplication::instance()->thread())
+  {
+    QMetaObject::invokeMethod(this,"slotFileOpened",Qt::QueuedConnection, Q_ARG(int, _id));
+    return;
+  }
+
   if ( OpenFlipper::Options::doSlotDebugging() ) {
     if ( sender() != 0 ) {
       if ( sender()->metaObject() != 0 ) {

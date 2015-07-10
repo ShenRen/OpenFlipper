@@ -40,67 +40,50 @@
 *                                                                            *
 \*===========================================================================*/
 
+#include "RPCWrappersHelper.hh"
 
+namespace RPC
+{
 
-
-//=============================================================================
-//
-//  CLASS MViewWidget - IMPLEMENTATION
-//
-//=============================================================================
-
-
-//== INCLUDES =================================================================
-
-#include "CoreWidget.hh"
-
-// -------------------- ACG
-#include "OpenFlipper/common/GlobalOptions.hh"
-
-//== IMPLEMENTATION ==========================================================
-
-/** \brief Slot writing everything to the Logger widget
- *
- * This slot has to be called by all loggers. It is used to serialize
- * and color the Output.
- *
- * @param _type Logtype (defines the color of the output)
- * @param _message The message for output
- **/
-void
-CoreWidget::
-slotLog(Logtype _type, QString _message) {
-
-  if (QThread::currentThread() != QApplication::instance()->thread())
-  {
-    QMetaObject::invokeMethod(this,"slotLog",Qt::QueuedConnection, Q_ARG(Logtype, _type), Q_ARG(QString, _message));
-    return;
-  }
-  QColor textColor;
-
-  switch (_type) {
-    case LOGINFO:
-      textColor = QColor(0,160,0);
-      break;
-    case LOGOUT:
-      textColor = QColor(0,0,0);
-      break;
-    case LOGWARN:
-      textColor = QColor(160,160,0);
-      break;
-    case LOGERR:
-      textColor = QColor(250,0,0);
-      break;
-    case LOGSTATUS:
-      textColor = QColor(0,0,250);
-      break;
-  }
-
-  logWidget_->append(_message, _type);
-
-  if (_type == LOGERR)
-    statusBar_->showMessage(_message,textColor, 4000);
-
+RPCHelper::RPCHelper()
+{
 }
 
-//=============================================================================
+RPCHelper::~RPCHelper()
+{
+}
+
+QScriptValue RPCHelper::callFunction(QScriptEngine* _engine, const QString& _plugin, const QString& _functionName)
+{
+  QString command = _plugin+"."+_functionName+ "()";
+
+  QScriptValue returnValue = _engine->evaluate(command);
+  if ( returnValue.isError() ) {
+    QString error = returnValue.toString();
+    std::cerr << "Error : " << error.toStdString() << std::endl;
+  }
+  return returnValue;
+}
+
+
+QScriptValue RPCHelper::callFunction(QScriptEngine* _engine, const QString& _plugin, const QString& _functionName , const std::vector< QScriptValue >& _parameters)
+{
+  QString command = _plugin+"."+_functionName+ "(";
+  // Make the parameters available in the scripting environment
+  for ( uint i = 0 ; i < _parameters.size(); ++i ) {
+    _engine->globalObject().setProperty("ParameterData" + QString::number(i) , _parameters[i] );
+    command += "ParameterData" + QString::number(i);
+    if ( (i + 1) < _parameters.size() )
+      command+=",";
+  }
+  command += ")";
+
+  QScriptValue returnValue = _engine->evaluate(command);
+  if ( returnValue.isError() ) {
+    QString error = returnValue.toString();
+    std::cerr << "Error : " << error.toStdString() << std::endl;
+  }
+  return returnValue;
+}
+
+}

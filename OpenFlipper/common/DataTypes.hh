@@ -62,6 +62,7 @@
 
 
 #include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/UpdateType.hh>
 
 #include <ACG/Math/Matrix4x4T.hh>
 #include <ACG/Math/VectorT.hh>
@@ -191,6 +192,13 @@ Q_DECLARE_METATYPE(QVector< int >)
 Q_DECLARE_METATYPE(Vector)
 Q_DECLARE_METATYPE(Vector4)
 Q_DECLARE_METATYPE(Matrix4x4)
+Q_DECLARE_METATYPE(UpdateType)
+
+/** Registers datatypes on runtime for signal/slots
+ *
+ */
+DLLEXPORT
+void registerTypes();
 
 //================================================================================================
 /** @name Functions for adding dataTypes

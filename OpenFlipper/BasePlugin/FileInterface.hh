@@ -132,7 +132,8 @@ signals:
       /** \brief This signal has to be emitted if an object has been loaded from a file.
        *
        * Every time a new object is added to the scene from a file, this signal has to be emitted.
-       * Emit this signal once each time a file has been completely processed.
+       * Emit this signal once each time a file has been completely processed.\n
+       * This signal can be called from any thread.\n
        *
        * @param _id Id of the new object
        */

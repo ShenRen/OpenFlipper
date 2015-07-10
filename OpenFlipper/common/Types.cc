@@ -60,8 +60,12 @@
 #include "TypesInternal.hh"
 #include "DataTypes.hh"
 #include <map>
-#include <QCoreApplication>
+
 #include <OpenFlipper/common/GlobalOptions.hh>
+#include <OpenFlipper/BasePlugin/LoggingInterface.hh>
+
+#include <QCoreApplication>
+#include <QMetaType>
 
 
 /** This field defines the start id for custom datatypes. It starts high to avoid conflicts with previously
@@ -420,6 +424,18 @@ QString DataType::name() const {
   return typeName(field);
 }
 
+//=============================================================================
+
+void registerTypes() {
+  qRegisterMetaType<IdList>("IdList");
+  qRegisterMetaType<DataType>("DataType");
+  qRegisterMetaType< QVector< int > >("QVector<int>");
+  qRegisterMetaType<Vector>("Vector");
+  qRegisterMetaType<Vector4>("Vector4");
+  qRegisterMetaType<Matrix4x4>("Matrix4x4");
+  qRegisterMetaType<UpdateType>("UpdateType");
+  qRegisterMetaType<Logtype>("LogType");
+}
 
 //=============================================================================
 //=============================================================================

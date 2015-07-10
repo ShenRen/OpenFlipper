@@ -1215,9 +1215,6 @@ int FileOFFPlugin::loadObject(QString _filename) {
         polyMeshObj->mesh()->update_face_normals();
 
       backupTextureCoordinates(*(polyMeshObj->mesh()));
-
-      polyMeshObj->update();
-      polyMeshObj->show();
     }
 
     // Handle new TriMeshes
@@ -1231,16 +1228,11 @@ int FileOFFPlugin::loadObject(QString _filename) {
         triMeshObj->mesh()->update_face_normals();
 
       backupTextureCoordinates(*(triMeshObj->mesh()));
-
-      triMeshObj->update();
-      triMeshObj->show();
     }
 
     //general stuff
+    emit updatedObject(object->id(), UPDATE_ALL);
     emit openedFile( object->id() );
-
-    // Update viewport
-    PluginFunctions::viewAll();
 
     forceTriangleMesh_ = false;
     forcePolyMesh_     = false;

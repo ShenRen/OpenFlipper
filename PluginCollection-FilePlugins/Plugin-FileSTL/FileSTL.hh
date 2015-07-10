@@ -82,6 +82,7 @@ class FileSTLPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     void log(Logtype _type, QString _message);
     void log(QString _message);
     void updateView();
+    void updatedObject(int _identifier, const UpdateType& _type);
 
     void deleteObject( int _id );
 

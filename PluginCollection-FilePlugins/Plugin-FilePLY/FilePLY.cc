@@ -333,13 +333,9 @@ int FilePLYPlugin::loadObject(QString _filename, DataType _type) {
 
     PolyMeshObject* object(0);
     if(PluginFunctions::getObject( objectId, object )) {
-
-      object->show();
       emit openedFile( objectId );
     }
 
-    // Update viewport
-    PluginFunctions::viewAll();
 
     return objectId;
   } else if ( _type == DATA_TRIANGLE_MESH) {
@@ -350,12 +346,9 @@ int FilePLYPlugin::loadObject(QString _filename, DataType _type) {
     TriMeshObject* object(0);
     if(PluginFunctions::getObject( objectId, object )) {
 
-      object->show();
       emit openedFile( objectId );
     }
 
-    // Update viewport
-    PluginFunctions::viewAll();
 
     return objectId;
   } else {
@@ -399,12 +392,8 @@ int FilePLYPlugin::loadObject(QString _filename) {
             TriMeshObject* object(0);
             if(PluginFunctions::getObject( objectId, object )) {
 
-                object->show();
                 emit openedFile( objectId );
             }
-
-            // Update viewport
-            PluginFunctions::viewAll();
 
             return objectId;
 
@@ -414,13 +403,9 @@ int FilePLYPlugin::loadObject(QString _filename) {
 
             PolyMeshObject* object(0);
             if(PluginFunctions::getObject( objectId, object )) {
-
-                object->show();
                 emit openedFile( objectId );
             }
 
-            // Update viewport
-            PluginFunctions::viewAll();
 
             return objectId;
         }
@@ -446,13 +431,8 @@ int FilePLYPlugin::loadObject(QString _filename) {
 
             PolyMeshObject* object(0);
             if(PluginFunctions::getObject( objectId, object )) {
-
-                object->show();
                 emit openedFile( objectId );
             }
-
-            // Update viewport
-            PluginFunctions::viewAll();
 
             return objectId;
         }
@@ -464,13 +444,8 @@ int FilePLYPlugin::loadObject(QString _filename) {
 
         PolyMeshObject* object(0);
         if(PluginFunctions::getObject( objectId, object )) {
-
-            object->show();
             emit openedFile( objectId );
         }
-
-        // Update viewport
-        PluginFunctions::viewAll();
 
         return objectId;
     } else {
@@ -480,13 +455,9 @@ int FilePLYPlugin::loadObject(QString _filename) {
 
         TriMeshObject* object(0);
         if(PluginFunctions::getObject( objectId, object )) {
-
-            object->show();
             emit openedFile( objectId );
         }
 
-        // Update viewport
-        PluginFunctions::viewAll();
 
         return objectId;
     }
@@ -497,12 +468,7 @@ int FilePLYPlugin::loadObject(QString _filename) {
 
     TriMeshObject* object(0);
     if(PluginFunctions::getObject( objectId, object )) {
-
-        object->show();
         emit openedFile( objectId );
-
-        // Update viewport
-        PluginFunctions::viewAll();
     }
 
     return objectId;
@@ -552,7 +518,7 @@ int FilePLYPlugin::loadTriMeshObject(QString _filename, const PLYHeader& _header
         if(_header.numFaces == 0)
             PluginFunctions::setDrawMode(ACG::SceneGraph::DrawModes::POINTS);
 
-        object->update();
+        emit updatedObject(object->id(), UPDATE_ALL);
 
         backupTextureCoordinates(*mesh);
 
@@ -611,7 +577,7 @@ int FilePLYPlugin::loadPolyMeshObject(QString _filename, const PLYHeader& _heade
         if(_header.numFaces == 0)
             PluginFunctions::setDrawMode(ACG::SceneGraph::DrawModes::POINTS);
 
-        object->update();
+        emit updatedObject(object->id(), UPDATE_ALL);
 
         backupTextureCoordinates(*mesh);
 

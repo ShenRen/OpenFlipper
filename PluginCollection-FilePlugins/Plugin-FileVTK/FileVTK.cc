@@ -1576,169 +1576,138 @@ int FileVTKPlugin::loadObject(QString _filename) {
     return -1;
   }
 
-    if ( (forceTriangleMesh_) || (bestType == BMT_TriMesh) ){
+  BaseObject* baseObj = 0;
 
-        // add a triangle mesh
-        int id = -1;
-        emit addEmptyObject(DATA_TRIANGLE_MESH, id);
+  if ( (forceTriangleMesh_) || (bestType == BMT_TriMesh) ){
 
-        TriMeshObject* object(0);
+    // add a triangle mesh
+    int id = -1;
+    emit addEmptyObject(DATA_TRIANGLE_MESH, id);
 
-        if(PluginFunctions::getObject( id, object)){
+    TriMeshObject* object(0);
 
-            TriMesh* _mesh;
-            PluginFunctions::getMesh(id,_mesh);
+    if(PluginFunctions::getObject( id, object)){
 
-            if ( _mesh != 0 ) {
-                if ( !loadMesh(in,_mesh,dataset) ) {
-                    emit log(LOGERR,"Unable to load mesh!");
-                    return -1;
-                }
-            } else {
-                emit log(LOGERR,"Unable to add empty triangle mesh!");
-                return -1;
-            }
+      TriMesh* _mesh;
+      PluginFunctions::getMesh(id,_mesh);
 
-            object->setFromFileName(_filename);
-            object->setName(object->filename());
-
-            object->update();
-
-            //general stuff
-            emit openedFile( object->id() );
-
-            PluginFunctions::viewAll();
-
-            return id;
+      if ( _mesh != 0 ) {
+        if ( !loadMesh(in,_mesh,dataset) ) {
+          emit log(LOGERR,"Unable to load mesh!");
+          return -1;
         }
+      } else {
+        emit log(LOGERR,"Unable to add empty triangle mesh!");
+        return -1;
+      }
+
+      baseObj = object;
+    }
+
+  }
+  // If no type can represent the object in the file just use PolyMesh
+  // and load as much as possible
+  else if ((bestType == BMT_PolyMesh) || (bestType == BMT_None))
+  {
+
+    int id = -1;
+    emit addEmptyObject(DATA_POLY_MESH, id);
+
+
+    PolyMeshObject* object(0);
+
+    if(PluginFunctions::getObject( id, object)){
+
+      PolyMesh* _mesh(0);
+      PluginFunctions::getMesh(id, _mesh);
+
+      if ( _mesh != 0 ) {
+        if ( !loadMesh(in,_mesh,dataset) ) {
+          emit log(LOGERR,"Unable to load mesh!");
+          return -1;
+        }
+      } else {
+        emit log(LOGERR,"Unable to add empty poly mesh!");
+        return -1;
+      }
+
+      baseObj = object;
 
     }
-    // If no type can represent the object in the file just use PolyMesh
-    // and load as much as possible
-    else if ((bestType == BMT_PolyMesh) || (bestType == BMT_None))
-    {
-
-        int id = -1;
-        emit addEmptyObject(DATA_POLY_MESH, id);
 
 
-        PolyMeshObject* object(0);
-
-        if(PluginFunctions::getObject( id, object)){
-
-            PolyMesh* _mesh(0);
-            PluginFunctions::getMesh(id, _mesh);
-
-            if ( _mesh != 0 ) {
-                if ( !loadMesh(in,_mesh,dataset) ) {
-                    emit log(LOGERR,"Unable to load mesh!");
-                    return -1;
-                }
-            } else {
-                emit log(LOGERR,"Unable to add empty poly mesh!");
-                return -1;
-            }
-
-
-            object->setFromFileName(_filename);
-            object->setName(object->filename());
-
-            object->update();
-
-            //general stuff
-            emit openedFile( object->id() );
-
-            PluginFunctions::viewAll();
-
-            return id;
-
-        }
-
-
-    }
+  }
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
-    else if (bestType == BMT_PolyhedralMesh)
-    {
-        // add a Polyhedral mesh
-        int id = -1;
-        emit addEmptyObject(DATA_POLYHEDRAL_MESH, id);
+  else if (bestType == BMT_PolyhedralMesh)
+  {
+    // add a Polyhedral mesh
+    int id = -1;
+    emit addEmptyObject(DATA_POLYHEDRAL_MESH, id);
 
-        PolyhedralMeshObject* object(0);
+    PolyhedralMeshObject* object(0);
 
-        if(PluginFunctions::getObject( id, object)){
+    if(PluginFunctions::getObject( id, object)){
 
-            PolyhedralMesh* _mesh;
-            _mesh = PluginFunctions::polyhedralMesh(object);
+      PolyhedralMesh* _mesh;
+      _mesh = PluginFunctions::polyhedralMesh(object);
 
-            if ( _mesh != 0 ) {
-                if ( !loadMesh(in,_mesh,dataset) ) {
-                    emit log(LOGERR,"Unable to load mesh!");
-                    return -1;
-                }
-            } else {
-                emit log(LOGERR,"Unable to add empty polyhedral mesh!");
-                return -1;
-            }
-
-            object->setFromFileName(_filename);
-            object->setName(object->filename());
-
-            object->update();
-
-            object->setObjectDrawMode(ACG::SceneGraph::DrawModes::getDrawMode("Cells (flat shaded)"));
-
-            //general stuff
-            emit openedFile( object->id() );
-
-            PluginFunctions::viewAll();
-
-            return id;
+      if ( _mesh != 0 ) {
+        if ( !loadMesh(in,_mesh,dataset) ) {
+          emit log(LOGERR,"Unable to load mesh!");
+          return -1;
         }
+      } else {
+        emit log(LOGERR,"Unable to add empty polyhedral mesh!");
+        return -1;
+      }
 
+      baseObj = object;
     }
+
+  }
 #endif //ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
-    else if (bestType == BMT_HexahedralMesh)
-    {
-        // add a heexahedral mesh
-        int id = -1;
-        emit addEmptyObject(DATA_HEXAHEDRAL_MESH, id);
+  else if (bestType == BMT_HexahedralMesh)
+  {
+    // add a heexahedral mesh
+    int id = -1;
+    emit addEmptyObject(DATA_HEXAHEDRAL_MESH, id);
 
-        HexahedralMeshObject* object(0);
+    HexahedralMeshObject* object(0);
 
-        if(PluginFunctions::getObject( id, object)){
+    if(PluginFunctions::getObject( id, object)){
 
-            HexahedralMesh* _mesh;
-            _mesh = PluginFunctions::hexahedralMesh(object);
+      HexahedralMesh* _mesh;
+      _mesh = PluginFunctions::hexahedralMesh(object);
 
-            if ( _mesh != 0 ) {
-                if ( !loadMesh(in,_mesh,dataset) ) {
-                    emit log(LOGERR,"Unable to load mesh!");
-                    return -1;
-                }
-            } else {
-                emit log(LOGERR,"Unable to add empty hexahedral mesh!");
-                return -1;
-            }
-
-
-            object->setFromFileName(_filename);
-            object->setName(object->filename());
-
-            object->update();
-
-            object->setObjectDrawMode(ACG::SceneGraph::DrawModes::getDrawMode("Cells (flat shaded)"));
-
-            //general stuff
-            emit openedFile( object->id() );
-
-            PluginFunctions::viewAll();
-
-            return id;
+      if ( _mesh != 0 ) {
+        if ( !loadMesh(in,_mesh,dataset) ) {
+          emit log(LOGERR,"Unable to load mesh!");
+          return -1;
         }
-
+      } else {
+        emit log(LOGERR,"Unable to add empty hexahedral mesh!");
+        return -1;
+      }
+      baseObj = object;
     }
+
+  }
 #endif //ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+
+  if (baseObj)
+  {
+    baseObj->setFromFileName(_filename);
+    baseObj->setName(baseObj->filename());
+
+
+    emit updatedObject(baseObj->id(), UPDATE_ALL);
+
+    //general stuff
+    emit openedFile( baseObj->id() );
+
+    return baseObj->id();
+  }
 
   emit log(LOGERR,tr("Error in load mesh!"));
 

@@ -152,7 +152,7 @@ int FileOMPlugin::loadObject(QString _filename) {
                 PolyMeshObject* object(0);
                 if(PluginFunctions::getObject( objectId, object )) {
                     
-                    object->show();
+                    emit updatedObject(objectId, UPDATE_ALL);
                     emit openedFile( objectId );
                 }
                 
@@ -204,7 +204,6 @@ int FileOMPlugin::loadObject(QString _filename) {
             PolyMeshObject* object(0);
             if(PluginFunctions::getObject( objectId, object )) {
             
-                object->show();
                 emit openedFile( objectId );
             }
             return objectId;
@@ -218,7 +217,7 @@ int FileOMPlugin::loadObject(QString _filename) {
         PolyMeshObject* object(0);
         if(PluginFunctions::getObject( objectId, object )) {
             
-            object->show();
+            emit updatedObject(objectId, UPDATE_ALL);
             emit openedFile( objectId );
         }
         
@@ -230,8 +229,7 @@ int FileOMPlugin::loadObject(QString _filename) {
         
         TriMeshObject* object(0);
         if(PluginFunctions::getObject( objectId, object )) {
-            
-            object->show();
+            emit updatedObject(objectId, UPDATE_ALL);
             emit openedFile( objectId );
         }
         
@@ -246,7 +244,7 @@ int FileOMPlugin::loadObject(QString _filename) {
     TriMeshObject* object(0);
     if(PluginFunctions::getObject( objectId, object )) {
         
-        object->show();
+        emit updatedObject(objectId, UPDATE_ALL);
         emit openedFile( objectId );
     }
     
@@ -319,8 +317,6 @@ int FileOMPlugin::loadTriMeshObject(QString _filename){
         }
         
         object->mesh()->update_normals();
-        
-        object->update();
         
         backupTextureCoordinates(*(object->mesh()));
 
@@ -410,8 +406,6 @@ int FileOMPlugin::loadPolyMeshObject(QString _filename){
 
 
         object->mesh()->update_normals();
-        
-        object->update();
         
         backupTextureCoordinates(*(object->mesh()));
 

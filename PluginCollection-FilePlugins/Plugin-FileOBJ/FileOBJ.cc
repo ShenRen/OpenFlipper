@@ -2001,9 +2001,6 @@ int FileOBJPlugin::loadObject(QString _filename) {
         polyMeshObj->mesh()->update_normals();
       else
         polyMeshObj->mesh()->update_face_normals();
-
-      polyMeshObj->update();
-      polyMeshObj->show();
     }
 
     //handle new TriMeshes
@@ -2015,9 +2012,6 @@ int FileOBJPlugin::loadObject(QString _filename) {
         triMeshObj->mesh()->update_normals();
       else
         triMeshObj->mesh()->update_face_normals();
-
-      triMeshObj->update();
-      triMeshObj->show();
     }
 
 #ifdef ENABLE_BSPLINECURVE_SUPPORT
@@ -2051,9 +2045,8 @@ int FileOBJPlugin::loadObject(QString _filename) {
     }
 
     //general stuff
+    emit updatedObject( object->id(), UPDATE_ALL );
     emit openedFile( object->id() );
-
-    PluginFunctions::viewAll();
   }
 
   forceTriangleMesh_ = false;

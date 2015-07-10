@@ -157,12 +157,15 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
         hexMesh = true;
     }
 
+    BaseObjectData* baseObj = 0;
+
     if(hexMesh) {
 
         emit addEmptyObject(DATA_HEXAHEDRAL_MESH, id);
         HexahedralMeshObject* obj(0);
 
         if (PluginFunctions::getObject(id, obj)) {
+            baseObj = obj;
 
             if(compatibility_mode) {
 
@@ -176,17 +179,7 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
                 }
             }
 
-            obj->setFromFileName(_filename);
-            obj->setName(obj->filename());
-
-            // Compute face normals
-            emit updatedObject(obj->id(), UPDATE_ALL);
         }
-
-        emit openedFile(obj->id());
-
-        // Go into solid flat shaded mode
-        obj->setObjectDrawMode(ACG::SceneGraph::DrawModes::getDrawMode("Cells (flat shaded)"));
 
         // Scale polyhedra a bit
         obj->meshNode()->set_scaling(0.8);
@@ -197,6 +190,7 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
         PolyhedralMeshObject* obj(0);
 
         if (PluginFunctions::getObject(id, obj)) {
+            baseObj = obj;
 
             if(compatibility_mode) {
 
@@ -209,23 +203,26 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
                     emit log(LOGERR, QString("Could not open file %1!").arg(_filename));
                 }
             }
-            obj->setFromFileName(_filename);
-            obj->setName(obj->filename());
 
-            // Compute face normals
-            emit updatedObject(obj->id(), UPDATE_ALL);
         }
-
-        emit openedFile(obj->id());
-
-        // Go into solid flat shaded mode
-        obj->setObjectDrawMode(ACG::SceneGraph::DrawModes::getDrawMode("Cells (flat shaded)"));
 
         // Scale polyhedra a bit
         obj->meshNode()->set_scaling(0.8);
     }
 
-    PluginFunctions::viewAll();
+    if (baseObj)
+    {
+      baseObj->setFromFileName(_filename);
+      baseObj->setName(baseObj->filename());
+
+      // Go into solid flat shaded mode
+      baseObj->setObjectDrawMode(ACG::SceneGraph::DrawModes::getDrawMode("Cells (flat shaded)"));
+
+      // Compute face normals
+      emit updatedObject(baseObj->id(), UPDATE_ALL);
+
+      emit openedFile(baseObj->id());
+    }
 
     return id;
 }

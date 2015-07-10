@@ -68,6 +68,7 @@ class FileHeightFieldPNGPlugin : public QObject, BaseInterface, FileInterface, L
     void save(int _id , QString _filename );
     void log(Logtype _type, QString _message);
     void log(QString _message);
+    void updatedObject(int _identifier, const UpdateType& _type);
 
   private slots:
 
@@ -77,6 +78,8 @@ class FileHeightFieldPNGPlugin : public QObject, BaseInterface, FileInterface, L
 
     void initializePlugin();
     
+    bool showImageDialog(const QImage& _image, int* minX, int* maxX, int* minY, int* maxY, double* height);
+
   public :
 
      ~FileHeightFieldPNGPlugin() {};

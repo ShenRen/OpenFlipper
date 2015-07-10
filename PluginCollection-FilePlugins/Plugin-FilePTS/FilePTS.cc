@@ -766,9 +766,6 @@ int FilePTSPlugin::loadObject( QString _filename )
           emit updatedObject( splatCloudObjectId, UPDATE_ALL );
           emit openedFile( splatCloudObjectId );
 
-          // update viewport
-          PluginFunctions::viewAll();
-
           // get drawmodes
           ACG::SceneGraph::DrawModes::DrawMode splatsDrawMode = ACG::SceneGraph::DrawModes::getDrawMode( "Splats" );
           ACG::SceneGraph::DrawModes::DrawMode dotsDrawMode   = ACG::SceneGraph::DrawModes::getDrawMode( "Dots"   );

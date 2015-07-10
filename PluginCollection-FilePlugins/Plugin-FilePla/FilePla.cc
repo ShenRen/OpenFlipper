@@ -120,7 +120,7 @@ int FilePlaPlugin::loadObject(QString _filename)
         }
       }
 
-      emit updatedObject( plane->id() );
+      emit updatedObject( plane->id(), UPDATE_ALL );
 
     }
 

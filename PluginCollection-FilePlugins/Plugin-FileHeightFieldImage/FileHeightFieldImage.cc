@@ -88,6 +88,24 @@ DataType  FileHeightFieldPNGPlugin::supportedType() {
   return type;
 }
 
+bool FileHeightFieldPNGPlugin::showImageDialog(const QImage& _image, int* _minX, int* _maxX, int* _minY, int* _maxY, double* _height)
+{
+  ImageDialog imageDialog(_image);
+  imageDialog.heightValue->setValue(*_height);
+
+  int result = imageDialog.exec();
+
+  if ( result == QDialog::Accepted) {
+    *_minX   = imageDialog.minX->value();
+    *_maxX   = imageDialog.maxX->value();
+    *_minY   = imageDialog.minY->value();
+    *_maxY   = imageDialog.maxY->value();
+    *_height = imageDialog.heightValue->value();
+  } else {
+    return false;
+  }
+  return true;
+}
 
 
 int FileHeightFieldPNGPlugin::loadObject(QString _filename)
@@ -112,20 +130,20 @@ int FileHeightFieldPNGPlugin::loadObject(QString _filename)
   double height = image.height() / 100;
 
   if ( OpenFlipper::Options::gui() ) {
-    ImageDialog* imageDialog = new ImageDialog(image);
-    imageDialog->heightValue->setValue(height);
 
-    int result = imageDialog->exec();
-
-    if ( result == QDialog::Accepted) {
-      minX   = imageDialog->minX->value();
-      maxX   = imageDialog->maxX->value();
-      minY   = imageDialog->minY->value();
-      maxY   = imageDialog->maxY->value();
-      height = imageDialog->heightValue->value();
-    } else {
+    bool ret = false;
+    QMetaObject::invokeMethod(this,"showImageDialog",
+        // execute widget in main thread
+        (QThread::currentThread() != QApplication::instance()->thread()) ? Qt::BlockingQueuedConnection: Qt::DirectConnection,
+        Q_RETURN_ARG(bool, ret),
+        Q_ARG(const QImage&, image),
+        Q_ARG(int*,&minX),
+        Q_ARG(int*,&maxX),
+        Q_ARG(int*,&minY),
+        Q_ARG(int*,&maxY),
+        Q_ARG(double*,&height));
+    if (!ret)
       return -1;
-    }
   }
 
 
@@ -144,13 +162,11 @@ int FileHeightFieldPNGPlugin::loadObject(QString _filename)
       loadImageAsTriangleMesh(image,mesh,minX ,maxX , minY ,maxY, height);
 
       // Make sure everything is ready
-      object->update();
+      emit updatedObject(object->id(), UPDATE_ALL);
 
       // Tell core about update
       emit openedFile( id );
 
-      // Update viewport
-      PluginFunctions::viewAll();
     }
   }
 

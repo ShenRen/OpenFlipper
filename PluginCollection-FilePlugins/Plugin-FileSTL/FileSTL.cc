@@ -151,13 +151,9 @@ int FileSTLPlugin::loadObject(QString _filename) {
             object->mesh()->update_halfedge_normals();
         }
 
-        object->update();
-        object->show();
+        emit updatedObject(object->id(), UPDATE_ALL);
 
         emit openedFile( object->id() );
-
-        // Update viewport
-        PluginFunctions::viewAll();
 
         return object->id();
 

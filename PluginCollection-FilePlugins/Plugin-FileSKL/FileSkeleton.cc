@@ -226,7 +226,6 @@ int FileSKLPlugin::loadObject(QString _filename)
     obj->setName(obj->filename());
     emit updatedObject( obj->id(), UPDATE_ALL );
     emit openedFile( obj->id() );
-    PluginFunctions::viewAll();
   } else {
     emit log(LOGERR,tr("Unable to add empty skeleton"));
   }

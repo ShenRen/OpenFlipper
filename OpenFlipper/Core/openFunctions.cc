@@ -623,12 +623,9 @@ void Core::slotFileOpened ( int _id ) {
   PluginFunctions::getObject(_id,object2);
 
   // ================================================================================
-  // if this is the first object opend, reset the global view
+  // show all files
   // ================================================================================
-  if ( PluginFunctions::objectCount() == 1 && OpenFlipper::Options::gui() && !OpenFlipper::Options::sceneGraphUpdatesBlocked() )
-    for ( unsigned int i = 0 ; i < OpenFlipper::Options::examinerWidgets() ; ++i ) {
-      coreWidget_->examiner_widgets_[i]->viewAll();
-    }
+  PluginFunctions::viewAll();
 
   // objectRoot_->dumpTree();
 }

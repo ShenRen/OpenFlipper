@@ -473,7 +473,6 @@ int FileBVHPlugin::loadObject(QString _filename) {
   object->source( PluginFunctions::objectCount() > 4 );
   emit updatedObject( object->id(), UPDATE_ALL );
   emit openedFile( object->id() );
-  PluginFunctions::viewAll();
 
   return object->id();
 }

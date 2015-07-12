@@ -702,10 +702,11 @@ void MeshCompiler::splitVertices()
   if (numIsolatedVerts_ > 0)
   {
     // create table that stores how many isolated vertices have been encountered up to each vertex
-    std::vector<int> IsoFix(numPositions, 0);
+    //  this is done in the index domain after splitting
+    std::vector<int> IsoFix(splitter_->numVerts, 0);
 
     int fixIndex = 0;
-    for (int i = 0; i < numPositions; ++i)
+    for (int i = 0; i < splitter_->numVerts; ++i)
     {
       if (splitter_->isIsolated(i))
         fixIndex--;
@@ -713,10 +714,10 @@ void MeshCompiler::splitVertices()
       IsoFix[i] = fixIndex;
     }
 
-    // IsoFix[] array contains offsets <= 0 for each position.
-    // It maps from each position id to the vbo index, which does not contain any isolates.
+    // IsoFix[] array contains offsets <= 0 for each split vertex id.
+    // It maps from such an id to the vbo index, which does not contain any isolates.
     // Isolates may be appended later to the vbo if the user wants that.
-    
+
     numDrawVerts_ = 0;
 
     // apply index fixing table to current vertex ids
@@ -732,9 +733,9 @@ void MeshCompiler::splitVertices()
         // get interleaved vertex id for (i, k) after splitting
         int idx = getInputIndexSplit(i, k);
 
-        // vertex[0] is the position index of (i, k)
-        // IsoFix[vertex[0]] is the offset that has to be applies to the interleaved vertex id
-        idx += IsoFix[vertex[0]];   
+        // idx is the split vertex id of (i, k)
+        // IsoFix[idx] is the offset that has to be applied to that
+        idx += IsoFix[idx];
 
         // store fixed vertex id
         setInputIndexSplit(i, k, idx);

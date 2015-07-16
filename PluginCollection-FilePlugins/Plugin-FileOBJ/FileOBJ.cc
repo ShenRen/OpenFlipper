@@ -170,11 +170,15 @@ void trimString( std::string& _string) {
 
 bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
 {
-  std::string line;
-  std::string keyWrd;
-  std::string textureName;
+  static QString line;
+  static QString keyWrd;
+  static QString textureName;
+  line.clear();
+  keyWrd.clear();
+  textureName.clear();
 
-  std::string matName;
+  static QString matName;
+  matName.clear();
   Material    mat;
   float       f1,f2,f3;
   bool        insideDefintion = false;
@@ -182,9 +186,9 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
 
 
   //open stream
-  std::fstream matStream( _filename.toUtf8(), std::ios_base::in );
+  QTextStream matStream( &_filename, QIODevice::ReadOnly );
 
-  if ( !matStream ){
+  if ( !matStream.status()==QTextStream::Ok ){
     emit log(LOGERR, tr("readMaterial : cannot open file %1").arg(_filename) );
     return false;
   }
@@ -193,71 +197,77 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
   mat.cleanup();
 
   //parse material file
-  while( matStream && !matStream.eof() )
+  while( matStream.status() == QTextStream::Ok && !matStream.atEnd() )
   {
-    std::getline(matStream,line);
-    if ( matStream.bad() ){
+    line = matStream.readLine();
+    if ( matStream.status() != QTextStream::Ok ){
       emit log(LOGERR, tr("readMaterial : Warning! Could not read file properly!"));
       return false;
     }
 
-    if ( line.empty() )
+    if ( line.isEmpty() )
       continue;
 
-    std::stringstream stream(line);
+    QTextStream stream(&line);
 
     stream >> keyWrd;
 
-    if( ( isspace(line[0]) && line[0] != '\t' ) || line[0] == '#' )
+    if( ( line[0].isSpace() && line[0] != QLatin1Char('\t') ) || line[0] == QLatin1Char('#') )
     {
-      if (insideDefintion && !matName.empty() && mat.is_valid())
+      if (insideDefintion && !matName.isEmpty() && mat.is_valid())
       {
-        _importer.materials()[matName] = mat;
+        _importer.materials()[matName.toStdString()] = mat;
         mat.cleanup();
       }
     }
 
-    else if (keyWrd == "newmtl") // begin new material definition
+    else if (keyWrd == QLatin1String("newmtl")) // begin new material definition
     {
       stream >> matName;
       insideDefintion = true;
     }
 
-    else if (keyWrd == "Kd") // diffuse color
+    else if (keyWrd == QLatin1String("Kd")) // diffuse color
     {
-      stream >> f1; stream >> f2; stream >> f3;
+      f1 = getFloat(stream);
+      f2 = getFloat(stream);
+      f3 = getFloat(stream);
 
-      if( !stream.fail() )
+      if( stream.status()==QTextStream::Ok )
         mat.set_Kd(f1,f2,f3);
     }
 
-    else if (keyWrd == "Ka") // ambient color
+    else if (keyWrd == QLatin1String("Ka")) // ambient color
     {
-      stream >> f1; stream >> f2; stream >> f3;
+      f1 = getFloat(stream);
+      f2 = getFloat(stream);
+      f3 = getFloat(stream);
 
-      if( !stream.fail() )
+      if( !stream.status()==QTextStream::Ok )
         mat.set_Ka(f1,f2,f3);
     }
 
-    else if (keyWrd == "Ks") // specular color
+    else if (keyWrd == QLatin1String("Ks")) // specular color
     {
-      stream >> f1; stream >> f2; stream >> f3;
+      f1 = getFloat(stream);
+      f2 = getFloat(stream);
+      f3 = getFloat(stream);
 
-      if( !stream.fail() )
+      if( !stream.status()==QTextStream::Ok )
         mat.set_Ks(f1,f2,f3);
     }
 #if 0
-    else if (keyWrd == "illum") // diffuse/specular shading model
+    else if (keyWrd == QLatin1String("illum") // diffuse/specular shading model
     {
       ; // just skip this
     }
 
-    else if (keyWrd == "Ns") // Shininess [0..200]
+    else if (keyWrd == QLatin1String("Ns") // Shininess [0..200]
     {
       ; // just skip this
     }
 
-    else if (keyWrd == "map_") // map images
+    else if (keyWrd == QLatin1String("map_") // map images
     {
       // map_Ks, specular map
       // map_Ka, ambient map
@@ -266,31 +276,31 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
       ; // just skip this
     }
 #endif
-    else if (keyWrd == "map_Kd" ) {
+    else if (keyWrd == QLatin1String("map_Kd") ) {
       // Get the rest of the line, removing leading or trailing spaces
       // This will define the filename of the texture
-      std::getline(stream,textureName);
-      trimString(textureName);
-      if ( ! textureName.empty() )
-        mat.set_map_Kd( textureName, textureId++ );
+      textureName = stream.readLine();
+      textureName = textureName.trimmed();
+      if ( ! textureName.isEmpty() )
+        mat.set_map_Kd( textureName.toStdString(), textureId++ );
     }
-    else if (keyWrd == "Tr") // transparency value
+    else if (keyWrd == QLatin1String("Tr")) // transparency value
     {
-      stream >> f1;
+      f1 = getFloat(stream);
 
-      if( !stream.fail() )
+      if( stream.status() == QTextStream::Ok )
         mat.set_Tr(f1);
     }
-    else if (keyWrd == "d") // transparency value
+    else if (keyWrd == QLatin1String("d")) // transparency value
     {
-      stream >> f1;
+      f1 = getFloat(stream);
 
-      if( !stream.fail() )
+      if( stream.status() == QTextStream::Ok )
         mat.set_Tr(f1);
     }
 
-    if ( matStream && insideDefintion && mat.is_valid() && !matName.empty())
-      _importer.materials()[matName] = mat;
+    if ( matStream.status() == QTextStream::Ok && insideDefintion && mat.is_valid() && !matName.isEmpty())
+      _importer.materials()[matName.toStdString()] = mat;
   }
 
   emit log( tr("%1 materials loaded.").arg( _importer.materials().size() ) );

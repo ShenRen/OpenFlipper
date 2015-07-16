@@ -152,20 +152,6 @@ DataType  FileOBJPlugin::supportedType() {
     return type;
 }
 
-//-----------------------------------------------------------------------------------------------------
-
-void trimString( std::string& _string) {
-  // Trim Both leading and trailing spaces
-
-  size_t start = _string.find_first_not_of(" \t\r\n");
-  size_t end   = _string.find_last_not_of(" \t\r\n");
-
-  if(( std::string::npos == start ) || ( std::string::npos == end))
-    _string = "";
-  else
-    _string = _string.substr( start, end-start+1 );
-}
-
 //-----------------------------------------------------------------------------
 
 bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
@@ -179,10 +165,16 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
 
   static QString matName;
   matName.clear();
-  Material    mat;
-  float       f1,f2,f3;
-  bool        insideDefintion = false;
-  int         textureId = 1;
+  static Material    mat;
+  mat.cleanup();
+  static float       f1,f2,f3;
+  f1 = 0;
+  f2 = 0;
+  f3 = 0;
+  static bool        insideDefintion;
+  insideDefintion = false;
+  static int         textureId;
+  textureId = 1;
 
 
   //open stream

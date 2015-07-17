@@ -1,6 +1,6 @@
-/*===========================================================================*\
-*                                                                            *
-*                              OpenFlipper                                   *
+/* ========================================================================= *
+ *                                                                           *
+ *                               OpenFlipper                                 *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,14 +36,14 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                            *
-\*===========================================================================*/
+ *                                                                           *
+ * ========================================================================= */
 
 /*===========================================================================*\
 *                                                                            *
-*   $Revision: 18129 $                                                       *
+*   $Revision: 13620 $                                                       *
 *   $LastChangedBy: moebius $                                                *
-*   $Date: 2014-02-05 10:25:53 +0100 (Wed, 05 Feb 2014) $                     *
+*   $Date: 2012-02-01 14:51:25 +0100 (Mi, 01 Feb 2012) $                     *
 *                                                                            *
 \*===========================================================================*/
 

@@ -452,6 +452,11 @@ bool FileOFFPlugin::readFileOptions(QString _filename, OFFImporter& _importer) {
 
             // Skip vertex indices
             for(uint i = 0; i < tmp_count; ++i) {
+              if(sstr.eof())
+              {
+                emit log(LOGERR,"The OFF File is Malformatted! Aborting...");
+                return false;
+              }
                 sstr >> dummy_uint;
             }
 

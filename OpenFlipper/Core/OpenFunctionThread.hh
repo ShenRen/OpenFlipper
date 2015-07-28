@@ -36,7 +36,7 @@ public slots:
 public:
 
   ~LoadFromPluginThread();
-  LoadFromPluginThread(QVector<LoadInfos> _loadInfos, const QString& _jobName);
+  LoadFromPluginThread(const QVector<LoadInfos>& _loadInfos, const QString& _jobName);
 
 
   int getObjId(int index)const;

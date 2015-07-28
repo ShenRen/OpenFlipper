@@ -123,7 +123,10 @@ endif()
 
 if (WIN32)
   add_definitions( -DACGDLL
-                   -DUSEACG )
+                   -DUSEACG 
+                   -DPLUGINLIBDLL
+                   -DUSEPLUGINLIBDLL
+                   )
 endif ()
 
 

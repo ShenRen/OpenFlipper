@@ -493,7 +493,7 @@ signals:
       void slotLoad(QString _filename, DataType _type, int& _id);
 
       /// the load widget wants to load a given file
-      void slotLoad(QString _filename, int _pluginID);
+      void slotLoad(QStringList _filenames, IdList _pluginIDs);
       
       /// Called when a file has been opened
       void slotFileOpened ( int _id );
@@ -804,6 +804,8 @@ public slots:
   int loadObject ( QString _filename );
   
 private slots:
+  void loadObjectFinished(QString _filename);
+
   /** Do a reset of the scenegraph (bounding box update,...)
    *
    * @param _resetTrackBall Should the rotation center of the trackball be reset to the scene center?

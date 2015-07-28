@@ -69,6 +69,8 @@
 #include <OpenFlipper/common/DataTypes.hh>
 #include <time.h>
 
+#include "OpenFunctionThread.hh"
+
 void Core::resetScenegraph( bool _resetTrackBall  ) {
 
   if ( OpenFlipper::Options::gui() && !OpenFlipper::Options::sceneGraphUpdatesBlocked() ) {
@@ -205,6 +207,42 @@ void Core::slotExecuteAfterStartup() {
     exitApplication();
 }
 
+void Core::loadObjectFinished(QString _threadId)
+{
+  if ( OpenFlipper::Options::gui() ) {
+    LoadFromPluginThread* thread = dynamic_cast<LoadFromPluginThread*>(sender());
+    if (!thread)
+      return;
+
+    int id = thread->getObjId(0);
+    QString filename = thread->getFilename(0);
+
+    if ( id != -1 ) {
+      coreWidget_->statusMessage( tr("Loading %1 ... done").arg(filename), 4000 );
+
+      // Get the object to figure out the data type
+      BaseObject* object;
+      PluginFunctions::getObject(id,object);
+
+      // Security check, if object really exists
+      if ( object != 0 ) {
+
+        // Add to recent files with the given datatype
+        if ( OpenFlipper::Options::gui() )
+          coreWidget_->addRecent(filename, object->dataType());
+      } else {
+        emit log(LOGERR, tr("Unable to add recent as object with id %1 could not be found!").arg(id) );
+      }
+
+    } else
+      coreWidget_->statusMessage( tr("Loading %1 ... failed!").arg(filename), 4000 );
+
+    if ( !OpenFlipper::Options::sceneGraphUpdatesBlocked() )
+      coreWidget_->setStatus(ApplicationStatus::READY );
+  }
+
+}
+
 
 int Core::loadObject ( QString _filename ) {
   /** \todo Check if this function is ok. It should check all plugins for the given files and do not depend
@@ -269,35 +307,36 @@ int Core::loadObject ( QString _filename ) {
           coreWidget_->setStatus(ApplicationStatus::PROCESSING );
       }
 
-      //load file
-      int id = supportedTypes()[i].plugin->loadObject(_filename);
+      QString jobId = QString("Loading_"+_filename);
+      QVector<LoadFromPluginThread::LoadInfos> infos;
+      infos.push_back(LoadFromPluginThread::LoadInfos(supportedTypes()[i].plugin, _filename));
+      LoadFromPluginThread* thread = new LoadFromPluginThread(infos, jobId);
 
-      if ( OpenFlipper::Options::gui() ) {
-        if ( id != -1 ) {
-          coreWidget_->statusMessage( tr("Loading %1 ... done").arg(_filename), 4000 );
-          
-          // Get the object to figure out the data type
-          BaseObject* object;
-          PluginFunctions::getObject(id,object);
+      connect(thread, SIGNAL(finished(QString)), this, SLOT(slotFinishJob(QString)));
+      connect(thread, SIGNAL(finished(QString)), this, SLOT(loadObjectFinished(QString)));
 
-          // Security check, if object really exists         
-          if ( object != 0 ) { 
+      if ( OpenFlipper::Options::gui() )
+      {
+        connect(thread, SIGNAL(updateView()), this, SLOT(updateView()), Qt::BlockingQueuedConnection);
 
-            // Add to recent files with the given datatype
-            if ( OpenFlipper::Options::gui() )
-              coreWidget_->addRecent(_filename, object->dataType());
-          } else {
-            emit log(LOGERR, tr("Unable to add recent as object with id %1 could not be found!").arg(id) );
-          }
-          
-        } else
-          coreWidget_->statusMessage( tr("Loading %1 ... failed!").arg(_filename), 4000 );
+        slotStartJob(jobId , QString("Loading %1").arg(_filename) , 0, 0, true);
+        thread->start();
+        thread->startProcessing();
 
-        if ( !OpenFlipper::Options::sceneGraphUpdatesBlocked() )
-          coreWidget_->setStatus(ApplicationStatus::READY );
+
+        while(thread->isRunning())
+          QApplication::processEvents();
+        // process last events
+        QApplication::processEvents();
+      }
+      else
+      {
+        thread->loadFromPlugin();
       }
 
-      return id;
+      int objId = thread->getObjId(0);
+
+      return objId;
     }
   }
 
@@ -305,6 +344,7 @@ int Core::loadObject ( QString _filename ) {
 
   return -1;
 }
+
 
 /// Function for loading a given file
 int Core::loadObject( DataType _type, QString _filename) {
@@ -387,34 +427,43 @@ int Core::loadObject( DataType _type, QString _filename) {
         coreWidget_->setStatus(ApplicationStatus::PROCESSING );
     }
 
-    int id = -1;
-
     //load file
+    QString jobId = QString("Loading_"+_filename);
+    QVector<LoadFromPluginThread::LoadInfos> infos;
+
     if ( checkSlot( supportedTypes()[i].object , "loadObject(QString,DataType)" ) )
-      id = supportedTypes()[i].plugin->loadObject(_filename, _type);
+      infos.push_back(LoadFromPluginThread::LoadInfos(supportedTypes()[i].plugin, _type,_filename));
     else
-      id = supportedTypes()[i].plugin->loadObject(_filename);
+      infos.push_back(LoadFromPluginThread::LoadInfos(supportedTypes()[i].plugin, _filename));
 
-    if ( OpenFlipper::Options::gui() ) {
-      if ( id != -1 ) {
-        coreWidget_->statusMessage( tr("Loading %1 ... done").arg(_filename), 4000 );
+    LoadFromPluginThread* thread = new LoadFromPluginThread(infos, jobId);
 
-        // Get the object to figure out the data type
-        BaseObject* object;
-        PluginFunctions::getObject(id,object);
+    connect(thread, SIGNAL(finished(QString)), this, SLOT(slotFinishJob(QString)));
+    connect(thread, SIGNAL(finished(QString)), this, SLOT(loadObjectFinished(QString)));
 
-        // Add to recent files with the given datatype
-        if ( OpenFlipper::Options::gui() )
-          coreWidget_->addRecent(_filename, object->dataType());
+    if ( OpenFlipper::Options::gui() )
+    {
+      connect(thread, SIGNAL(updateView()), this, SLOT(updateView()), Qt::BlockingQueuedConnection);
 
-      } else
-        coreWidget_->statusMessage( tr("Loading %1 ... failed!").arg(_filename), 4000 );
+      slotStartJob(jobId , QString("Loading %1").arg(_filename) , 0, 0, true);
+      thread->start();
+      thread->startProcessing();
 
-      if ( !OpenFlipper::Options::sceneGraphUpdatesBlocked() )
-        coreWidget_->setStatus(ApplicationStatus::READY );
+
+      while(thread->isRunning())
+        QApplication::processEvents();
+      // process last events
+      QApplication::processEvents();
+    }
+    else
+    {
+      thread->loadFromPlugin();
     }
 
-    return id;
+    int objId = thread->getObjId(0);
+
+    return objId;
+
   } else {
 
     emit log(LOGERR, tr("Unable to load object. No suitable plugin found!") );
@@ -513,70 +562,122 @@ void Core::slotCopyObject( int _oldId , int& _newId ) {
 
 }
 
-/// Function for loading a given file
-void Core::slotLoad(QString _filename, int _pluginID) {
+
+/// Function for loading multiple files
+void Core::slotLoad(QStringList _filenames, IdList _pluginIDs) {
+
+
+  QString filemsg = "";
+  if (_filenames.size() > 1)
+    filemsg = QString( tr("Loading Files ...") );
+  else
+    filemsg = QString( tr("Loading %1 ...").arg(_filenames[0]) );
 
   if ( OpenFlipper::Options::gui() ) {
-    coreWidget_->statusMessage( tr("Loading %1 ... ").arg(_filename));
+    coreWidget_->statusMessage( filemsg );
     if ( !OpenFlipper::Options::sceneGraphUpdatesBlocked() )
       coreWidget_->setStatus(ApplicationStatus::PROCESSING );
   }
 
-  //load file
-  time_t start = clock();
-  int id = supportedTypes()[_pluginID].plugin->loadObject(_filename);
-  time_t end = clock();
-  emit log(LOGINFO,tr("Loading %1 with Plugin %2 took %3 seconds.").arg(_filename).arg(supportedTypes()[_pluginID].name).arg((double)(end-start)/CLOCKS_PER_SEC) );
+  //setup thread
+  QString jobId = QString("Loading File");
+  if (_filenames.size() > 1)
+    jobId += "s";
 
-  if ( OpenFlipper::Options::gui() ) {
-    if ( id != -1 )
-      coreWidget_->statusMessage( tr("Loading %1 ... done").arg(_filename), 4000 );
+  QVector<LoadFromPluginThread::LoadInfos> loadInfos;
+  for (int i = 0; i < _filenames.size(); ++i)
+    loadInfos.push_back(LoadFromPluginThread::LoadInfos(supportedTypes()[_pluginIDs[i]].plugin, _filenames[i]));
+  LoadFromPluginThread* thread = new LoadFromPluginThread(loadInfos, jobId);
+
+  connect(thread, SIGNAL(finished(QString)), this, SLOT(slotFinishJob(QString)));
+  connect(thread, SIGNAL(state(QString , int )), this, SLOT(slotSetJobState(QString , int)));
+
+  if ( OpenFlipper::Options::gui() )
+  {
+    connect(thread, SIGNAL(updateView()), this, SLOT(updateView()), Qt::BlockingQueuedConnection);
+    //block log (decrease performance when loading multiple files)
+    coreWidget_->logWidget_->setUpdatesEnabled(false);
+
+    // start thread
+    if (_filenames.size() > 1)
+      slotStartJob(jobId , QString(filemsg), 0, _filenames.size(), true);
     else
-      coreWidget_->statusMessage( tr("Loading %1 ... failed!").arg(_filename), 4000 );
+      slotStartJob(jobId , QString(filemsg), 0, 0, true);
 
-    if ( !OpenFlipper::Options::sceneGraphUpdatesBlocked() )
-      coreWidget_->setStatus(ApplicationStatus::READY );
+    thread->start();
+    thread->startProcessing();
+
+    //wait thread
+    while(thread->isRunning())
+      QApplication::processEvents();
+    //process last occuring events
+    QApplication::processEvents();
+
+    //unblock and update log
+    coreWidget_->logWidget_->setUpdatesEnabled(true);
   }
-  
+  else
+  {
+    thread->loadFromPlugin();
+  }
+
   // Initialize as unknown type
-  DataType type = DATA_UNKNOWN;
+  QVector<DataType> type = QVector<DataType>(_filenames.size(), DATA_UNKNOWN);
 
-  // An object has been added. Get it and do some processing!
-  if ( id > 0 ) {
+  for (int i = 0; i < _filenames.size(); ++i)
+  {
+    int id = thread->getObjId(i);
 
-    BaseObjectData* object;
-    PluginFunctions::getObject(id,object);
-    
-    if ( !object ) {
+    if ( OpenFlipper::Options::gui() ) {
 
-      BaseObject* baseObj = 0;
-      GroupObject* group = 0;
-      
-      PluginFunctions::getObject(id,baseObj);
-      
-      if (baseObj){
+      if ( id != -1 )
+        coreWidget_->statusMessage( tr("Loading %1 done").arg(_filenames[i]), 4000 );
+      else
+        coreWidget_->statusMessage( tr("Loading %1 failed").arg(_filenames[i]), 4000 );
 
-        group = dynamic_cast< GroupObject* > (baseObj);
-
-        if (group)
-          type = DATA_GROUP;
-      }
-      
-      if ( group == 0 ){
-        emit log(LOGERR,tr("Object id returned but no object with this id has been found! Error in one of the file plugins!"));
-        return;
-      }
+      if ( !OpenFlipper::Options::sceneGraphUpdatesBlocked() )
+        coreWidget_->setStatus(ApplicationStatus::READY );
     }
-    
-    // Get the objects type
-    if (object)
-      type = object->dataType();
+
+    if ( id > 0 ) {
+
+      BaseObjectData* object;
+      PluginFunctions::getObject(id,object);
+
+      if ( !object ) {
+
+        BaseObject* baseObj = 0;
+        GroupObject* group = 0;
+
+        PluginFunctions::getObject(id,baseObj);
+
+        if (baseObj){
+
+          group = dynamic_cast< GroupObject* > (baseObj);
+
+          if (group)
+            type[i] = DATA_GROUP;
+
+        }
+
+        if ( group == 0 ){
+          emit log(LOGERR,tr("Object id returned but no object with this id has been found! Error in one of the file plugins!"));
+          return;
+        }
+      }
+
+      // Get the objects type
+      if (object)
+        type[i] = object->dataType();
+    }
   }
   
   // If the id was greater than zero, add the file to the recent files.
-  if ( id >= 0 )
-    if ( OpenFlipper::Options::gui() )
-      coreWidget_->addRecent(_filename, type);
+  if ( OpenFlipper::Options::gui() )
+    for (int i = 0; i < _filenames.size(); ++i)
+      if ( thread->getObjId(i) >= 0 )
+        coreWidget_->addRecent(_filenames[i], type[i]);
+
 }
 
 /// Slot for loading a given file
@@ -784,7 +885,7 @@ void Core::loadObject() {
 
     if (supportedTypes().size() != 0){
       LoadWidget* widget = new LoadWidget(supportedTypes());
-      connect(widget,SIGNAL(load(QString, int)),this,SLOT(slotLoad(QString, int)));
+      connect(widget,SIGNAL(loadFiles(QStringList, IdList)),this,SLOT(slotLoad(QStringList, IdList)));
       connect(widget,SIGNAL(save(int, QString, int)),this,SLOT(saveObject(int, QString, int)));
 
       widget->setWindowIcon( OpenFlipper::Options::OpenFlipperIcon() );

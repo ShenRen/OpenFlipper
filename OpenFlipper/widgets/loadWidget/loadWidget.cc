@@ -255,6 +255,8 @@ void LoadWidget::loadFile(){
 
 
   //load the selected files
+  QStringList loadableFiles;
+  IdList pluginIds;
   for (int i=0; i < files.size(); i++){
     
     QFileInfo fi(files[i]);
@@ -286,8 +288,11 @@ void LoadWidget::loadFile(){
     //emit load signal
     if ( pluginForExtension_.find( ext ) != pluginForExtension_.end() ){
       emit load(filename, pluginForExtension_[ ext ]);
+      loadableFiles.push_back(filename);
+      pluginIds.push_back(pluginForExtension_[ext]);
     }
   }
+  emit loadFiles(loadableFiles, pluginIds);
 }
 
 /// find suitable plugin for saving current file

@@ -69,6 +69,7 @@ class LoadWidget : public QFileDialog
 
   signals:
     void load(QString _filename, int _pluginID);
+    void loadFiles(QStringList _filenames, IdList _pluginIds);
     void save(int     _id, QString _filename, int _pluginID);
     void save(IdList _ids, QString _filename, int _pluginID);
     

@@ -154,12 +154,294 @@ namespace Viewer {
 
   int ViewerProperties::viewerId() {
     return viewerId_;
-  };
+  }
 
   void ViewerProperties::viewerId(int _id) {
     viewerId_ = _id;
     settingsSection_ = "Viewer" + QString::number(_id) + "/";
+  }
+
+  void ViewerProperties::drawMode(ACG::SceneGraph::DrawModes::DrawMode _mode) {
+    currentDrawMode_ = _mode;
+    emit updated();
+    emit drawModeChanged(viewerId_);
+  }
+
+  ACG::SceneGraph::DrawModes::DrawMode ViewerProperties::drawMode() {
+    return currentDrawMode_;
+  }
+
+  void ViewerProperties::snapshotCounter(const int _counter){
+    snapshotCounter_ = _counter;
+  }
+
+  QString ViewerProperties::snapshotFileType() {
+    return snapshotFileType_;
+  }
+
+  QString ViewerProperties::snapshotName() {
+    return snapshotName_;
+  }
+
+  int ViewerProperties::snapshotCounter() {
+    return snapshotCounter_++;
+  }
+
+  double ViewerProperties::wheelZoomFactor() {
+    return wZoomFactor_;
+  }
+
+  double ViewerProperties::wheelZoomFactorShift() {
+    return wZoomFactorShift_;
+  }
+
+  void ViewerProperties::wheelZoomFactor(double _factor) {
+    wZoomFactor_ = _factor;
+  }
+
+  void ViewerProperties::wheelZoomFactorShift(double _factor) {
+    wZoomFactorShift_ = _factor;
+  }
+
+  bool ViewerProperties::wheelInvert() {
+    return wInvert_;
+  }
+
+  void ViewerProperties::wheelInvert(bool _invert) {
+    wInvert_ = _invert;
+  }
+
+  bool ViewerProperties::isCCWFront(){
+    return CCWFront_;
+  }
+
+  void ViewerProperties::ccwFront() {
+    CCWFront_ = true;
+    emit updated();
+  }
+
+  void ViewerProperties::cwFront() {
+    CCWFront_ = false;
+    emit updated();
+  }
+
+  ACG::Vec4f ViewerProperties::backgroundColor() {
+    return backgroundColor_;
+  }
+
+  QRgb ViewerProperties::backgroundColorRgb(){
+    QColor c;
+    c.setRedF(  backgroundColor_[0]);
+    c.setGreenF(backgroundColor_[1]);
+    c.setBlueF( backgroundColor_[2]);
+    c.setAlphaF(backgroundColor_[3]);
+    return c.rgba();
+  }
+
+  QColor ViewerProperties::backgroundQColor(){
+    QColor c;
+    c.setRedF(  backgroundColor_[0]);
+    c.setGreenF(backgroundColor_[1]);
+    c.setBlueF( backgroundColor_[2]);
+    c.setAlphaF(backgroundColor_[3]);
+    return c;
+  }
+
+  void ViewerProperties::backgroundColor( ACG::Vec4f _color ) {
+    backgroundColor_ = _color; emit updated();
   };
+
+  void ViewerProperties::backgroundColor( QRgb _color ) {
+    QColor c(_color);
+    backgroundColor_[0] = c.redF();
+    backgroundColor_[1] = c.greenF();
+    backgroundColor_[2] = c.blueF();
+    backgroundColor_[3] = c.alphaF();
+    emit updated();
+  }
+
+  void ViewerProperties::backgroundColor( QColor _color ) {
+    backgroundColor_[0] = _color.redF();
+    backgroundColor_[1] = _color.greenF();
+    backgroundColor_[2] = _color.blueF();
+    backgroundColor_[3] = _color.alphaF();
+    emit updated();
+  }
+
+  void ViewerProperties::lockUpdate()  {
+    locked_++;
+  }
+
+  void ViewerProperties::unLockUpdate(){
+    locked_-- ;
+    if ( locked_ <0 ) {
+      std::cerr << "More unlocks then locks" << std::endl;
+      locked_ = 0;
+    }
+  }
+
+  bool ViewerProperties::updateLocked() {
+    return (locked_ != 0);
+  }
+
+  bool ViewerProperties::backFaceCulling() {
+    return backFaceCulling_;
+  }
+
+  void ViewerProperties::backFaceCulling(bool _state ) {
+    backFaceCulling_ = _state;
+    emit updated();
+  }
+
+  void ViewerProperties::twoSidedLighting(bool _state ) {
+    twoSidedLighting_ = _state;
+    emit updated();
+  }
+
+  bool ViewerProperties::twoSidedLighting() {
+    return twoSidedLighting_;
+  }
+
+  void ViewerProperties::multisampling(bool _state ) {
+    multisampling_ = _state;
+    emit updated();
+  }
+
+  bool ViewerProperties::multisampling() {
+    return multisampling_;
+  }
+
+  void ViewerProperties::mipmapping(bool _state ) {
+    glState_->allow_mipmapping(_state); mipmapping_ = _state; emit updated();
+  }
+
+  bool ViewerProperties::mipmapping() {
+    return mipmapping_;
+  }
+
+  void ViewerProperties::animation(bool _state ) {
+    animation_ = _state;
+    emit updated();
+  }
+
+  bool ViewerProperties::animation() {
+    return animation_;
+  }
+
+  ACG::GLState& ViewerProperties::glState() {
+    return (*glState_);
+  }
+
+  const ACG::GLState& ViewerProperties::glState() const {
+    return (*glState_);
+  }
+
+  void ViewerProperties::setglState(ACG::GLState* _glState) {
+    glState_ = _glState;
+  }
+
+  void ViewerProperties::objectMarker (ViewObjectMarker* _marker) {
+    objectMarker_ = _marker;
+    emit updated();
+  }
+
+  ViewObjectMarker* ViewerProperties::objectMarker() {
+    return objectMarker_;
+  }
+
+  double ViewerProperties::orthoWidth() {
+    return orthoWidth_;
+  }
+
+  void ViewerProperties::orthoWidth(double _width){
+    orthoWidth_ = _width;
+    emit updated();
+  }
+
+  double ViewerProperties::nearPlane(){
+    return nearPlane_;
+  }
+
+  void ViewerProperties::setPlanes( double _near, double _far  ) {
+    nearPlane_ = _near;
+    farPlane_ = _far;
+    emit updated();
+  }
+
+  double ViewerProperties::farPlane(){
+    return farPlane_;
+  }
+
+  ACG::Vec3d ViewerProperties::sceneCenter(){
+    return sceneCenter_;
+  }
+
+  void ViewerProperties::sceneCenter(ACG::Vec3d _center){
+    sceneCenter_ = _center;
+    emit updated();
+  }
+
+
+  double ViewerProperties::sceneRadius() {
+    return sceneRadius_;
+  }
+
+  void ViewerProperties::sceneRadius(double _radius ) {
+    sceneRadius_ = _radius;
+    emit updated();}
+
+
+  ACG::Vec3d ViewerProperties::trackballCenter(){
+    return trackballCenter_;
+  }
+
+  void ViewerProperties::trackballCenter(ACG::Vec3d _center){
+    trackballCenter_ = _center;
+    emit updated();
+  }
+
+  double ViewerProperties::trackballRadius() {
+    return trackballRadius_;
+  }
+
+  void ViewerProperties::trackballRadius(double _radius ) {
+    trackballRadius_ = _radius; emit updated();
+  }
+
+  void ViewerProperties::stereo(bool _stereo) {
+    stereo_ = _stereo;
+    emit updated();
+  }
+
+  bool ViewerProperties::stereo() {
+    return stereo_;
+  }
+
+  CursorPainter* ViewerProperties::cursorPainter() {
+    return cursorPainter_;
+  }
+
+  void ViewerProperties::cursorPainter( CursorPainter* _painter ) {
+    cursorPainter_ = _painter;
+  }
+
+  ACG::Vec3d ViewerProperties::cursorPoint3D() {
+    return cursorPoint3D_;
+  }
+
+  void ViewerProperties::cursorPoint3D(ACG::Vec3d _pos) {
+    cursorPoint3D_ = _pos;
+  }
+
+  bool ViewerProperties::cursorPositionValid() {
+    return cursorPositionValid_;
+  }
+
+  void ViewerProperties::cursorPositionValid(bool _valid) {
+    cursorPositionValid_ = _valid;
+  }
+
+
 
 }
 

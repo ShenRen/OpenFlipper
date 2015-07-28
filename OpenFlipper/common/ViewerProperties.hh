@@ -131,12 +131,10 @@ namespace Viewer {
 
     public:
       /// set draw mode (No test if this mode is available!)
-      void drawMode(ACG::SceneGraph::DrawModes::DrawMode _mode) { currentDrawMode_ = _mode;
-                                                                  emit updated();
-                                                                  emit drawModeChanged(viewerId_); };
+      void drawMode(ACG::SceneGraph::DrawModes::DrawMode _mode);
       
       /// get current draw mode
-      ACG::SceneGraph::DrawModes::DrawMode drawMode() { return currentDrawMode_; };
+      ACG::SceneGraph::DrawModes::DrawMode drawMode();
       
     private:
       
@@ -164,16 +162,16 @@ namespace Viewer {
       void snapshotFileType(const QString& _type);
       
       /** Set the start index for the snapshot counter */
-      void snapshotCounter(const int _counter){snapshotCounter_ = _counter;};
+      void snapshotCounter(const int _counter);
       
       /** Get the file type for the current snapshot */
-      QString snapshotFileType() { return snapshotFileType_; };
+      QString snapshotFileType();
       
       /** Get the name for the current snapshot */
-      QString snapshotName() { return snapshotName_; };
+      QString snapshotName();
 
       /** Get the counter for the current snapshot and increases the counter */
-      int snapshotCounter() { return snapshotCounter_++; };
+      int snapshotCounter();
 
     private:
       QString                      snapshotName_;
@@ -192,22 +190,22 @@ namespace Viewer {
 
     public slots:
       /// Zoom factor when using mouse wheel
-      double wheelZoomFactor() { return wZoomFactor_; };
+      double wheelZoomFactor();
 
       /// Zoom factor when using mouse wheel and pressing shift
-      double wheelZoomFactorShift() { return wZoomFactorShift_; };
+      double wheelZoomFactorShift();
 
       /// Set zoom factor when using mouse wheel
-      void wheelZoomFactor(double _factor) { wZoomFactor_ = _factor; };
+      void wheelZoomFactor(double _factor);
 
       /// Set zoom factor when using mouse wheel and pressing shift
-      void wheelZoomFactorShift(double _factor) { wZoomFactorShift_ = _factor; };
+      void wheelZoomFactorShift(double _factor);
 
       /// Invert mouse wheel direction?
-      bool wheelInvert() { return wInvert_; };
+      bool wheelInvert();
 
       /// Invert mouse wheel direction
-      void wheelInvert(bool _invert) { wInvert_ = _invert; };
+      void wheelInvert(bool _invert);
 
     private:
       double wZoomFactor_;
@@ -237,12 +235,12 @@ namespace Viewer {
     public slots:
       /** true if counter clockwise orientation should be used to define front facing orientation.
        */
-      bool isCCWFront(){ return CCWFront_; };
+      bool isCCWFront();
 
       /// Set counter clockwise orientation as front
-      void ccwFront() { CCWFront_ = true; emit updated(); };
+      void ccwFront();
       /// Set clockwise orientation as front
-      void cwFront() { CCWFront_ = false; emit updated(); };
+      void cwFront();
 
     private:
       bool CCWFront_;
@@ -253,44 +251,25 @@ namespace Viewer {
     public slots:
 
       /// Get current background color
-      ACG::Vec4f backgroundColor() { return backgroundColor_; }
+      ACG::Vec4f backgroundColor();
 
       /// Get current background color
-      QRgb backgroundColorRgb(){ QColor c;
-                                 c.setRedF(  backgroundColor_[0]);
-                                 c.setGreenF(backgroundColor_[1]);
-                                 c.setBlueF( backgroundColor_[2]);
-                                 c.setAlphaF(backgroundColor_[3]);
-                                 return c.rgba(); };
+      QRgb backgroundColorRgb();
 
       /// Get current background color
-      QColor backgroundQColor(){ QColor c;
-                                 c.setRedF(  backgroundColor_[0]);
-                                 c.setGreenF(backgroundColor_[1]);
-                                 c.setBlueF( backgroundColor_[2]);
-                                 c.setAlphaF(backgroundColor_[3]);
-                                 return c; }
+      QColor backgroundQColor();
 
       /** Set background color.
       */
-      void backgroundColor( ACG::Vec4f _color ) { backgroundColor_ = _color; emit updated(); };
+      void backgroundColor( ACG::Vec4f _color );
 
       /** Set background color.
       */
-      void backgroundColor( QRgb _color ) { QColor c(_color);
-                                            backgroundColor_[0] = c.redF();
-                                            backgroundColor_[1] = c.greenF();
-                                            backgroundColor_[2] = c.blueF();
-                                            backgroundColor_[3] = c.alphaF();
-                                            emit updated(); };
+      void backgroundColor( QRgb _color );
 
       /** Set background color.
       */
-      void backgroundColor( QColor _color ) { backgroundColor_[0] = _color.redF();
-                                              backgroundColor_[1] = _color.greenF();
-                                              backgroundColor_[2] = _color.blueF();
-                                              backgroundColor_[3] = _color.alphaF();
-                                              emit updated(); };
+      void backgroundColor( QColor _color );
 
     private:
       ACG::Vec4f backgroundColor_;
@@ -304,20 +283,14 @@ namespace Viewer {
       and updateGL() will have no effect! This is true until the display is
       unlockUpdate()'ed.
       */
-      void lockUpdate()  { locked_++; };
+      void lockUpdate();
 
       /// Unlock display locked by updateLock().
-      void unLockUpdate(){
-        locked_-- ;
-        if ( locked_ <0 ) {
-          std::cerr << "More unlocks then locks" << std::endl;
-          locked_ = 0;
-        }
-      };
+      void unLockUpdate();
 
       /** Are updateDisplayList() and updateGL() locked?
       (c.f. lockUpdate()) */
-      bool updateLocked() { return (locked_ != 0); };
+      bool updateLocked();
 
     private:
       int locked_;
@@ -327,10 +300,10 @@ namespace Viewer {
 
     public slots:
       /// Get current state of backface culling
-      bool backFaceCulling() { return backFaceCulling_; };
+      bool backFaceCulling();
 
       /// Enable or disable backface culling
-      void backFaceCulling(bool _state ) { backFaceCulling_ = _state; emit updated(); }
+      void backFaceCulling(bool _state );
 
     private:
       bool backFaceCulling_;
@@ -339,10 +312,10 @@ namespace Viewer {
 
     public slots:
       /// set 2-sided lighting on/off
-      void twoSidedLighting(bool _state ) { twoSidedLighting_ = _state; emit updated(); }
+      void twoSidedLighting(bool _state );
 
       /// is 2-sided lighing enabled?
-      bool twoSidedLighting() { return twoSidedLighting_; };
+      bool twoSidedLighting();
 
     private:
       bool twoSidedLighting_;
@@ -351,10 +324,10 @@ namespace Viewer {
 
     public slots:
       /// set multisampling on/off
-      void multisampling(bool _state ) { multisampling_ = _state; emit updated(); }
+      void multisampling(bool _state );
 
       /// is multisampling enabled?
-      bool multisampling() { return multisampling_; };
+      bool multisampling();
 
     private:
       bool multisampling_;
@@ -363,10 +336,10 @@ namespace Viewer {
 
     public slots:
       /// set mipmapping on/off
-      void mipmapping(bool _state ) { glState_->allow_mipmapping(_state); mipmapping_ = _state; emit updated(); }
+      void mipmapping(bool _state );
 
       /// is mipmapping enabled?
-      bool mipmapping() { return mipmapping_; };
+      bool mipmapping();
 
     private:
       bool mipmapping_;
@@ -375,10 +348,10 @@ namespace Viewer {
 
     public slots:
       /// set 2-sided lighting on/off
-      void animation(bool _state ) { animation_ = _state; emit updated(); }
+      void animation(bool _state );
 
       /// is 2-sided lighing enabled?
-      bool animation() { return animation_; };
+      bool animation();
 
     private:
       bool animation_;
@@ -388,10 +361,10 @@ namespace Viewer {
 
     public:
       /// Get the glState of the Viewer
-      ACG::GLState& glState() { return (*glState_); };
-      const ACG::GLState& glState() const { return (*glState_); };
+      ACG::GLState& glState();
+      const ACG::GLState& glState() const;
 
-      void setglState(ACG::GLState* _glState) { glState_ = _glState; };
+      void setglState(ACG::GLState* _glState);
 
     private:
       /// Pointer to the glState of the Viewer
@@ -401,10 +374,10 @@ namespace Viewer {
 
     public slots:
       /// set object marker for viewer
-      void objectMarker (ViewObjectMarker* _marker) { objectMarker_ = _marker; emit updated(); }
+      void objectMarker (ViewObjectMarker* _marker);
 
       /// current object marker
-      ViewObjectMarker* objectMarker() { return objectMarker_; };
+      ViewObjectMarker* objectMarker();
 
     private:
       ViewObjectMarker *objectMarker_;
@@ -443,47 +416,47 @@ namespace Viewer {
     public:
       
       /// Get width of the gl scene in orthogonal projection mode (defaults to 2.0)
-      double orthoWidth() { return orthoWidth_; };
+      double orthoWidth();
       
       /// Set the width of the gl scene in orthogonal projection mode
-      void orthoWidth(double _width){ orthoWidth_ = _width; emit updated(); };
+      void orthoWidth(double _width);
       
       
       /// Return distance to near Plane
-      double nearPlane(){ return nearPlane_;};
+      double nearPlane();
       
       /// Set near and far plane at the same time
-      void setPlanes( double _near, double _far  ) {nearPlane_ = _near; farPlane_ = _far; emit updated();} ;
+      void setPlanes( double _near, double _far  );
       
       /// Return distance to far Plane
-      double farPlane(){ return farPlane_;};
+      double farPlane();
       
       /// Get current scene center (rendering center)
-      ACG::Vec3d sceneCenter(){ return sceneCenter_; };
+      ACG::Vec3d sceneCenter();
       
       /// Set current scene center (rendering center)
-      void sceneCenter(ACG::Vec3d _center){ sceneCenter_ = _center; emit updated(); };
+      void sceneCenter(ACG::Vec3d _center);
 
       
       /// Get radius of the current scene
-      double sceneRadius() {return sceneRadius_;};
+      double sceneRadius();
       
       /// Set radius of the current scene
-      void sceneRadius(double _radius ) { sceneRadius_ = _radius; emit updated();};
+      void sceneRadius(double _radius );
       
       
       /// Get virtual trackball center (rotation center when using mouse)
-      ACG::Vec3d trackballCenter(){ return trackballCenter_; };
+      ACG::Vec3d trackballCenter();
       
       /// Set virtual trackball center (rotation center when using mouse)
-      void trackballCenter(ACG::Vec3d _center){ trackballCenter_ = _center; emit updated(); };
+      void trackballCenter(ACG::Vec3d _center);
       
       
       /// Get trackball radius (rotation sphere when using mouse)
-      double trackballRadius() {return trackballRadius_;};
+      double trackballRadius();
       
       /// Set trackball radius   (rotation sphere when using mouse)
-      void trackballRadius(double _radius ) { trackballRadius_ = _radius; emit updated();};
+      void trackballRadius(double _radius );
       
     private:
       
@@ -519,8 +492,8 @@ namespace Viewer {
     
     public:
 
-      void stereo(bool _stereo) { stereo_ = _stereo; emit updated(); };
-      bool stereo() {return stereo_; };
+      void stereo(bool _stereo);
+      bool stereo();
 
     private:
       /// Flag if stereo should be enabled for the current viewer
@@ -537,14 +510,14 @@ namespace Viewer {
     //===========================================================================
 
     public:
-      CursorPainter* cursorPainter() { return cursorPainter_; };
-      void cursorPainter( CursorPainter* _painter ) { cursorPainter_ = _painter; };
+      CursorPainter* cursorPainter();
+      void cursorPainter( CursorPainter* _painter );
 
-      ACG::Vec3d cursorPoint3D() { return cursorPoint3D_; };
-      void cursorPoint3D(ACG::Vec3d _pos) { cursorPoint3D_ = _pos; };
+      ACG::Vec3d cursorPoint3D();
+      void cursorPoint3D(ACG::Vec3d _pos);
 
-      bool cursorPositionValid() {return cursorPositionValid_; };
-      void cursorPositionValid(bool _valid) { cursorPositionValid_ = _valid;  };
+      bool cursorPositionValid();
+      void cursorPositionValid(bool _valid);
 
     private:
 

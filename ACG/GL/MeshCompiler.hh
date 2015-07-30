@@ -794,7 +794,7 @@ private:
         numIndices_;
 
   std::vector<int>           faceStart_;         // start position in buf for each face
-  std::vector<unsigned char> faceSize_;          // face size, copy of faceInput_->getFaceSize() for better performance
+  std::vector<int>           faceSize_;          // face size, copy of faceInput_->getFaceSize() for better performance
   std::vector<int>           faceData_;
   size_t                     maxFaceSize_;       // max(faceSize_)
   bool                       constantFaceSize_;
@@ -805,7 +805,7 @@ private:
   bool deleteFaceInputeData_;       // delete if face input data internally created
 
   std::vector<int>  faceBufSplit_; // mapping from (faceID, cornerID) to interleaved vertex id after splitting
-  std::vector<unsigned char>  faceRotCount_; // # ccw rotations per face, handled internally by getInputIndexOffset
+  std::vector<int>  faceRotCount_; // # ccw rotations per face, handled internally by getInputIndexOffset
   std::vector<int>  faceSortMap_;  // face IDs sorted by group; maps sortFaceID -> FaceID
   int               provokingVertex_; // provoking vertex of each triangle
   bool              provokingVertexSetByUser_; // was the provoking vertex selected by user or set to default?
@@ -861,10 +861,10 @@ private:
   struct WeldListEntry
   {
     int faceId;
-    unsigned char cornerId;
+    int cornerId;
     
     int refFaceId;
-    unsigned char refCornerId;
+    int refCornerId;
   };
 
   struct ACGDLLEXPORT WeldList
@@ -885,8 +885,8 @@ private:
 
   // mapping from <faceId, faceCornerId> -> <weldFaceId, weldFaceCorner>
 //  std::vector< std::pair<int, unsigned char> > vertexWeldMap_;   // std::pair<int, unsigned char> gets padded to 8 bytes
-  std::vector< int > vertexWeldMapFace_;
-  std::vector< unsigned char > vertexWeldMapCorner_;
+  std::vector<int> vertexWeldMapFace_;
+  std::vector<int> vertexWeldMapCorner_;
 
 
   struct ACGDLLEXPORT VertexSplitter 
@@ -950,8 +950,8 @@ private:
 
   /// vertex index in vbo -> input (face id, corner id) pair , also inverse of faceBufSplit_
 //  std::vector<std::pair<int, unsigned char> > vertexMap_; // sizeof( std::pair<int, unsigned char> ) = 8!!
-  std::vector< int > vertexMapFace_;
-  std::vector< unsigned char > vertexMapCorner_;
+  std::vector<int> vertexMapFace_;
+  std::vector<int> vertexMapCorner_;
 
   /// input face index -> output tri index
   std::vector<int> faceToTriMap_;

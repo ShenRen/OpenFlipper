@@ -389,7 +389,7 @@ void MeshCompiler::weldVertices()
 
   // clear weld map
   vertexWeldMapFace_.resize(numIndices_, -1);
-  vertexWeldMapCorner_.resize(numIndices_, 0xff);
+  vertexWeldMapCorner_.resize(numIndices_, -1);
 
   // alloc buffer to query vertex data
   int maxAdjCount = 0;
@@ -1505,7 +1505,7 @@ void MeshCompiler::build(bool _weldVertices, bool _optimizeVCache, bool _needPer
       std::vector< int > emptyVec;
       vertexWeldMapFace_.swap(emptyVec);
     } {
-      std::vector< unsigned char > emptyVec;
+      std::vector< int > emptyVec;
       vertexWeldMapCorner_.swap(emptyVec);
     }
   }
@@ -2727,7 +2727,7 @@ void MeshCompiler::createVertexMap(bool _keepIsolatedVerts)
     numIsolatedVerts_ = 0; // delete isolated vertices
 
   vertexMapFace_.resize(numDrawVerts_, -1);
-  vertexMapCorner_.resize(numDrawVerts_, 0xff);
+  vertexMapCorner_.resize(numDrawVerts_, -1);
 
   for (int i = 0; i < numFaces_; ++i)
   {
@@ -2736,7 +2736,7 @@ void MeshCompiler::createVertexMap(bool _keepIsolatedVerts)
       // map from (face, corner) -> vertex id is given by getInputIndexSplit(), so create the inverse
       int vertexID = getInputIndexSplit(i, k);
       vertexMapFace_[vertexID] = i;
-      vertexMapCorner_[vertexID] = (unsigned char)k;
+      vertexMapCorner_[vertexID] = k;
     }
   }
 
@@ -2757,7 +2757,7 @@ void MeshCompiler::createVertexMap(bool _keepIsolatedVerts)
     if (i < offsetIso)
     {
       if (vertexMapFace_[i] < 0 ||
-        vertexMapCorner_[i] == 0xff)
+        vertexMapCorner_[i]  < 0)
         std::cerr << "mesh-assembler: vertexMap error at index: " << i << std::endl;
     }
     else if (vertexMapFace_[i] < 0)

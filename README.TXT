@@ -19,4 +19,4 @@ http://openflipper.org/Documentation/latest/buildingOpenFlipper.html
 
 LICENSE:
 ========
-LGPL 3
+BSD-3

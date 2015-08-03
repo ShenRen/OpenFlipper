@@ -1,6 +1,8 @@
 /*! \page changelog Changelog
 
-- <b>OpenFlipper 2.2 ( ?/?/? , 20293 )</b>
+- <b>OpenFlipper 3.0 ( ?/?/? , 21058 )</b>
+     - <b>LICENSE<b>
+        - Switched to BSD-3 License
      - <b>ACG</b>
         - MeshCompiler and DrawMesh
 	     - check surface type of meshcompiler input
@@ -8,25 +10,50 @@
              - support face colors + smooth shading refs (#2387)
              - fix properties of DrawMode solid faces colored
              - add drawmode face colors + halfedge texcoords + smooth lighting
+             - increase max supported face size closes #2522
+        - Geometry
+             - add fast algorithms for bspline basis function to ACG
         - GL
              - implicitly bind vbo on upload()
+             - fix shaders for resolving multisampled textures
+             - improve Post-Processor interface: request texture format, IO bind() helper funcs, multiviewport
+             - dynamic shaders now support preprocessor macros
+             - get rid of gluPickMatrix call and avoid using big array on stack
+             - replace gluNurbs rendering with own implementation refs #2429 
+        - Meminfo
+             - New classes to get memory information (RAMInfo class)
+        - Nodes
+             - Fixing rendering behavior of StatusNodes so they can be used in a standalone fashion.
+             - Disable use of custom GL blend functions in LineNode.
      - <b>Core</b>
         - IO
              - Emit warning in save object function, if object can't be retrieved
+             - Async loaders to keep ui alive while loading
         - ProcessManager:
              - fix: possible crash with multiple processes (row variable wasn't updated, if the job widget row was changed)
         - QtBaseViewer
              - assumption that the drawbuffer is ailways GL_BACK might be problematic (refs #2361)
+        - Picking
+             - Added interfaces and functions for refine picking functionality (Can be used to implement exact picking after colorpicking)
+             - Added functions to retrieve viewing rays for raycasting from examiner widgets
+        - Screenshots
+             - fix screenshot buffer creation (fixes screenshot with multiple instances of OF)
+             - fix alpha channel of snapshots refs #2506
      - <b>Interfaces</b>
         - Process Interface
              - Fixed memory leak
              - Process Manager: removed redudant code/speed up
              - OpenFlipperThread: added jobid getter
+        - Metadata Interface
+             - Added new meta data interface (CVan be used to store additional metadata along with screenschots)
      - <b>UI</b>
         - AboutWidget
              - set OpenFlipper System Information Tab read-only
         - Optionswidget
              - add option for max backups
+        - Snapshots
+             - The viewer snapshot dialog now automatically suggests file names that don't exist yet. If names of existing files are entered, a warning is displayed in real time. If non-writable paths are entered, a warning is displayed as well.
+             - New feature: Copy view as C-style string. Holding Ctrl while clicking the "Copy View" context menu action now copies a C-style string to the clipboard.
      - <b>License Manager</b>
         - Remove function pointers which produce errors in C++11
      - <b>Documentation</b>
@@ -40,6 +67,7 @@
              - Added missing restore signal for ui buttons (refs #2407)
              - fixes problem with textures after undo operation (refs #2407)
              - update re/undo buttons after clear all
+             - create correct object on poly/tri mesh copy
          - Decimater
              - Added process interface to decimater and using the observer pattern for progress bar
              - gui-only slots declared as private slots
@@ -50,19 +78,29 @@
              - More warnings on defect files
              - fix crash when file contains degenerated faces (refs #2382)
              - Fix: Dont write texture coordinates if writing them is disabled
+             - Loader: Significant speedup
          - FileOM
              - Respect save settings dialog for polymeshes
              - release texture coordinate properties if not found in file
+         - InfoMeshObject
+             - Fix target count display on updates. closes #2443
          - IsotropicRemesher
              - nogui / batch mode support (closes #2384)
          - PrimitiveGenerator
              - add initial backups for each generated primitive (refs #2407)
          - Remesher
              - add nogui support (closes #2384)
+         - Selection
+             - add options for selection/handle/feature/area color for Poly/Triangle Meshes
          - TextureControl
              - image storage checks last modification of a texture and reloads it again if necessary closes #2381
      - <b>Build System</b>
          - Catching of SIGSEGV can now be controlled through CMake flag.
+         - CMake flag for enabled debug console  on windows in release mode
+         - Make OpenVolumeMesh non mandatory for build
+         - fix install path on 64-bit windows with 64-bit installer
+         - Removed unneccessary ftgl
+         - Removed various istream includes
 
 - <b>OpenFlipper 2.1 ( 2015/01/21 , 20181 )</b>
      - <b>General</b>

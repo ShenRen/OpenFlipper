@@ -1886,7 +1886,10 @@ void MeshObjectSelectionPlugin::lassoSelect(QRegion&      _region,
                         elements.push_back(list[j].second);
                     }
                 }
-                selectVertices(bod->id(), elements);
+                if (!_deselection)
+                  selectVertices(bod->id(), elements);
+                else
+                  unselectVertices(bod->id(), elements);
                 alreadySelectedObjects.insert(list[i].first);
                 emit updatedObject(bod->id(), UPDATE_SELECTION);
                 emit  createBackup(bod->id(), "Lasso Selection", UPDATE_SELECTION);
@@ -1914,7 +1917,10 @@ void MeshObjectSelectionPlugin::lassoSelect(QRegion&      _region,
                         elements.push_back(list[j].second);
                     }
                 }
-                selectEdges(bod->id(), elements);
+                if (!_deselection)
+                  selectEdges(bod->id(), elements);
+                else
+                  unselectEdges(bod->id(), elements);
                 alreadySelectedObjects.insert(list[i].first);
                 emit updatedObject(bod->id(), UPDATE_SELECTION);
                 emit  createBackup(bod->id(), "Lasso Selection", UPDATE_SELECTION);
@@ -1944,8 +1950,25 @@ void MeshObjectSelectionPlugin::lassoSelect(QRegion&      _region,
                 }
                 IdList oldEdgeSelection = getEdgeSelection(bod->id());
                 clearEdgeSelection(bod->id());
-                selectEdges(bod->id(), elements);
+
+                if (!_deselection)
+                {
+                  //on selection: select picked edges, convert to halfedge selection
+                  selectEdges(bod->id(), elements);
+                }
+                else
+                {
+                  //on deselection: get current Halfedge Selection, unselect edge, convert back
+                  if(bod->dataType() == DATA_TRIANGLE_MESH)
+                    MeshSelection::convertHalfedgeToEdgeSelection(PluginFunctions::triMesh(bod));
+                  else if(bod->dataType() == DATA_POLY_MESH)
+                    MeshSelection::convertHalfedgeToEdgeSelection(PluginFunctions::polyMesh(bod));
+
+                  clearHalfedgeSelection(bod->id());
+                  unselectEdges(bod->id(), elements);
+                }
                 
+
                 if(bod->dataType() == DATA_TRIANGLE_MESH)
                     MeshSelection::convertEdgeToHalfedgeSelection(PluginFunctions::triMesh(bod));
                 else if(bod->dataType() == DATA_POLY_MESH)
@@ -1981,7 +2004,10 @@ void MeshObjectSelectionPlugin::lassoSelect(QRegion&      _region,
                         elements.push_back(list[j].second);
                     }
                 }
-                selectFaces(bod->id(), elements);
+                if (!_deselection)
+                  selectFaces(bod->id(), elements);
+                else
+                  unselectFaces(bod->id(), elements);
                 alreadySelectedObjects.insert(list[i].first);
                 emit updatedObject(bod->id(), UPDATE_SELECTION);
                 emit  createBackup(bod->id(), "Lasso Selection", UPDATE_SELECTION);

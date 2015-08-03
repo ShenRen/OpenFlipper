@@ -322,8 +322,12 @@ update_cache()
       for (fh_it = fh_cache_.begin(); fh_it != fh_end; ++fh_it){
         fv_it = mesh_.cfv_iter(*fh_it);
         for (; fv_it.is_valid(); ++fv_it)
+        {
           ++numTris;
+        }
+        numTris -= 2;
       }
+
 
       poly_cache.resize(numTris*3);
       offset = 0;
@@ -337,12 +341,13 @@ update_cache()
         // go to next vertex
         ++fv_it;
         unsigned int vPrev = fv_it->idx();
+        ++fv_it;
 
         // create triangle fans pointing towards v0
         for (; fv_it.is_valid(); ++fv_it) {
 //           poly_cache.push_back(drawMesh_ ? drawMesh_->mapVertexToVBOIndex(v0) : v0);
 //           poly_cache.push_back(drawMesh_ ? drawMesh_->mapVertexToVBOIndex(vPrev) : vPrev);
-// 
+//
 //           vPrev = fv_it->idx();
 //           poly_cache.push_back(drawMesh_ ? drawMesh_->mapVertexToVBOIndex(vPrev) : vPrev);
           poly_cache[offset++] = (drawMesh_ ? drawMesh_->mapVertexToVBOIndex(v0) : v0);

@@ -199,13 +199,19 @@ void CoordsysNode::drawCoordsys(IRenderer* _renderer, RenderObject* _baseRO)
 
   // Origin
   _baseRO->debugName = "coordsys.sphere";
-  _baseRO->emissive = Vec3f(1.0f, 1.0f, 1.0f);
+  _baseRO->emissive = Vec3f(0.4f, 0.4f, 0.4f);
+  _baseRO->diffuse  = Vec3f(0.3f, 0.3f, 0.3f);
+  _baseRO->specular = Vec3f(0.2f, 0.2f, 0.2f);
+  _baseRO->ambient  = Vec3f(0.1f, 0.1f, 0.1f);
   sphere_->addToRenderer(_renderer, _baseRO, sphereRadius);
 
 
   // X-Axis
   _baseRO->debugName = "coordsys.x.axis";
-  _baseRO->emissive = Vec3f(1.0f, 0.0f, 0.0f);
+  _baseRO->emissive = Vec3f(0.5f, 0.0f, 0.0f);
+  _baseRO->diffuse  = Vec3f(0.3f, 0.0f, 0.0f);
+  _baseRO->specular = Vec3f(0.1f, 0.0f, 0.0f);
+  _baseRO->ambient  = Vec3f(0.1f, 0.0f, 0.0f);
   _baseRO->modelview = mModelView;
   _baseRO->modelview.rotate (-90, 0, 1, 0);
   _baseRO->modelview.translate ( 0, 0, -bodyLength );
@@ -218,7 +224,10 @@ void CoordsysNode::drawCoordsys(IRenderer* _renderer, RenderObject* _baseRO)
 
   // Y-Axis
   _baseRO->debugName = "coordsys.y.axis";
-  _baseRO->emissive = Vec3f(0.0f, 1.0f, 0.0f);
+  _baseRO->emissive = Vec3f(0.0f, 0.5f, 0.0f);
+  _baseRO->diffuse  = Vec3f(0.0f, 0.3f, 0.0f);
+  _baseRO->specular = Vec3f(0.0f, 0.1f, 0.0f);
+  _baseRO->ambient  = Vec3f(0.0f, 0.1f, 0.0f);
   _baseRO->modelview = mModelView;
   _baseRO->modelview.rotate (90, 1, 0, 0);
   _baseRO->modelview.translate ( 0, 0, -bodyLength );
@@ -231,7 +240,10 @@ void CoordsysNode::drawCoordsys(IRenderer* _renderer, RenderObject* _baseRO)
 
   // Z-Axis
   _baseRO->debugName = "coordsys.z.axis";
-  _baseRO->emissive = Vec3f(0.0f, 0.0f, 1.0f);
+  _baseRO->emissive = Vec3f(0.0f, 0.0f, 0.5f);
+  _baseRO->diffuse  = Vec3f(0.0f, 0.0f, 0.3f);
+  _baseRO->specular = Vec3f(0.0f, 0.0f, 0.1f);
+  _baseRO->ambient  = Vec3f(0.0f, 0.0f, 0.1f);
   _baseRO->modelview = mModelView;
   _baseRO->modelview.rotate (180, 0, 1, 0);
   _baseRO->modelview.translate ( 0, 0, -bodyLength );
@@ -504,7 +516,7 @@ void CoordsysNode::getRenderObjects( IRenderer* _renderer, GLState& _state, cons
     ro.modelview = _state.modelview();
 
     // colored by emission only
-    ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+    ro.shaderDesc.shadeMode = SG_SHADE_PHONG;
     ro.shaderDesc.clearTextures();
     ro.shaderDesc.vertexColors = false;
 

@@ -1,44 +1,52 @@
 /*===========================================================================*\
- *                                                                           *
- *                              OpenFlipper                                  *
- *      Copyright (C) 2001-2014 by Computer Graphics Group, RWTH Aachen      *
- *                           www.openflipper.org                             *
- *                                                                           *
- *---------------------------------------------------------------------------*
- *  This file is part of OpenFlipper.                                        *
- *                                                                           *
- *  OpenFlipper is free software: you can redistribute it and/or modify      *
- *  it under the terms of the GNU Lesser General Public License as           *
- *  published by the Free Software Foundation, either version 3 of           *
- *  the License, or (at your option) any later version with the              *
- *  following exceptions:                                                    *
- *                                                                           *
- *  If other files instantiate templates or use macros                       *
- *  or inline functions from this file, or you compile this file and         *
- *  link it with other files to produce an executable, this file does        *
- *  not by itself cause the resulting executable to be covered by the        *
- *  GNU Lesser General Public License. This exception does not however       *
- *  invalidate any other reasons why the executable file might be            *
- *  covered by the GNU Lesser General Public License.                        *
- *                                                                           *
- *  OpenFlipper is distributed in the hope that it will be useful,           *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *  GNU Lesser General Public License for more details.                      *
- *                                                                           *
- *  You should have received a copy of the GNU LesserGeneral Public          *
- *  License along with OpenFlipper. If not,                                  *
- *  see <http://www.gnu.org/licenses/>.                                      *
- *                                                                           *
+*                                                                           *
+*                              OpenFlipper                                  *
+*           Copyright (c) 2001-2015, RWTH-Aachen University                 *
+*           Department of Computer Graphics and Multimedia                  *
+*                          All rights reserved.                             *
+*                            www.openflipper.org                            *
+*                                                                           *
+*---------------------------------------------------------------------------*
+* This file is part of OpenFlipper.                                         *
+*---------------------------------------------------------------------------*
+*                                                                           *
+* Redistribution and use in source and binary forms, with or without        *
+* modification, are permitted provided that the following conditions        *
+* are met:                                                                  *
+*                                                                           *
+* 1. Redistributions of source code must retain the above copyright notice, *
+*    this list of conditions and the following disclaimer.                  *
+*                                                                           *
+* 2. Redistributions in binary form must reproduce the above copyright      *
+*    notice, this list of conditions and the following disclaimer in the    *
+*    documentation and/or other materials provided with the distribution.   *
+*                                                                           *
+* 3. Neither the name of the copyright holder nor the names of its          *
+*    contributors may be used to endorse or promote products derived from   *
+*    this software without specific prior written permission.               *
+*                                                                           *
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       *
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED *
+* TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A           *
+* PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER *
+* OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,  *
+* EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,       *
+* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR        *
+* PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF    *
+* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
+*                                                                           *
 \*===========================================================================*/
 
 /*===========================================================================*\
- *                                                                           *
- *   $Revision: 20771 $                                                       *
- *   $Author: moeller $                                                      *
- *   $Date: 2015-06-03 16:47:45 +0200 (Wed, 03 Jun 2015) $                   *
- *                                                                           *
+*                                                                            *
+*   $Revision$                                                       *
+*   $LastChangedBy$                                                *
+*   $Date$                     *
+*                                                                            *
 \*===========================================================================*/
+
 
 
 
@@ -94,15 +102,14 @@ void ArrowNode::boundingBox(Vec3d& _bbMin, Vec3d& _bbMax)
 
     // start and end point
     Vec3f s = a->start;
-    Vec3f e = a->start + a->dir * a->scale;
+    Vec3f e = a->start + a->dir * a->scale[1];
 
     // conv to double precision
     Vec3d sd = OpenMesh::vector_cast<Vec3d>(s);
     Vec3d ed = OpenMesh::vector_cast<Vec3d>(e);
 
     // enlarge aabb by some amount to account for the volumetric shape
-    double offset = double(radius * a->scale);
-    Vec3d volEnlargeOffset = Vec3d(offset, offset, offset);
+    Vec3d volEnlargeOffset = OpenMesh::vector_cast<Vec3d>(radius * a->scale);
 
     _bbMin.minimize(sd - volEnlargeOffset);
     _bbMin.minimize(ed - volEnlargeOffset);
@@ -362,21 +369,21 @@ GLMatrixf ArrowNode::computeWorldMatrix(int _arrow) const
     align(i, 2) = binormal[i];
   }
 
-  align.scale(a->scale, a->scale, a->scale);
+  // scaling vector: width, length, height
+  align.scale(a->scale[1], a->scale[2], a->scale[0]);
 
   return align;
 }
 
 //----------------------------------------------------------------------------
 
-int ArrowNode::addArrow(const Vec3f& _start, const Vec3f& _dir, const Vec3f& _normal /*= Vec3f(0.0f, 1.0f, 0.0f)*/, float _scale /*= 1.0f*/, const Vec4uc& _color /*= Vec4uc(82, 82, 82, 255)*/)
+int ArrowNode::addArrow(const Vec3f& _start, const Vec3f& _dir, const Vec3f& _normal, const Vec3f& _scale, const Vec4uc& _color)
 {
   Arrow a;
   a.start = _start;
   a.dir = _dir;
   a.scale = _scale;
   a.color = _color;
-  a.normal = _normal;
 
   a.orthonormalize();
 
@@ -386,6 +393,16 @@ int ArrowNode::addArrow(const Vec3f& _start, const Vec3f& _dir, const Vec3f& _no
   invalidateInstanceBuffer_ = true;
 
   return int(arrows_.size()) - 1;
+}
+
+//----------------------------------------------------------------------------
+
+int ArrowNode::addArrow(const Vec3f& _start, const Vec3f& _dir, const Vec3f& _normal, const Vec3f& _scale, const Vec4f& _color)
+{
+  Vec4uc c;
+  for (int i = 0; i < 4; ++i)
+    c[i] = std::min(std::max(int(_color[i] * 255.0f), 0), 255);
+  return addArrow(_start, _dir, _normal, _scale, c);
 }
 
 //----------------------------------------------------------------------------
@@ -411,9 +428,19 @@ void ArrowNode::Arrow::orthonormalize()
 
 //----------------------------------------------------------------------------
 
-int ArrowNode::addArrow(const Vec3d& _start, const Vec3d& _dir, const Vec3d& _normal /*= Vec3d(0.0f, 1.0f, 0.0f)*/, double _scale /*= 1.0f*/, const Vec4uc& _color /*= Vec4uc(82, 82, 82, 255)*/)
+int ArrowNode::addArrow(const Vec3d& _start, const Vec3d& _dir, const Vec3d& _normal, const Vec3d& _scale, const Vec4uc& _color)
 {
-  return addArrow(OpenMesh::vector_cast<Vec3f>(_start), OpenMesh::vector_cast<Vec3f>(_dir), OpenMesh::vector_cast<Vec3f>(_normal), float(_scale), _color);
+  return addArrow(OpenMesh::vector_cast<Vec3f>(_start), OpenMesh::vector_cast<Vec3f>(_dir), OpenMesh::vector_cast<Vec3f>(_normal), OpenMesh::vector_cast<Vec3f>(_scale), _color);
+}
+
+//----------------------------------------------------------------------------
+
+int ArrowNode::addArrow(const Vec3d& _start, const Vec3d& _dir, const Vec3d& _normal, const Vec3d& _scale, const Vec4f& _color)
+{
+  Vec4uc c;
+  for (int i = 0; i < 4; ++i)
+    c[i] = std::min(std::max(int(_color[i] * 255.0f), 0), 255);
+  return addArrow(_start, _dir, _normal, _scale, c);
 }
 
 //----------------------------------------------------------------------------
@@ -440,9 +467,15 @@ void ArrowNode::updateInstanceData()
         for (int c = 0; c < 4; ++c)
           instanceData_[offset + r*4 + c] = m(r,c);
 
+      // store inverse transpose to support lighting with non-uniform scaling
+      m.invert();
+      for (int r = 0; r < 3; ++r)
+        for (int c = 0; c < 3; ++c)
+          instanceData_[offset + 4 * 3 + r * 3 + c] = m(c, r);
+
       // store color in last dword as rgba8_unorm
 //      instanceData_[offset + 4 * 3] = *(float*)(arrows_[i].color.data());
-      memcpy(&instanceData_[offset + 4*3], arrows_[i].color.data(), 4);
+      memcpy(&instanceData_[offset + 4*3 + 3*3], arrows_[i].color.data(), 4);
 
       // append more data here as needed
     }
@@ -489,6 +522,9 @@ void ArrowNode::updateInstanceBuffer()
       vertexDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inWorld0", 1, instanceBuffer_.id());
       vertexDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inWorld1", 1, instanceBuffer_.id());
       vertexDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inWorld2", 1, instanceBuffer_.id());
+      vertexDeclInstanced_.addElement(GL_FLOAT, 3, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inWorldIT0", 1, instanceBuffer_.id());
+      vertexDeclInstanced_.addElement(GL_FLOAT, 3, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inWorldIT1", 1, instanceBuffer_.id());
+      vertexDeclInstanced_.addElement(GL_FLOAT, 3, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inWorldIT2", 1, instanceBuffer_.id());
       vertexDeclInstanced_.addElement(GL_UNSIGNED_BYTE, 4, VERTEX_USAGE_COLOR, size_t(0), 0, 1, instanceBuffer_.id());
     }
 
@@ -533,12 +569,12 @@ void ArrowNode::arrowNormal(int _arrowID, const Vec3f& _normal)
   invalidateInstanceData_ = true;
 }
 
-float ArrowNode::arrowScale(int _arrowID) const
+Vec3f ArrowNode::arrowScale(int _arrowID) const
 {
   return arrows_[_arrowID].scale;
 }
 
-void ArrowNode::arrowScale(int _arrowID, float _scale)
+void ArrowNode::arrowScale(int _arrowID, const Vec3f& _scale)
 {
   arrows_[_arrowID].scale = _scale;
   invalidateInstanceData_ = true;

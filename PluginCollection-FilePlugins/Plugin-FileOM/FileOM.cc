@@ -211,6 +211,7 @@ int FileOMPlugin::loadObject(QString _filename) {
             PolyMeshObject* object(0);
             if(PluginFunctions::getObject( objectId, object )) {
             
+                emit updatedObject(objectId, UPDATE_ALL);
                 emit openedFile( objectId );
             }
             return objectId;

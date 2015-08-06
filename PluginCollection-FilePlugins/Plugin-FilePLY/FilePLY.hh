@@ -126,36 +126,6 @@ class FilePLYPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     QWidget* saveOptionsWidget(QString /*_currentFilter*/);
     QWidget* loadOptionsWidget(QString /*_currentFilter*/);
 
-  private:
-
-    // Helper class that stores general file information
-    typedef std::pair<std::string,std::string> PPair;
-    struct PLYHeader {
-        bool    binary;
-        bool    bigEndian;
-        bool    isTriangleMesh;
-
-        int     numVertices;
-        bool    hasVertexNormals;
-        bool    hasVertexColors;
-        bool    hasVertexColorAlpha;
-        // If true, colors are separated in ambient, diffuse and specular
-        bool    hasVertexTexCoords;
-        std::vector<PPair> vProps;
-
-        int     numFaces;
-        bool    hasFaceNormals;
-        bool    hasFaceColors;
-        bool    hasFaceColorAlpha;
-        std::string valenceType;
-        std::string  indexType;
-        // If true, colors are separated in ambient, diffuse and specular
-        std::vector<PPair> fProps;
-    };
-
-    // Get data type size in bytes
-    size_t getTypeSize(std::string _type);
-
   public slots:
 
     /// Loads Object and converts it to a triangle mesh if possible
@@ -165,10 +135,10 @@ class FilePLYPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     int loadObject(QString _filename, DataType _type);
 
     /// Always loads mesh as polymesh
-    int loadPolyMeshObject(QString _filename, const PLYHeader& _header);
+    int loadPolyMeshObject(QString _filename, OpenMesh::IO::Options& _opt);
 
     /// Loads a triangle mesh
-    int loadTriMeshObject(QString _filename, const PLYHeader& _header);
+    int loadTriMeshObject(QString _filename, OpenMesh::IO::Options& _opt);
 
     bool saveObject(int _id, QString _filename);
 
@@ -176,44 +146,10 @@ class FilePLYPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
 
   private:
 
-    // Parse header of PLY file
-    bool parseHeader(QString _filename, PLYHeader& _header);
-
     // Template functions
 
     template <class MeshT>
-    bool readMeshFileAscii(QString _filename, MeshT* _mesh, const PLYHeader& _header);
-
-    template <class MeshT>
-    bool readMeshFileBinary(QString _filename, MeshT* _mesh, const PLYHeader& _header);
-
-    template <class MeshT>
-    bool writeMeshFileAscii(QString _filename, MeshT* _mesh);
-
-    template <class MeshT>
-    bool writeMeshFileBinary(QString _filename, MeshT* _mesh);
-
-    template <class MeshT>
-    void writeHeader(std::ofstream& _os, MeshT* _mesh, bool _binary);
-
-    template <class MeshT>
     void backupTextureCoordinates(MeshT& _mesh);
-
-    /// \brief Helper functions for writing/reading of binary data
-
-    template <class T>
-    void readValue(std::istream& _in, T& _value, bool _bigEndian) const {
-        T tmp;
-        OpenMesh::IO::restore(_in , tmp, _bigEndian); //assuming LSB byte order
-        _value = tmp;
-    }
-
-    template <class T>
-    void writeValue(std::ostream& _out, T value, bool _bigEndian = false) const {
-        T tmp = value;
-        OpenMesh::IO::store(_out, tmp, _bigEndian);
-    }
-
 
     //Option Widgets
     QWidget* loadOptions_;

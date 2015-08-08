@@ -419,6 +419,7 @@ void ShaderGenerator::initDefaultUniforms()
   addUniform("vec3 g_cEmissive");
   addUniform("vec3 g_cSpecular");
   addUniform("vec4 g_vMaterial");
+  addUniform("vec3 g_cLightModelAmbient");
 }
 
 
@@ -1176,7 +1177,10 @@ void ShaderProgGenerator::addVertexBeginCode(QStringList* _code)
     }
   }
 
-  _code->push_back("vec4 sg_cColor = vec4(g_cEmissive, SG_ALPHA);");
+  if (desc_.vertexColors && (desc_.colorMaterialMode == GL_AMBIENT || desc_.colorMaterialMode == GL_AMBIENT_AND_DIFFUSE))
+    _code->push_back("vec4 sg_cColor = vec4(g_cEmissive + g_cLightModelAmbient * " SG_INPUT_VERTEXCOLOR ".xyz, SG_ALPHA);");
+  else
+    _code->push_back("vec4 sg_cColor = vec4(g_cEmissive + g_cLightModelAmbient * g_cAmbient, SG_ALPHA);");
 
   if (ioDesc_.inputNormal_)
   {
@@ -1787,7 +1791,10 @@ void ShaderProgGenerator::addFragmentBeginCode(QStringList* _code)
   _code->push_back("#endif");
 
 
-  _code->push_back("vec4 sg_cColor = vec4(g_cEmissive, SG_ALPHA);");
+  if (desc_.vertexColors && (desc_.colorMaterialMode == GL_AMBIENT || desc_.colorMaterialMode == GL_AMBIENT_AND_DIFFUSE))
+    _code->push_back("vec4 sg_cColor = vec4(g_cEmissive + g_cLightModelAmbient * " SG_INPUT_VERTEXCOLOR ".xyz, SG_ALPHA);");
+  else
+    _code->push_back("vec4 sg_cColor = vec4(g_cEmissive + g_cLightModelAmbient * g_cAmbient, SG_ALPHA);");
 
   if (desc_.shadeMode == SG_SHADE_GOURAUD ||
       desc_.shadeMode == SG_SHADE_FLAT ||

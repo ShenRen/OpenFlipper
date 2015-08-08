@@ -801,9 +801,7 @@ void IRenderer::bindObjectUniforms( ACG::RenderObject* _obj, GLSL::Program* _pro
 
   // material
   
-  // modify the emissive color such that it also contains the global ambient light model
-  ACG::Vec3f emissiveA = _obj->emissive + globalLightModelAmbient_ * _obj->ambient;
-  _prog->setUniform("g_cEmissive", emissiveA);
+  _prog->setUniform("g_cEmissive", _obj->emissive);
 
   _prog->setUniform("g_cDiffuse", _obj->diffuse);
   _prog->setUniform("g_cAmbient", _obj->ambient);
@@ -812,6 +810,7 @@ void IRenderer::bindObjectUniforms( ACG::RenderObject* _obj, GLSL::Program* _pro
   ACG::Vec4f materialParams(_obj->shininess, _obj->alpha, 0.0f, 0.0f);
   _prog->setUniform("g_vMaterial", materialParams);
 
+  _prog->setUniform("g_cLightModelAmbient", globalLightModelAmbient_);
 
   // Additional Uniforms defined in the render Object
   if ( !_obj->uniformPool_.empty() )

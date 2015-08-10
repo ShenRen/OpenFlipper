@@ -185,10 +185,16 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
 
 
   //open stream
-  QTextStream matStream( &_filename, QIODevice::ReadOnly );
+  QFile matFile(_filename);
+  if (!matFile.open(QFile::ReadOnly))
+  {
+    emit log(LOGERR, tr("readMaterial : cannot open file %1").arg(_filename));
+    return false;
+  }
 
+  QTextStream matStream(&matFile);
   if ( !matStream.status()==QTextStream::Ok ){
-    emit log(LOGERR, tr("readMaterial : cannot open file %1").arg(_filename) );
+    emit log(LOGERR, tr("readMaterial : cannot open stream %1").arg(_filename) );
     return false;
   }
 

@@ -384,6 +384,7 @@ int ArrowNode::addArrow(const Vec3f& _start, const Vec3f& _dir, const Vec3f& _no
   a.dir = _dir;
   a.scale = _scale;
   a.color = _color;
+  a.normal = _normal;
 
   a.orthonormalize();
 
@@ -414,6 +415,8 @@ void ArrowNode::Arrow::orthonormalize()
   // make sure dir and normal are linearly independent
   if (normal.sqrnorm() < 1e-6f)
     normal = Vec3f(0.0f, 1.0f, 0.0f);
+
+  normal.normalize();
 
   while (std::fabs(dir | normal) > 0.99f || normal.sqrnorm() < 0.01f)
   {

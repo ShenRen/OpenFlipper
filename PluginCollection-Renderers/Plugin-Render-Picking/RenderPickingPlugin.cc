@@ -64,6 +64,14 @@
 #include <QtGui>
 #endif
 
+#if QT_VERSION >= 0x050000
+ #include <QOpenGLContext>
+ #include <QSurfaceFormat>
+#else
+ #include <QGLFormat>
+#endif
+
+
 void RenderPickingPlugin::initializePlugin()
 {
   pickRendererMode_ = ACG::SceneGraph::PICK_ANYTHING;
@@ -177,7 +185,7 @@ void RenderPickingPlugin::render(ACG::GLState* _glState, Viewer::ViewerPropertie
 
 QString RenderPickingPlugin::checkOpenGL() {
 
-  // TODO: Correctly configure the following requirements!
+#if QT_VERSION < 0x050000
 
   // Get version and check
   QGLFormat::OpenGLVersionFlags flags = QGLFormat::openGLVersionFlags();
@@ -191,6 +199,27 @@ QString RenderPickingPlugin::checkOpenGL() {
   QString missing = "";
 
   return missing;
+
+#else
+  QOpenGLContext* context = QOpenGLContext::currentContext();
+  if ( context ) {
+
+    // Get version and check
+    QSurfaceFormat format = context->format();
+
+    if ( (format.majorVersion() < 2) ) {
+      return QString("Insufficient OpenGL Version! OpenGL 2.0 or higher required");
+    }
+
+    // Check extensions
+    QString missing("");
+
+    return missing;
+  } else {
+    return name() + QString(": No context available");
+  }
+
+#endif
 
 }
 

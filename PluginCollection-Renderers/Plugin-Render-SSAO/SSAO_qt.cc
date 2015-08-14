@@ -54,32 +54,77 @@
  */
 
 #include "SSAO.hh"
-#include <QGLFormat>
+
+
+#if QT_VERSION >= 0x050000
+ #include <QOpenGLContext>
+ #include <QSurfaceFormat>
+#else
+ #include <QGLFormat>
+#endif
 
 
 QString SSAOPlugin::checkOpenGL() {
 
+#if QT_VERSION < 0x050000
+
   // Get version and check
-  QGLFormat::OpenGLVersionFlags flags = QGLFormat::openGLVersionFlags();
-  if ( !flags.testFlag(QGLFormat::OpenGL_Version_3_2) )
-    return QString("Insufficient OpenGL Version! OpenGL 3.2 or higher required");
+   QGLFormat::OpenGLVersionFlags flags = QGLFormat::openGLVersionFlags();
+   if ( !flags.testFlag(QGLFormat::OpenGL_Version_3_2) )
+     return QString("Insufficient OpenGL Version! OpenGL 3.2 or higher required");
 
-  // Check extensions
-  QString glExtensions = QString((const char*)glGetString(GL_EXTENSIONS));
-  QString missing("");
-  if ( !glExtensions.contains("GL_ARB_vertex_buffer_object") )
-    missing += "GL_ARB_vertex_buffer_object extension missing\n";
+   // Check extensions
+   QString glExtensions = QString((const char*)glGetString(GL_EXTENSIONS));
+   QString missing("");
+   if ( !glExtensions.contains("GL_ARB_vertex_buffer_object") )
+     missing += "GL_ARB_vertex_buffer_object extension missing\n";
 
-#ifndef __APPLE__
-  if ( !glExtensions.contains("GL_ARB_vertex_program") )
-    missing += "GL_ARB_vertex_program extension missing\n";
+   #ifndef __APPLE__
+     if ( !glExtensions.contains("GL_ARB_vertex_program") )
+       missing += "GL_ARB_vertex_program extension missing\n";
+   #endif
+
+   if ( !glExtensions.contains("GL_ARB_texture_float") )
+     missing += "GL_ARB_texture_float extension missing\n";
+
+   if ( !glExtensions.contains("GL_EXT_framebuffer_object") )
+     missing += "GL_EXT_framebuffer_object extension missing\n";
+
+   return missing;
+
+#else
+  QOpenGLContext* context = QOpenGLContext::currentContext();
+  if ( context ) {
+
+    // Get version and check
+    QSurfaceFormat format = context->format();
+
+    if ( (format.majorVersion() < 4) && (format.minorVersion() < 2) ) {
+      return QString("Insufficient OpenGL Version! OpenGL 3.2 or higher required");
+    }
+
+    // Check extensions
+    QString missing("");
+
+    if ( !context->hasExtension("GL_ARB_vertex_buffer_object") )
+      missing += "GL_ARB_vertex_buffer_object extension missing\n";
+
+    #ifndef __APPLE__
+      if ( !context->hasExtension("GL_ARB_vertex_program") )
+        missing += "GL_ARB_vertex_program extension missing\n";
+    #endif
+
+    if ( !context->hasExtension("GL_ARB_texture_float") )
+       missing += "GL_ARB_texture_float extension missing\n";
+
+    if ( !context->hasExtension("GL_EXT_framebuffer_object") )
+       missing += "GL_EXT_framebuffer_object extension missing\n";
+
+     return missing;
+  } else {
+    return name() + QString(": No context available");
+  }
+
 #endif
 
-  if ( !glExtensions.contains("GL_ARB_texture_float") )
-    missing += "GL_ARB_texture_float extension missing\n";
-
-  if ( !glExtensions.contains("GL_EXT_framebuffer_object") )
-    missing += "GL_EXT_framebuffer_object extension missing\n";
-
-  return missing;
 }

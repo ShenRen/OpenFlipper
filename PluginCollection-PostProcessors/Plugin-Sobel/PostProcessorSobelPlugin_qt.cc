@@ -55,12 +55,48 @@
 
 #include "PostProcessorSobelPlugin.hh"
 
-#include <QGLFormat>
+#if QT_VERSION >= 0x050000
+ #include <QOpenGLContext>
+ #include <QSurfaceFormat>
+#else
+ #include <QGLFormat>
+#endif
+
 
 QString PostProcessorSobelPlugin::checkOpenGL() {
+
+#if QT_VERSION < 0x050000
+
   QGLFormat::OpenGLVersionFlags flags = QGLFormat::openGLVersionFlags();
   if ( ! flags.testFlag(QGLFormat::OpenGL_Version_3_0) )
     return QString("Insufficient OpenGL Version! OpenGL 3.0 or higher required");
 
-  return QString("");
+  // Check extensions
+  QString glExtensions = QString((const char*)glGetString(GL_EXTENSIONS));
+  QString missing("");
+
+  return missing;
+
+#else
+  QOpenGLContext* context = QOpenGLContext::currentContext();
+  if ( context ) {
+
+    // Get version and check
+    QSurfaceFormat format = context->format();
+
+    if ( (format.majorVersion() < 3) ) {
+      return QString("Insufficient OpenGL Version! OpenGL 3.0 or higher required");
+    }
+
+    // Check extensions
+    QString missing("");
+
+    return missing;
+
+  } else {
+    return name() + QString(": No context available");
+  }
+
+#endif
+
 }

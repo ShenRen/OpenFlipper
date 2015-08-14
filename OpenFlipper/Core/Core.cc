@@ -78,7 +78,14 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QSettings>
-#include <QGLFormat>
+
+#if QT_VERSION >= 0x050000
+ #include <QOpenGLContext>
+ #include <QSurfaceFormat>
+#else
+ #undef QT_NO_OPENGL
+ #include <QGLFormat>
+#endif
 
 #include <QPluginLoader>
 #include "OpenFlipper/BasePlugin/BaseInterface.hh"
@@ -1921,9 +1928,12 @@ bool Core::checkOpenGLCapabilities()  {
   
   QString missing;
   
+
+#if QT_VERSION < 0x050000
+
   // We need at least version 2.0 or higher 
   QGLFormat::OpenGLVersionFlags flags = QGLFormat::openGLVersionFlags();
-  
+
   if ( QGLFormat::hasOpenGL() ) {
     if ( flags.testFlag(QGLFormat::OpenGL_Version_None) ) {
       missing += tr("OpenGL Version Unknown to QT!\n");
@@ -1931,27 +1941,57 @@ bool Core::checkOpenGLCapabilities()  {
       warn = true;
     } else {
       if ( !( flags.testFlag(QGLFormat::OpenGL_Version_3_0) | 
-              flags.testFlag(QGLFormat::OpenGL_Version_2_1) | 
-              flags.testFlag(QGLFormat::OpenGL_Version_2_0) ) ) {
+          flags.testFlag(QGLFormat::OpenGL_Version_2_1) |
+          flags.testFlag(QGLFormat::OpenGL_Version_2_0) ) ) {
         ok = false; 
         missing += tr("OpenGL Version less then 2.0!\n");
       } 
     }
-  
+
   } else {
-   ok = false;
-   missing += tr("No OpenGL support found!\n");
+    ok = false;
+    missing += tr("No OpenGL support found!\n");
   }
   
   //Get OpenGL extensions
   QString glExtensions = QString((const char*)glGetString(GL_EXTENSIONS));
-  
+
   // Vertex buffer objects used heavily in mesh node and almost all other nodes
   if ( !glExtensions.contains("GL_ARB_vertex_buffer_object") ) {
     ok = false; 
     missing += tr("Your graphics card does not support the GL_ARB_vertex_buffer_object extension!\n");
   }
-  
+
+
+#else
+  QOpenGLContext* context = QOpenGLContext::currentContext();
+  if ( context ) {
+
+    // Get version and check
+    QSurfaceFormat format = context->format();
+
+    if ( (format.majorVersion() < 2) ) {
+
+      ok = false;
+      missing += tr("OpenGL Version less then 2.0!\n");
+
+    } else {
+
+      // Check extensions
+      if ( !context->hasExtension("GL_ARB_vertex_buffer_object") ) {
+        missing += "GL_ARB_vertex_buffer_object extension missing\n";
+        ok = false;
+      }
+
+    }
+
+  } else {
+    ok = false;
+    missing += tr("No OpenGL support found!\n");
+  }
+
+#endif
+
 
   if ( !ok ) {
     QString message = tr("Error! \nThe OpenGL capabilities of your current machine/driver are not sufficient!\n\n");

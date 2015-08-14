@@ -117,8 +117,9 @@ GLStateContext::GLStateContext() :
   memset(drawBufferState_, GL_BACK, sizeof(drawBufferState_));
 }
 
-GLState::GLState(bool _updateGL)
-  : render_pass_(1),
+GLState::GLState(bool _updateGL, bool _compatibilityProfile)
+  : compatibilityProfile_(_compatibilityProfile),
+    render_pass_(1),
     max_render_passes_(1),
     bb_min_(ACG::Vec3d(0.0,0.0,0.0)),
     bb_max_(ACG::Vec3d(0.0,0.0,0.0)),
@@ -207,31 +208,37 @@ void GLState::setState ()
 {
   makeCurrent();
 
-  // projection matrix
-  glMatrixMode(GL_PROJECTION);
-  glLoadMatrixd(projection_.get_raw_data());
-  glMatrixMode(GL_MODELVIEW);
+  if (compatibilityProfile_ ) {
 
-  // modelview matrix
-  glLoadMatrixd(modelview_.get_raw_data());
+    // projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixd(projection_.get_raw_data());
+    glMatrixMode(GL_MODELVIEW);
+
+    // modelview matrix
+    glLoadMatrixd(modelview_.get_raw_data());
+
+  }
 
   // clear color
   glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], clear_color_[3]);
 
-  // base color
-  glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, base_color_.data());
+  if (compatibilityProfile_ ) {
+    // base color
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, base_color_.data());
 
-  // ambient color
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT , ambient_color_.data());
+    // ambient color
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT , ambient_color_.data());
 
-  // diffuse color
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE , diffuse_color_.data());
+    // diffuse color
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE , diffuse_color_.data());
 
-  // specular color
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular_color_.data());
+    // specular color
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular_color_.data());
 
-  // shininess
-  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess_);
+    // shininess
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess_);
+  }
 
   // point size
   glPointSize(point_size_);
@@ -239,11 +246,13 @@ void GLState::setState ()
   // line width
   glLineWidth(line_width_);
 
-  // two sided lighting
-  if (twosided_lighting_)
-    glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
-  else
-    glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
+  if ( compatibilityProfile_ ) {
+    // two sided lighting
+    if (twosided_lighting_  )
+      glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
+    else
+      glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
+  }
 
   // viewport
   glViewport(left_, bottom_, width_, height_);
@@ -254,13 +263,17 @@ void GLState::setState ()
 
 void GLState::clearBuffers ()
 {
+
+  if ( compatibilityProfile_ ) {
     glPushAttrib (GL_ALL_ATTRIB_BITS);
+  }
 
-    GLState::disable(GL_DEPTH_TEST);
+  GLState::disable(GL_DEPTH_TEST);
+  GLState::disable(GL_DITHER);
+  glShadeModel( GL_FLAT );
+
+  if ( compatibilityProfile_ ) {
     GLState::disable(GL_LIGHTING);
-    GLState::disable(GL_DITHER);
-    glShadeModel( GL_FLAT );
-
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity ();
@@ -268,35 +281,48 @@ void GLState::clearBuffers ()
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity ();
+  }
 
 
-    // GetoriginalScissor settings
-    GLboolean scissor =  glIsEnabled(GL_SCISSOR_TEST);
-        
-    GLint origBox[4];
-    glGetIntegerv(GL_SCISSOR_BOX,&origBox[0]);
-    
-    //Enable scissor 
-    if (!scissor)
-      GLState::enable(GL_SCISSOR_TEST);
-    
-    // Restrict to our current viewport
-    glScissor(  left_,bottom_,width_,height_ );
-    
-    // Clear restricted region
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    
-    // Reset to originalsettings
-    glScissor(  origBox[0], origBox[1], origBox[2], origBox[3] );
-    
-    if (!scissor)
-      GLState::disable(GL_SCISSOR_TEST);
-      
+  // GetoriginalScissor settings
+  GLboolean scissor =  glIsEnabled(GL_SCISSOR_TEST);
+
+  GLint origBox[4];
+  glGetIntegerv(GL_SCISSOR_BOX,&origBox[0]);
+
+  //Enable scissor
+  if (!scissor)
+    GLState::enable(GL_SCISSOR_TEST);
+
+  // Restrict to our current viewport
+  glScissor(  left_,bottom_,width_,height_ );
+
+  // Clear restricted region
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+  // Reset to originalsettings
+  glScissor(  origBox[0], origBox[1], origBox[2], origBox[3] );
+
+  if (!scissor)
+    GLState::disable(GL_SCISSOR_TEST);
+
+  if ( compatibilityProfile_ ) {
     glPopMatrix ();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopAttrib ();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GLState::setCompatibilityProfile( bool _compatibility ) {
+  compatibilityProfile_ = _compatibility;
+}
+
+bool GLState::compatibilityProfile() const  {
+  return compatibilityProfile_;
 }
 
 //-----------------------------------------------------------------------------
@@ -306,7 +332,7 @@ void GLState::reset_projection()
   projection_.identity();
   inverse_projection_.identity();
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_ )
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
@@ -326,7 +352,7 @@ void GLState::set_projection(const GLMatrixd& _m, const GLMatrixd& _inv_m)
   projection_ = _m;
   inverse_projection_ = _inv_m;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
@@ -346,7 +372,7 @@ void GLState::reset_modelview()
   modelview_.identity();
   inverse_modelview_.identity();
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_ )
   {
     makeCurrent();
     glLoadIdentity();
@@ -364,7 +390,7 @@ void GLState::set_modelview(const GLMatrixd& _m, const GLMatrixd& _inv_m)
   modelview_ = _m;
   inverse_modelview_ = _inv_m;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
@@ -387,7 +413,7 @@ void GLState::ortho( double _left, double _right,
   projection_.ortho(_left, _right, _bottom, _top, _n, _f);
   inverse_projection_.inverse_ortho(_left,_right,_bottom,_top,_n,_f);
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_ )
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
@@ -412,7 +438,7 @@ void GLState::frustum( double _left, double _right,
   projection_.frustum(_left, _right, _bottom, _top, _n, _f);
   inverse_projection_.inverse_frustum(_left,_right,_bottom,_top,_n,_f);
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
@@ -436,7 +462,7 @@ void GLState::perspective( double _fovY, double _aspect,
   projection_.perspective(_fovY, _aspect, _n, _f);
   inverse_projection_.inverse_perspective(_fovY, _aspect, _n, _f);
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
@@ -505,7 +531,7 @@ void GLState::lookAt( const Vec3d& _eye,
   modelview_.lookAt(_eye, _center, _up);
   inverse_modelview_.inverse_lookAt(_eye, _center, _up);
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glLoadMatrixd(modelview_.data());
@@ -532,7 +558,7 @@ void GLState::translate( double _x, double _y, double _z,
     inverse_modelview_.translate(-_x, -_y, -_z);
   }
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
@@ -565,7 +591,7 @@ void GLState::rotate( double _angle, double _x, double _y, double _z,
     inverse_modelview_.rotate(-_angle, _x, _y, _z);
   }
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
@@ -592,7 +618,7 @@ void GLState::scale( double _sx, double _sy, double _sz,
     inverse_modelview_.scale(1.0f/_sx, 1.0f/_sy, 1.0f/_sz, MULT_FROM_RIGHT);
   }
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
@@ -619,7 +645,7 @@ void GLState::mult_matrix( const GLMatrixd& _m, const GLMatrixd& _inv_m,
     inverse_modelview_ *= _inv_m;
   }
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
@@ -686,7 +712,7 @@ void GLState::set_base_color(const Vec4f& _col)
 {
   base_color_ = _col;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_ )
   {
     makeCurrent();
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, _col.data());
@@ -716,7 +742,7 @@ void GLState::set_ambient_color(const Vec4f& _col)
 {
   ambient_color_ = _col;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, _col.data());
@@ -731,7 +757,7 @@ void GLState::set_diffuse_color(const Vec4f& _col)
 {
   diffuse_color_ = _col;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, _col.data());
@@ -746,7 +772,7 @@ void GLState::set_specular_color(const Vec4f& _col)
 {
   specular_color_ = _col;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, _col.data());
@@ -770,7 +796,7 @@ void GLState::set_shininess(float _shininess)
 {
   shininess_ = _shininess;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, _shininess);
@@ -829,7 +855,7 @@ void GLState::set_twosided_lighting(bool _b)
 {
   twosided_lighting_ = _b;
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_ )
   {
     makeCurrent();
     if (twosided_lighting_)
@@ -979,7 +1005,7 @@ void GLState::push_projection_matrix()
   stack_projection_.push(projection_);
   stack_inverse_projection_.push(inverse_projection_);
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
@@ -1002,7 +1028,7 @@ void GLState::pop_projection_matrix()
 
   update_matrices();
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glMatrixMode(GL_PROJECTION);
@@ -1022,7 +1048,7 @@ void GLState::push_modelview_matrix()
 
   update_matrices();
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glPushMatrix();
@@ -1043,7 +1069,7 @@ void GLState::pop_modelview_matrix()
 
   update_matrices();
 
-  if (updateGL_)
+  if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
     glPopMatrix();

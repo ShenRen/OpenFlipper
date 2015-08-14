@@ -222,7 +222,7 @@ class ACGDLLEXPORT GLState
 public:
 
   /// Default constructor
-  GLState(bool _updateGL = true);
+  GLState(bool _updateGL = true, bool _compatibilityProfile = true );
 
   /// destructor
   ~GLState() {}
@@ -254,9 +254,26 @@ public:
   void clearBuffers ();
 
   //===========================================================================
+  /** @name Profile setter
+  * @{ */
+  //===========================================================================
+
+  void setCompatibilityProfile( bool _compatibility );
+
+  bool compatibilityProfile() const;
+
+private:
+
+  bool compatibilityProfile_;
+
+  /** @} */
+
+  //===========================================================================
   /** @name glEnable / glDisable functionality
   * @{ */
   //===========================================================================
+
+public:
 
   /// replaces glEnable, but supports locking
   static void enable(GLenum _cap);

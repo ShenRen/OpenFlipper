@@ -103,17 +103,18 @@ void PropertyVisualizer::clear()
 
 QString PropertyVisualizer::toStr(OpenMesh::Vec3d v)
 {
-    return QObject::tr("( %1, %2, %3 )").arg(v[0]).arg(v[1]).arg(v[2]);
+    return QObject::trUtf8("∥(%1, %2, %3)∥ = %4").arg(v[0]).arg(v[1]).arg(v[2])
+            .arg(v.norm());
 }
 
 QString PropertyVisualizer::toStr(OpenMesh::Vec2d v)
 {
-    return QObject::tr("( %1, %2 )").arg(v[0]).arg(v[1]);
+    return QObject::tr("∥(%1, %2)∥ = %3").arg(v[0]).arg(v[1]).arg(v.norm());
 }
 
 QString PropertyVisualizer::toStr(OpenMesh::Vec2f v)
 {
-    return QObject::tr("( %1, %2 )").arg(v[0]).arg(v[1]);
+    return QObject::tr("∥(%1, %2)∥ =  %3").arg(v[0]).arg(v[1]).arg(v.norm());
 }
 
 #ifdef ENABLE_SKELETON_SUPPORT

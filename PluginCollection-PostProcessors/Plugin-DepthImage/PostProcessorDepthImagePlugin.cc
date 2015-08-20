@@ -75,6 +75,15 @@ QString PostProcessorDepthImagePlugin::postProcessorName() {
   return QString("Show Depth Image");
 }
 
+QString PostProcessorDepthImagePlugin::checkOpenGL() 
+{
+  if ( ! ACG::openGLVersion(3, 0) )
+    return QString("Insufficient OpenGL Version! OpenGL 3.0 or higher required");
+
+  return QString("");
+}
+
+
 void PostProcessorDepthImagePlugin::postProcess(ACG::GLState* _glstate, const std::vector<const PostProcessorInput*>& _input, const PostProcessorOutput& _output) {
 
   // ======================================================================================================

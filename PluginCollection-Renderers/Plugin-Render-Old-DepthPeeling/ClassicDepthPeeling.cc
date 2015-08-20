@@ -54,13 +54,6 @@
 #include <ACG/GL/GLError.hh>
 
 
-#if QT_VERSION >= 0x050000
- #include <QOpenGLContext>
- #include <QSurfaceFormat>
-#else
- #include <QGLFormat>
-#endif
-
 // this define enables a shader export of the generated peel shader for debugging purpose
 //#define DEPTHPEELING_SHADER_EXPORT
 
@@ -1098,57 +1091,20 @@ unsigned int DepthPeelingPlugin::getPeelShaderIndex(ACG::SceneGraph::DrawModes::
 }
 
 QString DepthPeelingPlugin::checkOpenGL() {
-
-#if QT_VERSION < 0x050000
-
-  // Get version and check
-  QGLFormat::OpenGLVersionFlags flags = QGLFormat::openGLVersionFlags();
-  if ( ! flags.testFlag(QGLFormat::OpenGL_Version_2_0) )
+  
+  if (!ACG::openGLVersion(2, 0))
     return QString("Insufficient OpenGL Version! OpenGL 2.0 or higher required");
-
-  //Get OpenGL extensions
-  QString glExtensions = QString((const char*)glGetString(GL_EXTENSIONS));
 
   // Collect missing extension
   QString missing = "";
 
-  if ( !glExtensions.contains("GL_ARB_geometry_shader4") )
+  if ( !ACG::checkExtensionSupported("GL_ARB_geometry_shader4") )
     missing += "Missing Extension GL_ARB_geometry_shader4\n";
 
-  if ( !glExtensions.contains("GL_ARB_vertex_program") )
+  if ( !ACG::checkExtensionSupported("GL_ARB_vertex_program") )
     missing += "Missing Extension GL_ARB_vertex_program\n";
 
   return missing;
-
-
-#else
-  QOpenGLContext* context = QOpenGLContext::currentContext();
-  if ( context ) {
-
-    // Get version and check
-    QSurfaceFormat format = context->format();
-
-    if ( (format.majorVersion() < 2) ) {
-      return QString("Insufficient OpenGL Version! OpenGL 2.0 or higher required");
-    }
-
-    // Check extensions
-    QString missing("");
-
-    if ( !context->hasExtension("GL_ARB_geometry_shader4") )
-      missing += "GL_ARB_geometry_shader4 extension missing\n";
-
-    #ifndef __APPLE__
-      if ( !context->hasExtension("GL_ARB_vertex_program") )
-        missing += "GL_ARB_vertex_program extension missing\n";
-    #endif
-
-    return missing;
-  } else {
-    return name() + QString(": No context available");
-  }
-
-#endif
 }
 
 

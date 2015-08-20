@@ -142,9 +142,24 @@ ToonRenderer::~ToonRenderer() {
   delete progOutline_;
 }
 
+QString ToonRenderer::checkOpenGL() {
+  if ( !ACG::openGLVersion(3, 2) )
+    return QString("Insufficient OpenGL Version! OpenGL 3.2 or higher required");
+
+  // Check extensions
+  QString missing("");
+  if ( !ACG::checkExtensionSupported("GL_ARB_vertex_buffer_object") )
+    missing += "GL_ARB_vertex_buffer_object extension missing\n";
+
+#ifndef __APPLE__
+  if ( !ACG::checkExtensionSupported("GL_ARB_vertex_program") )
+    missing += "GL_ARB_vertex_program extension missing\n";
+#endif
+
+  return missing;
+}
 
 void ToonRenderer::initializePlugin() {
-  ACG::ShaderProgGenerator::setShaderDir(OpenFlipper::Options::shaderDirStr());
 }
 
 QString ToonRenderer::renderObjectsInfo(bool _outputShaderInfo) {

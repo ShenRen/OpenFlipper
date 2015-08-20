@@ -214,6 +214,29 @@ DepthPeeling::~DepthPeeling()
 }
 
 
+
+QString DepthPeeling::checkOpenGL()
+{
+  if (!ACG::openGLVersion(3, 2))
+    return QString("Insufficient OpenGL Version! OpenGL 3.2 or higher required");
+
+  QString missing("");
+
+  if (!ACG::checkExtensionSupported("GL_ARB_vertex_buffer_object"))
+    missing += "GL_ARB_vertex_buffer_object extension missing\n";
+
+#ifndef __APPLE__
+  if (!ACG::checkExtensionSupported("GL_ARB_vertex_program"))
+    missing += "GL_ARB_vertex_program extension missing\n";
+#endif
+
+  if (!ACG::checkExtensionSupported("GL_ARB_occlusion_query"))
+    missing += "GL_ARB_occlusion_query extension missing\n";
+
+  return missing;
+}
+
+
 void DepthPeeling::initializePlugin()
 {
   ACG::ShaderProgGenerator::setShaderDir(OpenFlipper::Options::shaderDirStr());

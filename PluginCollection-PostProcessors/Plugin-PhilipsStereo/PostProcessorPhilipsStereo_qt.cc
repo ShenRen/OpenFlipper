@@ -64,55 +64,6 @@
 #else
  #include <QGLFormat>
 #endif
-
-QString PostProcessorPhilipsStereoPlugin::checkOpenGL() {
-
-
-
-#if QT_VERSION < 0x050000
-
-  QGLFormat::OpenGLVersionFlags flags = QGLFormat::openGLVersionFlags();
-  if ( ! flags.testFlag(QGLFormat::OpenGL_Version_3_0) )
-    return QString("Insufficient OpenGL Version! OpenGL 3.0 or higher required");
-
-  // Check extensions
-  QString glExtensions = QString((const char*)glGetString(GL_EXTENSIONS));
-  QString missing("");
-  if ( !glExtensions.contains("GL_ARB_texture_rectangle") )
-    missing += "GL_ARB_texture_rectangle extension missing\n";
-
-  return missing;
-
-#else
-  QOpenGLContext* context = QOpenGLContext::currentContext();
-  if ( context ) {
-
-    // Get version and check
-    QSurfaceFormat format = context->format();
-
-    if ( (format.majorVersion() < 3) ) {
-      return QString("Insufficient OpenGL Version! OpenGL 3.0 or higher required");
-    }
-
-    // Check extensions
-    QString missing("");
-
-    if ( !context->hasExtension("GL_ARB_texture_rectangle") )
-      missing += "GL_ARB_vertex_buffer_object extension missing\n";
-
-    return missing;
-
-  } else {
-    return name() + QString(": No context available");
-  }
-
-#endif
-
-
-
-
-}
-
 void  PostProcessorPhilipsStereoPlugin::slotShowOptionsMenu() {
 
   // Create widget if it does not exist

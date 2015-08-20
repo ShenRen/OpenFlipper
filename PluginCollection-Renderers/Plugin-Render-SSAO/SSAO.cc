@@ -76,6 +76,29 @@ SSAOPlugin::~SSAOPlugin()
 
 }
 
+QString SSAOPlugin::checkOpenGL() 
+{
+  if (!ACG::openGLVersion(3,2))
+    return QString("Insufficient OpenGL Version! OpenGL 3.2 or higher required");
+
+  QString missing("");
+  if ( !ACG::checkExtensionSupported("GL_ARB_vertex_buffer_object") )
+    missing += "GL_ARB_vertex_buffer_object extension missing\n";
+
+#ifndef __APPLE__
+  if ( !ACG::checkExtensionSupported("GL_ARB_vertex_program") )
+    missing += "GL_ARB_vertex_program extension missing\n";
+#endif
+
+  if ( !ACG::checkExtensionSupported("GL_ARB_texture_float") )
+    missing += "GL_ARB_texture_float extension missing\n";
+
+  if ( !ACG::checkExtensionSupported("GL_EXT_framebuffer_object") )
+    missing += "GL_EXT_framebuffer_object extension missing\n";
+
+  return missing;
+}
+
 
 SSAOPlugin::ViewerResources::ViewerResources()
 {

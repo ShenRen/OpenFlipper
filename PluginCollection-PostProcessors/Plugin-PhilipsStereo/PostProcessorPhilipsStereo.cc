@@ -78,6 +78,20 @@ QAction* PostProcessorPhilipsStereoPlugin::optionsAction() {
  return action;
 }
 
+
+
+QString PostProcessorPhilipsStereoPlugin::checkOpenGL() {
+  if ( ! ACG::openGLVersion(3, 0) )
+    return QString("Insufficient OpenGL Version! OpenGL 3.0 or higher required");
+
+  // Check extensions
+  QString missing("");
+  if ( !ACG::checkExtensionSupported("GL_ARB_texture_rectangle") )
+    missing += "GL_ARB_texture_rectangle extension missing\n";
+
+  return missing;
+}
+
 //-----------------------------------------------------------------------------
 
 void PostProcessorPhilipsStereoPlugin::postProcess(ACG::GLState* _glstate, const std::vector<const PostProcessorInput*>& _input, const PostProcessorOutput& _output) {

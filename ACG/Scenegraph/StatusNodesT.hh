@@ -264,7 +264,7 @@ private:
   const Mesh&                mesh_;
   DrawMeshT<Mesh>*           drawMesh_;
 
-  std::vector<unsigned int>  v_cache_, e_cache_, f_cache_, poly_cache;
+  std::vector<unsigned int>  v_cache_, e_cache_, f_cache_, poly_cache_;
   std::vector<FaceHandle>    fh_cache_;
 
   std::vector<Point>  he_points_;

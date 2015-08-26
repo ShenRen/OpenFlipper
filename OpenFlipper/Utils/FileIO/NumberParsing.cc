@@ -74,10 +74,10 @@ namespace Utils
     {
       //we have a negative float
       sign = sign * -1.0;
-      it++;
+      ++it;
     }
 
-    for (;it != end;it++)
+    for (;it != end;++it)
     {
       //we have read a digit
       if(it->isDigit())
@@ -88,19 +88,19 @@ namespace Utils
       else
       {
         //stop counting the highPart if its not a digit
-        it++;
+        ++it;
         break;
       }
     }
 
-    for (;it != end;it++)
+    for (;it != end;++it)
     {
       //we assume to have read a digit
       if(it->isDigit())
       {
         lowPart *=10;
         lowPart += it->digitValue();
-        n++;
+        ++n;
       }
       else
       {
@@ -137,10 +137,10 @@ namespace Utils
     {
       //we have a negative float
       sign = sign * -1.0;
-      it++;
+      ++it;
     }
 
-    for (;it != end;it++)
+    for (;it != end;++it)
     {
       //we have read a digit
       if(isdigit(*it))
@@ -151,19 +151,19 @@ namespace Utils
       else
       {
         //stop counting the highPart if its not a digit
-        it++;
+        ++it;
         break;
       }
     }
 
-    for (;it != end;it++)
+    for (;it != end;++it)
     {
       //we assume to have read a digit
       if(isdigit(*it))
       {
         lowPart *=10;
         lowPart += (int)(*it - '0');
-        n++;
+        ++n;
       }
       else
       {
@@ -203,10 +203,10 @@ namespace Utils
     {
       //we have a negative float
       sign = sign * -1.0;
-      it++;
+      ++it;
     }
 
-    for (;it != end;it++)
+    for (;it != end;++it)
     {
       //we have read a digit
       if(it->isDigit())
@@ -217,19 +217,19 @@ namespace Utils
       else
       {
         //stop counting the highPart if its not a digit
-        it++;
+        ++it;
         break;
       }
     }
 
-    for (;it != end;it++)
+    for (;it != end;++it)
     {
       //we assume to have read a digit
       if(it->isDigit())
       {
         lowPart *=10;
         lowPart += it->digitValue();
-        n++;
+        ++n;
       }
       else
       {

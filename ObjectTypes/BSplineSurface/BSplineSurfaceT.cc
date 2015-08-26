@@ -782,8 +782,6 @@ ACG::Vec2i
 BSplineSurfaceT<PointT>::
 interval_m(double _t)
 {
-  Vec2i interval = Vec2i(-1, -1);
-
   unsigned int i(0);
 
   if (_t >= upperu())
@@ -804,8 +802,6 @@ ACG::Vec2i
 BSplineSurfaceT<PointT>::
 interval_n(double _t)
 {
-  Vec2i interval = Vec2i(-1, -1);
-
   unsigned int i(0);
 
   if (_t >= upperv())

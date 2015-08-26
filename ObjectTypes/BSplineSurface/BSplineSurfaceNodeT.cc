@@ -551,12 +551,8 @@ drawControlNet(GLState& _state)
   // draw selection
   if (controlNetSelIndices_)
   {
-    // save old values
-    float point_size_old = _state.point_size();
-
     glColor(generateHighlightColor(controlnet_color_));
     glPointSize(10);
-//     glPointSize(point_size_old+2);
 
     // selected points are in index buffer
     controlNetSelIBO_.bind();

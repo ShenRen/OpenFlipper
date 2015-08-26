@@ -2038,12 +2038,6 @@ int FileOBJPlugin::loadObject(QString _filename) {
     }
 #endif
 
-#ifdef ENABLE_BSPLINESURFACE_SUPPORT
-    //handle new BSplineCurves
-    BSplineSurfaceObject* bssObj = dynamic_cast< BSplineSurfaceObject* > (object);
-
-#endif
-
     //textures
     if ( importer.hasTexture(i) && !importer.hasOption( i, OBJImporter::FORCE_NOTEXTURES ) ){
 

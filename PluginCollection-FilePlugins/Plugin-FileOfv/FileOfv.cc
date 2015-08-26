@@ -46,7 +46,6 @@
 *   $Date$                     *
 *                                                                            *
 \*===========================================================================*/
-#include <ACG/GL/GLState.hh>
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
@@ -74,11 +73,11 @@ void FileViewPlugin::initializePlugin() {
 
 QString FileViewPlugin::getLoadFilters() {
   return QString( tr("View definition files ( *.ofv )") );
-};
+}
 
 QString FileViewPlugin::getSaveFilters() {
   return QString( tr("View definition files ( *.ofv )") );
-};
+}
 
 DataType  FileViewPlugin::supportedType() {
   return DataType();
@@ -90,14 +89,11 @@ int FileViewPlugin::loadObject(QString _filename) {
     ACG::Vec3d  eye(1.0,1.0,1.0);
     ACG::Vec3d  center(0.0,0.0,0.0);
     ACG::Vec3d  up(1.0,0.0,0.0);
-//    float       fovy = 0;
     ACG::Vec4f  background;
     
-    //bool e_widthAndHeight = false;
     bool e_eye = false;
     bool e_center = false;
     bool e_up = false;
-//    bool e_fovy = false;
     bool e_background = false;
     
     QSettings settings(_filename, QSettings::IniFormat);
@@ -107,7 +103,6 @@ int FileViewPlugin::loadObject(QString _filename) {
         const int width = settings.value("Width").toInt();
         const int height = settings.value("Height").toInt();
         std::cerr << "Setting new viewport to " << width << "x" << height << std::endl;
-        //e_widthAndHeight = true;
     }
     
     if(settings.contains("EyeX")) {
@@ -134,11 +129,6 @@ int FileViewPlugin::loadObject(QString _filename) {
         e_up = true;
     }
     
-//    if(settings.contains("Fovy")) {
-//        fovy = settings.value("Fovy").toDouble();
-//        std::cerr << "Setting fovy to " << fovy << std::endl;
-//        e_fovy = true;
-//    }
     
     if(settings.contains("BackgroundR")) {
         background[0] = settings.value("BackgroundR").toDouble();
@@ -152,31 +142,7 @@ int FileViewPlugin::loadObject(QString _filename) {
     settings.endGroup();
     
     // Now set new projection and view
-    
-    // Get number of viewers
-    int viewers = PluginFunctions::viewers();
-    
-    for(int i = 0; i < viewers; ++i) {
-        
-        Viewer::ViewerProperties& props = PluginFunctions::viewerProperties(i);
-        ACG::GLState& state = props.glState();
-        
-//        // Perspective update
-//        double aspect = 0.0;
-//        if(e_widthAndHeight) aspect = width / height;
-//        else                 aspect = state.aspect();
-
-        // Set projection matrix
-        //if(e_fovy)
-        //    state.perspective(fovy, aspect, near, far);
-    
-        // Viewport
-        //if(e_widthAndHeight)
-        //    state.viewport(0, 0, width, height);
-        
-        //std::cerr << "Fovy: " << state.fovy() << std::endl;
-    }
-    
+       
     // LookAt
     ACG::Vec3d new_eye = e_eye ? eye : PluginFunctions::eyePos();
     ACG::Vec3d new_center = e_center ? center : PluginFunctions::sceneCenter();
@@ -192,7 +158,7 @@ int FileViewPlugin::loadObject(QString _filename) {
     emit updateView();
   
     return 0;
-};
+}
 
 bool FileViewPlugin::saveObject(int /*_id*/, QString /*_filename*/) {
   

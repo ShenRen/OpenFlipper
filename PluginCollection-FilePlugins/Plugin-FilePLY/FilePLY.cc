@@ -181,7 +181,7 @@ int FilePLYPlugin::loadObject(QString _filename, DataType _type) {
 
     return objectId;
   } else {
-    emit ( LOGERR, tr("FilePLYPlugin::loadObject(): Tried loading with unknown forced data type"));
+    emit log( LOGERR, tr("FilePLYPlugin::loadObject(): Tried loading with unknown forced data type"));
   }
 
   return -1;

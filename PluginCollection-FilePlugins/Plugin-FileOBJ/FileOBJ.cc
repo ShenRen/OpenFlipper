@@ -193,7 +193,7 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
   }
 
   QTextStream matStream(&matFile);
-  if ( !matStream.status()==QTextStream::Ok ){
+  if ( matStream.status()!=QTextStream::Ok ){
     emit log(LOGERR, tr("readMaterial : cannot open stream %1").arg(_filename) );
     return false;
   }
@@ -248,7 +248,7 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
       f2 = getFloat(stream);
       f3 = getFloat(stream);
 
-      if( !stream.status()==QTextStream::Ok )
+      if( stream.status()!=QTextStream::Ok )
         mat.set_Ka(f1,f2,f3);
     }
 
@@ -258,7 +258,7 @@ bool FileOBJPlugin::readMaterial(QString _filename, OBJImporter& _importer)
       f2 = getFloat(stream);
       f3 = getFloat(stream);
 
-      if( !stream.status()==QTextStream::Ok )
+      if( stream.status()!=QTextStream::Ok )
         mat.set_Ks(f1,f2,f3);
     }
 #if 0
@@ -606,7 +606,7 @@ void FileOBJPlugin::readOBJFile(QByteArray& _bufferedFile, QString _filename, OB
   QTextStream stream;
   QTextStream lineData;
   QTextStream tmp;
-  if (! input.status() == QTextStream::Ok){
+  if ( input.status() != QTextStream::Ok){
     emit log(LOGERR, tr("readOBJFile : cannot read file %1 is the file corrupt?").arg(_filename) );
     return;
   }
@@ -1303,7 +1303,7 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
   QTextStream lineData;
   QTextStream tmp;
 
-  if ( !input.status()==QTextStream::Ok ){
+  if ( input.status()!=QTextStream::Ok ){
     emit log(LOGERR, tr("readOBJFile : cannot read file %1 while checking Types (is the file corrupt?)").arg(_filename) );
     return;
   }
@@ -1343,7 +1343,7 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
   while( !input.atEnd())
   {
     line = input.readLine();
-    if ( !input.status()==QTextStream::Ok ){
+    if ( input.status()!=QTextStream::Ok ){
       emit log(LOGERR, tr("readOBJFile : Warning! Could not read file properly!"));
       return;
     }
@@ -1483,7 +1483,7 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
           // Read current value
           tmp >> value;
 
-          if ( !tmp.status()==QTextStream::Ok )
+          if ( tmp.status()!=QTextStream::Ok )
             emit log(LOGERR, tr("readOBJFile : Error reading vertex index!"));
 
         } else {
@@ -1492,7 +1492,7 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
           tmp.setString( &vertex );
           tmp >> value;
 
-          if ( !tmp.status()==QTextStream::Ok )
+          if ( tmp.status()!=QTextStream::Ok )
             emit log(LOGERR, tr("readOBJFile : Error reading vertex index!"));
         }
 

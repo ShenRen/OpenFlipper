@@ -636,8 +636,6 @@ void SkeletonObject::showMotionPath(bool _visible)
       for (uint c=0; c < joint->size(); c++ ){
         Skeleton::Joint* child = joint->child(c);
 
-        ACG::Vec3d globTrans = ref->localTranslation(child->id());
-
         for (unsigned int a = 0; a < skeleton_->animationCount(); a++){
 
           AnimationHandle animHandle = AnimationHandle(a, 0 );

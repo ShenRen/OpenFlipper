@@ -64,8 +64,7 @@ namespace VSI {
 
 /// Constructor
 ElementOutput::ElementOutput (Output *_out, SceneElement *_parent) :
-  ElementInOut (_out, _parent),
-  out_ (_out)
+  ElementInOut (_out, _parent)
 {
   connectionPointItem ()->setState (ConnectionPoint::OutputNotConnected);
 

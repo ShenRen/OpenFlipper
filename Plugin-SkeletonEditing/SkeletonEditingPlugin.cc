@@ -677,7 +677,6 @@ void SkeletonEditingPlugin::inverseKinematic(ACG::Vec3d dest,Skeleton::Pose* cur
 				ACG::Quaterniond quaternion(rotationAxis ,theta);
 
 				ACG::Matrix4x4d changingMatrix = currentGlobalMatrix * quaternion.rotation_matrix();
-				ACG::Vec3d currentTranslation = currentPose->globalTranslation( currentId );
 
 				//set position and rotation of our currentJoint, so pickedJoint is moving to our destination
 				currentPose->setGlobalMatrix(currentId, changingMatrix, false);

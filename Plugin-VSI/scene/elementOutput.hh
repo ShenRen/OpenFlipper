@@ -81,9 +81,6 @@ class ElementOutput : public ElementInOut {
 
     /// Remove connection
     void removeConnection (Connection *_conn);
-
-  private:
-    Output *out_;
 };
 
 //=============================================================================

@@ -86,12 +86,10 @@ bool PolyLinePlugin::createCircle_getPointOnMesh(TriMeshObject* _triMeshObject, 
 
     if (rayInt.empty())
         return false;
-    ACG::Vec3d eye = PluginFunctions::viewerProperties(0).glState().eye();
     int i = -1;
     double smDist = 10e10;
 
     for (unsigned int j = 0; j < rayInt.size(); j++) {
-        ACG::Vec3d norAtInt = _triMeshObject->mesh()->normal(rayInt[j].first);
         ACG::Vec3d p = _pOnPlane + _n * rayInt[j].second, dir = _center - p;
         const double dist = dir.norm();
         if (dist < smDist) {

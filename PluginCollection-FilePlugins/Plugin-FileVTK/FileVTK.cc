@@ -1330,9 +1330,6 @@ FileVTKPlugin::BestMeshType FileVTKPlugin::findBestObjectType(QString _filename)
         // Number of polygons to read
         quint32 polygoncount = polygonsLine[1].toUInt(&ok);
 
-        // number of ints in the whole polygon description
-        quint32 entrycount = polygonsLine[2].toUInt(&ok);
-
         if ( ! ok) {
             emit log(LOGERR,tr("Expected to get number of points and entries, but read %1 !").arg(polygonsLine.join(" ")));
             return BMT_None;

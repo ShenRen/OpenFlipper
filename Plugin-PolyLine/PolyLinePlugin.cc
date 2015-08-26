@@ -1034,8 +1034,6 @@ me_insert( QMouseEvent* _event )
         }
 
         if (cur_polyline_obj_->line()->n_vertices() >= 2) {
-            const PolyLine::Point &p1 = cur_polyline_obj_->line()->point(cur_polyline_obj_->line()->n_vertices() - 1),
-                    &p2 = cur_polyline_obj_->line()->point(cur_polyline_obj_->line()->n_vertices() - 2);
 
             cur_polyline_obj_->line()->delete_point(cur_polyline_obj_->line()->n_vertices() - 1);
         }
@@ -1638,7 +1636,6 @@ me_move( QMouseEvent* _event )
           PolyLineObject* lineObject;
           if (PluginFunctions::getObject(createCircle_CurrSelIndex_, lineObject))
           {
-              PolyLineCircleData* lineData = dynamic_cast<PolyLineCircleData*>(lineObject->objectData(CIRCLE_DATA));
               moveCircle_IsLocked = false;
               updateHandles(lineObject);
               updatePolyEllipse(lineObject, tool_->sb_CirclePointNum->value());

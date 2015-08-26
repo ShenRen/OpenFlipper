@@ -2595,7 +2595,6 @@ OpenMesh::Vec3d MovePlugin::getNearestFace(MeshType* _mesh, uint _fh, OpenMesh::
         return OpenMesh::Vec3d(0.0, 0.0, 0.0);
 
     typename MeshType::FaceVertexIter fv_it(*_mesh, fh);
-    typename MeshType::Point hitPointP = (typename MeshType::Point) _hitPoint;
 
     typename MeshType::Point cog(0.0,0.0,0.0);
     uint count = 0;

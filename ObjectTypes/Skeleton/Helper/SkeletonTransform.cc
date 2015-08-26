@@ -231,9 +231,6 @@ void SkeletonTransform::transformJoint(Skeleton::Joint* _joint, Matrix4x4 _matri
     Skeleton::Pose* pose = skeleton_.animation(a)->pose( iFrame );
   
     if ( parent != 0 ){
-       
-      //store original joint position
-      ACG::Vec3d oldJointPos = pose->globalTranslation( _joint->id() );
       
       //transform the local matrix
       Matrix4x4 newMatrix = transform * pose->localMatrix( _joint->id() );
@@ -244,52 +241,6 @@ void SkeletonTransform::transformJoint(Skeleton::Joint* _joint, Matrix4x4 _matri
       //    angle changes this has to be corrected by rotating the coord-frame
       // 2. the length of the bone to a child may have changed. Check that
       //    the length is the same like in the refPose
-//       if ( _keepChildPositions && (_joint->size() == 1) ){
-//     
-//         ACG::Vec3d newJointPos = pose->getGlobalTranslation( _joint->getID() );  
-//     
-//         Skeleton::Joint* child = _joint->getChild(0);
-//     
-//         double boneLen = refPose_->getLocalTranslation(child->getID()).norm();
-// 
-//         ACG::Vec3d childPos = pose->getGlobalTranslation( child->getID() );
-//     
-//         ACG::Vec3d vecOld = childPos - oldJointPos;
-//         ACG::Vec3d vecNew = childPos - newJointPos;
-//     
-//         vecOld.normalize();
-//         vecNew.normalize();
-//     
-//         double angle = vecNew | vecOld;
-//       
-//         if ( angle < 1.0 ){
-//       
-//           // construct rotation matrix
-//           angle = ACG::Geometry::radToDeg( acos(angle) );
-// 
-//           ACG::Vec3d axis = vecNew % vecOld;
-// 
-//           if ( axis.sqrnorm() == 0.0 )
-//             return;
-// 
-//           axis.normalize();
-//           
-//           //rotation around newJointPos
-//           ACG::GLMatrixT<double> rotation;
-//           rotation.identity();
-//           rotation.translate( newJointPos );
-//           rotation.rotate(-angle, axis);
-//           rotation.translate( -newJointPos );
-//       
-//           pose->setGlobal( _joint->getID(), rotation * pose->getGlobal(_joint->getID()));
-//       
-//           //make sure the bone length is still correct
-//           ACG::Vec3d childBone = pose->getLocalTranslation(child->getID());
-//           childBone.normalize();
-//       
-//           pose->setLocalTranslation( child->getID(), childBone * boneLen );
-//         }
-//       }
 
     } else {
       

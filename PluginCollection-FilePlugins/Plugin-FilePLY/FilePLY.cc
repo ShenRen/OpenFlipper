@@ -373,15 +373,15 @@ int FilePLYPlugin::loadTriMeshObject(QString _filename, OpenMesh::IO::Options& _
           return -1;
         }
 
+        //update normals if they aren't read
+        if (!_opt.vertex_has_normal() || !_opt.face_has_normal())
+          mesh->update_normals();
+
         //cleanup mesh if selected option could not be loaded
-        if (!hadVNormals && !_opt.vertex_has_normal() && mesh->has_vertex_normals())
-          mesh->release_vertex_normals();
         if (!hadVColors && !_opt.vertex_has_color() && mesh->has_vertex_colors())
           mesh->release_vertex_colors();
         if (!hadVTexCoords && !_opt.vertex_has_texcoord() && mesh->has_vertex_texcoords2D())
           mesh->release_vertex_texcoords2D();
-        if (!hadFNormals && !_opt.face_has_normal() && mesh->has_face_normals())
-          mesh->release_face_normals();
         if (!hadFColors && !_opt.face_has_color() && mesh->has_face_colors())
           mesh->release_face_colors();
 
@@ -444,15 +444,15 @@ int FilePLYPlugin::loadPolyMeshObject(QString _filename, OpenMesh::IO::Options& 
           return -1;
         }
 
+        //update normals if they aren't read
+        if (!_opt.vertex_has_normal() || !_opt.face_has_normal())
+          mesh->update_normals();
+
         //cleanup mesh if selected option could not be loaded
-        if (!hadVNormals && !_opt.vertex_has_normal() && mesh->has_vertex_normals())
-          mesh->release_vertex_normals();
         if (!hadVColors && !_opt.vertex_has_color() && mesh->has_vertex_colors())
           mesh->release_vertex_colors();
         if (!hadVTexCoords && !_opt.vertex_has_texcoord() && mesh->has_vertex_texcoords2D())
           mesh->release_vertex_texcoords2D();
-        if (!hadFNormals && !_opt.face_has_normal() && mesh->has_face_normals())
-          mesh->release_face_normals();
         if (!hadFColors && !_opt.face_has_color() && mesh->has_face_colors())
           mesh->release_face_colors();
 

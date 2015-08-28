@@ -62,8 +62,17 @@ if (QT4_FOUND)
 	message(STATUS "Using QT4 for OpenFlipper")
 elseif(QT5_FOUND)
 	message(STATUS "Using QT5 for OpenFlipper")
+	set (OF_MAX_QT_VERSION "5.3.2")
+    if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
+      message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n"
+        "OpenFlipper has not been tested with this QT Version on Windows.")
+    endif()
 else()
 	message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5 or specify the QT_QMAKE_EXECUTABLE to build with QT4")
+endif()
+
+if (QT5_FOUND)
+  
 endif()
 
 acg_openmp ()

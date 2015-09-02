@@ -51,6 +51,7 @@
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
+#include "MultiObjectPropertyModel.hh"
 #include "OpenMesh/OMPropertyModel.hh"
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
@@ -85,6 +86,36 @@
  */
 PropertyModel* __PropertyModelFactory::getModel(int objectID)
 {
+	using namespace PluginFunctions;
+	
+	if (objectID == -13 || objectID == -14 || objectID == -15)
+	{
+		if (propertyModelMap.find(objectID) == propertyModelMap.end())
+		{
+			propertyModelMap[objectID] = 0;
+		}
+		
+		if (propertyModelMap[objectID])
+		{
+			delete propertyModelMap[objectID];
+			propertyModelMap[objectID] = 0;
+		}
+		
+		switch (objectID) {
+			case -13:
+				propertyModelMap[objectID] = new MultiObjectPropertyModel(ALL_OBJECTS);
+				break;
+			case -14:
+				propertyModelMap[objectID] = new MultiObjectPropertyModel(TARGET_OBJECTS);
+				break;
+			case -15:
+				propertyModelMap[objectID] = new MultiObjectPropertyModel(SOURCE_OBJECTS);
+				break;
+		}
+		
+		return propertyModelMap[objectID];
+	}
+	
     PropertyModelMap::iterator it = propertyModelMap.find(objectID);
     if (it != propertyModelMap.end())
         return it->second;

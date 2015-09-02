@@ -41,18 +41,18 @@
 
 /*===========================================================================*\
 *                                                                            *
-*   $Revision$                                                       *
-*   $LastChangedBy$                                                *
-*   $Date$                     *
+*   $Revision: 21016 $                                                       *
+*   $LastChangedBy: schultz $                                                *
+*   $Date: 2015-07-16 16:48:42 +0200 (Thu, 16 Jul 2015) $                     *
 *                                                                            *
 \*===========================================================================*/
 
-#include "PropertyModel.hh"
+#include "SingleObjectPropertyModel.hh"
 
 #include <algorithm>
 
-PropertyModel::PropertyModel(QObject *parent)
-    : QAbstractListModel(parent),
+SingleObjectPropertyModel::SingleObjectPropertyModel(QObject *parent)
+    : PropertyModel(parent),
       widgets(0),
       currentlySelectedIndices(),
       currentlyVisualizedIndices()
@@ -63,7 +63,7 @@ PropertyModel::PropertyModel(QObject *parent)
     widgets->setLayout(layout);
 }
 
-PropertyModel::~PropertyModel()
+SingleObjectPropertyModel::~SingleObjectPropertyModel()
 {
     for (unsigned int i = 0; i < propertyVisualizers.size(); i++)
         delete propertyVisualizers[i];
@@ -73,19 +73,29 @@ PropertyModel::~PropertyModel()
  * @brief Visualizes the selected properties.
  * @param selectedIndices The
  */
-void PropertyModel::visualize(QModelIndexList selectedIndices)
+void SingleObjectPropertyModel::visualize(QModelIndexList selectedIndices, QWidgetList widgets)
 {
-    for (QModelIndexList::Iterator it = selectedIndices.begin(); it != selectedIndices.end(); ++it)
-    {
-        propertyVisualizers[it->row()]->visualize();
+	for (int i = 0; i < selectedIndices.size(); ++i)
+	{
+		const int row = selectedIndices[i].row();
+
+		if (widgets.empty())
+		{
+			propertyVisualizers[row]->visualize(true, 0);
+		}
+		else
+		{
+			propertyVisualizers[row]->visualize(true, widgets[i]);
+		}
+
         //delete index and reinsert so it is the last element.
         std::vector<unsigned int>& vec = currentlyVisualizedIndices;
-        vec.erase(std::remove(vec.begin(), vec.end(), it->row()), vec.end());
-        vec.push_back(it->row());
-    }
+        vec.erase(std::remove(vec.begin(), vec.end(), row), vec.end());
+        vec.push_back(row);
+	}
 }
 
-void PropertyModel::removeProperty(QModelIndexList selectedIndices)
+void SingleObjectPropertyModel::removeProperty(QModelIndexList selectedIndices)
 {
     std::vector<unsigned int> deleteIndices;
 
@@ -120,13 +130,13 @@ void PropertyModel::removeProperty(QModelIndexList selectedIndices)
     }
 }
 
-void PropertyModel::duplicateProperty(QModelIndexList selectedIndices)
+void SingleObjectPropertyModel::duplicateProperty(QModelIndexList selectedIndices)
 {
     for (QModelIndexList::Iterator it = selectedIndices.begin(); it != selectedIndices.end(); ++it)
         propertyVisualizers[it->row()]->duplicateProperty();
 }
 
-void PropertyModel::clear(QModelIndexList selectedIndices) {
+void SingleObjectPropertyModel::clear(QModelIndexList selectedIndices) {
     for (QModelIndexList::Iterator it = selectedIndices.begin(); it != selectedIndices.end(); ++it)
     {
         propertyVisualizers[it->row()]->clear();
@@ -135,7 +145,7 @@ void PropertyModel::clear(QModelIndexList selectedIndices) {
     }
 }
 
-void PropertyModel::updateWidget(const QModelIndexList& selectedIndices)
+void SingleObjectPropertyModel::updateWidget(const QModelIndexList& selectedIndices)
 {
     QLayout* layout = widgets->layout();
 
@@ -155,17 +165,17 @@ void PropertyModel::updateWidget(const QModelIndexList& selectedIndices)
     widgets->setLayout(layout);
 }
 
-void PropertyModel::connectLogs(PropertyVisualizer* propViz)
+void SingleObjectPropertyModel::connectLogs(PropertyVisualizer* propViz)
 {
     connect(propViz, SIGNAL(log(QString)), this, SLOT(slotLog(QString)));
     connect(propViz, SIGNAL(log(Logtype, QString)), this, SLOT(slotLog(Logtype, QString)));
 }
 
-int PropertyModel::rowCount(const QModelIndex & parent) const {
+int SingleObjectPropertyModel::rowCount(const QModelIndex & parent) const {
     return propertyVisualizers.size();
 }
 
-QVariant PropertyModel::data(const QModelIndex & index, int role) const {
+QVariant SingleObjectPropertyModel::data(const QModelIndex & index, int role) const {
     switch (role) {
         case Qt::DisplayRole:
             return propertyVisualizers[index.row()]->getName();
@@ -174,7 +184,7 @@ QVariant PropertyModel::data(const QModelIndex & index, int role) const {
     }
 }
 
-QVariant PropertyModel::headerData(int section, Qt::Orientation orientation, int role) const {
+QVariant SingleObjectPropertyModel::headerData(int section, Qt::Orientation orientation, int role) const {
     switch (role) {
         case Qt::DisplayRole:
             return tr("Some header. %1 %2").arg(section).arg(orientation);
@@ -184,15 +194,15 @@ QVariant PropertyModel::headerData(int section, Qt::Orientation orientation, int
     }
 }
 
-void PropertyModel::objectUpdated()
+void SingleObjectPropertyModel::objectUpdated()
 {
     for (unsigned int i = 0; i < currentlyVisualizedIndices.size(); i++)
     {
-        propertyVisualizers[currentlyVisualizedIndices[i]]->visualize(false);
+        propertyVisualizers[currentlyVisualizedIndices[i]]->visualize(false, 0);
     }
 }
 
-QString PropertyModel::getLoadFilename()
+QString SingleObjectPropertyModel::getLoadFilename()
 {
   QString filter = getLoadFilenameFilter();
 
@@ -201,12 +211,12 @@ QString PropertyModel::getLoadFilename()
   return fileName;
 }
 
-QString PropertyModel::getLoadFilenameFilter()
+QString SingleObjectPropertyModel::getLoadFilenameFilter()
 {
     return tr("");
 }
 
-QString PropertyModel::getSaveFilename(unsigned int propId)
+QString SingleObjectPropertyModel::getSaveFilename(unsigned int propId)
 {
   QString filter(getSaveFilenameFilter(propId));
   QString defaultName = getDefaultSaveFilename(propId);
@@ -216,14 +226,14 @@ QString PropertyModel::getSaveFilename(unsigned int propId)
   return fileName;
 }
 
-QString PropertyModel::getSaveFilenameFilter(unsigned int propId)
+QString SingleObjectPropertyModel::getSaveFilenameFilter(unsigned int propId)
 {
     QString filter= tr("All Files (*)");
 
     return filter;
 }
 
-QString PropertyModel::getDefaultSaveFilename(unsigned int propId)
+QString SingleObjectPropertyModel::getDefaultSaveFilename(unsigned int propId)
 {
     PropertyVisualizer* propViz = propertyVisualizers[propId];
 
@@ -245,7 +255,7 @@ QString PropertyModel::getDefaultSaveFilename(unsigned int propId)
     return name;
 }
 
-void PropertyModel::openFile(QString _filename, QFile& file_, QTextStream*& file_stream_)
+void SingleObjectPropertyModel::openFile(QString _filename, QFile& file_, QTextStream*& file_stream_)
 {
   closeFile(file_, file_stream_);
   file_.setFileName(_filename);
@@ -253,7 +263,7 @@ void PropertyModel::openFile(QString _filename, QFile& file_, QTextStream*& file
     file_stream_ = new QTextStream(&file_);
 }
 
-void PropertyModel::closeFile(QFile& file_, QTextStream*& file_stream_)
+void SingleObjectPropertyModel::closeFile(QFile& file_, QTextStream*& file_stream_)
 {
   if( file_stream_)
   {
@@ -266,7 +276,7 @@ void PropertyModel::closeFile(QFile& file_, QTextStream*& file_stream_)
   }
 }
 
-QString PropertyModel::readLine(QTextStream* file_stream_)
+QString SingleObjectPropertyModel::readLine(QTextStream* file_stream_)
 {
     if(file_stream_)
     {
@@ -277,7 +287,7 @@ QString PropertyModel::readLine(QTextStream* file_stream_)
     else return QString("");
 }
 
-void PropertyModel::writeLine(QString _s, QTextStream*& file_stream_)
+void SingleObjectPropertyModel::writeLine(QString _s, QTextStream*& file_stream_)
 {
   if(file_stream_)
   {
@@ -286,7 +296,7 @@ void PropertyModel::writeLine(QString _s, QTextStream*& file_stream_)
   else std::cerr << "Warning: filestream not available...\n";
 }
 
-void PropertyModel::saveProperty(unsigned int propId)
+void SingleObjectPropertyModel::saveProperty(unsigned int propId)
 {
     PropertyVisualizer* propVis = propertyVisualizers[propId];
 
@@ -312,7 +322,7 @@ void PropertyModel::saveProperty(unsigned int propId)
     closeFile(file_, file_stream_);
 }
 
-void PropertyModel::loadProperty()
+void SingleObjectPropertyModel::loadProperty()
 {
 
     QString filename = getLoadFilename();
@@ -341,7 +351,7 @@ void PropertyModel::loadProperty()
     closeFile(file_, file_stream_);
 }
 
-void PropertyModel::setPropertyFromFile(QTextStream*& file_stream_, unsigned int n, PropertyVisualizer* propVis)
+void SingleObjectPropertyModel::setPropertyFromFile(QTextStream*& file_stream_, unsigned int n, PropertyVisualizer* propVis)
 {
     for (unsigned int i = 0; i < n; ++i)
     {
@@ -350,7 +360,7 @@ void PropertyModel::setPropertyFromFile(QTextStream*& file_stream_, unsigned int
     }
 }
 
-PropertyVisualizer* PropertyModel::getPropertyVisualizer(QString propName, PropertyInfo::ENTITY_FILTER filter, TypeInfoWrapper typeInfo)
+PropertyVisualizer* SingleObjectPropertyModel::getPropertyVisualizer(QString propName, PropertyInfo::ENTITY_FILTER filter, TypeInfoWrapper typeInfo)
 {
     for (unsigned int i = 0; i < propertyVisualizers.size(); ++i)
     {
@@ -361,9 +371,12 @@ PropertyVisualizer* PropertyModel::getPropertyVisualizer(QString propName, Prope
     return 0;
 }
 
-bool PropertyModel::isPropertyFree(QString propName, PropertyInfo::ENTITY_FILTER filter, TypeInfoWrapper typeInfo)
+bool SingleObjectPropertyModel::isPropertyFree(QString propName, PropertyInfo::ENTITY_FILTER filter, TypeInfoWrapper typeInfo)
 {
     return getPropertyVisualizer(propName, filter, typeInfo) == 0;
 }
 
-
+PropertyInfo SingleObjectPropertyModel::getPropertyInfo(const QModelIndex index) const
+{
+	return propertyVisualizers[index.row()]->getPropertyInfo();
+}

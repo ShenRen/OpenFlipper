@@ -1,201 +1,70 @@
-/*===========================================================================*\
-*                                                                            *
-*                              OpenFlipper                                   *
- *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
- *           Department of Computer Graphics and Multimedia                  *
- *                          All rights reserved.                             *
- *                            www.openflipper.org                            *
- *                                                                           *
- *---------------------------------------------------------------------------*
- * This file is part of OpenFlipper.                                         *
- *---------------------------------------------------------------------------*
- *                                                                           *
- * Redistribution and use in source and binary forms, with or without        *
- * modification, are permitted provided that the following conditions        *
- * are met:                                                                  *
- *                                                                           *
- * 1. Redistributions of source code must retain the above copyright notice, *
- *    this list of conditions and the following disclaimer.                  *
- *                                                                           *
- * 2. Redistributions in binary form must reproduce the above copyright      *
- *    notice, this list of conditions and the following disclaimer in the    *
- *    documentation and/or other materials provided with the distribution.   *
- *                                                                           *
- * 3. Neither the name of the copyright holder nor the names of its          *
- *    contributors may be used to endorse or promote products derived from   *
- *    this software without specific prior written permission.               *
- *                                                                           *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       *
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED *
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A           *
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER *
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,  *
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,       *
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR        *
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF    *
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                            *
-\*===========================================================================*/
-
-/*===========================================================================*\
-*                                                                            *
-*   $Revision$                                                       *
-*   $LastChangedBy$                                                *
-*   $Date$                     *
-*                                                                            *
-\*===========================================================================*/
-
 #ifndef PROPERTY_MODEL_H
 #define PROPERTY_MODEL_H
 
+#include "Utils.hh"
 #include <QAbstractListModel>
-#include "PropertyVisualizer.hh"
 
-#include <OpenFlipper/BasePlugin/BaseInterface.hh>
-#include <OpenFlipper/BasePlugin/PickingInterface.hh>
-#include <OpenFlipper/BasePlugin/MouseInterface.hh>
+class QMouseEvent;
+class PropertyVisualizer;
 
-#include <vector>
-#include <iostream>
-#include <set>
-#include <typeinfo>
-
-#include <QPushButton>
-
-#include <Widgets/VectorWidget.hh>
-
-
-/*! \class PropertyModel
- *  \brief This class manages the visualizers for one object.
- *
- * For each mesh object a PropertyModel is created. It searches for properties and creates a
- * PropertyVisualizer for each of them. It provides the GUI for all selected properties.
- * Also loading and saving of properties is handled here.
- *
- * Note that for each type of object (OpenMesh, OpenVolumeMesh and others that might follow)
- * a subclass should be derived from this class.
- */
 class PropertyModel: public QAbstractListModel
 {
     Q_OBJECT
 
-signals:
-    void log(Logtype _type, QString _message);
-    void log(QString _message);
-
-private slots:
-    void slotLog(Logtype _type, QString _message){ emit log(_type, _message); }
-    void slotLog(QString _message){ emit log(_message);}
-
 public:
-    virtual void pickModeChanged(const std::string& _mode) {}
+	virtual void pickModeChanged(const std::string& _mode) {}
     virtual void mouseEvent(QMouseEvent* _event) {}
 
-    PropertyModel(QObject *parent = 0);
-    virtual ~PropertyModel();
+	PropertyModel(QObject *parent = 0) : QAbstractListModel(parent) {}
+	virtual ~PropertyModel() {}
 
-    virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
-    virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    virtual int rowCount(const QModelIndex & parent = QModelIndex()) const = 0;
+    virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const = 0;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const = 0;
 
     /// Revisualizes visualized properties.
-    virtual void objectUpdated();
+    virtual void objectUpdated() = 0;
 
     /// Visualizes the selected properties.
-    virtual void visualize(QModelIndexList selectedIndices);
+    virtual void visualize(QModelIndexList selectedIndices, QWidgetList widgets = QWidgetList()) = 0;
 
     /// Removes the selected properties.
-    virtual void removeProperty(QModelIndexList selectedIndices);
+    virtual void removeProperty(QModelIndexList selectedIndices) = 0;
 
     /// Duplicates the selected properties.
-    virtual void duplicateProperty(QModelIndexList selectedIndices);
+    virtual void duplicateProperty(QModelIndexList selectedIndices) = 0;
 
     /// Searches for properties and creates PropertyVisualizers.
-    virtual void gatherProperties(){ /* implemented by subclass */ }
+    virtual void gatherProperties() = 0;
 
     /// Clears the selected property visualization.
-    virtual void clear(QModelIndexList selectedIndices);
+    virtual void clear(QModelIndexList selectedIndices) = 0;
 
     /// Hides the widget.
-    inline void hideWidget()    { widgets->hide(); }
+    virtual void hideWidget() = 0;
 
     /// Returns the widget.
-    inline QWidget* getWidget() { return widgets;  }
+    virtual QWidget* getWidget() = 0;
 
     /// Updates the widget
-    virtual void updateWidget(const QModelIndexList& selectedIndices);
+    virtual void updateWidget(const QModelIndexList& selectedIndices) = 0;
 
     /// Connects the PropertyVisualizer log signals with the log slot.
-    void connectLogs(PropertyVisualizer* propViz);
+    virtual void connectLogs(PropertyVisualizer* propViz) = 0;
 
+	/// Returns the property info for the property with the given index.
+	virtual PropertyInfo getPropertyInfo(const QModelIndex index) const = 0;
 
-protected:
-
-    /// Returns a PropertyVisualizer.
-    PropertyVisualizer* getPropertyVisualizer(QString propName, PropertyInfo::ENTITY_FILTER filter, TypeInfoWrapper typeInfo);
-
-    /// Checks if the property name is still available.
-    bool isPropertyFree(QString propName, PropertyInfo::ENTITY_FILTER filter, TypeInfoWrapper typeInfo);
-
-
-    /// Asks the user for a file to load.
-    QString getLoadFilename();
-
-    /// Returns the filename filter for loading.
-    virtual QString getLoadFilenameFilter();
-
-    /// Asks the user for a file to load.
-    QString getSaveFilename(unsigned int propId);
-
-    /// Returns the filename filter for saving.
-    virtual QString getSaveFilenameFilter(unsigned int propId);
-
-    /// Returns the default file name
-    virtual QString getDefaultSaveFilename(unsigned int propId);
-
-    /// Opens a file.
-    void openFile(QString _filename, QFile &file_, QTextStream *&file_stream_);
-
-    /// Closes a file.
-    void closeFile(QFile& file_, QTextStream*& file_stream_);
-
-    /// Read line from a file.
-    QString readLine(QTextStream *file_stream_);
-
-    /// Writes a line to a file.
-    void writeLine(QString _s, QTextStream *&file_stream_);
-
-
-    /// Saves property.
-    void saveProperty(unsigned int propId);
-
-    /// Loads property.
-    void loadProperty();
-
-    /// Sets the property values from a given file.
-    virtual void setPropertyFromFile(QTextStream*& file_stream_, unsigned int n, PropertyVisualizer *propVis);
-
-    /**
-     * @brief Parses the property file header.
-     *
-     * @param header The header.
-     * @param[out] propVis The PropertyVisualizer that will visualize the new property.
-     * @param[out] n The number of values stored in the file
-     * @return True if parsing was successfull, False if not.
-     *
-     * When loading a property from a file this method parses the header placed in the file's first line. If parsing
-     * was successfull a new property and a PropertyVisualizer will be created.
-     */
-    virtual bool parseHeader(QString header, PropertyVisualizer*& propVis, unsigned int& n){ return false; }
-
-protected:
-    std::vector<PropertyVisualizer*> propertyVisualizers;
-    QWidget* widgets;
-
-    QModelIndexList currentlySelectedIndices;
-    std::vector<unsigned int> currentlyVisualizedIndices;
+	/// Returns the index of the property with the given name.
+	QModelIndex indexFromPropName(const QString& propName) const
+	{
+		for (int i = 0; i < rowCount(); ++i) {
+			const QModelIndex idx = index(i, 0);
+			const QString name = idx.data().toString();
+			if (name == propName) return idx;
+		}
+		return QModelIndex();
+	}
 };
 
 #endif /* PROPERTY_MODEL_H */

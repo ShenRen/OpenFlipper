@@ -60,7 +60,7 @@
  * implements a warning which will tell the user that visualizing the property for
  * that object type is not implemented yet.
  */
-void PropertyVisualizer::visualize(bool _setDrawMode)
+void PropertyVisualizer::visualize(bool _setDrawMode, QWidget* _widget)
 {
     log(LOGERR, "Visualizing for this type of object not yet supported.");
 }

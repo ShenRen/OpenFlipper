@@ -144,12 +144,13 @@ void PropertyVisPlugin::slotPickModeChanged( const std::string& _mode)
 
 void PropertyVisPlugin::slotAllCleared()
 {
-    if (propertyModel_  != 0)
+	using namespace PluginFunctions;
+
+    if (propertyModel_ != 0)
     {
         QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
         propertyModel_->clear(selectedIndices);
         propertyModel_->objectUpdated();
-
         emit updateView();
     }
 }
@@ -251,26 +252,41 @@ void PropertyVisPlugin::setNewPropertyModel(int id)
 
 void PropertyVisPlugin::slotMeshChanged(int /*_index*/)
 {
-  int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
-  BaseObjectData* object = 0;
-
-  PluginFunctions::getObject( id, object );
-  setNewPropertyModel(id);
+    int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
+	setNewPropertyModel(id);
 }
 
 //-----------------------------------------------------------------------------
 
 void PropertyVisPlugin::slotVisualize()
 {
-    if (propertyModel_ != 0)
-    {
-        QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
-        propertyModel_->visualize(selectedIndices);
+	using namespace PluginFunctions;
+	
+	// return if nothing is selected
+	if (propertyModel_ == 0) return;
 
-        emit updateView();
-        int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
-        emit updatedObject( id, UPDATE_COLOR );
-    }
+	int selectedId = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
+	QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
+	
+	// visualize property
+	propertyModel_->visualize(selectedIndices);
+	
+	// emit updates
+    emit updateView();
+	
+	if (selectedId >= 0)
+	{
+		emit updatedObject( selectedId, UPDATE_COLOR );
+	}
+	else
+	{
+		ObjectIterator o_it(ALL_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH);
+		while (o_it != objectsEnd())
+		{
+			emit updatedObject( o_it->id(), UPDATE_COLOR );
+			++o_it;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -282,7 +298,10 @@ void PropertyVisPlugin::slotMouseEvent( QMouseEvent* _event ) {
 
 //-----------------------------------------------------------------------------
 
-void PropertyVisPlugin::slotDuplicateProperty() {
+void PropertyVisPlugin::slotDuplicateProperty()
+{
+	using namespace PluginFunctions;
+	
     if (propertyModel_ != 0)
     {
         QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
@@ -291,12 +310,27 @@ void PropertyVisPlugin::slotDuplicateProperty() {
         emit updateView();
         int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
         slotMeshChanged();
-        emit updatedObject( id, UPDATE_ALL );
+
+		if (id >= 0)
+		{
+			emit updatedObject( id, UPDATE_ALL );
+		}
+		else
+		{
+			ObjectIterator o_it(ALL_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH);
+			while (o_it != objectsEnd())
+			{
+				emit updatedObject( o_it->id(), UPDATE_ALL );
+				++o_it;
+			}
+		}
     }
 }
 
 void PropertyVisPlugin::slotRemoveProperty()
 {
+	using namespace PluginFunctions;
+	
     if (propertyModel_ != 0)
     {
         QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
@@ -304,7 +338,20 @@ void PropertyVisPlugin::slotRemoveProperty()
 
         emit updateView();
         int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
-        emit updatedObject( id, UPDATE_ALL );
+		
+		if (id >= 0)
+		{
+			emit updatedObject( id, UPDATE_ALL );
+		}
+		else
+		{
+			ObjectIterator o_it(ALL_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH);
+			while (o_it != objectsEnd())
+			{
+				emit updatedObject( o_it->id(), UPDATE_ALL );
+				++o_it;
+			}
+		}
     }
 }
 

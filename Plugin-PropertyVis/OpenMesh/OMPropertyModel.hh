@@ -50,7 +50,7 @@
 #ifndef OM_PROPERTY_MODEL_H
 #define OM_PROPERTY_MODEL_H
 
-#include "../PropertyModel.hh"
+#include "SingleObjectPropertyModel.hh"
 #include "OMPropertyVisualizer.hh"
 
 #include "Widgets/LoadSaveWidget.hh"
@@ -69,12 +69,12 @@ class PropertyVisPlugin;
  * slots or Q_OBJECT"
  * http://doc.trolltech.com/qq/qq15-academic.html
  */
-class OMPropertyModelSubclass: public PropertyModel
+class OMPropertyModelSubclass: public SingleObjectPropertyModel
 {
 Q_OBJECT
 public:
     OMPropertyModelSubclass(QObject *parent = 0)
-        : PropertyModel(parent)
+        : SingleObjectPropertyModel(parent)
     {
     }
 
@@ -161,9 +161,22 @@ private:
 
     /// Adds a new property to the mesh.
     void addProperty(QString propName, QString friendlyTypeName, PropertyInfo::ENTITY_FILTER filter);
-    
+
     void initializeSupportedPropertyTypes();
 
+public:
+	static const TypeInfoWrapper proptype_bool;
+    static const TypeInfoWrapper proptype_int;
+    static const TypeInfoWrapper proptype_uint;
+    static const TypeInfoWrapper proptype_double;
+    static const TypeInfoWrapper proptype_Vec3d;
+    static const TypeInfoWrapper proptype_Vec3f;
+    static const TypeInfoWrapper proptype_Vec2d;
+    static const TypeInfoWrapper proptype_Vec2f;
+#ifdef ENABLE_SKELETON_SUPPORT
+    static const TypeInfoWrapper proptype_SkinWeights;
+#endif
+	
 private:
     MeshT* mesh_;
 
@@ -180,23 +193,34 @@ private:
     std::string lastPickMode;
     Viewer::ActionMode lastActionMode;
 
-
-    TypeInfoWrapper proptype_bool;
-    TypeInfoWrapper proptype_int;
-    TypeInfoWrapper proptype_uint;
-    TypeInfoWrapper proptype_double;
-    TypeInfoWrapper proptype_Vec3d;
-    TypeInfoWrapper proptype_Vec3f;
-    TypeInfoWrapper proptype_Vec2d;
-    TypeInfoWrapper proptype_Vec2f;
-#ifdef ENABLE_SKELETON_SUPPORT
-    TypeInfoWrapper proptype_SkinWeights;
-#endif
-
     typedef std::set<TypeInfoWrapper> TypeInfoWrapperSet;
     TypeInfoWrapperSet supportedPropertyTypes;
 
 };
+
+
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_bool
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<bool>), "bool");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_int
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<int>), "int");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_uint
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<unsigned int>), "unsigned int");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_double
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<double>), "double");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_Vec3d
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec3d>), "Vec3d");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_Vec3f
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec3f>), "Vec3f");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_Vec2d
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec2d>), "Vec2d");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_Vec2f
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec2f>), "Vec2f");
+
+#ifdef ENABLE_SKELETON_SUPPORT
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_SkinWeights
+	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<BaseSkin::SkinWeights>), "SkinWeights");
+#endif
+
 
 #if defined(INCLUDE_TEMPLATES) && !defined(OM_PROPERTY_MODEL_CC)
 #include "OMPropertyModelT.cc"

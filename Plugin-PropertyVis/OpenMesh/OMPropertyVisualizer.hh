@@ -70,7 +70,7 @@ public:
 
 
     /// Visualizes the property.
-    virtual void visualize(bool _setDrawMode = true);
+    virtual void visualize(bool _setDrawMode, QWidget* _widget);
 
     /**
      * @brief Removes the property.

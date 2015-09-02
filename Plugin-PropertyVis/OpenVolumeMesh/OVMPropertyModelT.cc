@@ -53,14 +53,6 @@
 
 #include "OVMPropertyModel.hh"
 
-#define INITIALIZE_PROPTYPES(primitive)                                                                                       \
-    proptype_##primitive##_bool(TypeInfoWrapper(typeid(OpenVolumeMesh::primitive##PropertyT<bool>), "bool")),                 \
-    proptype_##primitive##_int(TypeInfoWrapper(typeid(OpenVolumeMesh::primitive##PropertyT<int>), "int")),                     \
-    proptype_##primitive##_uint(TypeInfoWrapper(typeid(OpenVolumeMesh::primitive##PropertyT<unsigned int>), "unsigned int")),   \
-    proptype_##primitive##_double(TypeInfoWrapper(typeid(OpenVolumeMesh::primitive##PropertyT<double>), "double")),             \
-    proptype_##primitive##_Vec3d(TypeInfoWrapper(typeid(OpenVolumeMesh::primitive##PropertyT<ACG::Vec3d>), "Vec3d")),           \
-    proptype_##primitive##_Vec3f(TypeInfoWrapper(typeid(OpenVolumeMesh::primitive##PropertyT<ACG::Vec3f>), "Vec3f"))
-
 
 template <typename MeshT>
 OVMPropertyModel<MeshT>::OVMPropertyModel(MeshT* mesh, int objectID, QObject *parent)
@@ -68,13 +60,7 @@ OVMPropertyModel<MeshT>::OVMPropertyModel(MeshT* mesh, int objectID, QObject *pa
       mesh_(mesh),
       objectID_(objectID),
       mCombineProperty1(0),
-      mCombineProperty2(0),
-      INITIALIZE_PROPTYPES(Cell),
-      INITIALIZE_PROPTYPES(Face),
-      INITIALIZE_PROPTYPES(HalfFace),
-      INITIALIZE_PROPTYPES(Edge),
-      INITIALIZE_PROPTYPES(HalfEdge),
-      INITIALIZE_PROPTYPES(Vertex)
+      mCombineProperty2(0)
 {
     gatherProperties();
     bCombine.setText(tr("Combine"));
@@ -109,7 +95,7 @@ OVMPropertyModel<MeshT>::OVMPropertyModel(MeshT* mesh, int objectID, QObject *pa
 template <typename MeshT>
 void OVMPropertyModel<MeshT>::updateWidget(const QModelIndexList& selectedIndices)
 {
-    PropertyModel::updateWidget(selectedIndices);
+    SingleObjectPropertyModel::updateWidget(selectedIndices);
 
     if (selectedIndices.size() == 2)
     {
@@ -397,19 +383,8 @@ void OVMPropertyModel<MeshT>::saveProperty()
 {
     for (QModelIndexList::const_iterator it = currentlySelectedIndices.begin(), it_end = currentlySelectedIndices.end();
                 it != it_end; ++it) {
-        PropertyModel::saveProperty(it->row());
+        SingleObjectPropertyModel::saveProperty(it->row());
     }
-}
-
-template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isVectorType(const TypeInfoWrapper& typeInfo) const
-{
-    return     (typeInfo == proptype_Cell_Vec3f)     || (typeInfo == proptype_Cell_Vec3d)
-            || (typeInfo == proptype_Face_Vec3f)     || (typeInfo == proptype_Face_Vec3d)
-            || (typeInfo == proptype_HalfFace_Vec3f) || (typeInfo == proptype_HalfFace_Vec3d)
-            || (typeInfo == proptype_Edge_Vec3f)     || (typeInfo == proptype_Edge_Vec3d)
-            || (typeInfo == proptype_HalfEdge_Vec3f) || (typeInfo == proptype_HalfEdge_Vec3d)
-            || (typeInfo == proptype_Vertex_Vec3f)   || (typeInfo == proptype_Vertex_Vec3d);
 }
 
 /**
@@ -569,75 +544,117 @@ TypeInfoWrapper OVMPropertyModel<MeshT>::getSupportedTypeInfoWrapper(QString fri
 }
 
 template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isBoolType(const PropertyInfo& propInfo) const
+bool OVMPropertyModel<MeshT>::isBoolType(const PropertyInfo& propInfo)
 {
-    return propInfo.typeinfo() == proptype_Cell_bool ||
-           propInfo.typeinfo() == proptype_Face_bool ||
-           propInfo.typeinfo() == proptype_HalfFace_bool ||
-           propInfo.typeinfo() == proptype_Edge_bool ||
-           propInfo.typeinfo() == proptype_HalfEdge_bool ||
-           propInfo.typeinfo() == proptype_Vertex_bool;
+    return isBoolType(propInfo.typeinfo());
 }
 
 template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isIntType(const PropertyInfo& propInfo) const
+bool OVMPropertyModel<MeshT>::isBoolType(const TypeInfoWrapper& typeInfo)
 {
-    return propInfo.typeinfo() == proptype_Cell_int ||
-           propInfo.typeinfo() == proptype_Face_int ||
-           propInfo.typeinfo() == proptype_HalfFace_int ||
-           propInfo.typeinfo() == proptype_Edge_int ||
-           propInfo.typeinfo() == proptype_HalfEdge_int ||
-           propInfo.typeinfo() == proptype_Vertex_int;
+    return typeInfo == proptype_Cell_bool ||
+           typeInfo == proptype_Face_bool ||
+           typeInfo == proptype_HalfFace_bool ||
+           typeInfo == proptype_Edge_bool ||
+           typeInfo == proptype_HalfEdge_bool ||
+           typeInfo == proptype_Vertex_bool;
 }
 
 template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isDoubleType(const PropertyInfo& propInfo) const
+bool OVMPropertyModel<MeshT>::isIntType(const PropertyInfo& propInfo)
 {
-    return propInfo.typeinfo() == proptype_Cell_double ||
-           propInfo.typeinfo() == proptype_Face_double ||
-           propInfo.typeinfo() == proptype_HalfFace_double ||
-           propInfo.typeinfo() == proptype_Edge_double ||
-           propInfo.typeinfo() == proptype_HalfEdge_double ||
-           propInfo.typeinfo() == proptype_Vertex_double;
+    return isIntType(propInfo.typeinfo());
 }
 
 template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isUnsignedIntType(const PropertyInfo& propInfo) const
+bool OVMPropertyModel<MeshT>::isIntType(const TypeInfoWrapper& typeInfo)
 {
-    return propInfo.typeinfo() == proptype_Cell_uint ||
-           propInfo.typeinfo() == proptype_Face_uint ||
-           propInfo.typeinfo() == proptype_HalfFace_uint ||
-           propInfo.typeinfo() == proptype_Edge_uint ||
-           propInfo.typeinfo() == proptype_HalfEdge_uint ||
-           propInfo.typeinfo() == proptype_Vertex_uint;
+    return typeInfo == proptype_Cell_int ||
+           typeInfo == proptype_Face_int ||
+           typeInfo == proptype_HalfFace_int ||
+           typeInfo == proptype_Edge_int ||
+           typeInfo == proptype_HalfEdge_int ||
+           typeInfo == proptype_Vertex_int;
 }
 
 template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isVec3dType(const PropertyInfo& propInfo) const
+bool OVMPropertyModel<MeshT>::isDoubleType(const PropertyInfo& propInfo)
 {
-    return propInfo.typeinfo() == proptype_Cell_Vec3d ||
-           propInfo.typeinfo() == proptype_Face_Vec3d ||
-           propInfo.typeinfo() == proptype_HalfFace_Vec3d ||
-           propInfo.typeinfo() == proptype_Edge_Vec3d ||
-           propInfo.typeinfo() == proptype_HalfEdge_Vec3d ||
-           propInfo.typeinfo() == proptype_Vertex_Vec3d;
+    return isDoubleType(propInfo.typeinfo());
 }
 
 template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isVec3fType(const PropertyInfo& propInfo) const
+bool OVMPropertyModel<MeshT>::isDoubleType(const TypeInfoWrapper& typeInfo)
 {
-    return propInfo.typeinfo() == proptype_Cell_Vec3f ||
-           propInfo.typeinfo() == proptype_Face_Vec3f ||
-           propInfo.typeinfo() == proptype_HalfFace_Vec3f ||
-           propInfo.typeinfo() == proptype_Edge_Vec3f ||
-           propInfo.typeinfo() == proptype_HalfEdge_Vec3f ||
-           propInfo.typeinfo() == proptype_Vertex_Vec3f;
+    return typeInfo == proptype_Cell_double ||
+           typeInfo == proptype_Face_double ||
+           typeInfo == proptype_HalfFace_double ||
+           typeInfo == proptype_Edge_double ||
+           typeInfo == proptype_HalfEdge_double ||
+           typeInfo == proptype_Vertex_double;
 }
 
 template<typename MeshT>
-bool OVMPropertyModel<MeshT>::isVectorType(const PropertyInfo& propInfo) const
+bool OVMPropertyModel<MeshT>::isUnsignedIntType(const PropertyInfo& propInfo)
+{
+    return isUnsignedIntType(propInfo.typeinfo());
+}
+
+template<typename MeshT>
+bool OVMPropertyModel<MeshT>::isUnsignedIntType(const TypeInfoWrapper& typeInfo)
+{
+    return typeInfo == proptype_Cell_uint ||
+           typeInfo == proptype_Face_uint ||
+           typeInfo == proptype_HalfFace_uint ||
+           typeInfo == proptype_Edge_uint ||
+           typeInfo == proptype_HalfEdge_uint ||
+           typeInfo == proptype_Vertex_uint;
+}
+
+template<typename MeshT>
+bool OVMPropertyModel<MeshT>::isVec3dType(const PropertyInfo& propInfo)
+{
+    return isVec3dType(propInfo.typeinfo());
+}
+
+template<typename MeshT>
+bool OVMPropertyModel<MeshT>::isVec3dType(const TypeInfoWrapper& typeInfo)
+{
+    return typeInfo == proptype_Cell_Vec3d ||
+           typeInfo == proptype_Face_Vec3d ||
+           typeInfo == proptype_HalfFace_Vec3d ||
+           typeInfo == proptype_Edge_Vec3d ||
+           typeInfo == proptype_HalfEdge_Vec3d ||
+           typeInfo == proptype_Vertex_Vec3d;
+}
+
+template<typename MeshT>
+bool OVMPropertyModel<MeshT>::isVec3fType(const PropertyInfo& propInfo)
+{
+    return isVec3fType(propInfo.typeinfo());
+}
+
+template<typename MeshT>
+bool OVMPropertyModel<MeshT>::isVec3fType(const TypeInfoWrapper& typeInfo)
+{
+    return typeInfo == proptype_Cell_Vec3f ||
+           typeInfo == proptype_Face_Vec3f ||
+           typeInfo == proptype_HalfFace_Vec3f ||
+           typeInfo == proptype_Edge_Vec3f ||
+           typeInfo == proptype_HalfEdge_Vec3f ||
+           typeInfo == proptype_Vertex_Vec3f;
+}
+
+template<typename MeshT>
+bool OVMPropertyModel<MeshT>::isVectorType(const PropertyInfo& propInfo)
 {
     return isVec3fType(propInfo) || isVec3dType(propInfo);
+}
+
+template<typename MeshT>
+bool OVMPropertyModel<MeshT>::isVectorType(const TypeInfoWrapper& typeInfo)
+{
+    return isVec3fType(typeInfo) || isVec3dType(typeInfo);
 }
 
 template<typename MeshT>

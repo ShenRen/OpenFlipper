@@ -203,8 +203,15 @@ unsigned int OVMPropertyVisualizer<MeshT>::getClosestHalfedgeId(unsigned int _fa
 
 
 template <typename MeshT>
-void OVMPropertyVisualizer<MeshT>::visualize(bool _setDrawMode)
+void OVMPropertyVisualizer<MeshT>::visualize(bool _setDrawMode, QWidget* _widget)
 {
+    QWidget* tmp;
+    if (_widget)
+    {
+        tmp = widget;
+        widget = _widget;
+    }
+
     if (propertyInfo.isCellProp())
         visualizeCellProp(_setDrawMode);
     else if (propertyInfo.isFaceProp())
@@ -217,6 +224,11 @@ void OVMPropertyVisualizer<MeshT>::visualize(bool _setDrawMode)
         visualizeHalfedgeProp(_setDrawMode);
     else if (propertyInfo.isVertexProp())
         visualizeVertexProp(_setDrawMode);
+
+    if (_widget)
+    {
+        widget = tmp;
+    }
 }
 
 template <typename MeshT>

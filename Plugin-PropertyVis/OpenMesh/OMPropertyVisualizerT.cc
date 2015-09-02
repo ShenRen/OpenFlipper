@@ -306,8 +306,15 @@ unsigned int OMPropertyVisualizer<MeshT>::getClosestVertexId(unsigned int _face,
  * type of the property.
  */
 template <typename MeshT>
-void OMPropertyVisualizer<MeshT>::visualize(bool _setDrawMode)
+void OMPropertyVisualizer<MeshT>::visualize(bool _setDrawMode, QWidget* _widget)
 {
+    QWidget* tmp;
+    if (_widget)
+    {
+        tmp = widget;
+        widget = _widget;
+    }
+
     if (propertyInfo.isFaceProp())
         visualizeFaceProp(_setDrawMode);
     else if (propertyInfo.isEdgeProp())
@@ -316,6 +323,11 @@ void OMPropertyVisualizer<MeshT>::visualize(bool _setDrawMode)
         visualizeHalfedgeProp(_setDrawMode);
     else if (propertyInfo.isVertexProp())
         visualizeVertexProp(_setDrawMode);
+
+    if (_widget)
+    {
+        widget = tmp;
+    }
 }
 
 /**

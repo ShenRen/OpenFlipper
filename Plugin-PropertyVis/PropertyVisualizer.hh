@@ -102,7 +102,7 @@ public:
     virtual ~PropertyVisualizer(){delete widget; }
 
     /// Visualizes the property.
-    virtual void visualize(bool _setDrawMode = true);
+    virtual void visualize(bool _setDrawMode, QWidget* _widget);
 
     /// Removes the property.
     virtual void removeProperty();
@@ -180,6 +180,8 @@ public:
 protected:
 
     PropertyInfo propertyInfo;
+
+public:
     QWidget* widget;
 
 };

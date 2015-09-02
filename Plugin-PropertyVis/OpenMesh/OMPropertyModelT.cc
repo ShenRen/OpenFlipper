@@ -75,18 +75,7 @@ OMPropertyModel<MeshT>::OMPropertyModel(MeshT* mesh, int objectID, QObject *pare
       objectID_(objectID),
       mCombineProperty1(0),
       mCombineProperty2(0),
-      pickModeActive(false),
-      proptype_bool(TypeInfoWrapper(typeid(OpenMesh::PropertyT<bool>), "bool")),
-      proptype_int(TypeInfoWrapper(typeid(OpenMesh::PropertyT<int>), "int")),
-      proptype_uint(TypeInfoWrapper(typeid(OpenMesh::PropertyT<unsigned int>), "unsigned int")),
-      proptype_double(TypeInfoWrapper(typeid(OpenMesh::PropertyT<double>), "double")),
-      proptype_Vec3d(TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec3d>), "Vec3d")),
-      proptype_Vec3f(TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec3f>), "Vec3f")),
-      proptype_Vec2d(TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec2d>), "Vec2d")),
-      proptype_Vec2f(TypeInfoWrapper(typeid(OpenMesh::PropertyT<ACG::Vec2f>), "Vec2f"))
-#ifdef ENABLE_SKELETON_SUPPORT
-      ,proptype_SkinWeights(TypeInfoWrapper(typeid(OpenMesh::PropertyT<BaseSkin::SkinWeights>), "SkinWeights"))
-#endif
+      pickModeActive(false)
 {
     gatherProperties();
     bCombine.setText(tr("Combine"));
@@ -112,7 +101,7 @@ OMPropertyModel<MeshT>::OMPropertyModel(MeshT* mesh, int objectID, QObject *pare
 
     lastPickMode   = PluginFunctions::pickMode();
     lastActionMode = PluginFunctions::actionMode();
-    
+
     initializeSupportedPropertyTypes();
 
 }
@@ -120,7 +109,7 @@ OMPropertyModel<MeshT>::OMPropertyModel(MeshT* mesh, int objectID, QObject *pare
 template<typename MeshT>
 void OMPropertyModel<MeshT>::updateWidget(const QModelIndexList& selectedIndices)
 {
-    PropertyModel::updateWidget(selectedIndices);
+    SingleObjectPropertyModel::updateWidget(selectedIndices);
 
     if (selectedIndices.size() == 2)
     {
@@ -227,7 +216,7 @@ void OMPropertyModel<MeshT>::saveProperty()
 {
     for (QModelIndexList::const_iterator it = currentlySelectedIndices.begin(), it_end = currentlySelectedIndices.end();
                 it != it_end; ++it) {
-        PropertyModel::saveProperty(it->row());
+        SingleObjectPropertyModel::saveProperty(it->row());
     }
 }
 
@@ -333,7 +322,7 @@ void OMPropertyModel<MeshT>::setPropertyFromFile(QTextStream*& file_stream_, uns
     else
 #endif
     {
-        PropertyModel::setPropertyFromFile(file_stream_, n, propVis);
+        SingleObjectPropertyModel::setPropertyFromFile(file_stream_, n, propVis);
     }
 }
 
@@ -750,8 +739,8 @@ void OMPropertyModel<MeshT>:: addProperty(QString propName, QString friendlyType
 template<typename MeshT>
 void OMPropertyModel<MeshT>::initializeSupportedPropertyTypes()
 {
-    
-    
+
+
     supportedPropertyTypes.insert(proptype_bool);
     supportedPropertyTypes.insert(proptype_int);
     supportedPropertyTypes.insert(proptype_uint);
@@ -760,11 +749,11 @@ void OMPropertyModel<MeshT>::initializeSupportedPropertyTypes()
     supportedPropertyTypes.insert(proptype_Vec3f);
     supportedPropertyTypes.insert(proptype_Vec2d);
     supportedPropertyTypes.insert(proptype_Vec2f);
-    
+
 #ifdef ENABLE_SKELETON_SUPPORT
     supportedPropertyTypes.insert(proptype_SkinWeights);
 #endif
-    
+
 //#ifdef ENABLE_SKELETON_SUPPORT
 //    //template <typename MeshT>
 //    //const typename OMPropertyModel<MeshT>::TypeInfoWrapperSet OMPropertyModel<MeshT>::supportedPropertyTypes =
@@ -775,7 +764,5 @@ void OMPropertyModel<MeshT>::initializeSupportedPropertyTypes()
 //    //        (OpenFlipper::Options::nogui() ? typename OMPropertyModel<MeshT>::TypeInfoWrapperSet() : typename OMPropertyModel<MeshT>::TypeInfoWrapperSet(propertyTypes, propertyTypes + 6));
 //    supportedPropertyTypes = typename OMPropertyModel<MeshT>::TypeInfoWrapperSet();
 //#endif
-    
+
 }
-
-

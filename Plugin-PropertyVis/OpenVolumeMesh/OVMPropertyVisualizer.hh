@@ -76,7 +76,7 @@ public:
     virtual ~OVMPropertyVisualizer(){ clear(); }
 
     /// Visualizes a property.
-    virtual void visualize(bool _setDrawMode = true);
+    virtual void visualize(bool _setDrawMode, QWidget* _widget);
 
     /**
      * @brief Should remove the property.

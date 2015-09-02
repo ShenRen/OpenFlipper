@@ -89,6 +89,10 @@ void ObjectListItemModel::removeObject(int _id)
 
 void ObjectListItemModel::refresh(const DataType &datatype) {
     std::vector<ObjectInfo> objects;
+	objects.push_back(ObjectInfo("ALL_OBJECTS", -13));
+	objects.push_back(ObjectInfo("TARGET_OBJECTS", -14));
+	objects.push_back(ObjectInfo("SOURCE_OBJECTS", -15));
+	
     for (PluginFunctions::ObjectIterator o_it(PluginFunctions::ALL_OBJECTS, datatype);
             o_it != PluginFunctions::objectsEnd(); ++o_it) {
         objects.push_back(ObjectInfo(o_it->name(), o_it->id()));

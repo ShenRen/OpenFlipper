@@ -299,6 +299,7 @@ QWidget* MultiObjectPropertyModel::createWidgetForType(const TypeInfoWrapper& in
     // OpenVolumeMesh
     // ----------------------------------------
 
+    #ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
     if (OVMPropertyModel<HexahedralMesh>::isBoolType(info))
         return new BooleanWidget();
     if (OVMPropertyModel<HexahedralMesh>::isIntType(info))
@@ -311,6 +312,7 @@ QWidget* MultiObjectPropertyModel::createWidgetForType(const TypeInfoWrapper& in
         return new VectorWidget();
     if (OVMPropertyModel<HexahedralMesh>::isVec3fType(info))
         return new VectorWidget();
+    #endif
 
 
     // Other

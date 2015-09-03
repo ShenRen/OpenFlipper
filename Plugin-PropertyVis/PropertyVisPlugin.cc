@@ -76,10 +76,10 @@
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
-    #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
+	#include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
-    #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
+	#include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
 
 //== IMPLEMENTATION ==========================================================
@@ -94,50 +94,50 @@ propertyModel_(0)
 
 void PropertyVisPlugin::initializePlugin()
 {
-    if ( OpenFlipper::Options::gui() ) {
-      tool_ = new PropertyVisToolbar();
+	if ( OpenFlipper::Options::gui() ) {
+	  tool_ = new PropertyVisToolbar();
 
-      QSize size(300,300);
-      tool_->resize(size);
+	  QSize size(300,300);
+	  tool_->resize(size);
 
-      tool_->meshNames->setModel(&objectListItemModel_);
+	  tool_->meshNames->setModel(&objectListItemModel_);
 
-      emit addHiddenPickMode( PROP_VIS );
+	  emit addHiddenPickMode( PROP_VIS );
 
-      QIcon* toolIcon = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"PropertyVisIcon.png");
+	  QIcon* toolIcon = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"PropertyVisIcon.png");
 
-      emit addToolbox( tr("Property Visualization") , tool_, toolIcon );
-    }
+	  emit addToolbox( tr("Property Visualization") , tool_, toolIcon );
+	}
 }
 
 //-----------------------------------------------------------------------------
 
-void PropertyVisPlugin::pluginsInitialized() 
+void PropertyVisPlugin::pluginsInitialized()
 {
-    if ( OpenFlipper::Options::gui() ) {
+	if ( OpenFlipper::Options::gui() ) {
 
-        // connect toolbox elements
-        connect(tool_->meshNames,       SIGNAL( currentIndexChanged(int) ), this, SLOT( slotMeshChanged(int) ) );
+		// connect toolbox elements
+		connect(tool_->meshNames,       SIGNAL( currentIndexChanged(int) ), this, SLOT( slotMeshChanged(int) ) );
 
-        connect(tool_->visualizeButton, SIGNAL( clicked() ), this, SLOT( slotVisualize() ) );
-        connect(tool_->clearButton,     SIGNAL( clicked() ), this, SLOT( slotAllCleared() ) );
+		connect(tool_->visualizeButton, SIGNAL( clicked() ), this, SLOT( slotVisualize() ) );
+		connect(tool_->clearButton,     SIGNAL( clicked() ), this, SLOT( slotAllCleared() ) );
 
-        connect(tool_->refresh_property_names_tb, SIGNAL( clicked() ), this, SLOT( slotMeshChanged() ) );
-        connect(tool_->duplicate_property_tb, SIGNAL( clicked() ), this, SLOT( slotDuplicateProperty() ) );
-        connect(tool_->remove_property_tb, SIGNAL( clicked() ), this, SLOT( slotRemoveProperty() ) );
+		connect(tool_->refresh_property_names_tb, SIGNAL( clicked() ), this, SLOT( slotMeshChanged() ) );
+		connect(tool_->duplicate_property_tb, SIGNAL( clicked() ), this, SLOT( slotDuplicateProperty() ) );
+		connect(tool_->remove_property_tb, SIGNAL( clicked() ), this, SLOT( slotRemoveProperty() ) );
 
-        connect(tool_, SIGNAL( widgetShown() ), this, SLOT( updateGUI() ) );
+		connect(tool_, SIGNAL( widgetShown() ), this, SLOT( updateGUI() ) );
 
-        setNewPropertyModel(-1);
-    }
+		setNewPropertyModel(-1);
+	}
 }
 
 //-----------------------------------------------------------------------------
 
 void PropertyVisPlugin::slotPickModeChanged( const std::string& _mode)
 {
-    if (propertyModel_ != 0)
-        propertyModel_->pickModeChanged(_mode);
+	if (propertyModel_ != 0)
+		propertyModel_->pickModeChanged(_mode);
 }
 
 //-----------------------------------------------------------------------------
@@ -146,64 +146,64 @@ void PropertyVisPlugin::slotAllCleared()
 {
 	using namespace PluginFunctions;
 
-    if (propertyModel_ != 0)
-    {
-        QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
-        propertyModel_->clear(selectedIndices);
-        propertyModel_->objectUpdated();
-        emit updateView();
-    }
+	if (propertyModel_ != 0)
+	{
+		QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
+		propertyModel_->clear(selectedIndices);
+		propertyModel_->objectUpdated();
+		emit updateView();
+	}
 }
 
 //-----------------------------------------------------------------------------
 
 void PropertyVisPlugin::objectDeleted(int _id)
 {
-    if( OpenFlipper::Options::gui() )
-        objectListItemModel_.removeObject(_id);
-    PropertyModelFactory::Instance().deleteModel(_id);
+	if( OpenFlipper::Options::gui() )
+		objectListItemModel_.removeObject(_id);
+	PropertyModelFactory::Instance().deleteModel(_id);
 }
 
 //-----------------------------------------------------------------------------
 
 void PropertyVisPlugin::slotObjectUpdated( int _identifier, const UpdateType& _type )
 {
-    if( OpenFlipper::Options::gui() )
-    {
-        if ( tool_->isVisible() )
-            updateGUI();
-        PropertyModel* propertyModel = PropertyModelFactory::Instance().getModel(_identifier);
-        if (propertyModel)
-        {
-            if (_type == UPDATE_ALL)
-                propertyModel->gatherProperties();
-            if (_type == (UPDATE_ALL | UPDATE_GEOMETRY))
-                propertyModel->objectUpdated();
-        }
-    }
+	if( OpenFlipper::Options::gui() )
+	{
+		if ( tool_->isVisible() )
+			updateGUI();
+		PropertyModel* propertyModel = PropertyModelFactory::Instance().getModel(_identifier);
+		if (propertyModel)
+		{
+			if (_type == UPDATE_ALL)
+				propertyModel->gatherProperties();
+			if (_type == (UPDATE_ALL | UPDATE_GEOMETRY))
+				propertyModel->objectUpdated();
+		}
+	}
 }
 
 void PropertyVisPlugin::updateGUI()
 {
-    DataType datatype = DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH);
+	DataType datatype = DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH);
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
-    datatype |= DataType(DATA_POLYHEDRAL_MESH);
+	datatype |= DataType(DATA_POLYHEDRAL_MESH);
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
-    datatype |= DataType(DATA_HEXAHEDRAL_MESH);
+	datatype |= DataType(DATA_HEXAHEDRAL_MESH);
 #endif
-    objectListItemModel_.refresh(datatype);
+	objectListItemModel_.refresh(datatype);
 }
 
 //-----------------------------------------------------------------------------
 
 void PropertyVisPlugin::propertySelectionChanged()
 {
-    if (propertyModel_ != 0)
-    {
-        QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
-        propertyModel_->updateWidget(selectedIndices);
-    }
+	if (propertyModel_ != 0)
+	{
+		QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
+		propertyModel_->updateWidget(selectedIndices);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -219,40 +219,40 @@ void PropertyVisPlugin::propertySelectionChanged()
  */
 void PropertyVisPlugin::setNewPropertyModel(int id)
 {
-    if (propertyModel_)
-    {
-        propertyModel_->hideWidget();
-        disconnect(propertyModel_, SIGNAL(log(Logtype,QString)), this, SLOT(slotLog(Logtype,QString)));
-        disconnect(propertyModel_, SIGNAL(log(QString)), this, SLOT(slotLog(QString)));
-    }
-    propertyModel_ = PropertyModelFactory::Instance().getModel(id);
-    if (propertyModel_ != 0)
-    {
+	if (propertyModel_)
+	{
+		propertyModel_->hideWidget();
+		disconnect(propertyModel_, SIGNAL(log(Logtype,QString)), this, SLOT(slotLog(Logtype,QString)));
+		disconnect(propertyModel_, SIGNAL(log(QString)), this, SLOT(slotLog(QString)));
+	}
+	propertyModel_ = PropertyModelFactory::Instance().getModel(id);
+	if (propertyModel_ != 0)
+	{
 
-        tool_->propertyName_lv->setModel(propertyModel_);
-        connect(propertyModel_, SIGNAL( modelReset() ), this, SLOT( propertySelectionChanged() ));
-        connect(tool_->propertyName_lv->selectionModel(),
-                SIGNAL( selectionChanged(const QItemSelection &, const QItemSelection &) ),
-                this,
-                SLOT( propertySelectionChanged() ));
-        QWidget* widget = propertyModel_->getWidget();
-        tool_->propertyWidgets->addWidget(widget);
-        widget->show();
-        propertyModel_->gatherProperties();
-        connect(propertyModel_, SIGNAL(log(Logtype,QString)), this, SLOT(slotLog(Logtype,QString)));
-        connect(propertyModel_, SIGNAL(log(QString)), this, SLOT(slotLog(QString)));
-    }
-    else
-    {
-        tool_->propertyName_lv->setModel(0);
-    }
+		tool_->propertyName_lv->setModel(propertyModel_);
+		connect(propertyModel_, SIGNAL( modelReset() ), this, SLOT( propertySelectionChanged() ));
+		connect(tool_->propertyName_lv->selectionModel(),
+				SIGNAL( selectionChanged(const QItemSelection &, const QItemSelection &) ),
+				this,
+				SLOT( propertySelectionChanged() ));
+		QWidget* widget = propertyModel_->getWidget();
+		tool_->propertyWidgets->addWidget(widget);
+		widget->show();
+		propertyModel_->gatherProperties();
+		connect(propertyModel_, SIGNAL(log(Logtype,QString)), this, SLOT(slotLog(Logtype,QString)));
+		connect(propertyModel_, SIGNAL(log(QString)), this, SLOT(slotLog(QString)));
+	}
+	else
+	{
+		tool_->propertyName_lv->setModel(0);
+	}
 }
 
 //-----------------------------------------------------------------------------
 
 void PropertyVisPlugin::slotMeshChanged(int /*_index*/)
 {
-    int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
+	int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
 	setNewPropertyModel(id);
 }
 
@@ -261,26 +261,26 @@ void PropertyVisPlugin::slotMeshChanged(int /*_index*/)
 void PropertyVisPlugin::slotVisualize()
 {
 	using namespace PluginFunctions;
-	
+
 	// return if nothing is selected
 	if (propertyModel_ == 0) return;
 
 	int selectedId = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
 	QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
-	
+
 	// visualize property
 	propertyModel_->visualize(selectedIndices);
-	
+
 	// emit updates
-    emit updateView();
-	
+	emit updateView();
+
 	if (selectedId >= 0)
 	{
 		emit updatedObject( selectedId, UPDATE_COLOR );
 	}
 	else
 	{
-		ObjectIterator o_it(ALL_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH);
+		ObjectIterator o_it(ALL_OBJECTS, supportedDataTypes());
 		while (o_it != objectsEnd())
 		{
 			emit updatedObject( o_it->id(), UPDATE_COLOR );
@@ -292,8 +292,8 @@ void PropertyVisPlugin::slotVisualize()
 //-----------------------------------------------------------------------------
 
 void PropertyVisPlugin::slotMouseEvent( QMouseEvent* _event ) {
-    if (propertyModel_ != 0)
-        propertyModel_->mouseEvent(_event);
+	if (propertyModel_ != 0)
+		propertyModel_->mouseEvent(_event);
 }
 
 //-----------------------------------------------------------------------------
@@ -301,15 +301,15 @@ void PropertyVisPlugin::slotMouseEvent( QMouseEvent* _event ) {
 void PropertyVisPlugin::slotDuplicateProperty()
 {
 	using namespace PluginFunctions;
-	
-    if (propertyModel_ != 0)
-    {
-        QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
-        propertyModel_->duplicateProperty(selectedIndices);
 
-        emit updateView();
-        int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
-        slotMeshChanged();
+	if (propertyModel_ != 0)
+	{
+		QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
+		propertyModel_->duplicateProperty(selectedIndices);
+
+		emit updateView();
+		int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
+		slotMeshChanged();
 
 		if (id >= 0)
 		{
@@ -317,42 +317,42 @@ void PropertyVisPlugin::slotDuplicateProperty()
 		}
 		else
 		{
-			ObjectIterator o_it(ALL_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH);
+			ObjectIterator o_it(ALL_OBJECTS, supportedDataTypes());
 			while (o_it != objectsEnd())
 			{
 				emit updatedObject( o_it->id(), UPDATE_ALL );
 				++o_it;
 			}
 		}
-    }
+	}
 }
 
 void PropertyVisPlugin::slotRemoveProperty()
 {
 	using namespace PluginFunctions;
-	
-    if (propertyModel_ != 0)
-    {
-        QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
-        propertyModel_->removeProperty(selectedIndices);
 
-        emit updateView();
-        int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
-		
+	if (propertyModel_ != 0)
+	{
+		QModelIndexList selectedIndices = tool_->propertyName_lv->selectionModel()->selectedIndexes();
+		propertyModel_->removeProperty(selectedIndices);
+
+		emit updateView();
+		int id = tool_->meshNames->itemData( tool_->meshNames->currentIndex() ).toInt();
+
 		if (id >= 0)
 		{
 			emit updatedObject( id, UPDATE_ALL );
 		}
 		else
 		{
-			ObjectIterator o_it(ALL_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH);
+			ObjectIterator o_it(ALL_OBJECTS, supportedDataTypes());
 			while (o_it != objectsEnd())
 			{
 				emit updatedObject( o_it->id(), UPDATE_ALL );
 				++o_it;
 			}
 		}
-    }
+	}
 }
 
 #if QT_VERSION < 0x050000

@@ -56,9 +56,12 @@
 #include <typeinfo>
 
 #include <QObject>
-
 #include <QMessageBox>
 
+#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
+#include <ObjectTypes/PolyMesh/PolyMesh.hh>
+#include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
+#include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 
 /*! \class TypeInfoWrapper
  *  \brief Wraps the information of a type.
@@ -191,5 +194,20 @@ public:
     bool cancel;
 
 };
+
+static DataType supportedDataTypes()
+{
+    DataType res = DATA_TRIANGLE_MESH | DATA_POLY_MESH;
+
+    #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+    res |= DATA_POLYHEDRAL_MESH;
+    #endif
+
+    #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+    res |= DATA_HEXAHEDRAL_MESH;
+    #endif
+
+    return res;
+}
 
 #endif /* UTILS_H */

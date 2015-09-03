@@ -2,6 +2,7 @@
 #define MULTI_OBJECT_PROPERTY_MODEL_H
 
 #include "PropertyModel.hh"
+#include "OpenFlipper/common/DataTypes.hh"
 
 class PropertyVisualizer;
 
@@ -10,11 +11,11 @@ class MultiObjectPropertyModel: public PropertyModel
     Q_OBJECT
 
 public:
-	MultiObjectPropertyModel(const QStringList& res, QObject *parent = 0);
-	virtual ~MultiObjectPropertyModel();
+    MultiObjectPropertyModel(const QStringList& res, QObject *parent = 0);
+    virtual ~MultiObjectPropertyModel();
 
-	virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
-	virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     /// Revisualizes visualized properties.
@@ -47,19 +48,20 @@ public:
     /// Connects the PropertyVisualizer log signals with the log slot.
     virtual void connectLogs(PropertyVisualizer* propViz);
 
-	/// Returns the property info for the property with the given index.
-	virtual PropertyInfo getPropertyInfo(const QModelIndex index) const;
+    /// Returns the property info for the property with the given index.
+    virtual PropertyInfo getPropertyInfo(const QModelIndex index) const;
 
 private:
-	QWidget* createWidgetForType(const TypeInfoWrapper& info) const;
-	void setRange(const PropertyInfo& info, QWidget* widget) const;
+    QWidget* createWidgetForType(const TypeInfoWrapper& info) const;
+    void setRange(const PropertyInfo& info, QWidget* widget) const;
 
 private:
-	const QStringList restriction;
+    const QStringList restriction;
+    const DataType datatypes;
     std::vector<QString> propNames;
-	std::vector<PropertyInfo> propInfos;
-	std::vector<QWidget*> propWidgets;
-	QWidget* widget;
+    std::vector<PropertyInfo> propInfos;
+    std::vector<QWidget*> propWidgets;
+    QWidget* widget;
 };
 
 #endif /* MULTI_OBJECT_PROPERTY_MODEL_H */

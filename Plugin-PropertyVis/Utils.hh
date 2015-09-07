@@ -60,8 +60,14 @@
 
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
-#include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
-#include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
+
+#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+  #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
+#endif
+
+#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+  #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
+#endif
 
 /*! \class TypeInfoWrapper
  *  \brief Wraps the information of a type.

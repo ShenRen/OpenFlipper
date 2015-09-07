@@ -429,11 +429,16 @@ void MultiObjectPropertyModel::setRange(const PropertyInfo& info, QWidget* widge
     using namespace PluginFunctions;
 
     bool isDoubleType = info.typeinfo() == OMPropertyModel<TriMesh>::proptype_double;
-    isDoubleType |= OVMPropertyModel<HexahedralMesh>::isDoubleType(info.typeinfo());
+
+    #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+      isDoubleType |= OVMPropertyModel<HexahedralMesh>::isDoubleType(info.typeinfo());
+    #endif
 
     bool isIntType = info.typeinfo() == OMPropertyModel<TriMesh>::proptype_int;
-    isIntType |= OVMPropertyModel<HexahedralMesh>::isIntType(info.typeinfo());
 
+    #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+      isIntType |= OVMPropertyModel<HexahedralMesh>::isIntType(info.typeinfo());
+    #endif
 
     if (isDoubleType)
     {

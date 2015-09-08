@@ -81,7 +81,7 @@ GLPrimitive::GLPrimitive() :
 GLPrimitive::~GLPrimitive()
 {
   if (vbo_)
-    glDeleteBuffersARB(1, &vbo_);
+    glDeleteBuffers(1, &vbo_);
 
   delete[] vboData_;
 }
@@ -159,7 +159,7 @@ void GLPrimitive::bindVBO()
 {
   if (checkVBO())
   {
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 
     glVertexPointer(3, GL_FLOAT, 32, 0);
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -189,16 +189,16 @@ bool GLPrimitive::checkVBO()
       return false;
 
     // create vbo
-    glGenBuffersARB(1, &vbo_);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, bufSize, vboData_, GL_STATIC_DRAW_ARB);
+    glGenBuffers(1, &vbo_);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    glBufferData(GL_ARRAY_BUFFER, bufSize, vboData_, GL_STATIC_DRAW);
 
     delete[] vboData_;
     vboData_ = 0;
   } else if (vboDataInvalid_) {
     updateVBOData();
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, bufSize, vboData_, GL_STATIC_DRAW_ARB);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    glBufferData(GL_ARRAY_BUFFER, bufSize, vboData_, GL_STATIC_DRAW);
     vboDataInvalid_ = false;
   }
 
@@ -209,7 +209,7 @@ bool GLPrimitive::checkVBO()
 
 void GLPrimitive::unBindVBO()
 {
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);

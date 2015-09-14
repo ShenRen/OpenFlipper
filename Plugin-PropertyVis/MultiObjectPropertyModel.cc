@@ -128,7 +128,7 @@ void MultiObjectPropertyModel::visualize(QModelIndexList selectedIndices, QWidge
             const QString name = selectedIndices[i].data().toString();
 
             // skip this property if it does not exist
-            const QModelIndex idx = model->indexFromPropName(name);
+            const QModelIndex idx = model->indexFromFancyPropName(name);
             if (!idx.isValid()) continue;
 
             // insert items into lists
@@ -160,7 +160,7 @@ void MultiObjectPropertyModel::removeProperty(QModelIndexList selectedIndices)
             const QString name = selectedIndices[i].data().toString();
 
             // skip this property if it does not exist
-            const QModelIndex idx = model->indexFromPropName(name);
+            const QModelIndex idx = model->indexFromFancyPropName(name);
             if (!idx.isValid()) continue;
 
             // insert item into list
@@ -193,7 +193,7 @@ void MultiObjectPropertyModel::duplicateProperty(QModelIndexList selectedIndices
             const QString name = selectedIndices[i].data().toString();
 
             // skip this property if it does not exist
-            const QModelIndex idx = model->indexFromPropName(name);
+            const QModelIndex idx = model->indexFromFancyPropName(name);
             if (!idx.isValid()) continue;
 
             // insert item into list
@@ -266,7 +266,7 @@ void MultiObjectPropertyModel::clear(QModelIndexList selectedIndices)
             const QString name = selectedIndices[i].data().toString();
 
             // skip this property if it does not exist
-            const QModelIndex idx = model->indexFromPropName(name);
+            const QModelIndex idx = model->indexFromFancyPropName(name);
             if (!idx.isValid()) continue;
 
             // insert item into list

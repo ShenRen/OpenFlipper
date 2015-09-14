@@ -113,6 +113,8 @@ signals:
   //PickingInterface
   void addHiddenPickMode( const std::string& _mode );
   
+public slots:
+  void slotVisualizeProperty( int _id, const QString& _propname );
 
 private slots:
 

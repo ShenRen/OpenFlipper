@@ -134,6 +134,31 @@ void PropertyVisPlugin::pluginsInitialized()
 
 //-----------------------------------------------------------------------------
 
+void PropertyVisPlugin::slotVisualizeProperty( int _id, const QString& _propname )
+{
+	PropertyModel* model = PropertyModelFactory::Instance().getModel(_id);
+
+	if (model != 0)
+	{
+		model->gatherProperties();
+		QModelIndex idx = model->indexFromPlainPropName(_propname);
+
+		if (idx.isValid())
+		{
+			QModelIndexList list;
+			list.append(idx);
+
+			model->visualize(list);
+
+			
+			emit updateView();
+			emit updatedObject( _id, UPDATE_COLOR );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+
 void PropertyVisPlugin::slotPickModeChanged( const std::string& _mode)
 {
 	if (propertyModel_ != 0)

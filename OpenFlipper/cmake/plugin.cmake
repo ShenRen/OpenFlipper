@@ -448,6 +448,13 @@ function (_build_openflipper_plugin plugin)
 
   if (${_PLUGIN}_HAS_DEPS)
 
+    # Find all packages and include their Paths here as they would be in the toplevel
+    file(GLOB OF_PACKAGES RELATIVE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/Package*" )
+
+    foreach ( OF_PACKAGE ${OF_PACKAGES})
+      list(APPEND PACKAGE_INCLUDES "${CMAKE_SOURCE_DIR}/${OF_PACKAGES}")
+    endforeach ()
+
     include_directories (
       .
       ${CMAKE_SOURCE_DIR}
@@ -460,6 +467,7 @@ function (_build_openflipper_plugin plugin)
       ${GLEW_INCLUDE_DIR}
       ${GLUT_INCLUDE_DIR}
       ${CMAKE_BINARY_DIR}/OpenFlipper/PluginLib
+      ${PACKAGE_INCLUDES}
     )
 
     # Linking for apple is special here as the linker pulls in the dependencies, we have to set them like in PluginLib!
@@ -470,6 +478,7 @@ function (_build_openflipper_plugin plugin)
          GLOB _plugin_buildinfos
          RELATIVE "${CMAKE_SOURCE_DIR}"
          "${CMAKE_SOURCE_DIR}/ObjectTypes/*/CMakeLists.txt"
+         "${CMAKE_SOURCE_DIR}/Package*/ObjectTypes/*/CMakeLists.txt"
       )
 
 

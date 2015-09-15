@@ -10,11 +10,20 @@ file (
   GLOB _plugin_buildinfos
   RELATIVE "${CMAKE_SOURCE_DIR}"
   "${CMAKE_SOURCE_DIR}/ObjectTypes/*/CMakeLists.txt"
+  "${CMAKE_SOURCE_DIR}/Package*/ObjectTypes/*/CMakeLists.txt"
+
 )
 
 # include all cmake files found for objecttypes here
 foreach ( _buildInfo ${_plugin_buildinfos})
   include ("${CMAKE_SOURCE_DIR}/${_buildInfo}")
+endforeach ()
+  
+# Find all packages and include their Paths here like the toplevel would be
+file(GLOB OF_PACKAGES RELATIVE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/Package*" )
+
+foreach ( OF_PACKAGE ${OF_PACKAGES})
+   list(APPEND PACKAGE_INCLUDES "${CMAKE_SOURCE_DIR}/${OF_PACKAGES}")
 endforeach ()
 
 include_directories (
@@ -27,6 +36,7 @@ include_directories (
   ${GLEW_INCLUDE_DIR}
   ${GLUT_INCLUDE_DIR}
   ${ADDITIONAL_PLUGINLIB_INCS}
+  ${PACKAGE_INCLUDES}
 )
 
 link_directories (
@@ -92,13 +102,39 @@ acg_append_files (headers "*.hh" ${directories})
 acg_append_files (sources "*.cc" ${directories})
 acg_append_files (ui "*.ui" ${directories})
 
-# add additional object type sources
+####################################################################################
+# Object Type stuff
+####################################################################################
+
+#########################################################
+# add additional toplevel object type sources
+#########################################################
 acg_append_files_recursive (headers "*.hh" ${CMAKE_SOURCE_DIR}/ObjectTypes)
 acg_append_files_recursive (sources "*.cc" ${CMAKE_SOURCE_DIR}/ObjectTypes)
 acg_append_files_recursive (ui "*.ui" ${CMAKE_SOURCE_DIR}/ObjectTypes)
 
+#########################################################
+# Find all packages and include their Object types
+#########################################################
+
+file(GLOB PACKAGES RELATIVE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/Package*" )
+
+foreach ( OF_PACKAGE ${PACKAGES})
+  acg_append_files_recursive (headers "*.hh" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE})
+  acg_append_files_recursive (sources "*.cc" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE})
+  acg_append_files_recursive (ui "*.ui" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE})
+endforeach ()
+
+#=======================================================
+# Cleanup
+#=======================================================
+
 # remove template cc files from source file list
 acg_drop_templates (sources)
+
+#=======================================================
+# Moc/UIC handling
+#=======================================================
 
 # genereate uic and moc targets
 if (QT5_FOUND)

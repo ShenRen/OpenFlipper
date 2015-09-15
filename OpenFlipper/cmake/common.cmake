@@ -40,6 +40,8 @@ function (of_add_plugins)
         RELATIVE "${CMAKE_SOURCE_DIR}"
         "${CMAKE_SOURCE_DIR}/Plugin-*/CMakeLists.txt"
         "${CMAKE_SOURCE_DIR}/PluginCollection-*/Plugin-*/CMakeLists.txt"
+        "${CMAKE_SOURCE_DIR}/Package*/Plugin-*/CMakeLists.txt"
+        "${CMAKE_SOURCE_DIR}/Package*/PluginCollection-*/Plugin-*/CMakeLists.txt"
     )
     
     foreach (_plugin ${_plugins_in})

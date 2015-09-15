@@ -116,6 +116,9 @@ function (of_print_plugin_stats)
     RELATIVE "${CMAKE_SOURCE_DIR}"
     "${CMAKE_SOURCE_DIR}/Plugin-*"
     "${CMAKE_SOURCE_DIR}/PluginCollection-*/Plugin-*"
+    "${CMAKE_SOURCE_DIR}/Package*/Plugin-*"
+    "${CMAKE_SOURCE_DIR}/Package*/PluginCollection-*/Plugin-*"
+
   )
 
   list (SORT _plugins_in)

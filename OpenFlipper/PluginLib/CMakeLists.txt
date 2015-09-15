@@ -120,9 +120,9 @@ acg_append_files_recursive (ui "*.ui" ${CMAKE_SOURCE_DIR}/ObjectTypes)
 file(GLOB PACKAGES RELATIVE "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/Package*" )
 
 foreach ( OF_PACKAGE ${PACKAGES})
-  acg_append_files_recursive (headers "*.hh" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE})
-  acg_append_files_recursive (sources "*.cc" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE})
-  acg_append_files_recursive (ui "*.ui" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE})
+  acg_append_files_recursive (headers "*.hh" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE}/ObjectTypes)
+  acg_append_files_recursive (sources "*.cc" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE}/ObjectTypes)
+  acg_append_files_recursive (ui "*.ui" ${CMAKE_SOURCE_DIR}/${OF_PACKAGE}/ObjectTypes)
 endforeach ()
 
 #=======================================================

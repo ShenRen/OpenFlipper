@@ -41,9 +41,9 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                       *
- *   $Author$                                                      *
- *   $Date$                   *
+ *   $Revision: 21134 $                                                       *
+ *   $Author: moeller $                                                      *
+ *   $Date: 2015-08-21 13:22:18 +0200 (Fri, 21 Aug 2015) $                   *
  *                                                                           *
 \*===========================================================================*/
 
@@ -593,23 +593,23 @@ void StatusNodeT<Mesh, Mod>::getRenderObjects(IRenderer* _renderer,
   // Call updater function before doing anything
   update_cache();
 
-  bool shaded = (_drawMode & ( DrawModes::SOLID_FLAT_SHADED |
-			       DrawModes::SOLID_SMOOTH_SHADED |
-			       DrawModes::SOLID_PHONG_SHADED |
-			       DrawModes::SOLID_TEXTURED_SHADED |
-			       DrawModes::POINTS_SHADED ));
-
-  bool points = ((this->drawMode() == DrawModes::DEFAULT) |
-    (_drawMode & DrawModes::POINTS));
-
-  bool edges = ((this->drawMode() == DrawModes::DEFAULT) |
-    (_drawMode & DrawModes::WIREFRAME));
-
-  bool halfedges = ((this->drawMode() == DrawModes::DEFAULT) |
-    (_drawMode & DrawModes::WIREFRAME));
-
-  bool faces = ((this->drawMode() == DrawModes::DEFAULT) |
-    (_drawMode & DrawModes::SOLID_FLAT_SHADED));
+  bool shaded = false,
+    smooth = false,
+    wires = ((this->drawMode() == DrawModes::DEFAULT) ||
+    this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_WIREFRAME) >= 0 ||
+    _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_WIREFRAME) >= 0),
+    points = ((this->drawMode() == DrawModes::DEFAULT) ||
+    this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POINT) >= 0 ||
+    _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POINT) >= 0),
+    edges = (this->drawMode() == DrawModes::DEFAULT ||
+    this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_EDGE) >= 0 ||
+    _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_EDGE) >= 0),
+    halfedges = ((this->drawMode() == DrawModes::DEFAULT) ||
+    this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_HALFEDGE) >= 0 ||
+    _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_HALFEDGE) >= 0),
+    faces = ((this->drawMode() == DrawModes::DEFAULT) ||
+    this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POLYGON) >= 0 ||
+    _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_POLYGON) >= 0);
 
   RenderObject ro;
   ro.debugName = "StatusNode";

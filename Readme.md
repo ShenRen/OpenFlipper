@@ -14,20 +14,14 @@ Fetch the submodules:
  git submodule init
  git submodule update
 
-Required libs: 
-==============
+# Required libs: 
 Qt ( >= 4.8.2 ) http://www.qtsoftware.com/downloads 
 OpenGL          http://www.opengl.org
 GLUT            http://www.opengl.org/resources/libraries/glut
 GLEW            http://glew.sourceforge.net
 qwt ( >=6.0 )   optional http://qwt.sourceforge.net/
 
-Compiling OpenFlipper:
-======================
+# Compiling OpenFlipper:
 A detailed compilation manual is available online at:
 http://openflipper.org/Documentation/latest/buildingOpenFlipper.html
 
-
-LICENSE:
-========
-BSD-3

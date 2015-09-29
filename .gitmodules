@@ -1,0 +1,4 @@
+[submodule "libs_required/OpenMesh"]
+	path = libs_required/OpenMesh
+	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
+	branch = master

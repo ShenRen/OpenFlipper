@@ -110,7 +110,7 @@ public:
   {
     Point p0, p1, p2, q;
     points(_h, p0, p1, p2);
-    return ACG::Geometry::distPointTriangleSquared(_p, p0, p1, p2, q);
+    return ACG::Geometry::distPointTriangleSquaredStable(_p, p0, p1, p2, q);
   }
 
   void calculateBoundingBox(Node* _node, Point& median, int& axis)

@@ -911,6 +911,9 @@ private:
     /// number of vertex combinations currently in use
     int  numVerts;
 
+    /// number of input vertex positions
+    const int  numBaseVerts;
+
     /** split list format:
          for each vertex: [next split,  attribute ids]
           next split: -1 -> not split yet
@@ -1020,6 +1023,8 @@ private:
   // create face mapping: input id <-> final tri id
   void createFaceMap();
 
+public:
+
   /** \brief Multi-threaded version of getIndexAdjBuffer
    * 
    * Uses a multi-threaded method based on the vertex-triangle adjacency list to compute the index buffer with adjacency.
@@ -1029,7 +1034,6 @@ private:
   */
   void getIndexAdjBuffer_MT(void* _dst, const int _borderIndex = -1);
 
-public:
   // debugging tools
 
   /// dump mesh info to text file

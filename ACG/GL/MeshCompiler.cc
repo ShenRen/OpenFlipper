@@ -1058,7 +1058,7 @@ MeshCompiler::VertexSplitter::VertexSplitter(int _numAttribs,
                                          int _numVerts,
                                          int _numWorstCase,
                                          float _estBufferIncrease)
-: numAttribs(_numAttribs), numVerts(_numVerts)
+: numAttribs(_numAttribs), numVerts(_numVerts), numBaseVerts(_numVerts)
 {
   if (_numWorstCase <= 0)
     _numWorstCase = int(float(_numVerts) * (_estBufferIncrease + 1.0f));
@@ -1192,7 +1192,7 @@ void MeshCompiler::VertexSplitter::setAttribs( const int id, int* attr )
 
 bool MeshCompiler::VertexSplitter::isIsolated( const int vertexPosID )
 {
-  return getNext(vertexPosID) < 0;
+  return (vertexPosID < numBaseVerts) && (getNext(vertexPosID) < 0);
 }
 
 

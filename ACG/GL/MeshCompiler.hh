@@ -655,7 +655,7 @@ public:
   */
   int mapToDrawVertexID(const int _faceID, const int _cornerID) const;
 
-  /** Mapping from input Face id -> draw vertex id
+  /** Mapping from input Face id -> draw triangle id
    *
    * @param _faceID Face ID in input data
    * @param _k triangle no. associated to face, offset 0
@@ -805,7 +805,6 @@ private:
   bool deleteFaceInputeData_;       // delete if face input data internally created
 
   std::vector<int>  faceBufSplit_; // mapping from (faceID, cornerID) to interleaved vertex id after splitting
-  std::vector<int>  faceRotCount_; // # ccw rotations per face, handled internally by getInputIndexOffset
   std::vector<int>  faceSortMap_;  // face IDs sorted by group; maps sortFaceID -> FaceID
   int               provokingVertex_; // provoking vertex of each triangle
   bool              provokingVertexSetByUser_; // was the provoking vertex selected by user or set to default?
@@ -985,7 +984,7 @@ private:
 
   int mapTriToInputFace(const int _tri) const;
 
-  int getInputIndexOffset(const int _face, const int _corner, const bool _rotation = true) const;
+  int getInputIndexOffset(const int _face, const int _corner) const;
 
   inline int getInputFaceOffset(const int _face) const
   {
@@ -1010,6 +1009,9 @@ private:
 
   // convert n-poly -> tris (triangle fans)
   void triangulate();
+
+  // resolve triangulation
+  void resolveTriangulation();
 
   // sort input faces by group ids
   void sortFacesByGroup();

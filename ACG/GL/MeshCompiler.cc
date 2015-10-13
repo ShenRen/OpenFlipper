@@ -733,10 +733,6 @@ void MeshCompiler::splitVertices()
       const int fsize = getFaceSize(i);
       for (int k = 0; k < fsize; ++k)
       {
-        // get vertex position id before splitting
-        int vertex[16];
-        getInputFaceVertex_Welded(i, k, vertex);
-
         // get interleaved vertex id for (i, k) after splitting
         int idx = getInputIndexSplit(i, k);
 
@@ -752,17 +748,17 @@ void MeshCompiler::splitVertices()
 }
 
 
+bool MeshCompiler_forceUnsharedFaceVertex_InnerValenceSorter( const std::pair<int, int>& a, const std::pair<int, int>& b )
+{
+  return a.second > b.second;
+}
+
 void MeshCompiler::forceUnsharedFaceVertex()
 {
   // ==============================================
   //  face normal fix
   //  make sure that each triangle has at least one unique unshared vertex
   //  this vertex can store per face attributes when needed
-
-  // the used algorithm is optimal (min split count) for any n-poly mesh
-  //  however, this step should be done before triangulation
-  //  and faces have to be triangulated in fans to ensure
-  //  that each triangle makes use of the face-specific vertex
 
 
   // sharedVertex[i] = 1 iff the vertex id of corner i is shared with any neighboring face
@@ -774,96 +770,330 @@ void MeshCompiler::forceUnsharedFaceVertex()
   std::vector<int> tmpFaceVerts; // used for face rotation-swap
   tmpFaceVerts.resize(maxFaceSize_);
 
-  // number of ccw index rotations of the face to make the first corner unshared
-  faceRotCount_.resize(numFaces_, 0);
-
   int numInitialVerts = numDrawVerts_;
-  char* VertexUsed = new char[numDrawVerts_]; // marks vertices which are not shared with any neighboring face
-  memset(VertexUsed, 0, sizeof(char) * numDrawVerts_);
+  std::vector<int> VertexUsed(numDrawVerts_, -1); // marks vertices which are not shared with any neighboring face
 
-  for (int faceID = 0; faceID < numFaces_; ++faceID)
+
+  // process all n-polygons first
+
+  /*
+  new and better algorithm:   O(n^2)
+
+  for each face:
+
+  trisCovered = 0;
+
+  while (trisCovered < faceSize)
   {
-    const int numCorners = getFaceSize(faceID);
-    
-    // reset shared list
-    memset(&sharedVertices[0], 0, sizeof(int) * maxFaceSize_);
-    int numShared = 0;
+    compute inner valence of all corners in the remaining polygon
 
-    // find shared list (corners of this face, that are shared with the neighbors)
-    for (int v0 = 0; v0 < numCorners && numShared < numCorners; ++v0)
+    add 'best' corner: - highest inner valence and unused by other tris
+
+    for each triangle affected by this corner
+      rotate triIndexBuffer entries of the tri
+      remove tri from the remaining triangle list
+      ++ trisCovered
+  }
+  */
+  int triCounter = 0;
+
+
+  int fids[] = { 276, 284 };
+  std::vector<int> faces[2];
+  std::vector<int> tris[2];
+  for (int i = 0; i < 2; ++i)
+  {
+    int faceID = fids[i];
+    int fsize = getFaceSize(fids[i]);
+    for (int k = 0; k < fsize; ++k)
+      faces[i].push_back(getInputIndexSplit(faceID, k));
+  }
+
+  for (int sortFaceID = 0; sortFaceID < numFaces_; ++sortFaceID)
+  {
+    // get original face id
+    const int faceID = faceSortMap_.empty() ? sortFaceID : faceSortMap_[sortFaceID];
+    int fsize = getFaceSize(faceID);
+
+    int faceNo = -1;
+    if (faceID == fids[0])
+      faceNo = 0;
+    else if (faceID == fids[1])
+      faceNo = 1;
+
+    if (0 <= faceNo && faceNo <= 1)
     {
-      if (sharedVertices[v0])
-        continue;
-
-      const int vertexID0 = getInputIndexSplit(faceID, v0);
-
-      if (vertexID0 >= numInitialVerts || VertexUsed[vertexID0])
+      for (int i = 0; i < fsize - 2; ++i)
       {
-        sharedVertices[v0] = true;
-        ++numShared;
+        tris[faceNo].push_back(triIndexBuffer_[(triCounter + i) * 3]);
+        tris[faceNo].push_back(triIndexBuffer_[(triCounter + i) * 3 + 1]);
+        tris[faceNo].push_back(triIndexBuffer_[(triCounter + i) * 3 + 2]);
       }
     }
 
 
-    if (numShared == numCorners)
+    triCounter += fsize - 2;
+  }
+
+  triCounter = 0;
+
+
+  if (1)
+  {
+    for (int sortFaceID = 0; sortFaceID < numFaces_; ++sortFaceID)
     {
-      // worst-case: all vertices shared with neighbors
+      // get original face id
+      const int faceID = faceSortMap_.empty() ? sortFaceID : faceSortMap_[sortFaceID];
 
-      // add split vertex to end of vertex buffer, which is used exclusively by the current face
-      // current vertex count is stored in numDrawVerts_
+      const int faceSize = getFaceSize(faceID);
 
-      setInputIndexSplit(faceID, 0, numDrawVerts_);
-    }
-    else if (sharedVertices[0])
-    {
-      // validation code
-      int x = 0;
-      for (int i = 0; i < numCorners; ++i)
-        x += sharedVertices[i];
-      assert(x < numCorners);
-
-      // we have to make sure that an unshared vertex is the first referenced face vertex
-      // this is currently not the case, so rotate the face indices until this is true
-
-      // make copy of current face splitVertexID
-      for (int i = 0; i < numCorners; ++i)
-        tmpFaceVerts[i] = getInputIndexSplit(faceID, i);
-
-      // rotation order: i -> i+1
-      // find # rotations needed
-      int rotCount = 1;
-      for (; rotCount < numCorners; ++rotCount)
+      if (faceSize > 3)
       {
-        if (!sharedVertices[rotCount % numCorners])
+        // which corners of the polygon have been duplicated
+//        std::vector<int> duplicatedVerts;
+
+
+        // vertexPriorities[priority] = pair(cornerID, valence)
+        std::vector< std::pair<int, int> > vertexPriorities(faceSize);
+
+        // linked ring list for all the triangles in the uncovered triangulation
+        // ie. nextTri = remainingTris[currentTri];
+        const int faceTris = faceSize - 2;
+
+        struct RingTriangle 
         {
-          if (tmpFaceVerts[rotCount] < numInitialVerts)
-            VertexUsed[tmpFaceVerts[rotCount]] = 1;
-          break;
+          RingTriangle() {}
+          RingTriangle(int i, RingTriangle* p, RingTriangle* n) : id(i), prev(p), next(n) {}
+
+          int id; // local index of the triangle within a polygon [0, ... faceSize-3]
+          RingTriangle* prev; // prev triangle in the ring
+          RingTriangle* next; // next triangle in the ring
+        };
+
+        std::vector<RingTriangle> remainingTris(faceTris);
+        for (int i = 0; i < faceTris; ++i)
+          remainingTris[i] = RingTriangle(i, &remainingTris[(i + faceTris - 1) % faceTris], &remainingTris[(i + 1) % faceTris]);
+
+
+        RingTriangle* currentTri = &remainingTris[0];
+        int numTrisCovered = 0;
+
+        while (numTrisCovered < faceTris)
+        {
+          // compute valence of vertices within the remaining triangulation
+          for (int k = 0; k < faceSize; ++k)
+            vertexPriorities[k] = std::pair<int, int>(k, 0);
+
+          RingTriangle* startTri = currentTri;
+          int numRemainingTris = faceTris - numTrisCovered;
+          for (int t = 0; t < numRemainingTris; ++t)
+          {
+            for (int k = 0; k < 3; ++k)
+            {
+              int cornerID = -1 -triIndexBuffer_[(triCounter + currentTri->id) * 3 + k];
+              ++vertexPriorities[cornerID].second;
+            }
+            currentTri = currentTri->next;
+          }
+          assert(currentTri == startTri);
+
+          // sort by valence
+          std::sort(vertexPriorities.begin(), vertexPriorities.end(), MeshCompiler_forceUnsharedFaceVertex_InnerValenceSorter);
+
+          // find a good corner
+          int goodCorner = -1;
+          int goodVertexID = -1;
+          int bestValence = -1;
+          for (int k = 0; k < faceSize && vertexPriorities[k].second; ++k)
+          {
+            int cornerID = vertexPriorities[k].first;
+            int vertexID = getInputIndexSplit(faceID, cornerID);
+
+            int valence = vertexPriorities[k].second;
+
+            if (vertexID >= numInitialVerts || (VertexUsed[vertexID] == faceID))
+            {
+              // best case, this vertex is already owned by the polygon
+              // stop the search
+              goodCorner = cornerID;
+              goodVertexID = vertexID;
+              bestValence = valence;
+              break;
+            }
+            else if (VertexUsed[vertexID] < 0 && bestValence < valence)
+            {
+              goodCorner = cornerID; // best for now, but continue the search
+              goodVertexID = vertexID;
+              bestValence = valence;
+            }
+          }
+
+
+          // maybe add a new vertex
+          if (goodCorner < 0)
+          {
+            // have to add a new vertex
+            // use the one with highest inner valence
+
+            goodCorner = vertexPriorities[0].first; // polygon corner
+//            duplicatedVerts.push_back(goodCorner);
+
+            // add new vertex at the end of the buffer
+            goodVertexID = numDrawVerts_;
+            setInputIndexSplit(faceID, goodCorner, goodVertexID);
+          }
+          else
+          {
+            // mark the polygon as owner of the vertex
+            VertexUsed[goodVertexID] = faceID;
+          }
+
+          // process tris
+          for (int t = 0; t < numRemainingTris; ++t)
+          {
+            // check if the triangle references the good corner by testing the 3 vertices of the triangulation
+            bool triSkipped = true;
+            for (int k = 0; k < 3; ++k)
+            {
+              int cornerID = -1 - triIndexBuffer_[(triCounter + currentTri->id) * 3 + k];
+
+              if (cornerID == goodCorner)
+              {
+                // rotate the triangle such that the first corner of the triangle references the good corner
+                int rotCount = 3 - k;
+
+                // make a temp copy of current triangle
+                int tmpTriVerts[3] =
+                {
+                  triIndexBuffer_[(triCounter + currentTri->id) * 3],
+                  triIndexBuffer_[(triCounter + currentTri->id) * 3 + 1],
+                  triIndexBuffer_[(triCounter + currentTri->id) * 3 + 2],
+                };
+
+                // apply rotation
+                for (int i = 0; i < 3; ++i)
+                  triIndexBuffer_[(triCounter + currentTri->id) * 3 + (i + rotCount) % 3] = tmpTriVerts[i];
+
+
+                ++numTrisCovered;
+                triSkipped = false;
+
+                // remove triangle from the ring list
+                currentTri->prev->next = currentTri->next;
+                currentTri->next->prev = currentTri->prev;
+                break;
+              }
+            }
+
+            currentTri = currentTri->next;
+          }
+        }
+
+        
+
+
+      }
+
+      triCounter += faceSize - 2;
+    }
+  }
+
+  // process all triangles now
+  numInitialVerts = VertexUsed.size();
+  triCounter = 0;
+
+  for (int sortFaceID = 0; sortFaceID < numFaces_; ++sortFaceID)
+  {
+    int faceID = faceSortMap_.empty() ? sortFaceID : faceSortMap_[sortFaceID];
+    const int numCorners = getFaceSize(faceID);
+    
+    if (numCorners == 3)
+    {
+      // reset shared list
+      memset(&sharedVertices[0], 0, sizeof(int) * maxFaceSize_);
+      int numShared = 0;
+
+      // find shared list (corners of this face, that are shared with the neighbors)
+      for (int v0 = 0; v0 < numCorners && numShared < numCorners; ++v0)
+      {
+        if (sharedVertices[v0])
+          continue;
+
+        const int vertexID0 = getInputIndexSplit(faceID, v0);
+
+        // EDIT:
+        // vertexID0 >= numInitialVerts || (...) seemed wrong
+        if (vertexID0 < numInitialVerts && (VertexUsed[vertexID0] >= 0 && VertexUsed[vertexID0] != faceID))
+        {
+          sharedVertices[v0] = true;
+          ++numShared;
         }
       }
 
-      assert(rotCount < numCorners);
+      int rotCount = 0;
 
-      // rotate:  i -> i+rotCount
-      rotCount = numCorners - rotCount;
+      if (numShared == numCorners)
+      {
+        // worst-case: all vertices shared with neighbors
 
-      faceRotCount_[faceID] = rotCount;
-   
-      for (int i = 0; i < numCorners; ++i)
-        setInputIndexSplit(faceID, (i + rotCount)%numCorners, tmpFaceVerts[i]);
+        // add split vertex to end of vertex buffer, which is used exclusively by the current face
+        // current vertex count is stored in numDrawVerts_
+
+        setInputIndexSplit(faceID, 0, numDrawVerts_);
+      }
+      else if (sharedVertices[0])
+      {
+        // validation code
+        int x = 0;
+        for (int i = 0; i < numCorners; ++i)
+          x += sharedVertices[i];
+        assert(x < numCorners);
+
+        // we have to make sure that an unshared vertex is the first referenced face vertex
+        // this is currently not the case, so rotate the face indices until this is true
+
+        // make copy of current face splitVertexID
+        for (int i = 0; i < numCorners; ++i)
+          tmpFaceVerts[i] = getInputIndexSplit(faceID, i);
+
+        // rotation order: i -> i+1
+        // find # rotations needed
+        rotCount = 1;
+        for (; rotCount < numCorners; ++rotCount)
+        {
+          if (!sharedVertices[rotCount % numCorners])
+          {
+            if (tmpFaceVerts[rotCount] < numInitialVerts)
+              VertexUsed[tmpFaceVerts[rotCount]] = faceID;
+            break;
+          }
+        }
+
+        assert(rotCount < numCorners);
+
+        // rotate:  i -> i+rotCount
+        rotCount = numCorners - rotCount;
+
+        for (int i = 0; i < numCorners; ++i)
+        {
+//        setInputIndexSplit(faceID, i, tmpFaceVerts[(i + numCorners - rotCount) % numCorners]);
+
+          triIndexBuffer_[triCounter * 3 + i] = tmpFaceVerts[(i + numCorners - rotCount) % numCorners];
+        }
+      }
+      else
+      {
+        // best-case: unshared vertex at corner 0
+        const int idx = getInputIndexSplit(faceID, 0);
+        if (idx < numInitialVerts)
+          VertexUsed[idx] = faceID;
+      }
     }
-    else
-    {
-      // best-case: unshared vertex at corner 0
-      const int idx = getInputIndexSplit(faceID, 0);
-      if (idx < numInitialVerts)
-        VertexUsed[idx] = 1;
-    }
 
+    triCounter += numCorners - 2;
   }
 
-  delete [] VertexUsed;
-
+  std::cout << "force unshared num added: " << (numDrawVerts_ - numInitialVerts) << std::endl;
 }
 
 void MeshCompiler::getInputFaceVertex( const int _face, const int _corner, int* _out ) const
@@ -965,25 +1195,14 @@ MeshCompiler::~MeshCompiler()
 }
 
 
-int MeshCompiler::getInputIndexOffset( const int _face, const int _corner, const bool _rotation ) const
+int MeshCompiler::getInputIndexOffset( const int _face, const int _corner ) const
 {
   assert(_face >= 0);
   assert(_face < numFaces_);
 
   // baseIdx: offset to first index of the (face, corner) pair
   const int baseIdx = int(faceStart_.empty() ? maxFaceSize_ * _face : faceStart_[_face]);
-  const int fsize = getFaceSize(_face);
-
-  // rotate the vertices of the face if necessary (if constraint: first vertex of each face is exclusive to that face)
-  const int rotCount = faceRotCount_.empty() && _rotation ? 0 : faceRotCount_[_face];
-
-
-  assert(baseIdx >= 0);
-  assert(baseIdx <= numIndices_);
-
-  assert(fsize > 0);
-
-  return baseIdx + (_corner + rotCount) % fsize;
+  return baseIdx + _corner;
 }
 
 
@@ -1249,38 +1468,90 @@ void MeshCompiler::triangulate()
     // convert polygon into triangle fan
     // NOTE: all triangles must use the first face-vertex here!
     for (int k = 0; k < 3; ++k) 
-      triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, k);
+      triIndexBuffer_[indexCounter++] = -1 - k;
 
     for (int k = 3; k < faceSize; ++k)
     {
       // added tri belongs to current face
       triToSortFaceMap_[triCounter++] = sortFaceID;
 
-      triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, 0);
-      triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, k-1);
-      triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, k);
+      triIndexBuffer_[indexCounter++] = -1;
+      triIndexBuffer_[indexCounter++] = -1 - (k-1);
+      triIndexBuffer_[indexCounter++] = -1 - k;
     }
 
   }
 
-
-  // rotate tris such that the unshared face vertex is at the wanted provoking position of each triangle
-
-  if (provokingVertex_ >= 0)
-  {
-    for (int i  = 0; i < numTris_; ++i)
-    {
-      for (int k = 0; k < 3 - provokingVertex_; ++k)
-      {
-        const int tmp =  triIndexBuffer_[i*3];
-        triIndexBuffer_[i*3] = triIndexBuffer_[i*3 + 1];
-        triIndexBuffer_[i*3 + 1] = triIndexBuffer_[i*3 + 2];
-        triIndexBuffer_[i*3 + 2] = tmp;
-      }
-    }
-  }
-
-
+//   for (int sortFaceID = 0; sortFaceID < numFaces_; ++sortFaceID)
+//   {
+//     // get original face id
+//     const int faceID = faceSortMap_.empty() ? sortFaceID : faceSortMap_[sortFaceID];
+// 
+//     const int faceSize = getFaceSize(faceID);
+// 
+//     if (faceSize < 4)
+//     {
+//       // save face index mapping
+//       triToSortFaceMap_[triCounter++] = sortFaceID;
+// 
+//       for (int k = 0; k < 3; ++k)
+//         triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, k);
+//     }
+//     else
+//     {
+//       // use ACG::Triangulator to process complex polygons
+//       std::vector<Vec3f> poly(faceSize);
+//       for (int k = 0; k < faceSize; ++k)
+//       {
+//         VertexElement posElement;
+//         posElement.type_ = GL_FLOAT;
+//         posElement.numElements_ = 3;
+//         posElement.usage_ = VERTEX_USAGE_POSITION;
+//         posElement.pointer_ = 0;
+//         posElement.shaderInputName_ = 0;
+//         posElement.divisor_ = 0;
+//         posElement.vbo_ = 0;
+//         int posID = getInputIndexSplit(faceID, k);
+//         input_[inputIDPos_].getElementData( posID, &poly[k], &posElement);
+//       }
+//       Triangulator tris(poly);
+// 
+//       if (1 || tris.convex())
+//       {
+//         // best case: convert polygon into triangle fan
+//         // NOTE: all triangles must use the first face-vertex here!
+//         triToSortFaceMap_[triCounter++] = sortFaceID;
+//         for (int k = 0; k < 3; ++k)
+//           triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, k);
+// 
+//         for (int k = 3; k < faceSize; ++k)
+//         {
+//           // added tri belongs to current face
+//           triToSortFaceMap_[triCounter++] = sortFaceID;
+// 
+//           triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, 0);
+//           triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, k - 1);
+//           triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, k);
+//         }
+//       }
+//       else
+//       {
+//         // concave polygon
+//         // enforcing an unshared vertex gets ugly now
+// 
+//         for (int i = 0; i < tris.numTriangles(); ++i)
+//         {
+//           triToSortFaceMap_[triCounter++] = sortFaceID;
+//           for (int k = 0; k < 3; ++k)
+//           {
+//             int cornerID = tris.index(i * 3 + k);
+// 
+//             triIndexBuffer_[indexCounter++] = getInputIndexSplit(faceID, cornerID);
+//           }
+//         }
+//       }
+//     }
+//  
   // ---------------
   // fill out missing subset info:
 
@@ -1314,6 +1585,47 @@ void MeshCompiler::triangulate()
 
 }
 
+
+void MeshCompiler::resolveTriangulation()
+{
+  // rotate tris such that the unshared face vertex is at the wanted provoking position of each triangle
+
+  if (provokingVertex_ >= 0)
+  {
+    for (int i  = 0; i < numTris_; ++i)
+    {
+      for (int k = 0; k < 3 - provokingVertex_; ++k)
+      {
+        const int tmp =  triIndexBuffer_[i*3];
+        triIndexBuffer_[i*3] = triIndexBuffer_[i*3 + 1];
+        triIndexBuffer_[i*3 + 1] = triIndexBuffer_[i*3 + 2];
+        triIndexBuffer_[i*3 + 2] = tmp;
+      }
+    }
+  }
+
+  // resolve triangulation to indices
+  for (int drawTriID = 0; drawTriID < numTris_; ++drawTriID)
+  {
+    if (triIndexBuffer_[drawTriID * 3] < 0)
+    {
+      // triIndexBuffer stores the corner ids of the triangulations as:
+      //  triIndexBuffer[idx] = -cornerID - 1
+
+      // get original face id
+      const int sortFaceID = triToSortFaceMap_[drawTriID];
+      const int faceID = faceSortMap_.empty() ? sortFaceID : faceSortMap_[sortFaceID];
+
+      for (int k = 0; k < 3; ++k)
+      {
+        int negCornerID = triIndexBuffer_[drawTriID * 3 + k];
+        int cornerID = -1 - negCornerID;
+        int vertexID = triIndexBuffer_[drawTriID * 3 + k] = getInputIndexSplit(faceID, cornerID);
+        assert(vertexID >= 0);
+      }
+    }
+  }
+}
 
 void MeshCompiler::sortFacesByGroup()
 {
@@ -1425,20 +1737,15 @@ void MeshCompiler::optimize()
 
   for (int i = 0; i < numFaces_; ++i)
   {
-    const int frot = faceRotCount_.empty() ? 0 : faceRotCount_[i];
     const int fsize = getFaceSize(i);
 
     for (int k = 0;  k < fsize; ++k)
     {
-      // undo face rotation
-      int rotIdx = k - frot;
-      if (rotIdx < 0) rotIdx += fsize;
-
-      int oldVertex = getInputIndexSplit(i, rotIdx);
+      int oldVertex = getInputIndexSplit(i, k);
 
       int newVertex = vertexOptMap[oldVertex];
 
-      setInputIndexSplit(i, rotIdx, newVertex);
+      setInputIndexSplit(i, k, newVertex);
     }
   }
 
@@ -1510,24 +1817,6 @@ void MeshCompiler::build(bool _weldVertices, bool _optimizeVCache, bool _needPer
     }
   }
 
-  if (_needPerFaceAttribute)
-  {
-    if (dbg_MemProfiling)
-      std::cout << "force unshared vertex.., memusage = " << (getMemoryUsage() /(1024 * 1024)) << std::endl;
-
-    // The provoking vertex of each face shall not be referenced by any other face.
-    // This vertex can then be used to store per-face data
-    
-    // default provoking position 2
-    if (provokingVertex_ < 0)
-      provokingVertex_ = 2;
-    
-    provokingVertex_ = provokingVertex_ % 3;
-
-    // Adjacency info needed here
-    forceUnsharedFaceVertex();
-  }
-  
   /*
   2. step
 
@@ -1541,6 +1830,8 @@ void MeshCompiler::build(bool _weldVertices, bool _optimizeVCache, bool _needPer
   if (dbg_MemProfiling)
     std::cout << "sorting by mat.., memusage = " << (getMemoryUsage() /(1024 * 1024)) << std::endl;
   sortFacesByGroup();
+
+
 
 
   /*
@@ -1571,6 +1862,27 @@ void MeshCompiler::build(bool _weldVertices, bool _optimizeVCache, bool _needPer
     std::cout << "triangulate.., memusage = " << (getMemoryUsage() /(1024 * 1024)) << std::endl;
   triangulate();
 
+
+
+  if (_needPerFaceAttribute)
+  {
+    if (dbg_MemProfiling)
+      std::cout << "force unshared vertex.., memusage = " << (getMemoryUsage() / (1024 * 1024)) << std::endl;
+
+    // The provoking vertex of each face shall not be referenced by any other face.
+    // This vertex can then be used to store per-face data
+
+    // default provoking position 2
+    if (provokingVertex_ < 0)
+      provokingVertex_ = 2;
+
+    provokingVertex_ = provokingVertex_ % 3;
+
+    // Adjacency info needed here
+    forceUnsharedFaceVertex();
+  }
+
+  resolveTriangulation();
 
   /*
   4. step
@@ -2001,9 +2313,83 @@ bool MeshCompiler::dbgVerify(const char* _filename) const
       numTotalErrors += numErrors;
 
       numErrors = 0;
-
     }
-    
+
+    // -----------------------------------------------------------
+    // check triangulation
+
+    if (file.is_open())
+      file << "checking triangulation ..\n";
+
+    for (int i = 0; i < numFaces_; ++i)
+    {
+      int faceSize = getFaceSize(i);
+
+      std::vector<int> facePositions(faceSize, -1);
+
+      for (int k = 0; k < faceSize; ++k)
+        facePositions[k] = getInputIndex(i, k, inputIDPos_);
+
+      int numFaceTris = 0;
+      mapToDrawTriID(i, 0, &numFaceTris);
+
+      for (int t = 0; t < numFaceTris; ++t)
+      {
+        int triID = mapToDrawTriID(i, t);
+
+        int triPosOccurrence[3] = {-1, -1, -1};
+
+        for (int k = 0; k < 3; ++k)
+        {
+          int vertexID = getIndex(triID * 3 + k);
+
+          int originalFace = -1, originalCorner = -1;
+          int posID = mapToOriginalVertexID(vertexID, originalFace, originalCorner);
+
+          // check if the triangle positions make a subset of the polygon positions
+          for (int m = 0; m < faceSize; ++m)
+          {
+            if (posID == facePositions[m])
+            {
+              triPosOccurrence[k] = m;
+              break;
+            }
+          }
+
+          if (triPosOccurrence[k] < 0)
+          {
+            if (file.is_open())
+              file <<  "error: vertex at triangulated face " << i << " at triangle " << t << " at corner " << k << "is not even part of the original face!\n";
+
+            ++numErrors;
+          }
+        }
+
+        // check face winding of triangulation
+        int numInversions = 0;
+
+        for (int k = 0; k < 3; ++k)
+        {
+          int p1 = triPosOccurrence[k];
+          int p2 = triPosOccurrence[(k + 1) % 3];
+
+          if (p1 > p2)
+            ++numInversions;
+        }
+
+        if (numInversions > 1)
+        {
+          if (file.is_open())
+            file <<  "error: triangulation of face " << i << " at triangle " << t << " has flipped winding order!\n";
+
+          ++numErrors;
+        }
+      }
+    }
+
+    if (file.is_open())
+      file << numErrors << " errors found\n\n";
+    numTotalErrors += numErrors;
 
     if (file.is_open())
       file.close();
@@ -2045,11 +2431,6 @@ void MeshCompiler::dbgdump(const char* _filename) const
 
     for (size_t i = 0; i < faceBufSplit_.size(); ++i)
       file << "faceBufSplit_["<<i<<"] = "<<faceBufSplit_[i]<<"\n";
-
-    file << "\n\n";
-
-    for (size_t i = 0; i < faceRotCount_.size(); ++i)
-      file << "faceRotCount_["<<i<<"] = "<<int(faceRotCount_[i])<<"\n";
 
     file << "\n\n";
 
@@ -2731,7 +3112,8 @@ void MeshCompiler::createVertexMap(bool _keepIsolatedVerts)
 
   for (int i = 0; i < numFaces_; ++i)
   {
-    for (int k = 0; k < getFaceSize(i); ++k)
+    const int fsize = getFaceSize(i);
+    for (int k = 0; k < fsize; ++k)
     {
       // map from (face, corner) -> vertex id is given by getInputIndexSplit(), so create the inverse
       int vertexID = getInputIndexSplit(i, k);
@@ -2773,6 +3155,7 @@ void MeshCompiler::createFaceMap()
   // -------------------------------
   // create tri -> face map
 
+  triToFaceMap_.clear();
   triToFaceMap_.resize(numTris_, -1);
   for (int i = 0; i < numTris_; ++i)
   {
@@ -2796,6 +3179,7 @@ void MeshCompiler::createFaceMap()
   // offset table is necessary for variable polygon face sizes, because the map is stored in a single array
 
   // create offset table
+  faceToTriMapOffset_.clear();
   if (!constantFaceSize_)
   {
     faceToTriMapOffset_.resize(numTris_, -1);
@@ -2810,10 +3194,9 @@ void MeshCompiler::createFaceMap()
       offset += fsize - 2;
     }
   }
-  else
-    faceToTriMapOffset_.clear();
 
   // create face -> tri map
+  faceToTriMap_.clear();
   faceToTriMap_.resize(numTris_, -1); 
 
   for (int i = 0; i < numTris_; ++i)
@@ -3356,6 +3739,7 @@ const int* MeshCompiler::mapToOriginalFaceIDPtr() const
 }
 
 
+
 int MeshCompiler::mapToOriginalVertexID( const int _i, int& _faceID, int& _cornerID ) const
 {
   int positionID = -1;
@@ -3364,12 +3748,7 @@ int MeshCompiler::mapToOriginalVertexID( const int _i, int& _faceID, int& _corne
   {
     // connected vertex
     _faceID = vertexMapFace_[_i];
-
-    // revert face rotation here to get the correct input vertex
-    int frot = faceRotCount_.empty() ? 0 : faceRotCount_[_faceID];
-
-    _cornerID = vertexMapCorner_[_i] - frot;
-    if (_cornerID < 0) _cornerID += getFaceSize(_faceID);
+    _cornerID = vertexMapCorner_[_i];
 
     positionID = getInputIndex(_faceID, _cornerID, inputIDPos_);
   }
@@ -3387,14 +3766,7 @@ int MeshCompiler::mapToOriginalVertexID( const int _i, int& _faceID, int& _corne
 
 int MeshCompiler::mapToDrawVertexID( const int _faceID, const int _cornerID ) const
 {
-  // apply face rotation
-  const int fsize = getFaceSize(_faceID);
-  const int frot = faceRotCount_.empty() ? 0 : faceRotCount_[_faceID];
-
-  int rotCorner = _cornerID + frot;
-  if (rotCorner >= fsize) rotCorner -= fsize;
-
-  return getInputIndexSplit(_faceID, rotCorner);
+  return getInputIndexSplit(_faceID, _cornerID);
 }
 
 int MeshCompiler::mapToDrawTriID( const int _faceID, const int _k /*= 0*/, int* _numTrisOut /*= 0*/ ) const
@@ -3443,7 +3815,6 @@ size_t MeshCompiler::getMemoryUsage(bool _printConsole) const
   usage += faceData_.size() * 4;
   usage += faceGroupIDs_.size() * 2;
   usage += faceBufSplit_.size() * 4;
-  usage += faceRotCount_.size() * 1;
   usage += faceSortMap_.size() * 4;
 
   usage += triIndexBuffer_.size() * 4;
@@ -3482,7 +3853,6 @@ size_t MeshCompiler::getMemoryUsage(bool _printConsole) const
     std::cout << "faceData_: " << faceData_.size() * 4 / byteToMB << std::endl;
     std::cout << "faceGroupIDs_: " << faceGroupIDs_.size() * 2 / byteToMB << std::endl;
     std::cout << "faceBufSplit_: " << faceBufSplit_.size() * 4 / byteToMB << std::endl;
-    std::cout << "faceRotCount_: " << faceRotCount_.size() * 1 / byteToMB << std::endl;
 
     std::cout << "faceSortMap_: " << faceSortMap_.size() * 4 / byteToMB << std::endl;
 
@@ -3643,7 +4013,6 @@ void MeshCompiler::prepareData()
   vertexMapCorner_.clear();
 
   faceBufSplit_.clear();
-  faceRotCount_.clear();
 
   isolatedVertices_.clear();
   numIsolatedVerts_ = 0;

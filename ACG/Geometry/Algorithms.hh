@@ -309,7 +309,15 @@ distPointTriangleSquared( const Vec& _p,
                           Vec& _nearestPoint );
 
 /** \brief squared distance from point _p to triangle (_v0, _v1, _v2)
-*  In the stable version the distance to the longest edge is returned if the triangle is degenerate.
+*
+*  In the stable version the distance to the longest edge 
+*  is returned if the triangle is degenerate.
+*
+* @param _p   point to test against triangle
+* @param _v0  First point of trianlge
+* @param _v1  Second point of trianlge
+* @param _v2  Third point of trianlge
+* @return     Computed distance
 */
 template <class Vec>
 typename Vec::value_type
@@ -330,7 +338,14 @@ distPointTriangle( const Vec& _p,
 { return sqrt(distPointTriangleSquared(_p, _v0, _v1, _v2, _nearestPoint)); }
 
 /** \brief distance from point _p to triangle (_v0, _v1, _v2)
- *  In the stable version the distance to the longest edge is returned if the triangle is degenerate.
+*
+*   In the stable version the distance to the longest edge 
+*   is returned if the triangle is degenerate.
+* 
+* @param _v0  First point of trianlge
+* @param _v1  Second point of trianlge
+* @param _v2  Third point of trianlge
+* @return     Computed distance
  */
 template <class Vec>
 typename Vec::value_type

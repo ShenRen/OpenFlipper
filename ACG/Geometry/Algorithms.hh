@@ -308,6 +308,25 @@ distPointTriangleSquared( const Vec& _p,
                           const Vec& _v2,
                           Vec& _nearestPoint );
 
+/** \brief squared distance from point _p to triangle (_v0, _v1, _v2)
+*
+*  In the stable version the distance to the longest edge 
+*  is returned if the triangle is degenerate.
+*
+* @param _p   point to test against triangle
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangle
+* @return     Computed distance
+*/
+template <class Vec>
+typename Vec::value_type
+distPointTriangleSquaredStable( const Vec& _p,
+                                const Vec& _v0,
+                                const Vec& _v1,
+                                const Vec& _v2,
+                                Vec& _nearestPoint );
+
 /// distance from point _p to triangle (_v0, _v1, _v2)
 template <class Vec>
 typename Vec::value_type
@@ -317,6 +336,25 @@ distPointTriangle( const Vec& _p,
                    const Vec& _v2,
                    Vec& _nearestPoint )
 { return sqrt(distPointTriangleSquared(_p, _v0, _v1, _v2, _nearestPoint)); }
+
+/** \brief distance from point _p to triangle (_v0, _v1, _v2)
+*
+*   In the stable version the distance to the longest edge 
+*   is returned if the triangle is degenerate.
+* 
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangle
+* @return     Computed distance
+ */
+template <class Vec>
+typename Vec::value_type
+distPointTriangleStable( const Vec& _p,
+                         const Vec& _v0,
+                         const Vec& _v1,
+                         const Vec& _v2,
+                         Vec& _nearestPoint )
+{ return sqrt(distPointTriangleSquaredStable(_p, _v0, _v1, _v2, _nearestPoint)); }
 
 /** \brief Checks the distance from a point to a plane
 *
@@ -542,6 +580,9 @@ int isObtuse(const VectorT& _p0,
 
 /** \brief return squared area of triangle (_v0, _v1, _v2)
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <class Vec>
 typename Vec::value_type
@@ -552,6 +593,9 @@ triangleAreaSquared( const Vec& _v0,
 
 /** \brief return area of triangle (_v0, _v1, _v2)
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <class Vec>
 typename Vec::value_type
@@ -565,6 +609,9 @@ triangleArea( const Vec& _v0,
 
 /** \brief return aspect ratio (length/height) of triangle
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <typename Scalar, int N>
 Scalar
@@ -574,6 +621,9 @@ aspectRatio( const VectorT<Scalar, N>& _v0,
 
 /** \brief return roundness of triangle: 1=equilateral, 0=colinear
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <typename Scalar, int N>
 Scalar

@@ -41,7 +41,7 @@
 
 /*===========================================================================*\
  *                                                                           *
- *   $Revision$                                                       *
+ *   $Revision$                                                        *
  *   $Author$                                                      *
  *   $Date$                   *
  *                                                                           *
@@ -313,16 +313,16 @@ distPointLineSquared( const Vec& _p,
   return d1.sqrnorm();
 }    
 
-//-----------------------------------------------------------------------------
-
+  //-----------------------------------------------------------------------------
 
 template <class Vec>
 typename Vec::value_type
 distPointTriangleSquared( const Vec& _p,
-			  const Vec& _v0,
-			  const Vec& _v1,
-			  const Vec& _v2,
-			  Vec& _nearestPoint )
+                          const Vec& _v0,
+                          const Vec& _v1,
+                          const Vec& _v2,
+                          Vec& _nearestPoint,
+                          bool _stable)
 {
   Vec v0v1 = _v1 - _v0;
   Vec v0v2 = _v2 - _v0;
@@ -332,8 +332,23 @@ distPointTriangleSquared( const Vec& _p,
   
   // Check if the triangle is degenerated
   if (d < FLT_MIN && d > -FLT_MIN) {
-    std::cerr << "distPointTriangleSquared: Degenerated triangle !\n";
-    return -1.0;
+    if (_stable) {
+      const double l0 = v0v1.sqrnorm();
+      const double l1 = v0v2.sqrnorm();
+      const double l2 = (_v2 - _v1).sqrnorm();
+      if (l0 > l1 && l0 > l2) {
+        return distPointLineSquared(_p, _v0, _v1, &_nearestPoint);
+      }
+      else if (l1 > l0 && l1 > l2) {
+        return distPointLineSquared(_p, _v0, _v2, &_nearestPoint);
+      }
+      else {
+        return distPointLineSquared(_p, _v1, _v2, &_nearestPoint);
+      }
+    } else {
+      std::cerr << "distPointTriangleSquared: Degenerated triangle !\n";
+      return -1.0;
+    }
   }
   typename Vec::value_type invD = typename Vec::value_type(1.0) / d;
 
@@ -439,8 +454,38 @@ distPointTriangleSquared( const Vec& _p,
   return (_nearestPoint - _p).sqrnorm();
 }
 
+//-----------------------------------------------------------------------------
+
+
+template <class Vec>
+typename Vec::value_type
+distPointTriangleSquared( const Vec& _p,
+                          const Vec& _v0,
+                          const Vec& _v1,
+                          const Vec& _v2,
+                          Vec& _nearestPoint )
+{
+  return distPointTriangleSquared(_p, _v0, _v1, _v2, _nearestPoint, false);
+}
+
 
 //-----------------------------------------------------------------------------
+
+
+template <class Vec>
+typename Vec::value_type
+distPointTriangleSquaredStable( const Vec& _p,
+                                const Vec& _v0,
+                                const Vec& _v1,
+                                const Vec& _v2,
+                                Vec& _nearestPoint )
+{
+  return distPointTriangleSquared(_p, _v0, _v1, _v2, _nearestPoint, true);
+}
+
+
+//-----------------------------------------------------------------------------
+
 
 
 //

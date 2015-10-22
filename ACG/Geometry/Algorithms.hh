@@ -314,9 +314,9 @@ distPointTriangleSquared( const Vec& _p,
 *  is returned if the triangle is degenerate.
 *
 * @param _p   point to test against triangle
-* @param _v0  First point of trianlge
-* @param _v1  Second point of trianlge
-* @param _v2  Third point of trianlge
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangle
 * @return     Computed distance
 */
 template <class Vec>
@@ -342,9 +342,9 @@ distPointTriangle( const Vec& _p,
 *   In the stable version the distance to the longest edge 
 *   is returned if the triangle is degenerate.
 * 
-* @param _v0  First point of trianlge
-* @param _v1  Second point of trianlge
-* @param _v2  Third point of trianlge
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangle
 * @return     Computed distance
  */
 template <class Vec>

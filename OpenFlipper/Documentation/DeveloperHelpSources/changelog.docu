@@ -13,6 +13,7 @@
              - increase max supported face size closes #2522
         - Geometry
              - add fast algorithms for bspline basis function to ACG
+             - Added more stable dist_point triangle Algorithm Version
         - GL
              - implicitly bind vbo on upload()
              - fix shaders for resolving multisampled textures

@@ -580,6 +580,9 @@ int isObtuse(const VectorT& _p0,
 
 /** \brief return squared area of triangle (_v0, _v1, _v2)
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <class Vec>
 typename Vec::value_type
@@ -590,6 +593,9 @@ triangleAreaSquared( const Vec& _v0,
 
 /** \brief return area of triangle (_v0, _v1, _v2)
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <class Vec>
 typename Vec::value_type
@@ -603,6 +609,9 @@ triangleArea( const Vec& _v0,
 
 /** \brief return aspect ratio (length/height) of triangle
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <typename Scalar, int N>
 Scalar
@@ -612,6 +621,9 @@ aspectRatio( const VectorT<Scalar, N>& _v0,
 
 /** \brief return roundness of triangle: 1=equilateral, 0=colinear
 *
+* @param _v0  First point of triangle
+* @param _v1  Second point of triangle
+* @param _v2  Third point of triangl
 */
 template <typename Scalar, int N>
 Scalar

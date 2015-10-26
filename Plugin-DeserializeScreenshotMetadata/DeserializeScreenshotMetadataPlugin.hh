@@ -86,7 +86,7 @@ class DeserializeScreenshotMetadataPlugin: public QObject,
 
     signals:
         void updateView();
-        void updatedObject(int /*_identifier*/, const UpdateType /*_type*/);
+        void updatedObject(int /*_identifier*/, const UpdateType & /*_type*/);
 
         // ToolboxInterface
         void addToolbar(QToolBar* _toolbar);

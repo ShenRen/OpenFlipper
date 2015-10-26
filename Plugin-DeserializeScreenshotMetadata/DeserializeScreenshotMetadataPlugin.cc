@@ -63,6 +63,7 @@
 
 //== IMPLEMENTATION ==========================================================
 
+
 DeserializeScreenshotMetadataPlugin::DeserializeScreenshotMetadataPlugin() :
         toolbar(0),
         restoreAction(0),

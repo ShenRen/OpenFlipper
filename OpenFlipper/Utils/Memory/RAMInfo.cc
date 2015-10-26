@@ -40,38 +40,50 @@
  \*===========================================================================*/
 
 #include "RAMInfo.hh"
+#include <stdio.h>
 
 // Main Memory information
 #ifdef WIN32
 #include <Windows.h>
 #elif defined ARCH_DARWIN
-#else
-#include <sys/sysinfo.h>
-//Info class returned by sysinfo
-//struct sysinfo {
-//  long uptime;              /* Sekunden seit dem letzten Systemstart */
-//  unsigned long loads[3];   /* 1, 5 und 15 minütige Systemlast */
-//  unsigned long totalram;   /* nutzbare Hauptspeichergröße */
-//  unsigned long freeram;    /* verfügbare Speichergröße */
-//  unsigned long sharedram;  /* Größe des gemeinsamen Speichers */
-//  unsigned long bufferram;  /* von Puffern benutzter Speicher */
-//  unsigned long totalswap;  /* Größe des Auslagerungsspeichers */
-//  unsigned long freeswap;   /* verfügbarer Auslagerungsspeicher */
-//  unsigned short procs;     /* Aktuelle Prozesszahl */
-//  unsigned long totalhigh;  /* Gesamtgröße des oberen Speicherbereichs */
-//  unsigned long freehigh;   /* verfügbarer oberer Speicherbereich */
-//  unsigned int mem_unit;    /* Größe der Speichereinheit in Byte */
-//  char _f[20-2*sizeof(long)-sizeof(int)]; /* Auffüllung auf 64 bytes */
-//};
-
-// private struct to get ram information
 #endif
+// private struct to get ram information
 namespace{
 struct MemoryVacancy{
   unsigned long totalRamMB;
   unsigned long freeRamMB;
   unsigned long bufferRamMB;
 };
+
+void parseMeminfo(int& total, int& free, int& buffer)
+{
+  int memcache;
+  int memfree;
+  FILE* info = fopen("/proc/meminfo","r");
+  if(fscanf (info, "MemTotal: %d kB MemFree: %d kB Buffers: %d kB Cached: %d kB",&total, &memfree, &buffer, &memcache) < 4) //try to parse the old meminfo format
+  {
+    fclose(info);
+    info = fopen("/proc/meminfo","r");
+    //parsing the old format failed so we try to parse using the new format
+    if(fscanf(info, "MemTotal: %d kB MemFree: %d kB MemAvailable: %d kB Buffers: %d kB Cached: %d kB",&total, &memfree, &free, &buffer, &memcache) < 5)
+    {
+      //parsing failed overall so return -1 for all values
+      total = -1;
+      free = -1;
+      buffer = -1;
+    }
+    else
+    {
+      free = memfree + (buffer + memcache);  //everything is fine
+    }
+
+  }
+  else  //compute available memory
+  {
+    free = memfree + (buffer + memcache);
+  }
+  fclose(info);
+}
 
 }
 namespace Utils
@@ -100,13 +112,13 @@ namespace Utils
     #elif defined ARCH_DARWIN // Apple (sadly cant query free memory)
     #else // Linux
 
-      struct sysinfo sys_info;
-      sysinfo(&sys_info);
+      int total, free, buffer;
+      parseMeminfo(total, free, buffer);
 
-      // Unit in bytes ; /1024 -> KB ; /1024 MB
-      _outMemoryVacancy.totalRamMB = sys_info.totalram / 1024 / 1024 * sys_info.mem_unit;
-      _outMemoryVacancy.freeRamMB = sys_info.freeram / 1024 / 1024 * sys_info.mem_unit;
-      _outMemoryVacancy.bufferRamMB = sys_info.bufferram / 1024 / 1024 * sys_info.mem_unit; // Buffers get freed, if we don't have enough free ram
+      // Unit in bytes ; /1024 -> MB
+      _outMemoryVacancy.totalRamMB = (long)total / 1024;
+      _outMemoryVacancy.freeRamMB = (long)free / 1024;
+      _outMemoryVacancy.bufferRamMB = (long)buffer / 1024; // Buffers get freed, if we don't have enough free ram
     #endif
     }
 

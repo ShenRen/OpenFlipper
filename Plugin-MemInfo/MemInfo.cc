@@ -147,10 +147,9 @@ void MemInfoPlugin::cpuMemoryInfoUpdate() {
   if (mainMemBar_) {
     unsigned long totalRamMB = Utils::Memory::queryTotalRAM();
     unsigned long freeRamMB = Utils::Memory::queryFreeRAM();
-    unsigned long bufferRamMB = Utils::Memory::queryBufferedRAM();
 
     mainMemBar_->setRange(  0 , totalRamMB  );
-    mainMemBar_->setValue( totalRamMB-freeRamMB-bufferRamMB);
+    mainMemBar_->setValue( totalRamMB - freeRamMB );
     setProgressBarStyleSheet(mainMemBar_);
   }
 }

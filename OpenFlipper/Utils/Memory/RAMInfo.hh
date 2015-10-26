@@ -50,7 +50,7 @@ namespace Utils
 
     /**
      * @brief queryFreeRAM queries the os ram information and returns the amount of free ram (0 if not supported like on osx)
-     * @return unsigned long the free amount of ram in MB
+     * @return unsigned long the free amount of ram in MB (as for linux users free ram means here available ram)
      */
     DLLEXPORT
     unsigned long queryFreeRAM();

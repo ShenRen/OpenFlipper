@@ -188,7 +188,7 @@ void DepthPeelingPlugin::destroyResources(int _viewerId)
   if (p->blendDualPeelFbo_) glDeleteFramebuffersEXT(1, &p->blendDualPeelFbo_);
   p->blendDualPeelFbo_ = 0;
 
-  if (p->blendDualPeelTexID_) glDeleteTextures(7, p->blendDualPeelTexID_);
+  if (p->blendDualPeelTexID_[0]) glDeleteTextures(7, p->blendDualPeelTexID_);
   memset(p->blendDualPeelTexID_, 0, sizeof(p->blendDualPeelTexID_));
 }
 

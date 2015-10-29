@@ -67,19 +67,59 @@ namespace ACG{
 class ACGDLLEXPORT Triangulator
 {
 public:
+  /** \brief Execute the triangulation algorithm on a polygon
+   *
+   * @param _pos polygon vertex positions (ccw)
+  */
   Triangulator(const std::vector<Vec3f>& _pos);
+
+  /** \brief Destructor
+  */
   virtual ~Triangulator();
 
-
+  /** \brief Get number of triangles
+   * @return number of triangles after triangulation
+  */
   int numTriangles() const { return numTris_; }
-  int index(int i) const { return tris_[i]; }
+
+  /** \brief Get local vertex index 
+   *
+   * @param _i index to index buffer in range [0, .., numTris*3 - 1]
+   * @return vertex index in range [0, .., _pos.size()-1], where _pos is the input vector of positions as passed to the constructor
+  */
+  int index(int _i) const { return tris_[_i]; }
+
+  /** \brief Get local index buffer
+  *
+  * @return index buffer
+  */
   const std::vector<int>& indices() const { return tris_; }
 
-
+  /** \brief Is the polygon convex?
+  *
+  * @return convex true or false
+  */
   bool convex() const { return convex_; }
-  int numReflexVertices() const { return numReflexVertices_; }
-  bool isReflexVertex(int i) const;
 
+  /** \brief Get number of reflex vertices
+  *
+  * A reflex vertex is a vertex with an inner angle larger than 180 deg.
+  * @return number of reflex vertices
+  */
+  int numReflexVertices() const { return numReflexVertices_; }
+
+  /** \brief Check if a vertex is reflex
+  *
+  * A reflex vertex is a vertex with an inner angle larger than 180 deg.
+  * @param _i local vertex index in range [0, .., _pos.size()-1]
+  * @return reflex vertex true or false
+  */
+  bool isReflexVertex(int _i) const;
+
+  /** \brief Check if the triangulation was successful
+  *
+  * @return success true or false
+  */
   bool success() const { return !status_; }
 
 
@@ -95,7 +135,7 @@ private:
 
 
   // disable assignment operator
-  Triangulator& operator=(const Triangulator&){}
+  Triangulator& operator=(const Triangulator&){ return *this;  }
 
 
   float triangleAreaSign(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2) const;

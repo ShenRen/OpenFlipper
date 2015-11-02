@@ -118,7 +118,7 @@ else( WIN32 )
    IF ( SUITESPARSE_LIBRARY_DIR )
 
        # Skipped, as this is set for apple in the block above
-       if (NOT APPLE)
+#       if (NOT APPLE)
          list ( APPEND SUITESPARSE_LIBRARIES amd)
          list ( APPEND SUITESPARSE_LIBRARIES btf)
          list ( APPEND SUITESPARSE_LIBRARIES camd)
@@ -130,7 +130,7 @@ else( WIN32 )
          list ( APPEND SUITESPARSE_LIBRARIES klu)
  #       list ( APPEND SUITESPARSE_LIBRARIES spqr)
          list ( APPEND SUITESPARSE_LIBRARIES umfpack)
-       endif()
+ #      endif()
    
        # Metis and spqr are optional
        FIND_LIBRARY( SUITESPARSE_METIS_LIBRARY

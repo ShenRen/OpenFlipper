@@ -441,7 +441,7 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
     {
 
       if ( _node->status() != ACG::SceneGraph::BaseNode::HideNode )
-        _node->enter(*_glState, _drawMode);
+        _node->enter(*_glState, nodeDM);
 
 
       // fetch material (Node itself can be a material node, so we have to

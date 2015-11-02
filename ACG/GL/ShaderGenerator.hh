@@ -102,11 +102,12 @@ public:
     fragmentTemplateFile(""),
     normalizeTexColors(true),
     colorMaterialMode(GL_AMBIENT_AND_DIFFUSE),
-    textureTypes_()
+    textureTypes_(),
+    texGenDim(0),
+    texGenMode(GL_EYE_LINEAR)
   {
     for ( unsigned int i = 0 ; i < SG_MAX_SHADER_LIGHTS ; ++i)
       lightTypes[i] = SG_LIGHT_DIRECTIONAL;
-
   }
 
   //In case, something crashes with the light types, try this hammer ;-)
@@ -201,6 +202,48 @@ public:
 
 
 
+  // automatic texture coordinate generation, emulation of glTexGen
+  // this takes priority over any texcoords provided via addTextureType 
+
+  // dimension of generated texture coordinate: 0,1,2,3,4  (default: 0 - disabled)
+  int texGenDim;
+
+  // texture generation mode: GL_OBJECT_LINEAR, GL_EYE_LINEAR, GL_SPHERE_MAP, GL_NORMAL_MAP, GL_REFLECTION_MAP
+  GLenum texGenMode; 
+
+  void enableTexGenObjectLinear(int _dim = 2)
+  {
+    texGenDim = std::max(std::min(_dim, 4), 0);
+    texGenMode = GL_OBJECT_LINEAR;
+  }
+
+  void enableTexGenEyeLinear(int _dim = 2)
+  {
+    texGenDim = std::max(std::min(_dim, 4), 0);
+    texGenMode = GL_EYE_LINEAR;
+  }
+
+  void enableTexGenSphericalMap(int _dim = 2)
+  {
+    texGenDim = std::max(std::min(_dim, 2), 0);
+    texGenMode = GL_SPHERE_MAP;
+  }
+
+  void enableTexGenNormalMap(int _dim = 3)
+  {
+    texGenDim = std::max(std::min(_dim, 3), 0);
+    texGenMode = GL_NORMAL_MAP;
+  }
+
+  void enableTexGenReflectionMap(int _dim = 3)
+  {
+    texGenDim = std::max(std::min(_dim, 3), 0);
+    texGenMode = GL_REFLECTION_MAP;
+  }
+
+  void disableTexGen() { texGenDim = 0; }
+
+
   // comparison operator
   bool operator == (const ShaderGenDesc& _rhs) const
   {
@@ -242,6 +285,15 @@ public:
 
     if (macros != _rhs.macros)
       return false;
+
+    if (texGenDim != _rhs.texGenDim)
+      return false;
+
+    if (texGenDim)
+    {
+      if (texGenMode != _rhs.texGenMode)
+        return false;
+    }
 
     if (numLights)
       return memcmp(lightTypes, _rhs.lightTypes, numLights * sizeof(ShaderGenLightType)) == 0;

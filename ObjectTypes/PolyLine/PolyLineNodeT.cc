@@ -531,6 +531,8 @@ updateVBO() {
 
     typename PolyLine::CustomPropertyHandle proph = polyline_.enumerate_custom_property_handles(i);
 
+    
+
     const void* propDataBuf = polyline_.get_custom_property_buffer(proph);
 
     typename std::map< typename PolyLine::CustomPropertyHandle, int >::iterator mapEntry = polylinePropMap_.find(proph);
@@ -542,13 +544,13 @@ updateVBO() {
       ACG::VertexElement desc;
 
       unsigned int propSize = 0;
-      polyline_.get_custom_property_shader_binding(proph, &propSize, &desc.shaderInputName_, &desc.type_);
+      if (polyline_.get_custom_property_shader_binding(proph, &propSize, &desc.shaderInputName_, &desc.type_)) {
+        // assume aligned memory without byte padding
+        desc.numElements_ = propSize / VertexDeclaration::getGLTypeSize(desc.type_);
+        desc.pointer_ = 0;
 
-      // assume aligned memory without byte padding
-      desc.numElements_ = propSize / VertexDeclaration::getGLTypeSize(desc.type_);
-      desc.pointer_ = 0;
-
-      polylinePropMap_[proph] = addCustomBuffer(desc, propDataBuf);
+        polylinePropMap_[proph] = addCustomBuffer(desc, propDataBuf);
+      }
     }
     else // otherwise update pointer of property data buffer
       setCustomBuffer(mapEntry->second, propDataBuf);

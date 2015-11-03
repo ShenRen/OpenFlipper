@@ -91,6 +91,7 @@ void RenderObject::initFromState( GLState* _glState )
 
   alpha = 1.0f;
 
+
   if (_glState)
   {
     modelview = _glState->modelview();
@@ -119,6 +120,24 @@ void RenderObject::initFromState( GLState* _glState )
       emissive[i] = _glState->base_color()[i];
     }
     shininess = _glState->shininess();
+  }
+
+
+  // get texcoord generation params
+  if (glIsEnabled(GL_TEXTURE_GEN_Q))
+    shaderDesc.texGenDim = 4;
+  else if (glIsEnabled(GL_TEXTURE_GEN_R))
+    shaderDesc.texGenDim = 3;
+  else if (glIsEnabled(GL_TEXTURE_GEN_T))
+    shaderDesc.texGenDim = 2;
+  else if (glIsEnabled(GL_TEXTURE_GEN_S))
+    shaderDesc.texGenDim = 1;
+
+  if (shaderDesc.texGenDim)
+  {
+    GLint genMode = 0;
+    glGetTexGeniv(GL_S, GL_TEXTURE_GEN_MODE, &genMode);
+    shaderDesc.texGenMode = genMode;
   }
 }
 

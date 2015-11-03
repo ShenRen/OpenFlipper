@@ -196,9 +196,19 @@ void ShaderGenerator::initVertexShaderIO(const ShaderGenDesc* _desc, const Defau
 
   if (_iodesc->passTexCoord_ && !_desc->textured())
   {
-    // assume 2d texcoords
-    addInput("vec2 inTexCoord");
-    addOutput("vec2 outVertexTexCoord");
+    // assume 2d texcoords as default
+    int texdim = 2;
+
+    if (_desc->texGenMode && _desc->texGenDim > 0 && _desc->texGenDim <= 4)
+      texdim = _desc->texGenDim;
+
+
+    QString inTexCoordString, outTexCoordString;
+    inTexCoordString.sprintf("vec%i inTexCoord", texdim);
+    outTexCoordString.sprintf("vec%i outVertexTexCoord", texdim);
+
+    addInput(inTexCoordString);
+    addOutput(outTexCoordString);
   }
 
 
@@ -1177,6 +1187,7 @@ void ShaderProgGenerator::addVertexBeginCode(QStringList* _code)
     }
   }
 
+
   if (desc_.vertexColors && (desc_.colorMaterialMode == GL_AMBIENT || desc_.colorMaterialMode == GL_AMBIENT_AND_DIFFUSE))
     _code->push_back("vec4 sg_cColor = vec4(g_cEmissive + g_cLightModelAmbient * " SG_INPUT_VERTEXCOLOR ".xyz, SG_ALPHA);");
   else
@@ -1190,6 +1201,84 @@ void ShaderProgGenerator::addVertexBeginCode(QStringList* _code)
 
   if (ioDesc_.inputColor_ && (desc_.shadeMode == SG_SHADE_UNLIT || desc_.colorMaterialMode == GL_EMISSION))
     _code->push_back("sg_cColor = " SG_INPUT_VERTEXCOLOR ";");
+
+
+  // texcoord generation
+  if (desc_.texGenDim && desc_.texGenMode)
+  {
+    // https://www.opengl.org/wiki/Mathematics_of_glTexGen
+
+    if (!ioDesc_.inputTexCoord_)
+    {
+      // declare variable if it has not been allocated yet
+      QString texGenString;
+      texGenString.sprintf("vec%i sg_vTexCoord; // glTexGen emulation", desc_.texGenDim);
+      _code->push_back(texGenString);
+    }
+
+    const char* texGenCoordString[] = { "x", "y", "z", "w" };
+
+    switch (desc_.texGenMode)
+    {
+    case GL_OBJECT_LINEAR:
+    {
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot(inPosition, g_vTexGenPlane[%i]);", texGenCoordString[i], i);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_EYE_LINEAR:
+    {
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot(sg_vPosVS, g_vTexGenPlane[%i]);", texGenCoordString[i], i);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_SPHERE_MAP:
+    {
+      _code->push_back("vec3 sg_vPosVS_unit = normalize(sg_vPosVS.xyz);");
+      _code->push_back("vec3 sg_TexGenRefl = reflect(sg_vPosVS_unit, sg_vNormalVS);");
+      _code->push_back("vec3 sg_TexGenRefl2 = sg_TexGenRefl; sg_TexGenRefl2.z += 1.0;");
+      _code->push_back("float sg_TexGenMRcp = 0.5 * inversesqrt(dot(sg_TexGenRefl2, sg_TexGenRefl2));");
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_TexGenRefl.%s * sg_TexGenMRcp + 0.5;", texGenCoordString[i], texGenCoordString[i]);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_NORMAL_MAP:
+    {
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_vNormalVS.%s;", texGenCoordString[i], texGenCoordString[i]);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_REFLECTION_MAP:
+    {
+      _code->push_back("vec3 sg_vPosVS_unit = normalize(sg_vPosVS.xyz);");
+      _code->push_back("vec3 sg_TexGenRefl = reflect(sg_vPosVS_unit, sg_vNormalVS);");
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_TexGenRefl.%s;", texGenCoordString[i], texGenCoordString[i]);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    default: break;
+    }
+  }
 
 
   // apply modifiers
@@ -1943,6 +2032,31 @@ void ShaderProgGenerator::generateShaders()
     ioDesc_.passTexCoord_ = true;
   }
 
+  // clamp generated texcoord dimension
+  int maxTexGenDim = 4;
+
+  switch (desc_.texGenMode)
+  {
+  case GL_EYE_LINEAR:
+  case GL_OBJECT_LINEAR: maxTexGenDim = 4; break;
+    
+  case GL_SPHERE_MAP: maxTexGenDim = 2; break;
+  
+  case GL_NORMAL_MAP:
+  case GL_REFLECTION_MAP: maxTexGenDim = 3; break;
+  
+  default: maxTexGenDim = 0; break;
+  }
+
+  desc_.texGenDim = std::max(std::min(desc_.texGenDim, maxTexGenDim), 0);
+
+  if (desc_.texGenMode == GL_REFLECTION_MAP || desc_.texGenMode == GL_SPHERE_MAP || desc_.texGenMode == GL_NORMAL_MAP)
+    ioDesc_.inputNormal_ = true;
+
+  if (desc_.texGenDim && desc_.texGenMode)
+    ioDesc_.passTexCoord_ = true; // no input, but texcoords are generated
+
+
   if (desc_.vertexColors)
     ioDesc_.inputColor_ = true;
 
@@ -2573,6 +2687,19 @@ QString ShaderGenDesc::toString() const
 
     resStrm  << "\nShadowTexture: " <<  iter->second.shadow;
   }
+
+  resStrm << "\nshaderDesc.texGenDim: " << texGenDim;
+
+  switch (texGenMode)
+  {
+  case GL_OBJECT_LINEAR: resStrm << "\nshaderDesc.texGenMode: GL_OBJECT_LINEAR"; break;
+  case GL_EYE_LINEAR: resStrm << "\nshaderDesc.texGenMode: GL_EYE_LINEAR"; break;
+  case GL_SPHERE_MAP: resStrm << "\nshaderDesc.texGenMode: GL_SPHERE_MAP"; break;
+  case GL_NORMAL_MAP: resStrm << "\nshaderDesc.texGenMode: GL_NORMAL_MAP"; break;
+  case GL_REFLECTION_MAP: resStrm << "\nshaderDesc.texGenMode: GL_REFLECTION_MAP"; break;
+  default: resStrm << "\nshaderDesc.texGenMode: unknown"; break;
+  }
+  
 
   if (!vertexTemplateFile.isEmpty())
     resStrm << "\nshaderDesc.vertexTemplateFile: " << vertexTemplateFile;

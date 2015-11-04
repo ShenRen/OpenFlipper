@@ -1850,7 +1850,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
     // Plugins to core
     if ( checkSignal(plugin,"emptyObjectAdded(int)" ) )
       connect(plugin , SIGNAL( emptyObjectAdded( int ) ) ,
-              this   , SLOT( slotEmptyObjectAdded ( int ) ),Qt::DirectConnection);
+              this   , SLOT( slotEmptyObjectAdded ( int ) ),Qt::QueuedConnection);
 
     // core to plugins
     if ( checkSlot(plugin,"addedEmptyObject(int)" ) )

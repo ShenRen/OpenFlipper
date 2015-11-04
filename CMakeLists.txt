@@ -137,6 +137,7 @@ file (
   RELATIVE "${CMAKE_SOURCE_DIR}"
            "${CMAKE_SOURCE_DIR}/libs_required/*/CMakeLists.txt"
            "${CMAKE_SOURCE_DIR}/libs/*/CMakeLists.txt"
+           "${CMAKE_SOURCE_DIR}/Package-*/libs/*/CMakeLists.txt"
 )
 
 set( REMAINING_LOCAL_LIBS "" )

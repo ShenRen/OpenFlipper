@@ -12,11 +12,19 @@ IF (COMISO_INCLUDE_DIR)
   SET(COMISO_FIND_QUIETLY TRUE)
 ENDIF (COMISO_INCLUDE_DIR)
 
+# search all lib directories in packages for OpenFlipper
+file (
+  GLOB _libdirs
+           "${CMAKE_SOURCE_DIR}/libs"
+           "${CMAKE_SOURCE_DIR}/Package-*/libs"
+)
+
           
 # Find CoMISo config file
 FIND_PATH( COMISO_INCLUDE_DIR CoMISo/Config/config.hh
            PATHS "${CMAKE_SOURCE_DIR}"
                  "${CMAKE_SOURCE_DIR}/libs/" 
+                 "${_libdirs}"
                  "${CMAKE_SOURCE_DIR}/../" )
 
 if ( COMISO_INCLUDE_DIR )

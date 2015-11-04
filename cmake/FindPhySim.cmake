@@ -11,8 +11,17 @@ IF (PHYSIM_INCLUDE_DIRS)
   SET(PHYSIM_FIND_QUIETLY TRUE)
 ENDIF (PHYSIM_INCLUDE_DIRS)
 
+# search all lib directories in packages for OpenFlipper
+file (
+  GLOB _libdirs
+           "${CMAKE_SOURCE_DIR}/libs"
+           "${CMAKE_SOURCE_DIR}/Package-*/libs"
+)
+
+
 FIND_PATH( PHYSIM_INCLUDE_DIRS PhySim/Config/PhySimDefines.hh
-           PATHS "${CMAKE_SOURCE_DIR}/libs" )
+           PATHS "${_libdirs}" 
+                 "${CMAKE_SOURCE_DIR}/libs" )
 
 add_definitions (-DPHYSIMDLL -DUSEPHYSIM )
 

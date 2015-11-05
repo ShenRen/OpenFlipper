@@ -218,7 +218,9 @@ add_subdirectory (OpenFlipper/Documentation/UserQtHelpTarget)
 # PolyLine extension special case
 # ========================================================================
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/libs/MeshIntegration )
+find_package (MeshIntegration)
+
+if (MESH_INTEGRATION_FOUND)
   add_definitions( -DEXTENDED_POLY_LINE )
 endif()
 

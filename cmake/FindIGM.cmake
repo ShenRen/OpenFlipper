@@ -15,15 +15,22 @@ cmake_minimum_required(VERSION 2.8.9)
 
 #if already found via finder or simulated finder in openmesh CMakeLists.txt, skip the search
 IF (NOT IGM_FOUND) 
+  file (
+    GLOB _libdirs
+             "${CMAKE_SOURCE_DIR}/libs"
+             "${CMAKE_SOURCE_DIR}/Package-*/libs"
+  )
+
   SET (SEARCH_PATHS 
     /usr/local/
     /usr/
-    "${CMAKE_SOURCE_DIR}/IGM/src/"
-    "${CMAKE_SOURCE_DIR}/libs/IGM/src/"
-    "${CMAKE_SOURCE_DIR}/../IGM/src/"
+    "${CMAKE_SOURCE_DIR}/"
+    "${CMAKE_SOURCE_DIR}/../"
+    "${CMAKE_SOURCE_DIR}/libs/" 
+    "${_libdirs}"
   )
 
-  FIND_PATH (IGM_INCLUDE_DIR IGM/QuadMeshGeneratorT.hh
+  FIND_PATH (IGM_INCLUDE_DIR IGM/src/IGM/QuadMeshGeneratorT.hh
     PATHS ${SEARCH_PATHS}
     PATH_SUFFIXES include)
 
@@ -33,7 +40,7 @@ IF (NOT IGM_FOUND)
 
 
   set(IGM_LIBRARIES ${IGM_LIBRARY})
-  set(IGM_INCLUDE_DIRS ${IGM_INCLUDE_DIR} )
+  set(IGM_INCLUDE_DIRS ${IGM_INCLUDE_DIR}/IGM/src )
 
 #checks, if OPENMESH was found and sets OPENMESH_FOUND if so
   include(FindPackageHandleStandardArgs)

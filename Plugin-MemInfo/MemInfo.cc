@@ -91,9 +91,9 @@ void MemInfoPlugin::pluginsInitialized() {
   }
 
   // Main Memory information
-  #ifdef ARCH_DARWIN //Apple
+//  #ifdef ARCH_DARWIN //Apple
 
-  #else // Linux and Windows
+//  #else // Linux and Windows
 
  //   emit log(LOGINFO,"Main Memory monitoring supported, installing main memory monitor into status bar");
 
@@ -109,7 +109,7 @@ void MemInfoPlugin::pluginsInitialized() {
 
     cpuMemoryInfoUpdate();
 
-  #endif
+  //#endif
 
 }
 

@@ -46,6 +46,10 @@
 #ifdef WIN32
 #include <Windows.h>
 #elif defined ARCH_DARWIN
+#include <mach/mach_host.h>
+#include <mach/vm_statistics.h>
+#include <sys/sysctl.h>
+#include <sys/types.h>
 #endif
 // private struct to get ram information
 namespace{
@@ -110,12 +114,38 @@ namespace Utils
       _outMemoryVacancy.freeRamMB = ms.ullAvailPhys / 1024 / 1024;
 
     #elif defined ARCH_DARWIN // Apple (sadly cant query free memory)
+      mach_msg_type_number_t count = HOST_VM_INFO_COUNT;
+      vm_statistics_data_t vmstat;
+      if(KERN_SUCCESS != host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&vmstat, &count))
+      {  // An error occurred
+      }
+      else
+      {
+          //retrieve real physical memory
+          int mib[2];
+          uint64_t physical_memory;
+          size_t length;
+          mib[0] = CTL_HW;
+          mib[1] = HW_MEMSIZE;
+          length = sizeof(uint64_t);
+          if( sysctl(mib, 2, &physical_memory, &length, NULL, 0) == -1 )
+          {
+              physical_memory = 0;
+          }
+          // retrieve free memory
+          double total = vmstat.wire_count + vmstat.active_count + vmstat.inactive_count + vmstat.free_count;
+          double free = vmstat.free_count / total;
+          _outMemoryVacancy.totalRamMB = physical_memory / 1024 / 1024;
+          _outMemoryVacancy.freeRamMB = (long)(free + vmstat.inactive_count) * PAGE_SIZE / 1024/1024;
+          _outMemoryVacancy.bufferRamMB =0;
+      }
+
     #else // Linux
 
       int total, free, buffer;
       parseMeminfo(total, free, buffer);
 
-      // Unit in bytes ; /1024 -> MB
+      // Unit in kbytes ; /1024 -> MB
       _outMemoryVacancy.totalRamMB = (long)total / 1024;
       _outMemoryVacancy.freeRamMB = (long)free / 1024;
       _outMemoryVacancy.bufferRamMB = (long)buffer / 1024; // Buffers get freed, if we don't have enough free ram

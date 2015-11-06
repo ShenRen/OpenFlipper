@@ -31,10 +31,16 @@ IF (QEX_INCLUDE_DIRS)
   SET(QEX_FIND_QUIETLY TRUE)
 ENDIF (QEX_INCLUDE_DIRS)
 
+file (
+  GLOB _libdirs
+           "${CMAKE_SOURCE_DIR}/libs/QEx/interfaces/c"
+           "${CMAKE_SOURCE_DIR}/Package-*/libs/QEx/interfaces/c"
+)
+
 FIND_PATH(QEX_INCLUDE_DIR qex.h
 	  PATHS /usr/local/include/QEx
                 /usr/include/QEx
-                "${CMAKE_SOURCE_DIR}/libs/QEx/interfaces/c"
+                "${_libdirs}"
 	        )
 SET(QEX_LIBRARY_DIR NOTFOUND CACHE PATH "The directory where the QEx libraries can be found.")
 SET(SEARCH_PATHS

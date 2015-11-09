@@ -91,9 +91,9 @@ void MemInfoPlugin::pluginsInitialized() {
   }
 
   // Main Memory information
-  #ifdef ARCH_DARWIN //Apple
+//  #ifdef ARCH_DARWIN //Apple
 
-  #else // Linux and Windows
+//  #else // Linux and Windows
 
  //   emit log(LOGINFO,"Main Memory monitoring supported, installing main memory monitor into status bar");
 
@@ -109,7 +109,7 @@ void MemInfoPlugin::pluginsInitialized() {
 
     cpuMemoryInfoUpdate();
 
-  #endif
+  //#endif
 
 }
 
@@ -147,10 +147,9 @@ void MemInfoPlugin::cpuMemoryInfoUpdate() {
   if (mainMemBar_) {
     unsigned long totalRamMB = Utils::Memory::queryTotalRAM();
     unsigned long freeRamMB = Utils::Memory::queryFreeRAM();
-    unsigned long bufferRamMB = Utils::Memory::queryBufferedRAM();
 
     mainMemBar_->setRange(  0 , totalRamMB  );
-    mainMemBar_->setValue( totalRamMB-freeRamMB-bufferRamMB);
+    mainMemBar_->setValue( totalRamMB - freeRamMB );
     setProgressBarStyleSheet(mainMemBar_);
   }
 }

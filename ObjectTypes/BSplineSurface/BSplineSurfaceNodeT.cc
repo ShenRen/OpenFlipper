@@ -140,6 +140,9 @@ getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMod
     ro.setupShaderGenFromDrawmode(props);
     ro.depthTest = true;
 
+    // generated texcoords for environment mapping should be computed in fragment shader,
+    // because normals aren't available in the vertex shader 
+    ro.shaderDesc.texGenPerFragment = true;
 
     if (props->primitive() == DrawModes::PRIMITIVE_POLYGON || props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)
     {
@@ -408,7 +411,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
   }
 
 
-  if ( (_drawMode & DrawModes::SOLID_TEXTURED )  ) {
+  if ((_drawMode & DrawModes::SOLID_TEXTURED) || (_drawMode & DrawModes::SOLID_ENV_MAPPED)) {
     ACG::GLState::enable(GL_AUTO_NORMAL);
     ACG::GLState::enable(GL_NORMALIZE);
     ACG::GLState::enable (GL_BLEND); 

@@ -68,6 +68,10 @@
     #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif /* ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT */
 
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
+#endif
+
 
 /**
  * @brief Returns the PropertyModel
@@ -154,6 +158,13 @@ PropertyModel* __PropertyModelFactory::getModel(int objectID)
         propertyModel = new OVMPropertyModel<HexahedralMesh>(mesh, objectID);
     }
 #endif /* ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT */
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    else if ( object->dataType(DATA_TETRAHEDRAL_MESH) )
+    {
+        TetrahedralMesh* mesh = PluginFunctions::tetrahedralMesh(object);
+        propertyModel = new OVMPropertyModel<TetrahedralMesh>(mesh, objectID);
+    }
+#endif
     else
     {
         return 0;

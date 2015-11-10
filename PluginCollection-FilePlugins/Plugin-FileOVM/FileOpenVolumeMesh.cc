@@ -95,6 +95,9 @@ void FileOpenVolumeMeshPlugin::initializePlugin() {
     typeCheck_->addItem("Autodetect");
     typeCheck_->addItem("Polyhedral Mesh");
     typeCheck_->addItem("Hexahedral Mesh");
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    typeCheck_->addItem("Tetrahedral Mesh");
+#endif
     typeCheck_->setCurrentIndex(0);
     loadCompMode_ = new QCheckBox("Load PolyVolMesh format");
     loadTopCheck_ = new QCheckBox("Perform topology checks");
@@ -137,6 +140,9 @@ QString FileOpenVolumeMeshPlugin::getSaveFilters() {
 DataType FileOpenVolumeMeshPlugin::supportedType() {
 
     DataType type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    type |= DATA_TETRAHEDRAL_MESH;
+#endif
     return type;
 }
 
@@ -157,12 +163,21 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
 
     int id = -1;
     bool hexMesh = false;
+    bool tetMesh = false;
 
     if(!OpenFlipper::Options::nogui() && typeCheck_->currentIndex() == 0) {
         hexMesh = fileManager_.isHexahedralMesh(_filename.toStdString());
     } else if (!OpenFlipper::Options::nogui() && typeCheck_->currentIndex() == 2) {
         hexMesh = true;
     }
+
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    if(!OpenFlipper::Options::nogui() && typeCheck_->currentIndex() == 0) {
+        tetMesh = fileManager_.isTetrahedralMesh(_filename.toStdString());
+    } else if (!OpenFlipper::Options::nogui() && typeCheck_->currentIndex() == 3) {
+        tetMesh = true;
+    }
+#endif // ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
 
     BaseObjectData* baseObj = 0;
 
@@ -186,12 +201,41 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
                 }
             }
 
+            // Scale hexahedra a bit
+            obj->meshNode()->set_scaling(0.8);
+
         }
 
-        // Scale polyhedra a bit
-        obj->meshNode()->set_scaling(0.8);
+    }
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    else if(tetMesh) {
 
-    } else {
+        emit addEmptyObject(DATA_TETRAHEDRAL_MESH, id);
+        TetrahedralMeshObject* obj(0);
+
+        if (PluginFunctions::getObject(id, obj)) {
+            baseObj = obj;
+
+            if(compatibility_mode) {
+
+                loadMesh((const char*) _filename.toLatin1(), *(obj->mesh()), compatibility_mode,
+                         topology_checks);
+
+            } else {
+                if(!fileManager_.readFile(_filename.toStdString(), *(obj->mesh()),
+                                          topology_checks,true)) {
+                    emit log(LOGERR, QString("Could not open file %1!").arg(_filename));
+                }
+            }
+
+            // Scale tetrahedra a bit
+            obj->meshNode()->set_scaling(0.8);
+        }
+
+
+    }
+#endif // ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    else {
 
         emit addEmptyObject(DATA_POLYHEDRAL_MESH, id);
         PolyhedralMeshObject* obj(0);
@@ -211,10 +255,10 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
                 }
             }
 
-        }
+            // Scale polyhedra a bit
+            obj->meshNode()->set_scaling(0.8);
 
-        // Scale polyhedra a bit
-        obj->meshNode()->set_scaling(0.8);
+        }
     }
 
     if (baseObj)
@@ -244,6 +288,9 @@ bool FileOpenVolumeMeshPlugin::saveObject(int _id, QString _filename) {
 
         PolyhedralMeshObject* mesh_obj = PluginFunctions::polyhedralMeshObject(obj);
         HexahedralMeshObject* hex_mesh_obj = PluginFunctions::hexahedralMeshObject(obj);
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+        TetrahedralMeshObject* tet_mesh_obj = PluginFunctions::tetrahedralMeshObject(obj);
+#endif
         if (mesh_obj) {
 
           obj->setFromFileName(_filename);
@@ -262,6 +309,17 @@ bool FileOpenVolumeMeshPlugin::saveObject(int _id, QString _filename) {
             return false;
           }
         }
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+        else if (tet_mesh_obj) {
+
+          obj->setFromFileName(_filename);
+          obj->setName(obj->filename());
+          if (!fileManager_.writeFile(_filename.toStdString(), *(tet_mesh_obj->mesh()))) {
+            emit log(LOGERR, tr("Unable to save ") + _filename);
+            return false;
+          }
+        }
+#endif // ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
 
         return true;
 

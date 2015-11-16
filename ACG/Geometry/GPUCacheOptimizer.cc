@@ -342,7 +342,6 @@ GPUCacheOptimizerTipsify::GPUCacheOptimizerTipsify(unsigned int CacheSize, unsig
 : GPUCacheOptimizer(NumTris, NumVerts, IndexSize, pIndices)
 {
   // optimization notes:
-  //  - expensive call to RemoveTriFromList(pV->pTris[m]) costs 30-40% of total run-time
   //  - cache unfriendly layout of Opt_Vertex: high read/write access cost to Opt_vertex data
 
 	if (NumVerts < 3 || !NumTris) return;
@@ -445,7 +444,7 @@ GPUCacheOptimizerTipsify::GPUCacheOptimizerTipsify(unsigned int CacheSize, unsig
 
 				  Opt_Vertex* adjV = pVerts + v;
 
-				  adjV->RemoveTriFromList(pV->pTris[m]);
+				  --pV->iNumTrisLeft;
 
 				  if (iTimeStamp - adjV->iCachePos > (int)CacheSize)
 				    adjV->iCachePos = iTimeStamp++;

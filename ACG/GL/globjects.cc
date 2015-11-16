@@ -459,7 +459,6 @@ void Texture2D::buildMipMaps( GLenum _internalfmt,
       // compute number of mipmaps
 
       Vec2i curSize = Vec2i(_width, _height);
-      int curOffset = 0;
 
       std::vector<int> mipMemsize(1, 0);
       std::vector<Vec2i> mipSize(1, curSize);

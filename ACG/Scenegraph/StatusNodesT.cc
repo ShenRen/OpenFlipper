@@ -310,8 +310,9 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
   // using static bitflags for drawmodes is no longer recommended
   //  read from properties instead:
 
-  bool shaded = false,
-    smooth = false,
+  bool shaded = false;
+  bool smooth = false;
+  bool
     wires = ((this->drawMode() == DrawModes::DEFAULT) ||
             this->drawMode().getLayerIndexByPrimitive(DrawModes::PRIMITIVE_WIREFRAME) >= 0 ||
             _drawMode.getLayerIndexByPrimitive(DrawModes::PRIMITIVE_WIREFRAME) >= 0),

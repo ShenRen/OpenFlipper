@@ -128,6 +128,7 @@ PolyLinePlugin::PolyLinePlugin() :
         mergeAction_(0),
         splitAction_(0),
         cutAction_(0),
+        cutMultipleAction_(0),
         cur_insert_id_(-1),
         cur_polyline_obj_(0),
         cur_move_id_(-1),

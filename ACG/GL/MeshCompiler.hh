@@ -235,8 +235,12 @@ protected:
 class ACGDLLEXPORT MeshCompilerVertexCompare
 {
 public:
+  MeshCompilerVertexCompare(double _d_eps = 1e-4, float _f_eps = 1e-4f) : d_eps_(_d_eps), f_eps_(_f_eps) {}
 
   virtual bool equalVertex(const void* v0, const void* v1, const VertexDeclaration* _decl);
+
+  const double d_eps_;
+  const float f_eps_;
 };
 
 class ACGDLLEXPORT MeshCompiler
@@ -544,7 +548,7 @@ public:
 
   /** Get index buffer ready for rendering.
   */
-  int* getIndexBuffer() const {return indices_;}
+  const int* getIndexBuffer() const {return indices_.data();}
 
   /** \brief Get index buffer with adjacency information ready for rendering.
    *
@@ -973,7 +977,7 @@ private:
   int numIsolatedVerts_;
 
   /// index buffer
-  int*  indices_;
+  std::vector<int>  indices_;
 
 private:
 

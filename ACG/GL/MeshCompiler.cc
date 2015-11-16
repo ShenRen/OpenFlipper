@@ -1099,8 +1099,6 @@ MeshCompiler::MeshCompiler(const VertexDeclaration& _decl)
   numFaces_ = 0;
   curFaceInputPos_ = 0;
 
-  indices_ = 0;
-
   numDrawVerts_ = 0;
   numIsolatedVerts_ = 0;
 
@@ -1134,10 +1132,6 @@ MeshCompiler::MeshCompiler(const VertexDeclaration& _decl)
 
 MeshCompiler::~MeshCompiler()
 {
-  if (!triIndexBuffer_.empty() && indices_ != &triIndexBuffer_[0])
-    delete [] indices_;
-
-
   if (deleteFaceInputeData_)
     delete faceInput_;
 
@@ -1629,16 +1623,17 @@ void MeshCompiler::sortFacesByGroup()
 
 void MeshCompiler::optimize()
 {
-  indices_ = new int[numTris_ * 3];
-
+  indices_.resize(numTris_ * 3);
   triOptMap_.resize(numTris_, -1);
 
   for (int i = 0; i < numSubsets_; ++i)
   {
     Subset* pSubset = &subsets_[i];
 
-    GPUCacheOptimizerTipsify copt(24, pSubset->numTris, numDrawVerts_, 4, &triIndexBuffer_[0] + pSubset->startIndex);
-    copt.WriteIndexBuffer(4, indices_ + pSubset->startIndex);
+    const int vcacheSize = 24;
+    GPUCacheOptimizerTipsify copt(vcacheSize, pSubset->numTris, numDrawVerts_, 4, &triIndexBuffer_[0] + pSubset->startIndex);
+    copt.WriteIndexBuffer(4, &indices_[pSubset->startIndex]);
+
 
     // apply changes to trimap
     const unsigned int StartTri = pSubset->startIndex/3;
@@ -1654,7 +1649,7 @@ void MeshCompiler::optimize()
 
   unsigned int* vertexOptMap = new unsigned int[numDrawVerts_];
 
-  GPUCacheOptimizer::OptimizeVertices(numTris_, numDrawVerts_, 4, indices_, vertexOptMap);
+  GPUCacheOptimizer::OptimizeVertices(numTris_, numDrawVerts_, 4, indices_.data(), vertexOptMap);
 
   // apply vertexOptMap to index buffer
 
@@ -1836,10 +1831,7 @@ void MeshCompiler::build(bool _weldVertices, bool _optimizeVCache, bool _needPer
     optimize();
   }
   else if (!triIndexBuffer_.empty())
-  {
-    indices_ = new int[triIndexBuffer_.size()];
-    memcpy(indices_, &triIndexBuffer_[0], triIndexBuffer_.size() * sizeof(int));
-  }
+    triIndexBuffer_.swap(indices_);
 
   if (dbg_MemProfiling)
     std::cout << "creating maps.., memusage = " << (getMemoryUsage() /(1024 * 1024)) << std::endl;
@@ -1870,6 +1862,7 @@ void MeshCompiler::build(bool _weldVertices, bool _optimizeVCache, bool _needPer
 
 
   // debugging
+//   dbgdumpInputObj("../../../dbg_meshcompinput.obj");
 //   dbgdump("../../../dbg_meshcomp.txt");
 //   dbgdumpObj("../../../dbg_meshcomp.obj");
 //   dbgVerify("../../../dbg_maps.txt");
@@ -2080,7 +2073,10 @@ bool MeshCompiler::dbgVerify(const char* _filename) const
         int vertex = mapToDrawVertexID(face, k);
         getVertex(vertex, v1);
 
-        if (!vertexCompare_->equalVertex(v0, v1, &decl_))
+        // allow slightly larger errors
+        MeshCompilerVertexCompare verifyCmp(1e-3, 1e-3f);
+
+        if (!verifyCmp.equalVertex(v0, v1, &decl_))
         {
           std::string vertexData0 = vertexToString(v0);
           std::string vertexData1 = vertexToString(v1);
@@ -2339,7 +2335,8 @@ void MeshCompiler::dbgdump(const char* _filename) const
     for (int i = 0; i < numAttributes_; ++i)
     {
       const VertexElementInput* inp = input_ + i;
-      file << "attribute[" << i << "]: internalbuf " << inp->internalBuf << ", data " << inp->data << ", count " << inp->count << ", stride " << inp->stride << ", attrSize " << inp->attrSize << "\n";
+
+      file << "attribute[" << i << "]: internalbuf " << ((const void*)inp->internalBuf) << ", data " << ((const void*)inp->data) << ", count " << inp->count << ", stride " << inp->stride << ", attrSize " << inp->attrSize << "\n";
     }
 
     file << "\n\n";
@@ -3767,7 +3764,7 @@ size_t MeshCompiler::getMemoryUsage(bool _printConsole) const
   usage += faceToTriMapOffset_.size() * 4;
   usage += triToFaceMap_.size() * 4;
 
-  usage += numTris_ * 3 * 4; // indices_
+  usage += indices_.size() * 4; // indices_
 
 
 
@@ -3831,8 +3828,8 @@ std::string MeshCompiler::checkInputData() const
 
   for (int i = 0; i < faceInput_->getNumFaces(); ++i)
   {
-    if (faceInput_->getFaceSize(i) > 0xff)
-      strm << "Error: face size too big: face " << i << ", size " << faceInput_->getFaceSize(i) << " must not exceed 255\n";
+    if (faceInput_->getFaceSize(i) < 3)
+      strm << "Error: face size too small: face " << i << ", size " << faceInput_->getFaceSize(i) << " must be at least 3\n";
 
     std::map<int, int> facePositions;
 
@@ -4117,7 +4114,7 @@ int MeshCompilerDefaultFaceInput::getSingleFaceAttr( const int _faceID, const in
   assert(_faceCorner < getFaceSize(_faceID));
 
 
-  if (faceData_[_attrID].empty())
+  if (faceData_[_attrID].empty() || pos >= int(faceData_[_attrID].size()))
     return -1;
 
   return faceData_[_attrID][pos];
@@ -4205,9 +4202,6 @@ bool MeshCompilerVertexCompare::equalVertex( const void* v0, const void* v1, con
   assert(v0);
   assert(v1);
 
-  const double d_eps = 1e-4;
-  const float f_eps = 1e-4f;
-
   const int nElements = (int)_decl->getNumElements();
   for (int i = 0; i < nElements; ++i)
   {
@@ -4230,7 +4224,7 @@ bool MeshCompilerVertexCompare::equalVertex( const void* v0, const void* v1, con
         for (int k = 0; k < (int)el->numElements_; ++k)
           diff += fabs(d0[k] - d1[k]);
 
-        if (diff > d_eps)
+        if (diff > d_eps_)
           return false;
 
       } break;
@@ -4253,7 +4247,7 @@ bool MeshCompilerVertexCompare::equalVertex( const void* v0, const void* v1, con
           diff += fabsf(f0[k] - f1[k]);
         }
 
-        if (diff > f_eps)
+        if (diff > f_eps_)
           return false;
       } break;
 

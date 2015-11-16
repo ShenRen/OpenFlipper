@@ -444,7 +444,7 @@ GPUCacheOptimizerTipsify::GPUCacheOptimizerTipsify(unsigned int CacheSize, unsig
 
 				  Opt_Vertex* adjV = pVerts + v;
 
-				  --pV->iNumTrisLeft;
+				  --adjV->iNumTrisLeft;
 
 				  if (iTimeStamp - adjV->iCachePos > (int)CacheSize)
 				    adjV->iCachePos = iTimeStamp++;

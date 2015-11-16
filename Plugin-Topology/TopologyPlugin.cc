@@ -282,7 +282,7 @@ void TopologyPlugin::add_face(QMouseEvent* _event) {
 
             ++fv_it;
             if ( (m.point(*fv_it) - hit_point).sqrnorm() < shortest_distance ) {
-               shortest_distance = (m.point(*fv_it) - hit_point).sqrnorm();
+               //shortest_distance = (m.point(*fv_it) - hit_point).sqrnorm();  Unnecessary. Not used anymore after this point
                closest = *fv_it;
             }
 
@@ -635,7 +635,7 @@ void TopologyPlugin::flip_edge(QMouseEvent* _event) {
 
             dist = ACG::Geometry::distPointLineSquared(hit_point,m.point(m.to_vertex_handle( e3 )),m.point(m.from_vertex_handle( e3 )));
             if ( dist < min_dist) {
-               min_dist = dist;
+               // min_dist = dist; Unnecessary. Not used after this point
                closest_edge = m.edge_handle(e3);
             }
 
@@ -700,7 +700,7 @@ void TopologyPlugin::collapse_edge(QMouseEvent* _event) {
 
             dist = ACG::Geometry::distPointLineSquared(hit_point,m.point(m.to_vertex_handle( e3 )),m.point(m.from_vertex_handle( e3 )));
             if ( dist < min_dist) {
-               min_dist = dist;
+               //min_dist = dist; Unnecessary. Not used after this point
                closest_halfedge = e3;
             }
 
@@ -820,7 +820,7 @@ void TopologyPlugin::split_edge(QMouseEvent* _event) {
                      m.point(m.from_vertex_handle(e3)));
 
             if (dist < min_dist) {
-               min_dist = dist;
+               // min_dist = dist; Unnecessary. Not used after this point
                closest_edge = m.edge_handle(e3);
             }
 

@@ -1649,12 +1649,12 @@ void
 BSplineSurfaceNodeT<BSplineSurfaceType>::
 updateTexBuffers()
 {
-  size_t knotBufSizeU = bsplineSurface_.get_knots_m().size();
-  size_t knotBufSizeV = bsplineSurface_.get_knots_n().size();
+  const size_t knotBufSizeU = bsplineSurface_.get_knots_m().size();
+  const size_t knotBufSizeV = bsplineSurface_.get_knots_n().size();
 
-  size_t numControlPointsU = bsplineSurface_.n_control_points_m();
-  size_t numControlPointsV = bsplineSurface_.n_control_points_n();
-  size_t controlPointBufSize = numControlPointsU * numControlPointsV;
+  const size_t numControlPointsU = bsplineSurface_.n_control_points_m();
+  const size_t numControlPointsV = bsplineSurface_.n_control_points_n();
+
 
   if (knotBufSizeU)
   {
@@ -1678,6 +1678,9 @@ updateTexBuffers()
 
 
 #ifdef GL_VERSION_3_0
+
+  const size_t controlPointBufSize = numControlPointsU * numControlPointsV;
+
   if (controlPointBufSize)
   {
     std::vector<float> controlPointBuf(controlPointBufSize * 3);

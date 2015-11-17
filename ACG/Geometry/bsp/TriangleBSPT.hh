@@ -76,7 +76,7 @@ public:
   typedef BSPImplT< TriangleBSPCoreT<BSPTraits> > Base;
   typedef typename Base::Scalar Scalar;
   TriangleBSPT(const BSPTraits& _traits,
-               const Scalar _infinity = std::numeric_limits<Scalar>::infinity()) : Base(_traits, _infinity) {}
+               const Scalar& _infinity = std::numeric_limits<Scalar>::infinity()) : Base(_traits, _infinity) {}
 };
 
 //== CLASS DEFINITION =========================================================

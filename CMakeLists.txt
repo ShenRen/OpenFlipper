@@ -69,7 +69,7 @@ if (QT4_FOUND)
 	message(STATUS "Using QT4 for OpenFlipper")
 elseif(QT5_FOUND)
 	message(STATUS "Using QT5 for OpenFlipper")
-	set (OF_MAX_QT_VERSION "5.3.2")
+	set (OF_MAX_QT_VERSION "5.5.0")
     if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
       message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n"
         "OpenFlipper has not been tested with this QT Version on Windows.")

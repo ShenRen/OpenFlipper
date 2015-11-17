@@ -104,7 +104,8 @@ public:
     colorMaterialMode(GL_AMBIENT_AND_DIFFUSE),
     textureTypes_(),
     texGenDim(0),
-    texGenMode(GL_EYE_LINEAR)
+    texGenMode(GL_EYE_LINEAR),
+    texGenPerFragment(false)
   {
     for ( unsigned int i = 0 ; i < SG_MAX_SHADER_LIGHTS ; ++i)
       lightTypes[i] = SG_LIGHT_DIRECTIONAL;
@@ -211,6 +212,10 @@ public:
   // texture generation mode: GL_OBJECT_LINEAR, GL_EYE_LINEAR, GL_SPHERE_MAP, GL_NORMAL_MAP, GL_REFLECTION_MAP
   GLenum texGenMode; 
 
+  // generate texture coordinates per vertex or fragment
+  // default: false -> per vertex
+  bool texGenPerFragment;
+
   void enableTexGenObjectLinear(int _dim = 2)
   {
     texGenDim = std::max(std::min(_dim, 4), 0);
@@ -292,6 +297,9 @@ public:
     if (texGenDim)
     {
       if (texGenMode != _rhs.texGenMode)
+        return false;
+
+      if (texGenPerFragment != _rhs.texGenPerFragment)
         return false;
     }
 
@@ -1216,6 +1224,10 @@ private:
   /** \brief Calls lighting modifier for each light
    */
   void modifyLightingCode(QStringList* _code, ShaderModifier* _modifier);
+
+  /** \brief Add texture coordinate generation code
+   */
+  void addTexGenCode(QStringList* _code, bool _fragmentShader);
 
   /// returns path to _strFileName without last slash
   static QString getPathName(QString _strFileName);

@@ -235,8 +235,12 @@ protected:
 class ACGDLLEXPORT MeshCompilerVertexCompare
 {
 public:
+  MeshCompilerVertexCompare(double _d_eps = 1e-4, float _f_eps = 1e-4f) : d_eps_(_d_eps), f_eps_(_f_eps) {}
 
   virtual bool equalVertex(const void* v0, const void* v1, const VertexDeclaration* _decl);
+
+  const double d_eps_;
+  const float f_eps_;
 };
 
 class ACGDLLEXPORT MeshCompiler
@@ -544,7 +548,7 @@ public:
 
   /** Get index buffer ready for rendering.
   */
-  int* getIndexBuffer() const {return indices_;}
+  const int* getIndexBuffer() const {return indices_.data();}
 
   /** \brief Get index buffer with adjacency information ready for rendering.
    *
@@ -655,7 +659,7 @@ public:
   */
   int mapToDrawVertexID(const int _faceID, const int _cornerID) const;
 
-  /** Mapping from input Face id -> draw vertex id
+  /** Mapping from input Face id -> draw triangle id
    *
    * @param _faceID Face ID in input data
    * @param _k triangle no. associated to face, offset 0
@@ -805,7 +809,6 @@ private:
   bool deleteFaceInputeData_;       // delete if face input data internally created
 
   std::vector<int>  faceBufSplit_; // mapping from (faceID, cornerID) to interleaved vertex id after splitting
-  std::vector<int>  faceRotCount_; // # ccw rotations per face, handled internally by getInputIndexOffset
   std::vector<int>  faceSortMap_;  // face IDs sorted by group; maps sortFaceID -> FaceID
   int               provokingVertex_; // provoking vertex of each triangle
   bool              provokingVertexSetByUser_; // was the provoking vertex selected by user or set to default?
@@ -974,7 +977,7 @@ private:
   int numIsolatedVerts_;
 
   /// index buffer
-  int*  indices_;
+  std::vector<int>  indices_;
 
 private:
 
@@ -985,7 +988,7 @@ private:
 
   int mapTriToInputFace(const int _tri) const;
 
-  int getInputIndexOffset(const int _face, const int _corner, const bool _rotation = true) const;
+  int getInputIndexOffset(const int _face, const int _corner) const;
 
   inline int getInputFaceOffset(const int _face) const
   {
@@ -1010,6 +1013,9 @@ private:
 
   // convert n-poly -> tris (triangle fans)
   void triangulate();
+
+  // resolve triangulation
+  void resolveTriangulation();
 
   // sort input faces by group ids
   void sortFacesByGroup();

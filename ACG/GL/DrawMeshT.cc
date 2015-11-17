@@ -593,7 +593,7 @@ DrawMeshT<Mesh>::rebuild()
   meshComp_->setVertices(mesh_.n_vertices(), mesh_.points(), 24, false, GL_DOUBLE, 3);
   
   // normals
-  if (mesh_.has_halfedge_normals())
+  if (halfedgeNormalMode_ && mesh_.has_halfedge_normals())
     meshComp_->setNormals(mesh_.n_halfedges(), mesh_.property(mesh_.halfedge_normals_pph()).data(), 24, false, GL_DOUBLE, 3);
   else if (mesh_.has_vertex_normals())
     meshComp_->setNormals(mesh_.n_vertices(), mesh_.vertex_normals(), 24, false, GL_DOUBLE, 3);

@@ -1071,6 +1071,15 @@ public:
   std::string checkInputData() const;
 };
 
+struct RingTriangle
+{
+  RingTriangle() {}
+  RingTriangle(int i, RingTriangle* p, RingTriangle* n) : id(i), prev(p), next(n) {}
+
+  int id; // local index of the triangle within a polygon [0, ... faceSize-3]
+  RingTriangle* prev; // prev triangle in the ring
+  RingTriangle* next; // next triangle in the ring
+};
 
 
 }

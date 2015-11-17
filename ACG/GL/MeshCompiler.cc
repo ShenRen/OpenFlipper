@@ -815,16 +815,6 @@ void MeshCompiler::forceUnsharedFaceVertex()
       // ie. nextTri = remainingTris[currentTri];
       const int faceTris = faceSize - 2;
 
-      struct RingTriangle
-      {
-        RingTriangle() {}
-        RingTriangle(int i, RingTriangle* p, RingTriangle* n) : id(i), prev(p), next(n) {}
-
-        int id; // local index of the triangle within a polygon [0, ... faceSize-3]
-        RingTriangle* prev; // prev triangle in the ring
-        RingTriangle* next; // next triangle in the ring
-      };
-
       std::vector<RingTriangle> remainingTris(faceTris);
       for (int i = 0; i < faceTris; ++i)
         remainingTris[i] = RingTriangle(i, &remainingTris[(i + faceTris - 1) % faceTris], &remainingTris[(i + 1) % faceTris]);

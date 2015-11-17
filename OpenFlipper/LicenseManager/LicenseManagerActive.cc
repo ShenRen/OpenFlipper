@@ -84,6 +84,9 @@ License File format:
 #include <QCryptographicHash>
 #include <QNetworkInterface>
 
+#include <OpenFlipper/BasePlugin/INIInterface.hh>
+#include <limits>
+
 
 /** \brief decode string
  *
@@ -127,6 +130,98 @@ void LicenseManager::blockSignals( bool _state) {
   }
 
 }
+
+
+
+
+bool LicenseManager::timestampOk() {
+
+    QString inifile = OpenFlipper::Options::configDirStr()  + OpenFlipper::Options::dirSeparator() + "OpenFlipper.ini";
+    INIFile ini;
+    if ( !ini.connect( inifile,true) ) {
+      //emit log(LOGERR,tr("Can not create user ini file"));
+      return false;
+    }
+
+    bool notExpired = false;
+
+    quint64 timestamp = QDateTime::currentMSecsSinceEpoch();
+    quint64 lastTimestamp = timestamp;
+
+    quint64 timestampEntry = 0;
+
+    QString lastTimestampEntry;
+    std::vector< QString > lastTimestampEntryVec;
+    quint64 lastTimestampEntryNum = 0;
+    bool gotTimestampEntry = false;
+
+
+    // ===============================================================================================
+    // Read last Timestemp
+    // ===============================================================================================
+
+    if( ini.get_entry(lastTimestampEntryVec, "Timestamp", pluginFileName() ) ){
+        lastTimestampEntry = lastTimestampEntryVec[0];
+        lastTimestampEntryNum = lastTimestampEntry.toULongLong(&gotTimestampEntry,16);
+    }else{
+        notExpired = true;
+    }
+
+
+    // ===============================================================================================
+    // Decrypt last Timestamp
+    // ===============================================================================================
+
+    uint factor = 30000;
+    std::string name = pluginFileName().toStdString();
+    uint moduloFactor = 72; //<100
+    int nameSize = pluginFileName().size();
+    int nameEncr = (name[0]) + (name[nameSize-1]) + (name[(nameSize-1)/2]);
+
+    bool moduloOK = (lastTimestampEntryNum-(100*(lastTimestampEntryNum/100))==(lastTimestampEntryNum/100)%moduloFactor);
+
+    lastTimestampEntryNum = lastTimestampEntryNum / 100;
+    lastTimestampEntryNum = lastTimestampEntryNum - nameEncr;
+    lastTimestampEntryNum = lastTimestampEntryNum * factor;
+
+    lastTimestamp = lastTimestampEntryNum;
+
+    // ===============================================================================================
+    // Check last Timestemp
+    // ===============================================================================================
+
+    if (notExpired||(timestamp>(lastTimestamp-360000)&&moduloOK)) {
+        notExpired = true;
+    } else {
+        timestamp = std::numeric_limits<quint64>::max();
+    }
+
+
+    // ===============================================================================================
+    // Encrypt new Timestamp
+    // ===============================================================================================
+
+    timestampEntry = timestamp;
+
+    timestampEntry = timestampEntry / factor;
+    timestampEntry = timestampEntry + nameEncr;
+    timestampEntry = (timestampEntry * 100) + (timestampEntry % moduloFactor);
+
+
+    // ===============================================================================================
+    // Write new Timestemp
+    // ===============================================================================================
+
+    ini.add_entry("Timestamp",pluginFileName(), QString::number(timestampEntry,16));
+    //ini.add_entry("Timestamp","Read", QString::number(lastTimestamp));
+    //ini.add_entry("Timestamp","Write", QString::number(QDateTime::currentMSecsSinceEpoch()));
+
+    ini.disconnect();
+
+    return notExpired;
+
+}
+
 
 // Plugin authentication function.
 bool LicenseManager::authenticate() {
@@ -422,7 +517,9 @@ bool LicenseManager::authenticate() {
 
   // ===============================================================================================
   // Check License or generate request
-  // =============================================================================================== 
+  // ===============================================================================================
+  bool alreadyExpired = true;
+
   if (!elements.empty()) //valid file was found
   {
     // Check expiry date
@@ -441,10 +538,17 @@ bool LicenseManager::authenticate() {
         macFound = true;
     }
 
+    if (timestampOk()) {
+        alreadyExpired = false;
+    }
+
+
     if ( !signatureOk ) {
       authstring_ += tr("License Error: The license file signature for Plugin \"") + name() + tr("\" is invalid!\n\n");
     } else if ( expired ) {
       authstring_ += tr("License Error: The license for plugin \"") + name() + tr("\" has expired on ") + elements[1] + "!\n\n";       
+    } else if ( alreadyExpired ) {
+      authstring_ += tr("License Error: System time has been reset. The license for plugin \"") + name() + tr("\" has been expired!\n\n");
     } else if ( elements[2] != pluginFileName() ) {
       authstring_ += tr("License Error: The license file contains plugin name\"") + elements[2] + tr("\" but this is plugin \"") + name() + "\"!\n\n";
     } else if ( elements[3] != coreHash ) {

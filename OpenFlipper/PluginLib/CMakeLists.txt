@@ -26,8 +26,17 @@ foreach ( OF_PACKAGE ${OF_PACKAGES})
    list(APPEND PACKAGE_INCLUDES "${CMAKE_SOURCE_DIR}/${OF_PACKAGES}")
 endforeach ()
 
+
+# search all lib directories in packages for OpenFlipper
+file (
+    GLOB PACKAGE_DIRS
+      "${CMAKE_SOURCE_DIR}/Package-*"
+)
+
+
 include_directories (
   ..
+  ${PACKAGE_DIRS}
   ${OPENMESH_INCLUDE_DIRS}
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}

@@ -2122,18 +2122,22 @@ split_into_one_per_component(MeshT &_mesh,
 }
 
 template <class PointT>
-typename PolyLineT<PointT>::CustomPropertyHandle PolyLineT<PointT>::CustomProperty::handle() const {
-  return (CustomPropertyHandle)(this);
+typename PolyLineT<PointT>::CustomPropertyHandle PolyLineT<PointT>::custom_prop_handle(const CustomProperty* _prop) const {
+  size_t n = cprop_enum.size();
+  for (int i = 0; i < n; ++i)
+    if (cprop_enum[i] == _prop)
+      return i;
+  return -1;
 }
 
 template <class PointT>
 typename PolyLineT<PointT>::CustomProperty* PolyLineT<PointT>::custom_prop(CustomPropertyHandle _handle) {
-  return reinterpret_cast<CustomProperty*>(_handle);
+  return (_handle >= 0 ? cprop_enum[_handle] : 0);
 }
 
 template <class PointT>
 const typename PolyLineT<PointT>::CustomProperty* PolyLineT<PointT>::custom_prop(CustomPropertyHandle _handle) const {
-  return reinterpret_cast<const CustomProperty*>(_handle);
+  return (_handle >= 0 ? cprop_enum[_handle] : 0);
 }
 
 template <class PointT>
@@ -2168,20 +2172,17 @@ typename PolyLineT<PointT>::CustomPropertyHandle PolyLineT<PointT>::
       pcontainer->ref_count = 1;
   }
 
-  return pcontainer->handle();
+  return custom_prop_handle(pcontainer);
 }
 
 template <class PointT>
 void PolyLineT<PointT>::
   release_custom_property(CustomPropertyHandle _prop_handle) {
 
-  if (_prop_handle) {
+  CustomProperty* p = custom_prop(_prop_handle);
 
-    CustomProperty* p = custom_prop(_prop_handle);
-
-    if (--p->ref_count <= 0)
-      p->prop_data.clear();
-  } 
+  if (p && --p->ref_count <= 0)
+    p->prop_data.clear();
 }
 
 template <class PointT>
@@ -2194,7 +2195,7 @@ void PolyLineT<PointT>::
 
     CustomProperty* p = entry->second;
 
-    release_custom_property(p->handle());
+    release_custom_property(custom_prop_handle(p));
   } 
 }
 
@@ -2207,7 +2208,7 @@ typename PolyLineT<PointT>::CustomPropertyHandle PolyLineT<PointT>::
   if (it == custom_properties.end())
     return 0;
 
-  return it->second->handle();
+  return custom_prop_handle(it->second);
 }
 
 template <class PointT>
@@ -2236,10 +2237,9 @@ void PolyLineT<PointT>::
     return;
   }
 
-  if (_property_handle) {
+  CustomProperty* p = custom_prop(_property_handle);
 
-    CustomProperty* p = custom_prop(_property_handle);
-
+  if (p) {
     unsigned int offset = p->prop_size * _i;
 
     // check out of range
@@ -2262,13 +2262,8 @@ void PolyLineT<PointT>::
   unsigned int _i,
   const void* _data) {
 
-  typename CustomPropertyMap::iterator entry = custom_properties.find(_name);
-
-  if (entry != custom_properties.end()) {
-
-    CustomProperty* p = entry->second;
-    set_custom_property(p->handle(), _i, _data);
-  } 
+  CustomPropertyHandle h = get_custom_property_handle(_name);
+  set_custom_property(h, _i, _data);
 }
 
 template <class PointT>
@@ -2307,13 +2302,8 @@ void PolyLineT<PointT>::
   unsigned int _i,
   void* _data) const {
 
-  typename CustomPropertyMap::const_iterator entry = custom_properties.find(_name);
-
-  if (entry != custom_properties.end()) {
-
-    const CustomProperty* p = entry->second;
-    get_custom_property(p->handle(), _i, _data);
-  } 
+  CustomPropertyHandle h = get_custom_property_handle(_name);
+  get_custom_property(h, _i, _data);
 }
 
 
@@ -2334,15 +2324,8 @@ template <class PointT>
 bool PolyLineT<PointT>::
   custom_property_available(const std::string& _name) const {
 
-  typename CustomPropertyMap::const_iterator entry = custom_properties.find(_name);
-
-  if (entry != custom_properties.end()) {
-
-    const CustomProperty* p = entry->second;
-    return custom_property_available(p->handle());
-  }
-
-  return false;
+  CustomPropertyHandle h = get_custom_property_handle(_name);
+  return custom_property_available(h);
 }
 
 
@@ -2412,7 +2395,7 @@ typename PolyLineT<PointT>::CustomPropertyHandle PolyLineT<PointT>::
   enumerate_custom_property_handles(unsigned int _i) const {
 
   if (_i < get_num_custom_properties())
-    return cprop_enum[_i]->handle();
+    return CustomPropertyHandle(_i);
   else
     return 0;
 }

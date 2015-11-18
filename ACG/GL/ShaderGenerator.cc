@@ -199,7 +199,7 @@ void ShaderGenerator::initVertexShaderIO(const ShaderGenDesc* _desc, const Defau
     // assume 2d texcoords as default
     int texdim = 2;
 
-    if (_desc->texGenMode && _desc->texGenDim > 0 && _desc->texGenDim <= 4)
+    if (_desc->texGenMode && _desc->texGenDim > 0 && _desc->texGenDim <= 4 && !_desc->texGenPerFragment)
       texdim = _desc->texGenDim;
 
 
@@ -1176,18 +1176,6 @@ void ShaderProgGenerator::addVertexBeginCode(QStringList* _code)
   _code->push_back("vec3 sg_vNormalVS = vec3(0.0, 1.0, 0.0);");
   _code->push_back("vec3 sg_vNormalOS = vec3(0.0, 1.0, 0.0);");
 
-  /// note: multi-texturing is not supported, as this requires custom texture compositing
-  //       this can be done via shader modifiers or templates
-  if (ioDesc_.inputTexCoord_)
-  {
-    if (!desc_.textureTypes().empty() && desc_.textureTypes().begin()->second.type == GL_TEXTURE_3D) {
-      _code->push_back("vec3 sg_vTexCoord = inTexCoord;");
-    } else {
-      _code->push_back("vec2 sg_vTexCoord = inTexCoord;");
-    }
-  }
-
-
   if (desc_.vertexColors && (desc_.colorMaterialMode == GL_AMBIENT || desc_.colorMaterialMode == GL_AMBIENT_AND_DIFFUSE))
     _code->push_back("vec4 sg_cColor = vec4(g_cEmissive + g_cLightModelAmbient * " SG_INPUT_VERTEXCOLOR ".xyz, SG_ALPHA);");
   else
@@ -1202,83 +1190,8 @@ void ShaderProgGenerator::addVertexBeginCode(QStringList* _code)
   if (ioDesc_.inputColor_ && (desc_.shadeMode == SG_SHADE_UNLIT || desc_.colorMaterialMode == GL_EMISSION))
     _code->push_back("sg_cColor = " SG_INPUT_VERTEXCOLOR ";");
 
-
   // texcoord generation
-  if (desc_.texGenDim && desc_.texGenMode)
-  {
-    // https://www.opengl.org/wiki/Mathematics_of_glTexGen
-
-    if (!ioDesc_.inputTexCoord_)
-    {
-      // declare variable if it has not been allocated yet
-      QString texGenString;
-      texGenString.sprintf("vec%i sg_vTexCoord; // glTexGen emulation", desc_.texGenDim);
-      _code->push_back(texGenString);
-    }
-
-    const char* texGenCoordString[] = { "x", "y", "z", "w" };
-
-    switch (desc_.texGenMode)
-    {
-    case GL_OBJECT_LINEAR:
-    {
-      for (int i = 0; i < desc_.texGenDim; ++i)
-      {
-        QString assignmentInstrString;
-        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot(inPosition, g_vTexGenPlane[%i]);", texGenCoordString[i], i);
-        _code->push_back(assignmentInstrString);
-      }
-    } break;
-
-    case GL_EYE_LINEAR:
-    {
-      for (int i = 0; i < desc_.texGenDim; ++i)
-      {
-        QString assignmentInstrString;
-        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot(sg_vPosVS, g_vTexGenPlane[%i]);", texGenCoordString[i], i);
-        _code->push_back(assignmentInstrString);
-      }
-    } break;
-
-    case GL_SPHERE_MAP:
-    {
-      _code->push_back("vec3 sg_vPosVS_unit = normalize(sg_vPosVS.xyz);");
-      _code->push_back("vec3 sg_TexGenRefl = reflect(sg_vPosVS_unit, sg_vNormalVS);");
-      _code->push_back("vec3 sg_TexGenRefl2 = sg_TexGenRefl; sg_TexGenRefl2.z += 1.0;");
-      _code->push_back("float sg_TexGenMRcp = 0.5 * inversesqrt(dot(sg_TexGenRefl2, sg_TexGenRefl2));");
-      for (int i = 0; i < desc_.texGenDim; ++i)
-      {
-        QString assignmentInstrString;
-        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_TexGenRefl.%s * sg_TexGenMRcp + 0.5;", texGenCoordString[i], texGenCoordString[i]);
-        _code->push_back(assignmentInstrString);
-      }
-    } break;
-
-    case GL_NORMAL_MAP:
-    {
-      for (int i = 0; i < desc_.texGenDim; ++i)
-      {
-        QString assignmentInstrString;
-        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_vNormalVS.%s;", texGenCoordString[i], texGenCoordString[i]);
-        _code->push_back(assignmentInstrString);
-      }
-    } break;
-
-    case GL_REFLECTION_MAP:
-    {
-      _code->push_back("vec3 sg_vPosVS_unit = normalize(sg_vPosVS.xyz);");
-      _code->push_back("vec3 sg_TexGenRefl = reflect(sg_vPosVS_unit, sg_vNormalVS);");
-      for (int i = 0; i < desc_.texGenDim; ++i)
-      {
-        QString assignmentInstrString;
-        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_TexGenRefl.%s;", texGenCoordString[i], texGenCoordString[i]);
-        _code->push_back(assignmentInstrString);
-      }
-    } break;
-
-    default: break;
-    }
-  }
+  addTexGenCode(_code, false);
 
 
   // apply modifiers
@@ -1857,14 +1770,6 @@ void ShaderProgGenerator::buildFragmentShader()
 
 void ShaderProgGenerator::addFragmentBeginCode(QStringList* _code)
 {
-
-  QString inputShader = "Vertex";
-
-  if ( tessEval_ )
-    inputShader = "Te";
-  if ( geometry_ )
-    inputShader = "Geometry";
-
   // support for projective texture mapping
   _code->push_back("vec4 sg_vPosCS = " SG_INPUT_POSCS ";");
   _code->push_back("vec2 sg_vScreenPos = sg_vPosCS.xy / sg_vPosCS.w * 0.5 + vec2(0.5, 0.5);");
@@ -1893,13 +1798,16 @@ void ShaderProgGenerator::addFragmentBeginCode(QStringList* _code)
   if (desc_.shadeMode == SG_SHADE_PHONG)
     addLightingCode(_code);
 
+
+  addTexGenCode(_code, true);
+
   if (desc_.textured())
   {
     std::map<size_t,ShaderGenDesc::TextureType>::const_iterator iter = desc_.textureTypes().begin();
-    _code->push_back("vec4 sg_cTex = texture(g_Texture"+QString::number(iter->first)+", out" + inputShader + "TexCoord);");
+    _code->push_back("vec4 sg_cTex = texture(g_Texture"+QString::number(iter->first)+", sg_vTexCoord);");
 
     for (++iter; iter != desc_.textureTypes().end(); ++iter)
-      _code->push_back("sg_cTex += texture(g_Texture"+QString::number(iter->first)+", out" + inputShader + "TexCoord);");
+      _code->push_back("sg_cTex += texture(g_Texture"+QString::number(iter->first)+", sg_vTexCoord);");
 
     if (desc_.textureTypes().size() > 1 && desc_.normalizeTexColors)
       _code->push_back("sg_cTex = sg_cTex * 1.0/" + QString::number(desc_.textureTypes().size()) +".0 ;");
@@ -2016,6 +1924,113 @@ void ShaderProgGenerator::addLightingFunctions(QStringList* _code)
     _code->push_back(it);
 }
 
+
+void ShaderProgGenerator::addTexGenCode( QStringList* _code, bool _fragmentShader )
+{
+  // declare local texcoord variable name as "sg_vTexCoord"
+  int texcoordVarDim = 2;
+  if (ioDesc_.inputTexCoord_ && 
+    !desc_.textureTypes().empty() &&
+    desc_.textureTypes().begin()->second.type == GL_TEXTURE_3D)
+    texcoordVarDim = 3;
+
+  bool generateTexCoord = desc_.texGenDim && desc_.texGenMode && (_fragmentShader == desc_.texGenPerFragment);
+  if (generateTexCoord)
+    texcoordVarDim = desc_.texGenDim;
+
+  QString texcoordVarInit;
+  texcoordVarInit.sprintf("vec%i sg_vTexCoord", texcoordVarDim);
+
+  // init with default value: input or zero
+  if (ioDesc_.inputTexCoord_ && !generateTexCoord)
+    texcoordVarInit += "= "SG_INPUT_TEXCOORD";";
+  else if (0 <= texcoordVarDim && texcoordVarDim <= 4)
+  {
+    QString zeroVecDefs[] = 
+    {
+      ";",
+      "= 0;",
+      "= vec2(0,0);",
+      "= vec3(0,0,0);",
+      "= vec4(0,0,0,0);"
+    };
+    texcoordVarInit += zeroVecDefs[texcoordVarDim];
+  }
+
+  _code->push_back(texcoordVarInit);
+
+
+  // texcoord generation
+  // https://www.opengl.org/wiki/Mathematics_of_glTexGen
+  if (generateTexCoord)
+  {
+
+    const char* texGenCoordString[] = { "x", "y", "z", "w" };
+
+    switch (desc_.texGenMode)
+    {
+    case GL_OBJECT_LINEAR:
+    {
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot("SG_INPUT_POSOS", g_vTexGenPlane[%i]);", texGenCoordString[i], i);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_EYE_LINEAR:
+    {
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot(sg_vPosVS, g_vTexGenPlane[%i]);", texGenCoordString[i], i);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_SPHERE_MAP:
+    {
+      _code->push_back("vec3 sg_vPosVS_unit = normalize(sg_vPosVS.xyz);");
+      _code->push_back("vec3 sg_TexGenRefl = reflect(sg_vPosVS_unit, sg_vNormalVS);");
+      _code->push_back("vec3 sg_TexGenRefl2 = sg_TexGenRefl; sg_TexGenRefl2.z += 1.0;");
+      _code->push_back("float sg_TexGenMRcp = 0.5 * inversesqrt(dot(sg_TexGenRefl2, sg_TexGenRefl2));");
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_TexGenRefl.%s * sg_TexGenMRcp + 0.5;", texGenCoordString[i], texGenCoordString[i]);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_NORMAL_MAP:
+    {
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_vNormalVS.%s;", texGenCoordString[i], texGenCoordString[i]);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    case GL_REFLECTION_MAP:
+    {
+      _code->push_back("vec3 sg_vPosVS_unit = normalize(sg_vPosVS.xyz);");
+      _code->push_back("vec3 sg_TexGenRefl = reflect(sg_vPosVS_unit, sg_vNormalVS);");
+      for (int i = 0; i < desc_.texGenDim; ++i)
+      {
+        QString assignmentInstrString;
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = sg_TexGenRefl.%s;", texGenCoordString[i], texGenCoordString[i]);
+        _code->push_back(assignmentInstrString);
+      }
+    } break;
+
+    default: break;
+    }
+  }
+}
+
+
 void ShaderProgGenerator::generateShaders()
 {
   // import template source from files
@@ -2050,11 +2065,31 @@ void ShaderProgGenerator::generateShaders()
 
   desc_.texGenDim = std::max(std::min(desc_.texGenDim, maxTexGenDim), 0);
 
-  if (desc_.texGenMode == GL_REFLECTION_MAP || desc_.texGenMode == GL_SPHERE_MAP || desc_.texGenMode == GL_NORMAL_MAP)
-    ioDesc_.inputNormal_ = true;
 
   if (desc_.texGenDim && desc_.texGenMode)
-    ioDesc_.passTexCoord_ = true; // no input, but texcoords are generated
+  {
+    // pass generated texcoord from vertex to fragment shader
+    if (!desc_.texGenPerFragment)
+      ioDesc_.passTexCoord_ = true;
+
+    // some modes require normal vectors
+    if (desc_.texGenMode == GL_REFLECTION_MAP || desc_.texGenMode == GL_SPHERE_MAP || desc_.texGenMode == GL_NORMAL_MAP)
+      ioDesc_.inputNormal_ = true;
+
+    // pass data to the fragment shader as required for the generation
+    if (desc_.texGenPerFragment)
+    {
+      switch (desc_.texGenMode)
+      {
+      case GL_OBJECT_LINEAR: ioDesc_.passPosOS_ = true; break;
+      case GL_EYE_LINEAR: ioDesc_.passPosVS_ = true; break;
+      case GL_SPHERE_MAP: ioDesc_.passPosVS_ = ioDesc_.passNormalVS_ = true; break;
+      case GL_NORMAL_MAP: ioDesc_.passNormalVS_ = true; break;
+      case GL_REFLECTION_MAP: ioDesc_.passPosVS_ = ioDesc_.passNormalVS_ = true; break;
+      default: break;
+      }
+    }
+  }
 
 
   if (desc_.vertexColors)
@@ -2700,6 +2735,7 @@ QString ShaderGenDesc::toString() const
   default: resStrm << "\nshaderDesc.texGenMode: unknown"; break;
   }
   
+  resStrm << "\nshaderDesc.texGenPerFragment: " << texGenPerFragment;
 
   if (!vertexTemplateFile.isEmpty())
     resStrm << "\nshaderDesc.vertexTemplateFile: " << vertexTemplateFile;

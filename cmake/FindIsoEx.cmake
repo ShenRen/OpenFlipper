@@ -12,8 +12,18 @@ IF (ISOEX_INCLUDE_DIRS)
   SET(ISOEX_FIND_QUIETLY TRUE)
 ENDIF (ISOEX_INCLUDE_DIRS)
 
+# search all lib directories in packages for OpenFlipper
+file (
+  GLOB _libdirs
+           "${CMAKE_SOURCE_DIR}/libs"
+           "${CMAKE_SOURCE_DIR}/Package-*/libs"
+)
+
+
+
 FIND_PATH( ISOEX_INCLUDE_DIRS IsoEx/Extractors/MarchingCubesT.hh
-           PATHS "${CMAKE_SOURCE_DIR}/libs" )
+           PATHS "${_libdirs}"
+                 "${CMAKE_SOURCE_DIR}/libs" )
 
 add_definitions (-DISOEXDLL -DUSEISOEX )
 

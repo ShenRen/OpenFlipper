@@ -82,10 +82,10 @@ class QuaternionT : public VectorT<Scalar,4>
 {
 public:
 
-#define W Base::values_[0]
-#define X Base::values_[1]
-#define Y Base::values_[2]
-#define Z Base::values_[3]
+#define W Base::data()[0]
+#define X Base::data()[1]
+#define Y Base::data()[2]
+#define Z Base::data()[3]
 
 
   typedef VectorT<Scalar,4>    Base;

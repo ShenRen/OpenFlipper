@@ -310,7 +310,7 @@ public:
   // This Block is used to pull in extended PolyLine features such as integration of
   // a PolyLine into a Mesh. Currently this code is not included in the free version.
   #ifdef EXTENDED_POLY_LINE
-    #include <libs/MeshIntegration/PolyLineIntegrationT.hh>
+    #include <MeshIntegration/PolyLineIntegrationT.hh>
   #endif
 
 
@@ -746,7 +746,7 @@ private:
 #ifdef EXTENDED_POLY_LINE
   #if defined(INCLUDE_TEMPLATES) && !defined(ACG_POLYLINE_INTEGRATIONT_C)
   #define ACG_POLYLINE_INTEGRATIONT_TEMPLATES
-  #include <libs/MeshIntegration/PolyLineIntegrationT.cc>
+  #include <MeshIntegration/PolyLineIntegrationT.cc>
   #endif
 #endif
 

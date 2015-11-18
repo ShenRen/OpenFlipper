@@ -455,8 +455,16 @@ function (_build_openflipper_plugin plugin)
       list(APPEND PACKAGE_INCLUDES "${CMAKE_SOURCE_DIR}/${OF_PACKAGES}")
     endforeach ()
 
+    # search all lib directories in packages for OpenFlipper
+  
+    file (
+        GLOB PACKAGE_DIRS
+          "${CMAKE_SOURCE_DIR}/Package-*"
+    )
+
     include_directories (
       .
+      ${PACKAGE_DIRS}
       ${CMAKE_SOURCE_DIR}
       ${OPENMESH_INCLUDE_DIRS}
       ${CMAKE_CURRENT_SOURCE_DIR}

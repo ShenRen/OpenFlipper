@@ -102,7 +102,7 @@ public:
   PolyLineNodeT(PolyLine& _pl, BaseNode* _parent = 0, std::string _name = "<PolyLineNode>");
 
   /// Destructor
-  ~PolyLineNodeT() {}
+  ~PolyLineNodeT();
 
   PolyLine& polyline() { return polyline_; }
 
@@ -189,8 +189,14 @@ private:
   /// Assignment operator (not used)
   PolyLineNodeT& operator=(const PolyLineNodeT& _rhs);
 
-  /// Buffer organization
+  /// Vertex layout without vertex colors
   ACG::VertexDeclaration vertexDecl_;
+
+  /// Vertex layout with vertex colors
+  ACG::VertexDeclaration vertexDeclVCol_;
+
+  /// Vertex layout with edge colors
+  ACG::VertexDeclaration vertexDeclECol_;
 
   /// Custom vertex data for shader based rendering
   std::vector< std::pair<ACG::VertexElement, const void*> > customBuffers_;
@@ -205,12 +211,30 @@ private:
    */
   void updateVBO();
 
+  /** \brief Create the vertex declaration
+  *
+  * The vertex data in the vbo contains both vertex and edge colors,
+  * so the vertex declaration decides which bytes to use for colored rendering (if any).
+  * @param _dst Vertex declaration to initialize
+  * @param _colorSource 0 - no colors, 1 - vertex colors, 2 - edge colors
+  *
+  */
+  void setupVertexDeclaration(VertexDeclaration* _dst, int _colorSource) const;
+
   /** \brief Write vertex data for rendering to a buffer
    *
    * @param _vertex index of polyline vertex
    * @param _dst address of vertex in buffer
    */
   void writeVertex(unsigned int _vertex, void* _dst);
+
+  /** \brief Write color for rendering to a buffer
+  *
+  * @param _vertex index of polyline vertex
+  * @param _colorSourceVertex vertex or edge color?
+  * @param _dst address of vertex in buffer
+  */
+  void writeVertexColor(unsigned int _vertex, bool _colorSourceVertex, void* _dst) const;
 
 private:
 

@@ -58,6 +58,7 @@
 
 #include <ACG/GL/acg_glew.hh>
 #include "GLState.hh"
+#include <cstring>
 
 
 //== NAMESPACES ===============================================================

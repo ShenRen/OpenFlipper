@@ -6,3 +6,7 @@
 	path = libs_required/OpenVolumeMesh
 	url = https://www.graphics.rwth-aachen.de:9000/OpenVolumeMesh/OpenVolumeMesh.git
 	branch = master
+[submodule "libs/ACGKinect"]
+	path = libs/ACGKinect
+	url = https://www.graphics.rwth-aachen.de:9000/ACGKinect/ACGKinect.git
+	branch = master

@@ -11,9 +11,11 @@
              - fix properties of DrawMode solid faces colored
              - add drawmode face colors + halfedge texcoords + smooth lighting
              - increase max supported face size closes #2522
+             - Improved performance
+             - New polygon-> triangle code
         - Geometry
              - add fast algorithms for bspline basis function to ACG
-             - Added more stable dist_point triangle Algorithm Version
+             - Added more stable dist_point triangle Algorithm Version           
         - GL
              - implicitly bind vbo on upload()
              - fix shaders for resolving multisampled textures
@@ -26,6 +28,8 @@
         - Nodes
              - Fixing rendering behavior of StatusNodes so they can be used in a standalone fashion.
              - Disable use of custom GL blend functions in LineNode.
+        - Shader Generator
+             - Added Texture coordinate generation
      - <b>Core</b>
         - IO
              - Emit warning in save object function, if object can't be retrieved
@@ -62,6 +66,8 @@
         - OpenFlipperThread: Add more information about reimplementing the interface
         - added some datatype docs
         - added examples for gathering object ids via script
+     - <b>ObjectTypes</b>
+        - Added PolyLine colored segment rendering
      - <b>Plugins</b>
          - Backup
              - Added Optionswidget for max backups
@@ -87,6 +93,9 @@
              - Fix target count display on updates. closes #2443
          - IsotropicRemesher
              - nogui / batch mode support (closes #2384)
+         - MemInfo
+             - Fixed wrong visualization on Linux
+             - Added Mac support
          - PrimitiveGenerator
              - add initial backups for each generated primitive (refs #2407)
          - Remesher

@@ -1943,7 +1943,7 @@ void ShaderProgGenerator::addTexGenCode( QStringList* _code, bool _fragmentShade
 
   // init with default value: input or zero
   if (ioDesc_.inputTexCoord_ && !generateTexCoord)
-    texcoordVarInit += "= "SG_INPUT_TEXCOORD";";
+    texcoordVarInit += "= " SG_INPUT_TEXCOORD ";";
   else if (0 <= texcoordVarDim && texcoordVarDim <= 4)
   {
     QString zeroVecDefs[] = 
@@ -1974,7 +1974,7 @@ void ShaderProgGenerator::addTexGenCode( QStringList* _code, bool _fragmentShade
       for (int i = 0; i < desc_.texGenDim; ++i)
       {
         QString assignmentInstrString;
-        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot("SG_INPUT_POSOS", g_vTexGenPlane[%i]);", texGenCoordString[i], i);
+        assignmentInstrString.sprintf("sg_vTexCoord.%s = dot(" SG_INPUT_POSOS ", g_vTexGenPlane[%i]);", texGenCoordString[i], i);
         _code->push_back(assignmentInstrString);
       }
     } break;

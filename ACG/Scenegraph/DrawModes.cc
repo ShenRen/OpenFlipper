@@ -663,7 +663,7 @@ void initializeDefaultDrawModes( void )
     EDGES_COLORED.              setDrawModeProperties(DrawModeProperties(PRIMITIVE_EDGE, LIGHTSTAGE_UNLIT, NORMAL_NONE, COLOR_PER_VERTEX));
 
     WIREFRAME.                  setDrawModeProperties(DrawModeProperties(PRIMITIVE_EDGE));
-    EDGES_COLORED.              setDrawModeProperties(DrawModeProperties(PRIMITIVE_EDGE, LIGHTSTAGE_UNLIT, NORMAL_NONE, COLOR_PER_VERTEX));
+    EDGES_COLORED.              setDrawModeProperties(DrawModeProperties(PRIMITIVE_EDGE, LIGHTSTAGE_UNLIT, NORMAL_NONE, COLOR_PER_EDGE));
 
     WIREFRAME.                  setDrawModeProperties(DrawModeProperties(PRIMITIVE_WIREFRAME));
 

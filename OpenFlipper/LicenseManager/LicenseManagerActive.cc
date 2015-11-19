@@ -84,7 +84,6 @@ License File format:
 #include <QCryptographicHash>
 #include <QNetworkInterface>
 
-#include <OpenFlipper/BasePlugin/INIInterface.hh>
 #include <limits>
 
 
@@ -136,37 +135,29 @@ void LicenseManager::blockSignals( bool _state) {
 
 bool LicenseManager::timestampOk() {
 
-    QString inifile = OpenFlipper::Options::configDirStr()  + OpenFlipper::Options::dirSeparator() + "OpenFlipper.ini";
-    INIFile ini;
-    if ( !ini.connect( inifile,true) ) {
-      //emit log(LOGERR,tr("Can not create user ini file"));
-      return false;
-    }
-
     bool notExpired = false;
+    bool gotTimestampEntry = false;
 
     quint64 timestamp = QDateTime::currentMSecsSinceEpoch();
     quint64 lastTimestamp = timestamp;
-
     quint64 timestampEntry = 0;
-
-    QString lastTimestampEntry;
-    std::vector< QString > lastTimestampEntryVec;
     quint64 lastTimestampEntryNum = 0;
-    bool gotTimestampEntry = false;
+
 
 
     // ===============================================================================================
     // Read last Timestemp
     // ===============================================================================================
 
-    if( ini.get_entry(lastTimestampEntryVec, "Timestamp", pluginFileName() ) ){
-        lastTimestampEntry = lastTimestampEntryVec[0];
-        lastTimestampEntryNum = lastTimestampEntry.toULongLong(&gotTimestampEntry,16);
-    }else{
-        notExpired = true;
-    }
+    QString title = "Timestamp/"+pluginFileName();
 
+    QString lastTimestampEntry = OpenFlipperSettings().value(title,"empty").toString();
+
+    if(lastTimestampEntry==QString("empty")){
+        notExpired = true;
+    }else{
+        lastTimestampEntryNum = lastTimestampEntry.toULongLong(&gotTimestampEntry,16);
+    }
 
     // ===============================================================================================
     // Decrypt last Timestamp
@@ -212,11 +203,7 @@ bool LicenseManager::timestampOk() {
     // Write new Timestemp
     // ===============================================================================================
 
-    ini.add_entry("Timestamp",pluginFileName(), QString::number(timestampEntry,16));
-    //ini.add_entry("Timestamp","Read", QString::number(lastTimestamp));
-    //ini.add_entry("Timestamp","Write", QString::number(QDateTime::currentMSecsSinceEpoch()));
-
-    ini.disconnect();
+    OpenFlipperSettings().setValue ( title, QString::number(timestampEntry,16) );
 
     return notExpired;
 

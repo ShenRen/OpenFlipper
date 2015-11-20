@@ -131,8 +131,6 @@ void LicenseManager::blockSignals( bool _state) {
 }
 
 
-
-
 bool LicenseManager::timestampOk() {
 
     bool notExpired = false;
@@ -144,18 +142,17 @@ bool LicenseManager::timestampOk() {
     quint64 lastTimestampEntryNum = 0;
 
 
-
     // ===============================================================================================
     // Read last Timestemp
     // ===============================================================================================
 
-    QString title = "Timestamp/"+pluginFileName();
+    const QString title = "Timestamp/"+pluginFileName();
 
     QString lastTimestampEntry = OpenFlipperSettings().value(title,"empty").toString();
 
-    if(lastTimestampEntry==QString("empty")){
+    if( lastTimestampEntry==QString("empty") ){
         notExpired = true;
-    }else{
+    } else {
         lastTimestampEntryNum = lastTimestampEntry.toULongLong(&gotTimestampEntry,16);
     }
 
@@ -163,13 +160,13 @@ bool LicenseManager::timestampOk() {
     // Decrypt last Timestamp
     // ===============================================================================================
 
-    uint factor = 30000;
-    std::string name = pluginFileName().toStdString();
-    uint moduloFactor = 72; //<100
-    int nameSize = pluginFileName().size();
-    int nameEncr = (name[0]) + (name[nameSize-1]) + (name[(nameSize-1)/2]);
+    const unsigned int factor = 30000;
+    const std::string name = pluginFileName().toStdString();
+    const unsigned int moduloFactor = 72; //<100
+    const int nameSize = pluginFileName().size();
+    const int nameEncr = ( name[0] ) + ( name[nameSize-1] ) + (name[(nameSize-1) / 2] );
 
-    bool moduloOK = (lastTimestampEntryNum-(100*(lastTimestampEntryNum/100))==(lastTimestampEntryNum/100)%moduloFactor);
+    bool moduloOK = (lastTimestampEntryNum -( 100 * (lastTimestampEntryNum / 100) ) == (lastTimestampEntryNum/100) % moduloFactor );
 
     lastTimestampEntryNum = lastTimestampEntryNum / 100;
     lastTimestampEntryNum = lastTimestampEntryNum - nameEncr;
@@ -181,7 +178,7 @@ bool LicenseManager::timestampOk() {
     // Check last Timestemp
     // ===============================================================================================
 
-    if (notExpired||(timestamp>(lastTimestamp-360000)&&moduloOK)) {
+    if (notExpired||(timestamp>(lastTimestamp-360000) && moduloOK)) {
         notExpired = true;
     } else {
         timestamp = std::numeric_limits<quint64>::max();

@@ -698,13 +698,13 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   // Only load .dll under windows
   if ( OpenFlipper::Options::isWindows() ) {
     QString dllname = _filename;
-    if ( ! dllname.endsWith( QStringLiteral(".dll") ) )
+    if ( ! dllname.endsWith( ".dll" ) )
       return;
   }
   // Only load .so under linux
   if ( OpenFlipper::Options::isLinux() ) {
     QString soname = _filename;
-    if ( ! soname.endsWith( QStringLiteral(".so") ) )
+    if ( ! soname.endsWith( ".so" ) )
       return;
   }
 
@@ -826,7 +826,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     emit log(LOGOUT,tr("Plugin Desciption :\t %1 ").arg( basePlugin->description()) );
 
-    supported = QStringLiteral("BaseInterface ");
+    supported = "BaseInterface ";
 
     info.plugin        = plugin;
     if ( checkSlot(plugin,"version()") )
@@ -971,7 +971,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Logging
   LoggingInterface* logPlugin = qobject_cast< LoggingInterface * >(plugin);
   if ( logPlugin ) {
-    supported = supported + QStringLiteral("Logging ");
+    supported = supported + "Logging ";
 
     // Create intermediate logger class which will mangle the output
     PluginLogger* newlog = new PluginLogger(info.name);
@@ -997,7 +997,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Menubar-Interface
   MenuInterface* menubarPlugin = qobject_cast< MenuInterface * >(plugin);
   if ( menubarPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("Menubar ");
+    supported = supported + "Menubar ";
 
     if ( checkSignal(plugin,"addMenubarAction(QAction*,QString)") )
       connect(plugin      , SIGNAL(addMenubarAction(QAction*,QString)),
@@ -1013,7 +1013,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports ContextMenuInterface
   ContextMenuInterface* contextMenuPlugin = qobject_cast< ContextMenuInterface * >(plugin);
   if ( contextMenuPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("ContextMenu ");
+    supported = supported + "ContextMenu ";
 
     if ( checkSignal(plugin,"addContextMenuItem(QAction*,ContextMenuType)") )
       connect(plugin      , SIGNAL(addContextMenuItem(QAction*,ContextMenuType)),
@@ -1043,7 +1043,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Toolbox-Interface
   ToolboxInterface* toolboxPlugin = qobject_cast< ToolboxInterface * >(plugin);
   if ( toolboxPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("Toolbox ");
+    supported = supported + "Toolbox ";
 
 
     if ( checkSignal(plugin, "addToolbox(QString,QWidget*)"))
@@ -1058,7 +1058,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports ViewMode-Interface
   ViewModeInterface* viewModePlugin = qobject_cast< ViewModeInterface * >(plugin);
   if ( viewModePlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("ViewMode ");
+    supported = supported + "ViewMode ";
     
     if ( checkSignal(plugin, "defineViewModeToolboxes(QString,QStringList)"))
       connect(plugin, SIGNAL( defineViewModeToolboxes(QString, QStringList) ),
@@ -1084,7 +1084,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Options-Interface
   OptionsInterface* optionsPlugin = qobject_cast< OptionsInterface * >(plugin);
   if ( optionsPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("Options ");
+    supported = supported + "Options ";
 
     QWidget* widget = 0;
     if ( optionsPlugin->initializeOptionsWidget( widget ) ) {
@@ -1099,7 +1099,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Toolbar-Interface
   ToolbarInterface* toolbarPlugin = qobject_cast< ToolbarInterface * >(plugin);
   if ( toolbarPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("Toolbars ");
+    supported = supported + "Toolbars ";
 
     if ( checkSignal(plugin,"addToolbar(QToolBar*)") )
       connect(plugin,SIGNAL(addToolbar(QToolBar*)),
@@ -1118,7 +1118,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports StatusBar-Interface
   StatusbarInterface* statusbarPlugin = qobject_cast< StatusbarInterface * >(plugin);
   if ( statusbarPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("StatusBar ");
+    supported = supported + "StatusBar ";
 
     if ( checkSignal(plugin,"showStatusMessage(QString,int)") )
       connect(plugin,SIGNAL(showStatusMessage(QString,int)),
@@ -1140,7 +1140,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Key-Interface
   KeyInterface* keyPlugin = qobject_cast< KeyInterface * >(plugin);
   if ( keyPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("KeyboardEvents ");
+    supported = supported + "KeyboardEvents ";
 
     if ( checkSignal(plugin,"registerKey(int,Qt::KeyboardModifiers,QString,bool)") )
       connect(plugin,SIGNAL( registerKey(int, Qt::KeyboardModifiers, QString, bool) ),
@@ -1150,7 +1150,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Mouse-Interface
   MouseInterface* mousePlugin = qobject_cast< MouseInterface * >(plugin);
   if ( mousePlugin && OpenFlipper::Options::gui()  ) {
-    supported = supported + QStringLiteral("MouseEvents ");
+    supported = supported + "MouseEvents ";
 
     if ( checkSlot( plugin , "slotMouseWheelEvent(QWheelEvent*,const std::string&)" ) )
       connect(this   , SIGNAL(PluginWheelEvent(QWheelEvent * , const std::string & )),
@@ -1169,7 +1169,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports InformationInterface
   InformationInterface* infoPlugin = qobject_cast< InformationInterface * >(plugin);
   if ( infoPlugin && OpenFlipper::Options::gui()  ) {
-    supported = supported + QStringLiteral("TypeInformation ");
+    supported = supported + "TypeInformation ";
 
     DataType dtype = infoPlugin->supportedDataTypes();
     supportedInfoTypes().insert(std::pair<InformationInterface*,DataType>(infoPlugin,dtype));
@@ -1178,7 +1178,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Picking-Interface
   PickingInterface* pickPlugin = qobject_cast< PickingInterface * >(plugin);
   if ( pickPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("Picking ");
+    supported = supported + "Picking ";
 
     if ( checkSlot( plugin , "slotPickModeChanged(const std::string&)" ) )
       connect(coreWidget_,SIGNAL(signalPickModeChanged (const std::string &)),
@@ -1215,7 +1215,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports INI-Interface
   INIInterface* iniPlugin = qobject_cast< INIInterface * >(plugin);
   if ( iniPlugin ) {
-    supported = supported + QStringLiteral("INIFile ");
+    supported = supported + "INIFile ";
 
     if ( checkSlot( plugin , "loadIniFile(INIFile&,int)" ) )
       connect(this    , SIGNAL(iniLoad( INIFile&,int)),
@@ -1245,7 +1245,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Selection-Interface
   SelectionInterface* selectionPlugin = qobject_cast< SelectionInterface * >(plugin);
   if ( selectionPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("SelectionBase ");
+    supported = supported + "SelectionBase ";
     
     if ( checkSignal(plugin,"addSelectionEnvironment(QString,QString,QIcon,QString&)") )
       log(LOGERR,tr("Plugin uses deprecated addSelectionEnvironment(QString,QString,QIcon,QString&) , Replace the qicon by the path to the icon!"));
@@ -1544,7 +1544,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Texture-Interface
   TextureInterface* texturePlugin = qobject_cast< TextureInterface * >(plugin);
   if ( texturePlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("Textures ");
+    supported = supported + "Textures ";
 
     if ( checkSignal(plugin,"addTexture(QString,QString,uint,int)") )
       connect(plugin , SIGNAL(addTexture( QString , QString , uint , int )),
@@ -1712,7 +1712,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Backup-Interface
   BackupInterface* backupPlugin = qobject_cast< BackupInterface * >(plugin);
   if ( backupPlugin ) {
-    supported = supported + QStringLiteral("Backups ");
+    supported = supported + "Backups ";
 
     // Incoming Signal that a backup should be created 
     if ( checkSignal( plugin , "createBackup(int,QString,UpdateType)" ) ) {
@@ -1827,7 +1827,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports LoadSave-Interface
   LoadSaveInterface* LoadSavePlugin = qobject_cast< LoadSaveInterface * >(plugin);
   if ( LoadSavePlugin ) {
-    supported = supported + QStringLiteral("Load/Save ");
+    supported = supported + "Load/Save ";
     if ( checkSignal(plugin,"load( QString,DataType,int& )" ) )
       connect(plugin , SIGNAL(load( QString,DataType,int& )) ,
               this   , SLOT(slotLoad( QString,DataType,int& )),Qt::DirectConnection );
@@ -1878,7 +1878,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports View-Interface
   ViewInterface* viewPlugin = qobject_cast< ViewInterface * >(plugin);
   if ( viewPlugin  && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("View ");
+    supported = supported + "View ";
 
     if ( checkSignal(plugin,"getStackWidget(QString,QWidget*&)" ) )
       connect(plugin      , SIGNAL(getStackWidget( QString , QWidget*&)),
@@ -1894,7 +1894,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports Process-Interface
   ProcessInterface* processPlugin = qobject_cast< ProcessInterface * >(plugin);
   if ( processPlugin ) {
-    supported = supported + QStringLiteral("Process ");
+    supported = supported + "Process ";
 
     if ( checkSignal(plugin,"startJob(QString,QString,int,int,bool)" ) )
       connect(plugin      , SIGNAL(startJob(QString, QString,int,int,bool)),
@@ -1940,7 +1940,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports RPC-Interface
   RPCInterface* rpcPlugin = qobject_cast< RPCInterface * >(plugin);
   if ( rpcPlugin ) {
-    supported = supported + QStringLiteral("RPC ");
+    supported = supported + "RPC ";
 
     if ( checkSignal(plugin,"pluginExists(QString,bool&)" ) )
       connect(plugin  , SIGNAL( pluginExists(QString,bool&) ),
@@ -1962,7 +1962,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports PluginConnectionInterface
   PluginConnectionInterface* interconnectionPlugin = qobject_cast< PluginConnectionInterface * >(plugin);
   if ( interconnectionPlugin ) {
-    supported = supported + QStringLiteral("Plugin Interconnection ");
+    supported = supported + "Plugin Interconnection ";
     
     if ( checkSignal(plugin,"crossPluginConnect(QString,const char*,QString,const char*)" ) ) {
       connect(plugin  , SIGNAL( crossPluginConnect(QString,const char*,QString,const char*) ),
@@ -1973,7 +1973,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports RenderInterface
   RenderInterface* renderPlugin = qobject_cast< RenderInterface * >(plugin);
   if ( renderPlugin ) {
-    supported = supported + QStringLiteral("Rendering ");
+    supported = supported + "Rendering ";
 
     if ( checkSlot( plugin , "rendererName()" ) ) {
       QString rendererNameString = "";
@@ -2031,7 +2031,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports PostProcessorInterface
   PostProcessorInterface* postProcessorPlugin = qobject_cast< PostProcessorInterface * >(plugin);
   if ( postProcessorPlugin ) {
-    supported = supported + QStringLiteral("PostProcessor ");
+    supported = supported + "PostProcessor ";
 
     if ( checkSlot( plugin , "postProcessorName()" ) ) {
       QString postProcessorNameString = "";
@@ -2081,7 +2081,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports AboutInfo-Interface
   AboutInfoInterface* aboutInfoPlugin = qobject_cast< AboutInfoInterface * >(plugin);
   if ( aboutInfoPlugin && OpenFlipper::Options::gui() ) {
-    supported = supported + QStringLiteral("AboutInfo ");
+    supported = supported + "AboutInfo ";
 
     if ( checkSignal(plugin,"addAboutInfo(QString,QString)") )
       connect(plugin      , SIGNAL(addAboutInfo(QString,QString)),
@@ -2120,7 +2120,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if the plugin supports RPC-Interface
   ScriptInterface* scriptPlugin = qobject_cast< ScriptInterface * >(plugin);
   if ( scriptPlugin ) {
-    supported = supported + QStringLiteral("Scripting ");
+    supported = supported + "Scripting ";
 
     // Create intermediate wrapper class which will mangle the call information
     ScriptingWrapper* newScript = new ScriptingWrapper(info.rpcName);
@@ -2205,7 +2205,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if its a filePlugin
   FileInterface* filePlugin = qobject_cast< FileInterface * >(plugin);
   if ( filePlugin ){
-    supported = supported + QStringLiteral("File ");
+    supported = supported + "File ";
 
     QStringList loadFilters = filePlugin->getLoadFilters().split(";;");
     QStringList saveFilters = filePlugin->getSaveFilters().split(";;");
@@ -2245,7 +2245,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
   //Check if it's a typePlugin
   TypeInterface* typePlugin = qobject_cast< TypeInterface * >(plugin);
   if ( typePlugin ){
-    supported = supported + QStringLiteral("Type ");
+    supported = supported + "Type ";
     
     // Call register type
     typePlugin->registerType();

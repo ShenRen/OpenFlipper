@@ -107,6 +107,10 @@ Q_INTERFACES(SecurityInterface)
     QString licenseError();
 
   private:
+
+
+    bool timestampOk();
+
     /** This is used to get the plugins Name from derived classes
         The plugin name is the usual name of the plugin
     */

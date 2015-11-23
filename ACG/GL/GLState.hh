@@ -1160,9 +1160,7 @@ private: //--------------------------------------------------------------------
              modelview_,
              inverse_modelview_,
              window2viewport_,
-             inverse_window2viewport_,
-             forward_projection_,
-             backward_projection_;
+             inverse_window2viewport_;
 
   // viewport
   int left_, bottom_, width_, height_;

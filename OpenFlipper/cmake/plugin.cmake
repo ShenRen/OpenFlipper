@@ -595,10 +595,17 @@ function (_build_openflipper_plugin plugin)
 
 
     add_library (Plugin-${plugin} MODULE ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
-
     # add this plugin to build plugin list for dependency tracking
     acg_set (OPENFLIPPER_PLUGINS "${OPENFLIPPER_PLUGINS};Plugin-${plugin}")
     acg_set (OPENFLIPPER_${_PLUGIN}_BUILD "1")
+
+    if (STATIC_PLUGIN_${_PLUGIN})
+        add_library (Plugin-Static-${plugin} STATIC ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
+        get_target_property(PLUGIN_OUTPUT_FILENAME Plugin-${plugin} LOCATION)
+        get_filename_component(PLUGIN_OUTPUT_FILENAME "${PLUGIN_OUTPUT_FILENAME}" NAME)
+        acg_set (OPENFLIPPER_STATIC_PLUGINS "${OPENFLIPPER_STATIC_PLUGINS};Plugin-Static-${plugin}")
+        acg_set (OPENFLIPPER_STATIC_PLUGIN_FILES "${OPENFLIPPER_STATIC_PLUGIN_FILES};${PLUGIN_OUTPUT_FILENAME}")
+    endif ()
 
     # append compiler and linker flags from plugin dependencies
 
@@ -768,6 +775,12 @@ macro (openflipper_plugin)
   option (
     DISABLE_PLUGIN_${_PLUGIN}
     "Disable building of plugin \"${_plugin}\""
+        OFF
+  )
+
+  option (
+    STATIC_PLUGIN_${_PLUGIN}
+    "Link plugin \"${_plugin}\" statically into the OpenFlipper binary."
         OFF
   )
 

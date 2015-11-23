@@ -122,6 +122,8 @@
  */
 static const int PRELOAD_THREADS_COUNT = (QThread::idealThreadCount() != -1) ? QThread::idealThreadCount() : 8;
 
+namespace cmake { extern const char *static_plugins; };
+
 class PreloadAggregator {
     public:
         PreloadAggregator() : expectedLoaders_(0) {}
@@ -341,6 +343,22 @@ void Core::loadPlugins()
   
   // Prepend the additional Plugins to the plugin list
   pluginlist = additionalPlugins << pluginlist;
+
+  /*
+   * Get list of static plugins.
+   */
+  QSet<QString> staticPlugins = QSet<QString>::fromList(
+      QString::fromUtf8(cmake::static_plugins).split("\n"));
+  for (int i = 0; i < pluginlist.size(); ) {
+      const QString bn = QFileInfo(pluginlist[i]).fileName();
+      if (staticPlugins.contains(bn)) {
+          emit log(LOGOUT, trUtf8("Not loading dynamic %1 as it is statically "
+                  "linked against OpenFlipper.").arg(bn));
+          pluginlist.removeAt(i);
+      } else {
+          ++i;
+      }
+  }
 
   /*
    * Note: This call is not necessary, anymore. Initialization order

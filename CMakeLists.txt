@@ -255,6 +255,8 @@ endif()
 
 # start with an empty plugin list
 acg_set (OPENFLIPPER_PLUGINS "")
+acg_set (OPENFLIPPER_STATIC_PLUGINS "")
+acg_set (OPENFLIPPER_STATIC_PLUGIN_FILES "")
 
 foreach (package ${PREFOUND_PACKAGES})
 find_package(${package})

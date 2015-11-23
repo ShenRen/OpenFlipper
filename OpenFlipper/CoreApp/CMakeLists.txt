@@ -100,6 +100,14 @@ if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/branding.qrc )
         endif()
 endif()
 
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "namespace cmake {\nconst char *static_plugins = \"\"\n")
+foreach (plugin ${OPENFLIPPER_STATIC_PLUGIN_FILES})
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\"${plugin}\\n\"\n")
+endforeach()
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" ";\n} /* namespace cmake */\n")
+
+list(APPEND RC_SRC "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc")
+
 if (WIN32)
   # add app icon rc file to windows build
   acg_add_executable (${OPENFLIPPER_PRODUCT_STRING} WIN32 ${CMAKE_CURRENT_SOURCE_DIR}/CoreApp.rc ${uic_targets} ${sources} ${headers} ${moc_targets} ${RC_SRC})
@@ -206,6 +214,7 @@ target_link_libraries (${OPENFLIPPER_PRODUCT_STRING}
   ${GLEW_LIBRARY}
   ${GLUT_LIBRARIES}
   ${COREAPP_ADDITIONAL_LINK_LIBRARIES}
+  ${OPENFLIPPER_STATIC_PLUGINS}
 )
 
 if (APPLE)

@@ -340,8 +340,6 @@ void GLState::reset_projection()
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
   }
-
-  update_matrices();
 }
 
 
@@ -360,8 +358,6 @@ void GLState::set_projection(const GLMatrixd& _m, const GLMatrixd& _inv_m)
     glLoadMatrixd(projection_.get_raw_data());
     glMatrixMode(GL_MODELVIEW);
   }
-
-  update_matrices();
 }
 
 
@@ -378,8 +374,6 @@ void GLState::reset_modelview()
     makeCurrent();
     glLoadIdentity();
   }
-
-  update_matrices();
 }
 
 
@@ -396,8 +390,6 @@ void GLState::set_modelview(const GLMatrixd& _m, const GLMatrixd& _inv_m)
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
   }
-
-  update_matrices();
 }
 
 
@@ -421,8 +413,6 @@ void GLState::ortho( double _left, double _right,
     glOrtho(_left, _right, _bottom, _top, _n, _f);
     glMatrixMode(GL_MODELVIEW);
   }
-
-  update_matrices();
 }
 
 
@@ -446,8 +436,6 @@ void GLState::frustum( double _left, double _right,
     glFrustum(_left, _right, _bottom, _top, _n, _f);
     glMatrixMode(GL_MODELVIEW);
   }
-
-  update_matrices();
 }
 
 
@@ -470,8 +458,6 @@ void GLState::perspective( double _fovY, double _aspect,
     glLoadMatrixd(projection_.data());
     glMatrixMode(GL_MODELVIEW);
   }
-
-  update_matrices();
 }
 
 
@@ -517,8 +503,6 @@ void GLState::viewport( int _left, int _bottom,
     makeCurrent();
     glViewport(_left, _bottom, _width, _height);
   }
-
-  update_matrices();
 }
 
 
@@ -537,8 +521,6 @@ void GLState::lookAt( const Vec3d& _eye,
     makeCurrent();
     glLoadMatrixd(modelview_.data());
   }
-
-  update_matrices();
 }
 
 
@@ -564,8 +546,6 @@ void GLState::translate( double _x, double _y, double _z,
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
   }
-
-  update_matrices();
 }
 
 //-----------------------------------------------------------------------------
@@ -597,8 +577,6 @@ void GLState::rotate( double _angle, double _x, double _y, double _z,
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
   }
-
-  update_matrices();
 }
 
 
@@ -624,8 +602,6 @@ void GLState::scale( double _sx, double _sy, double _sz,
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
   }
-
-  update_matrices();
 }
 
 
@@ -651,26 +627,8 @@ void GLState::mult_matrix( const GLMatrixd& _m, const GLMatrixd& _inv_m,
     makeCurrent();
     glLoadMatrixd(modelview_.get_raw_data());
   }
-
-  update_matrices();
 }
 
-
-//-----------------------------------------------------------------------------
-
-
-void GLState::update_matrices(bool _changedModelView,
-  bool _changedProjection,
-  bool _changedViewport)
-{
-  forward_projection_   = window2viewport_;
-  forward_projection_  *= projection_;
-  forward_projection_  *= modelview_;
-
-  backward_projection_  = inverse_modelview_;
-  backward_projection_ *= inverse_projection_;
-  backward_projection_ *= inverse_window2viewport_;
-}
 
 
 //-----------------------------------------------------------------------------
@@ -678,7 +636,9 @@ void GLState::update_matrices(bool _changedModelView,
 
 Vec3d GLState::project(const Vec3d& _point) const
 {
-  return forward_projection_.transform_point(_point);
+  Vec3d t = modelview_.transform_point(_point);
+  t = projection_.transform_point(t);
+  return window2viewport_.transform_point(t);
 }
 
 
@@ -687,7 +647,9 @@ Vec3d GLState::project(const Vec3d& _point) const
 
 Vec3d GLState::unproject(const Vec3d& _winPoint) const
 {
-  return backward_projection_.transform_point(_winPoint);
+  Vec3d t = inverse_window2viewport_.transform_point(_winPoint);
+  t = inverse_projection_.transform_point(t);
+  return inverse_modelview_.transform_point(t);
 }
 
 
@@ -1027,8 +989,6 @@ void GLState::pop_projection_matrix()
   stack_projection_.pop();
   stack_inverse_projection_.pop();
 
-  update_matrices();
-
   if (updateGL_ && compatibilityProfile_)
   {
     makeCurrent();
@@ -1046,8 +1006,6 @@ void GLState::push_modelview_matrix()
 {
   stack_modelview_.push(modelview_);
   stack_inverse_modelview_.push(inverse_modelview_);
-
-  update_matrices();
 
   if (updateGL_ && compatibilityProfile_)
   {
@@ -1067,8 +1025,6 @@ void GLState::pop_modelview_matrix()
 
   stack_modelview_.pop();
   stack_inverse_modelview_.pop();
-
-  update_matrices();
 
   if (updateGL_ && compatibilityProfile_)
   {

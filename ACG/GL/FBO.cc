@@ -402,6 +402,46 @@ addStencilBuffer( GLuint _width, GLuint _height )
   unbind();
 }
 
+//-----------------------------------------------------------------------------
+
+void 
+FBO::
+addDepthStencilBuffer( GLuint _width, GLuint _height )
+{
+  if (depthbuffer_)
+    glDeleteRenderbuffersEXT(1, &depthbuffer_);
+
+  if (stencilbuffer_)
+    glDeleteRenderbuffersEXT(1, &stencilbuffer_);
+
+  depthbuffer_ = stencilbuffer_ = 0;
+
+  // create renderbuffer
+  glGenRenderbuffersEXT(1, &depthbuffer_);
+
+  // bind renderbuffer
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthbuffer_);
+
+  // malloc
+#ifdef GL_ARB_texture_multisample
+  glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, samples_, GL_DEPTH_STENCIL, _width, _height);
+#else
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL, _width, _height);
+#endif
+
+  // attach to framebuffer object
+  if (bind())
+  {
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depthbuffer_);
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depthbuffer_);
+  }
+
+  // check status
+  checkFramebufferStatus();
+
+  // normal render mode
+  unbind();
+}
 
 
 //-----------------------------------------------------------------------------
@@ -602,7 +642,6 @@ GLsizei FBO::setMultisampling( GLsizei _samples, GLboolean _fixedsamplelocations
   
   return samples_;
 }
-
 
 
 //=============================================================================

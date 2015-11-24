@@ -100,10 +100,20 @@ if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/branding.qrc )
         endif()
 endif()
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "namespace cmake {\nconst char *static_plugins = \"\"\n")
-foreach (plugin ${OPENFLIPPER_STATIC_PLUGIN_FILES})
-file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\"${plugin}\\n\"\n")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "#include <QtPlugin>\n\n")
+
+foreach (plugin ${OPENFLIPPER_STATIC_PLUGIN_NAMES})
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "Q_IMPORT_PLUGIN(${plugin});\n")
 endforeach()
+
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\nnamespace cmake {\n")
+
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\nconst char *static_plugins = \"\"\n")
+
+foreach (plugin ${OPENFLIPPER_STATIC_PLUGIN_FILES})
+  file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\"${plugin}\\n\"\n")
+endforeach()
+
 file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" ";\n} /* namespace cmake */\n")
 
 list(APPEND RC_SRC "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc")

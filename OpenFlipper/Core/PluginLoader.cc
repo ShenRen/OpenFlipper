@@ -345,18 +345,20 @@ void Core::loadPlugins()
   pluginlist = additionalPlugins << pluginlist;
 
   /*
-   * Get list of static plugins.
+   * Remove static plugins from dynamically loaded list.
    */
-  QSet<QString> staticPlugins = QSet<QString>::fromList(
-      QString::fromUtf8(cmake::static_plugins).split("\n"));
-  for (int i = 0; i < pluginlist.size(); ) {
-      const QString bn = QFileInfo(pluginlist[i]).fileName();
-      if (staticPlugins.contains(bn)) {
-          emit log(LOGOUT, trUtf8("Not loading dynamic %1 as it is statically "
-                  "linked against OpenFlipper.").arg(bn));
-          pluginlist.removeAt(i);
-      } else {
-          ++i;
+  {
+      QSet<QString> staticPlugins = QSet<QString>::fromList(
+          QString::fromUtf8(cmake::static_plugins).split("\n"));
+      for (int i = 0; i < pluginlist.size(); ) {
+          const QString bn = QFileInfo(pluginlist[i]).fileName();
+          if (staticPlugins.contains(bn)) {
+              emit log(LOGOUT, trUtf8("Not loading dynamic %1 as it is statically "
+                      "linked against OpenFlipper.").arg(bn));
+              pluginlist.removeAt(i);
+          } else {
+              ++i;
+          }
       }
   }
 
@@ -452,6 +454,24 @@ void Core::loadPlugins()
         emit log(LOGOUT,"================================================================================");
       }
       delete *it;
+  }
+
+  /*
+   * Initialize static plugins.
+   */
+  QVector<QStaticPlugin> staticPlugins = QPluginLoader::staticPlugins();
+  for (QVector<QStaticPlugin>::iterator it = staticPlugins.begin();
+          it != staticPlugins.end(); ++it) {
+      QObject *instance = it->instance();
+      BaseInterface* basePlugin = qobject_cast< BaseInterface * >(instance);
+      if (basePlugin) {
+          QString fakeName = QString::fromUtf8("<Statically Linked>::/%1.%2")
+              .arg(basePlugin->name())
+              .arg(OpenFlipper::Options::isWindows() ? "dll" : "so");
+          QString pluginLicenseText  = "";
+          loadPlugin(fakeName, true, pluginLicenseText, instance);
+          licenseTexts += pluginLicenseText;
+      }
   }
 
   emit log(LOGINFO, tr("Total time needed to load plugins was %1 ms.").arg(time.elapsed()));

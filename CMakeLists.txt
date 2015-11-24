@@ -257,6 +257,7 @@ endif()
 acg_set (OPENFLIPPER_PLUGINS "")
 acg_set (OPENFLIPPER_STATIC_PLUGINS "")
 acg_set (OPENFLIPPER_STATIC_PLUGIN_FILES "")
+acg_set (OPENFLIPPER_STATIC_PLUGIN_NAMES "")
 
 foreach (package ${PREFOUND_PACKAGES})
 find_package(${package})

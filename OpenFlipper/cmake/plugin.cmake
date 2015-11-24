@@ -601,9 +601,11 @@ function (_build_openflipper_plugin plugin)
 
     if (STATIC_PLUGIN_${_PLUGIN})
         add_library (Plugin-Static-${plugin} STATIC ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
+        set_target_properties(Plugin-Static-${plugin} PROPERTIES COMPILE_DEFINITIONS "QT_STATICPLUGIN")
         get_target_property(PLUGIN_OUTPUT_FILENAME Plugin-${plugin} LOCATION)
         get_filename_component(PLUGIN_OUTPUT_FILENAME "${PLUGIN_OUTPUT_FILENAME}" NAME)
         acg_set (OPENFLIPPER_STATIC_PLUGINS "${OPENFLIPPER_STATIC_PLUGINS};Plugin-Static-${plugin}")
+        acg_set (OPENFLIPPER_STATIC_PLUGIN_NAMES "${OPENFLIPPER_STATIC_PLUGIN_NAMES};${STATIC_PLUGIN_${_PLUGIN}}")
         acg_set (OPENFLIPPER_STATIC_PLUGIN_FILES "${OPENFLIPPER_STATIC_PLUGIN_FILES};${PLUGIN_OUTPUT_FILENAME}")
     endif ()
 
@@ -778,10 +780,12 @@ macro (openflipper_plugin)
         OFF
   )
 
-  option (
+  set (
     STATIC_PLUGIN_${_PLUGIN}
-    "Link plugin \"${_plugin}\" statically into the OpenFlipper binary."
-        OFF
+    ""
+    CACHE
+    STRING
+    "Set this variable to the name of the plugin class in order to link it statically into the OpenFlipper binary."
   )
 
   if (NOT DISABLE_PLUGIN_${_PLUGIN})

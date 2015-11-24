@@ -71,6 +71,9 @@
 #include <QtScript/QScriptValueIterator>
 #include <QThread>
 #include <QMutexLocker>
+#if QT_VERSION >= 0x050000
+#include <QStaticPlugin>
+#endif
 
 #include <QPluginLoader>
 #include "OpenFlipper/BasePlugin/BaseInterface.hh"
@@ -344,6 +347,7 @@ void Core::loadPlugins()
   // Prepend the additional Plugins to the plugin list
   pluginlist = additionalPlugins << pluginlist;
 
+#if QT_VERSION >= 0x050000
   /*
    * Remove static plugins from dynamically loaded list.
    */
@@ -361,6 +365,7 @@ void Core::loadPlugins()
           }
       }
   }
+#endif
 
   /*
    * Note: This call is not necessary, anymore. Initialization order
@@ -456,6 +461,7 @@ void Core::loadPlugins()
       delete *it;
   }
 
+#if QT_VERSION >= 0x050000
   /*
    * Initialize static plugins.
    */
@@ -473,6 +479,7 @@ void Core::loadPlugins()
           licenseTexts += pluginLicenseText;
       }
   }
+#endif
 
   emit log(LOGINFO, tr("Total time needed to load plugins was %1 ms.").arg(time.elapsed()));
 

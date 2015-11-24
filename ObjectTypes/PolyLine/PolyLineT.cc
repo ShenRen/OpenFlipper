@@ -2275,9 +2275,9 @@ void PolyLineT<PointT>::
     return;
   }
 
-  if (_property_handle) {
+  const CustomProperty* p = custom_prop(_property_handle);
 
-    const CustomProperty* p = custom_prop(_property_handle);
+  if (p) {
 
     unsigned int offset = p->prop_size * _i;
 

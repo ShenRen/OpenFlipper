@@ -142,6 +142,9 @@ public:
   /// function to add a stencil renderbuffer to the fbo
   void addStencilBuffer( GLuint _width, GLuint _height );
 
+  /// add a packed depth24_stencil8 renderbuffer
+  void addDepthStencilBuffer( GLuint _width, GLuint _height );
+
   /// return attached texture id
   GLuint getAttachment( GLenum _attachment );
 

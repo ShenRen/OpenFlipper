@@ -2204,7 +2204,7 @@ typename PolyLineT<PointT>::CustomPropertyHandle PolyLineT<PointT>::
   typename CustomPropertyMap::const_iterator it = custom_properties.find(_name);
 
   if (it == custom_properties.end())
-    return 0;
+    return -1;
 
   return custom_prop_handle(it->second);
 }

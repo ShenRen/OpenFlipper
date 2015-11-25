@@ -40,7 +40,7 @@ elif [ "QTVERSTION" == "QT5" ]; then
   OPTIONS="$OPTIONS -DFORCE_QT4=FALSE -DQWT6_INCLUDE_DIR=~/sw/qwt-6.1/include -DQWT6_LIBRARY_DIR=~/sw/qwt-6.1/lib -DQWT6_LIBRARY=~/sw/qwt-6.1/lib/libqwt.so -DQT5_INSTALL_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt5"
 fi
 
-echo "Building with path: $BUILDPATH"
+echo "Building with path: build-release-$BUILDPATH"
 
 
 ########################################
@@ -63,10 +63,10 @@ git clone git@roosevelt:moebius/OpenFlipper-Test-Data.git TestData
 
 # Make release build folder
 if [ ! -d build-release ]; then
-  mkdir build-release-$PATH
+  mkdir build-release-$BUILDPATH
 fi
 
-cd build-release-$PATH
+cd build-release-$BUILDPATH
 
 cmake -DCMAKE_BUILD_TYPE=Release -DOPENFLIPPER_BUILD_UNIT_TESTS=TRUE -DSTL_VECTOR_CHECKS=ON $OPTIONS ../
 

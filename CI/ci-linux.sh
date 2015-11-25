@@ -62,7 +62,7 @@ git clone git@roosevelt:moebius/OpenFlipper-Test-Data.git TestData
 #########################################
 
 # Make release build folder
-if [ ! -d build-release ]; then
+if [ ! -d build-release-$BUILDPATH ]; then
   mkdir build-release-$BUILDPATH
 fi
 

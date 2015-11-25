@@ -9,36 +9,38 @@ QTVERSION=$3
 
 OPTIONS=""
 
-PATH=""
+BUILDPATH=""
 
 if [ "$COMPILER" == "gcc" ]; then
   echo "Building with GCC";
-  PATH="gcc-"
+  BUILDPATH="gcc-"
 elif [ "$COMPILER" == "clang" ]; then
 
   OPTIONS="$OPTIONS -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DGTEST_PREFIX=~/sw/gtest-1.7.0-clang/ "
-  PATH="clang-"
+  BUILDPATH="clang-"
   echo "Building with CLANG";
 fi  
 
 if [ "$LANGUAGE" == "C++98" ]; then
   echo "Building with C++98";
-  PATH="$PATH-cpp98"
+  BUILDPATH="$BUILDPATH-cpp98"
 elif [ "$LANGUAGE" == "C++11" ]; then
   echo "Building with C++11";
   OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS='-std=c++11' "
-  PATH="$PATH-cpp11"
+  BUILDPATH="$BUILDPATH-cpp11"
 fi  
 
 if [ "QTVERSION" == "QT4" ]; then
   echo "Building with QT4";
   OPTIONS="$OPTIONS -DFORCE_QT4=TRUE "
-  PATH="$PATH-qt4"
+  BUILDPATH="$BUILDPATH-qt4"
 elif [ "QTVERSTION" == "QT5" ]; then
   echo "Building with QT5";
-  PATH="$PATH-qt5"
+  BUILDPATH="$BUILDPATH-qt5"
   OPTIONS="$OPTIONS -DFORCE_QT4=FALSE -DQWT6_INCLUDE_DIR=~/sw/qwt-6.1/include -DQWT6_LIBRARY_DIR=~/sw/qwt-6.1/lib -DQWT6_LIBRARY=~/sw/qwt-6.1/lib/libqwt.so -DQT5_INSTALL_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt5"
 fi
+
+echo "Building with path: $BUILDPATH"
 
 
 ########################################

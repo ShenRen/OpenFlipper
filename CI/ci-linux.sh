@@ -34,7 +34,7 @@ if [ "QTVERSION" == "QT4" ]; then
   echo "Building with QT4";
   OPTIONS="$OPTIONS -DFORCE_QT4=TRUE "
   BUILDPATH="$BUILDPATH-qt4"
-elif [ "QTVERSTION" == "QT5" ]; then
+elif [ "QTVERSION" == "QT5" ]; then
   echo "Building with QT5";
   BUILDPATH="$BUILDPATH-qt5"
   OPTIONS="$OPTIONS -DFORCE_QT4=FALSE -DQWT6_INCLUDE_DIR=~/sw/qwt-6.1/include -DQWT6_LIBRARY_DIR=~/sw/qwt-6.1/lib -DQWT6_LIBRARY=~/sw/qwt-6.1/lib/libqwt.so -DQT5_INSTALL_PATH=/ACG/acgdev/gcc-4.0-x86_64/qt-5.5.0/5.5/gcc_64"

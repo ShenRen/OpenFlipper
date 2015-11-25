@@ -71,6 +71,9 @@
 #include <QtScript/QScriptValueIterator>
 #include <QThread>
 #include <QMutexLocker>
+#if QT_VERSION >= 0x050000
+#include <QStaticPlugin>
+#endif
 
 #include <QPluginLoader>
 #include "OpenFlipper/BasePlugin/BaseInterface.hh"
@@ -121,6 +124,8 @@
 
  */
 static const int PRELOAD_THREADS_COUNT = (QThread::idealThreadCount() != -1) ? QThread::idealThreadCount() : 8;
+
+namespace cmake { extern const char *static_plugins; };
 
 class PreloadAggregator {
     public:
@@ -342,6 +347,26 @@ void Core::loadPlugins()
   // Prepend the additional Plugins to the plugin list
   pluginlist = additionalPlugins << pluginlist;
 
+#if QT_VERSION >= 0x050000
+  /*
+   * Remove static plugins from dynamically loaded list.
+   */
+  {
+      QSet<QString> staticPlugins = QSet<QString>::fromList(
+          QString::fromUtf8(cmake::static_plugins).split("\n"));
+      for (int i = 0; i < pluginlist.size(); ) {
+          const QString bn = QFileInfo(pluginlist[i]).fileName();
+          if (staticPlugins.contains(bn)) {
+              emit log(LOGOUT, trUtf8("Not loading dynamic %1 as it is statically "
+                      "linked against OpenFlipper.").arg(bn));
+              pluginlist.removeAt(i);
+          } else {
+              ++i;
+          }
+      }
+  }
+#endif
+
   /*
    * Note: This call is not necessary, anymore. Initialization order
    * is determined later.
@@ -435,6 +460,26 @@ void Core::loadPlugins()
       }
       delete *it;
   }
+
+#if QT_VERSION >= 0x050000
+  /*
+   * Initialize static plugins.
+   */
+  QVector<QStaticPlugin> staticPlugins = QPluginLoader::staticPlugins();
+  for (QVector<QStaticPlugin>::iterator it = staticPlugins.begin();
+          it != staticPlugins.end(); ++it) {
+      QObject *instance = it->instance();
+      BaseInterface* basePlugin = qobject_cast< BaseInterface * >(instance);
+      if (basePlugin) {
+          QString fakeName = QString::fromUtf8("<Statically Linked>::/%1.%2")
+              .arg(basePlugin->name())
+              .arg(OpenFlipper::Options::isWindows() ? "dll" : "so");
+          QString pluginLicenseText  = "";
+          loadPlugin(fakeName, true, pluginLicenseText, instance);
+          licenseTexts += pluginLicenseText;
+      }
+  }
+#endif
 
   emit log(LOGINFO, tr("Total time needed to load plugins was %1 ms.").arg(time.elapsed()));
 

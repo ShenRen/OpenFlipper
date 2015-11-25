@@ -595,10 +595,19 @@ function (_build_openflipper_plugin plugin)
 
 
     add_library (Plugin-${plugin} MODULE ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
-
     # add this plugin to build plugin list for dependency tracking
     acg_set (OPENFLIPPER_PLUGINS "${OPENFLIPPER_PLUGINS};Plugin-${plugin}")
     acg_set (OPENFLIPPER_${_PLUGIN}_BUILD "1")
+
+    if (STATIC_PLUGIN_${_PLUGIN})
+        add_library (Plugin-Static-${plugin} STATIC ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
+        set_target_properties(Plugin-Static-${plugin} PROPERTIES COMPILE_DEFINITIONS "QT_STATICPLUGIN")
+        get_target_property(PLUGIN_OUTPUT_FILENAME Plugin-${plugin} LOCATION)
+        get_filename_component(PLUGIN_OUTPUT_FILENAME "${PLUGIN_OUTPUT_FILENAME}" NAME)
+        acg_set (OPENFLIPPER_STATIC_PLUGINS "${OPENFLIPPER_STATIC_PLUGINS};Plugin-Static-${plugin}")
+        acg_set (OPENFLIPPER_STATIC_PLUGIN_NAMES "${OPENFLIPPER_STATIC_PLUGIN_NAMES};${STATIC_PLUGIN_${_PLUGIN}}")
+        acg_set (OPENFLIPPER_STATIC_PLUGIN_FILES "${OPENFLIPPER_STATIC_PLUGIN_FILES};${PLUGIN_OUTPUT_FILENAME}")
+    endif ()
 
     # append compiler and linker flags from plugin dependencies
 
@@ -769,6 +778,14 @@ macro (openflipper_plugin)
     DISABLE_PLUGIN_${_PLUGIN}
     "Disable building of plugin \"${_plugin}\""
         OFF
+  )
+
+  set (
+    STATIC_PLUGIN_${_PLUGIN}
+    ""
+    CACHE
+    STRING
+    "Set this variable to the name of the plugin class in order to link it statically into the OpenFlipper binary."
   )
 
   if (NOT DISABLE_PLUGIN_${_PLUGIN})

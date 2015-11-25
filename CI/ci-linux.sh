@@ -37,7 +37,7 @@ if [ "$QTVERSION" == "QT4" ]; then
 elif [ "$QTVERSION" == "QT5" ]; then
   echo "Building with QT5";
   BUILDPATH="$BUILDPATH-qt5"
-  OPTIONS="$OPTIONS -DFORCE_QT4=FALSE -DQWT6_INCLUDE_DIR=~/sw/qwt-6.1/include -DQWT6_LIBRARY_DIR=~/sw/qwt-6.1/lib -DQWT6_LIBRARY=~/sw/qwt-6.1/lib/libqwt.so -DQT5_INSTALL_PATH=/ACG/acgdev/gcc-4.0-x86_64/qt-5.5.0/5.5/gcc_64"
+  OPTIONS="$OPTIONS -DFORCE_QT4=FALSE -DQWT6_INCLUDE_DIR=~/sw/qwt-6.1.2-qt5/include -DQWT6_LIBRARY_DIR=~/sw/qwt-6.1.2-qt5/lib -DQWT6_LIBRARY=~/sw/qwt-6.1.2-qt5/lib/libqwt-qt5.so -DQT5_INSTALL_PATH=/ACG/acgdev/gcc-4.0-x86_64/qt-5.5.0/5.5/gcc_64"
 fi
 
 echo "Building with path: build-release-$BUILDPATH"

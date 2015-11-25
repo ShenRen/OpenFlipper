@@ -31,6 +31,13 @@ fi
 
 
 ########################################
+# Fetch submodules
+########################################
+git submodule init
+git submodule update --remote
+
+
+########################################
 # Fetch test data
 ########################################
 rm -rf TestData

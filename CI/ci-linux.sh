@@ -13,11 +13,11 @@ BUILDPATH=""
 
 if [ "$COMPILER" == "gcc" ]; then
   echo "Building with GCC";
-  BUILDPATH="gcc-"
+  BUILDPATH="gcc"
 elif [ "$COMPILER" == "clang" ]; then
 
   OPTIONS="$OPTIONS -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DGTEST_PREFIX=~/sw/gtest-1.7.0-clang/ "
-  BUILDPATH="clang-"
+  BUILDPATH="clang"
   echo "Building with CLANG";
 fi  
 

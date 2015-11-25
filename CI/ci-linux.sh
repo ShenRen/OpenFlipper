@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Script abort on error
+set -e
+
 COMPILER=$1
 LANGUAGE=$2
 QTVERSION=$3

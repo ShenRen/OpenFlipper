@@ -6,3 +6,6 @@
 *.dll
 *.lib
 *.swp
+
+/build_dbg
+/build_rel

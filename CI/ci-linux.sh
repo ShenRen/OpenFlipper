@@ -41,6 +41,7 @@ elif [ "$QTVERSION" == "QT5" ]; then
 fi
 
 echo "Building with path: build-release-$BUILDPATH"
+echo "Full cmake options: $OPTIONS  "
 
 
 ########################################

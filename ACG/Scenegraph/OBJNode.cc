@@ -60,7 +60,6 @@
 
 
 #include "OBJNode.hh"
-#include "../GL/gl.hh"
 
 #include <cstdio>
 

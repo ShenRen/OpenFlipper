@@ -62,7 +62,6 @@
 #include "CoreWidget.hh"
 
 // -------------------- ACG
-#include "OpenFlipper/common/GlobalOptions.hh"
 
 //== IMPLEMENTATION ==========================================================
 

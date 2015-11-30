@@ -49,9 +49,6 @@
 
 #include "PostProcessorAnaglyphPlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <ACG/GL/gl.hh>
 #include <ACG/GL/ScreenQuad.hh>
 #include <ACG/GL/ShaderCache.hh>
 

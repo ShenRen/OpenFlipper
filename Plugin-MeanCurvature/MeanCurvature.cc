@@ -50,9 +50,6 @@
 
 #include "MeanCurvature.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
@@ -60,11 +57,9 @@
 #include <MeshTools/Curvature.hh>
 
 #ifdef USE_OPENMP
-#include <omp.h>
 #endif
 
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

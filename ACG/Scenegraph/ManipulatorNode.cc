@@ -61,12 +61,6 @@
 
 
 #include "ManipulatorNode.hh"
-#include "../Math/GLMatrixT.hh"
-#include "../GL/gl.hh"
-
-#include <QMouseEvent>
-#include <QEvent>
-#include <cfloat>
 
 
 //== NAMESPACES ===============================================================

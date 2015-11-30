@@ -51,14 +51,9 @@
 
 #include <QApplication>
 #include <QDir>
-#include <QString>
-#include <QFileInfo>
 
 #include <iostream>
-#include <cassert>
-#include <sstream>
 #include <fstream>
-#include <string>
 
 #include <ACG/GL/gl.hh>
 #include <ACG/GL/GLState.hh>

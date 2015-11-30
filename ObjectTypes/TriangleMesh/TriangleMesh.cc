@@ -59,8 +59,6 @@
 //== INCLUDES =================================================================
 
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
-#include <ACG/Geometry/Algorithms.hh>
-
 
 
 TriMeshObject::TriMeshObject(const TriMeshObject& _object) : MeshObject< TriMesh >(_object) {

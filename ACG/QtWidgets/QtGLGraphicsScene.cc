@@ -58,10 +58,7 @@
 //== INCLUDES =================================================================
 
 #include "QtGLGraphicsScene.hh"
-#include <QPainter>
-#include <QPaintEngine>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneDragDropEvent>
 #include <QApplication>
 
 //== NAMESPACES ===============================================================

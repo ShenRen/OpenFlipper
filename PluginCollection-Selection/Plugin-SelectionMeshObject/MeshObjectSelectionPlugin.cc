@@ -49,13 +49,6 @@
 
 #include "MeshObjectSelectionPlugin.hh"
 
-#include <set>
-#include <sstream>
-
-#include <QColorDialog>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include <MeshTools/MeshSelectionT.hh>
 
 // Primitive type icons

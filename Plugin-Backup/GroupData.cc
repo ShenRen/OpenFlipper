@@ -52,8 +52,6 @@
 #include "GroupBackup.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#include <algorithm>
-
 //-----------------------------------------------------------------------------
 
 GroupData::GroupData() : BackupData(0)

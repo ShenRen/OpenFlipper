@@ -50,8 +50,6 @@
 //== INCLUDES =================================================================
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
 #include <QScrollArea>
 
 

@@ -48,7 +48,6 @@
 \*===========================================================================*/
 
 #include <cstdio>
-#include <cstring>
 #include <iostream>
 #include <cstdlib>
 #include <QFile>
@@ -59,11 +58,7 @@
 #include <ACG/GL/IRenderer.hh>
 
 #include <ACG/GL/VertexDeclaration.hh>
-#include <ACG/GL/GLState.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
-#include <ACG/Scenegraph/MaterialNode.hh>
 
-#include <ACG/ShaderUtils/GLSLShader.hh>
 #include <ACG/GL/ShaderCache.hh>
 
 

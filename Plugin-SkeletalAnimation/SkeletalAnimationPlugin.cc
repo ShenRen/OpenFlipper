@@ -51,8 +51,6 @@
 #include <QMessageBox>
 
 #include "SkeletalAnimationPlugin.hh"
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
-#include "OpenFlipper/common/GlobalOptions.hh"
 #include <ObjectTypes/Skeleton/SkeletonObjectData.hh>
 #include <ObjectTypes/Skeleton/SkinT.hh>
 

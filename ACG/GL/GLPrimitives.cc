@@ -48,8 +48,6 @@
  \*===========================================================================*/
 
 #include <ACG/GL/acg_glew.hh>
-#include <iostream>
-#include <cstdio>
 
 #include "GLPrimitives.hh"
 #include <ACG/GL/IRenderer.hh>

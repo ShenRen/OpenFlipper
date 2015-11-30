@@ -61,7 +61,6 @@
 
 #include "CoordFrameNode.hh"
 #include "SceneGraph.hh"
-#include "../GL/gl.hh"
 #include "../GL/gltext.hh"
 #include "../GL/stipple_alpha.hh"
 

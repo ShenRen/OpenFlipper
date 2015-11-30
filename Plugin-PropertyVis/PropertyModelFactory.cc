@@ -49,23 +49,17 @@
 
 #include "PropertyModelFactory.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 #include "MultiObjectPropertyModel.hh"
 #include "OpenMesh/OMPropertyModel.hh"
-#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
-#include <ObjectTypes/PolyMesh/PolyMesh.hh>
 
 #ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
     #include "OpenVolumeMesh/OVMPropertyModel.hh"
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */
 
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
-    #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif /* ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT */
 
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
-    #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif /* ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT */
 
 

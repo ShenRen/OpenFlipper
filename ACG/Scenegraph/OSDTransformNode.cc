@@ -60,7 +60,6 @@
 
 #include "OSDTransformNode.hh"
 
-#include <ACG/GL/gl.hh>
 #include <ACG/Scenegraph/SceneGraph.hh>
 
 

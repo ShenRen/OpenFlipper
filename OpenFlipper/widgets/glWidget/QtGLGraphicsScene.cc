@@ -62,12 +62,10 @@
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include "QtGLGraphicsScene.hh"
 #include "QtMultiViewLayout.hh"
-#include <OpenFlipper/widgets/glWidget/QtBaseViewer.hh>
 #include <QApplication>
 #include <QPainter>
 #include <QPaintEngine>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneDragDropEvent>
 
 //== NAMESPACES ===============================================================
 

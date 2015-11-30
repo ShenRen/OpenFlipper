@@ -65,7 +65,6 @@
 #include <OpenFlipper/common/Types.hh>
 #include "BSplineSurface.hh"
 
-#include "PluginFunctionsBSplineSurface.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 

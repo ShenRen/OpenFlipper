@@ -61,11 +61,8 @@
 // -------------------- mview
 #include "Core.hh"
 // -------------------- ACG
-#include "OpenFlipper/common/GlobalOptions.hh"
 
 // -------------------- Qt
-#include <QScrollBar>
-#include <QApplication>
 
 //== IMPLEMENTATION ========================================================== 
 

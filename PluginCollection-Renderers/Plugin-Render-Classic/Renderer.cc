@@ -48,7 +48,6 @@
 \*===========================================================================*/
 
 #include <cstdio>
-#include <cstring>
 #include <iostream>
 #include <cstdlib>
 

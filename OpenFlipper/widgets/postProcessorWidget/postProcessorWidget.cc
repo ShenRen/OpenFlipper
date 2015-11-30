@@ -58,10 +58,6 @@
 #endif
 
 #include "postProcessorWidget.hh"
-#include <functional>
-#include <algorithm>
-
-#include <QMenu>
 
 
 PostProcessorDialog::PostProcessorDialog(QWidget *_parent)

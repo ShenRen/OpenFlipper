@@ -58,8 +58,6 @@
 //== INCLUDES =================================================================
 
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
-#include <ACG/Geometry/Algorithms.hh>
-
 
 
 PolyMeshObject::PolyMeshObject(const PolyMeshObject& _object) : MeshObject< PolyMesh >(_object) {

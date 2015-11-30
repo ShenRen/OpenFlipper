@@ -49,8 +49,6 @@
 
 #include "SingleObjectPropertyModel.hh"
 
-#include <algorithm>
-
 SingleObjectPropertyModel::SingleObjectPropertyModel(QObject *parent)
     : PropertyModel(parent),
       widgets(0),

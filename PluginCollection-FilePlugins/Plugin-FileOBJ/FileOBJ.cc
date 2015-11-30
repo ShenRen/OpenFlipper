@@ -53,8 +53,6 @@
 
 #include <OpenMesh/Core/IO/IOManager.hh>
 
-#include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/Utils/Memory/RAMInfo.hh>
 
 #if QT_VERSION >= 0x050000 
@@ -63,14 +61,8 @@
   #include <QtGui>
 #endif
 
-#include <QFileInfo>
-#include <QSettings>
-#include <QPushButton>
-
 #include "FileOBJ.hh"
 
-#include <iostream>
-#include <algorithm>
 #include <ACG/Utils/SmartPointer.hh>
 #include <OpenFlipper/Utils/FileIO/NumberParsing.hh>
 

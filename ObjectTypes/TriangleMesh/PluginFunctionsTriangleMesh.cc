@@ -59,7 +59,6 @@
 #include <OpenFlipper/common/Types.hh>
 
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {
 

@@ -50,8 +50,6 @@
 
 #include "ShortcutButton.hh"
 
-#include <iostream>
-
 ///Constructor
 ShortcutButton::ShortcutButton(QWidget* _parent) :
 QPushButton(_parent),

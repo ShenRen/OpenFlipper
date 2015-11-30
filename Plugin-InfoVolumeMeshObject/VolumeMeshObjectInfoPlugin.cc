@@ -58,12 +58,6 @@
 
 #include "VolumeMeshObjectInfoPlugin.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/BaseObject.hh>
-
-#include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
-#include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
-
 //== IMPLEMENTATION ==========================================================
 
 

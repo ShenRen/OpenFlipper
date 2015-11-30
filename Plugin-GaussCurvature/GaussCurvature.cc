@@ -49,12 +49,9 @@
 
 #include "GaussCurvature.hh"
 
-#include <ACG/GL/GLState.hh>
-
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#if QT_VERSION >= 0x050000 
-  #include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
   #include <QtGui>
 #endif
@@ -65,7 +62,6 @@
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
 #ifdef USE_OPENMP
-#include <omp.h>
 #endif
 
 

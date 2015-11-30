@@ -49,8 +49,6 @@
 
 #include "PolyLineObjectSerializer.hh"
 
-#include <limits>
-
 #include <ObjectTypes/PolyLine/PolyLineCircleData.hh>
 #include <ObjectTypes/PolyLine/PolyLineBezierSplineData.hh>
 

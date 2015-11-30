@@ -53,14 +53,9 @@
 #include <OpenFlipper/INIFile/INIFile.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
 #include <ACG/GL/ShaderCache.hh>
 
 #include "optionsWidget.hh"
-#include <iostream>
-
-#include <QColorDialog>
-#include <QMessageBox>
 
 OptionsWidget::OptionsWidget(std::vector<PluginInfo>& _plugins, std::vector<KeyBinding>& _core, InverseKeyMap& _invKeys, QWidget *parent)
   : QWidget(parent),

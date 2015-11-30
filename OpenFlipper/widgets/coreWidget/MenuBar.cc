@@ -59,10 +59,6 @@
 //== INCLUDES =================================================================
 
 #include "CoreWidget.hh"
-#include <OpenFlipper/common/GlobalOptions.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/BasePlugin/MenuInterface.hh>
-#include <OpenFlipper/common/RendererInfo.hh>
 
 //== IMPLEMENTATION ==========================================================
 

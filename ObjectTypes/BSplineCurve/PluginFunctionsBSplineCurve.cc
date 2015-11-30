@@ -64,7 +64,6 @@
 #include <OpenFlipper/common/Types.hh>
 #include "BSplineCurve.hh"
 
-#include "PluginFunctionsBSplineCurve.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {

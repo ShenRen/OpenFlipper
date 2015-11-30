@@ -61,17 +61,7 @@
 
 #include "Core.hh"
 
-#include <QToolBox>
-
-#include "OpenFlipper/BasePlugin/BaseInterface.hh"
-#include "OpenFlipper/BasePlugin/ToolboxInterface.hh"
-#include "OpenFlipper/BasePlugin/TextureInterface.hh"
-
 #include "OpenFlipper/BasePlugin/PluginFunctionsCore.hh"
-
-#include <OpenFlipper/common/RendererInfo.hh>
-
-#include <stdexcept>
 
 //== IMPLEMENTATION ==========================================================
 

@@ -61,9 +61,7 @@
 
 #include "Logging.hh"
 
-#include <QStringList>
-
-//== IMPLEMENTATION ========================================================== 
+//== IMPLEMENTATION ==========================================================
 
 /** 
  * @param _pluginName Name of the Plugin which uses this logger (Prepended to all Output)

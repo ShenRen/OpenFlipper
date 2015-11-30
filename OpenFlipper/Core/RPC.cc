@@ -61,7 +61,6 @@
 
 // -------------------- mview
 #include "Core.hh"
-#include <OpenFlipper/common/Types.hh>
 
 //== IMPLEMENTATION ==========================================================
 

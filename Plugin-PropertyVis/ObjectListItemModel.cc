@@ -49,8 +49,6 @@
 
 #include "ObjectListItemModel.hh"
 
-#include <algorithm>
-
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 ObjectListItemModel::ObjectListItemModel() {

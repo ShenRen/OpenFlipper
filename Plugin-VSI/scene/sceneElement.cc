@@ -51,16 +51,13 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QPushButton>
 #include <QMessageBox>
 #include <QPainter>
-#include <QPalette>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsGridLayout>
 #include <QGraphicsView>
-#include <QRegExp>
 
 #include <QDomText>
 #include <QXmlResultItems>
@@ -80,8 +77,6 @@
 #include "config/configDialog.hh"
 
 #include "../parser/element.hh"
-#include "../parser/input.hh"
-#include "../parser/type.hh"
 #include "../parser/context.hh"
 #include "../parser/function.hh"
 

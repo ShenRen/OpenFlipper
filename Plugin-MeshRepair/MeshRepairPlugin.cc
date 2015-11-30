@@ -50,14 +50,7 @@
 
 #include "MeshRepairPlugin.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include "OpenFlipper/INIFile/INIFile.hh"
-
-#include <ACG/Geometry/Algorithms.hh>
-#include <Math_Tools/Math_Tools.hh>
-
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

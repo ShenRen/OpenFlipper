@@ -65,45 +65,20 @@
 #include "QtGLGraphicsView.hh"
 #include "QtSceneGraphWidget.hh"
 #include "QtWheel.hh"
-#include "../Scenegraph/DrawModes.hh"
-#include "../GL/gl.hh"
-
-#include <iostream>
-#include <string>
-#include <cassert>
 
 #include <QMimeData>
 #include <QToolButton>
-#include <QFrame>
 
 #include <QClipboard>
 #include <QApplication>
-#include <QSplitter>
-#include <QLayout>
 #include <QPushButton>
-#include <QLabel>
 #include <QStatusBar>
-#include <QImage>
 #include <QColorDialog>
 #include <QFileDialog>
-#include <QToolTip>
-#include <QTextStream>
-#include <QDateTime>
 #include <QTimer>
 
 #include <QDesktopWidget>
-#include <QMouseEvent>
-#include <QVBoxLayout>
-#include <QKeyEvent>
-#include <QGridLayout>
-#include <QContextMenuEvent>
-#include <QWheelEvent>
-#include <QDropEvent>
-#include <QPixmap>
-#include <QMenu>
-#include <QVariant>
 #include <QButtonGroup>
-#include <QToolBar>
 
 #include <QGraphicsWidget>
 #include <QGraphicsGridLayout>

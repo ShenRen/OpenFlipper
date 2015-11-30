@@ -60,10 +60,8 @@
 
 #include "Types.hh"
 #include <ACG/Scenegraph/SceneGraph.hh>
-#include <OpenFlipper/common/BaseObjectCore.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <QDir>
 
 
 

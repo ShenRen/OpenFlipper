@@ -49,8 +49,6 @@
 
 #include "MeshObjectInfoPlugin.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <ACG/Geometry/Algorithms.hh>
 #include <MeshTools/MeshInfoT.hh>
 
 

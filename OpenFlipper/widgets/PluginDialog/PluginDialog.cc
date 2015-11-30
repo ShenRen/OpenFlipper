@@ -51,8 +51,6 @@
 
 #include "PluginDialog.hh"
 
-#include <QMessageBox>
-
 const QColor PluginDialog::blockColor_  = QColor(228, 155, 18);
 const QColor PluginDialog::unloadColor_ = QColor(172, 172, 172);
 const QColor PluginDialog::loadedBuiltInColor_ = QColor(208, 240, 192);

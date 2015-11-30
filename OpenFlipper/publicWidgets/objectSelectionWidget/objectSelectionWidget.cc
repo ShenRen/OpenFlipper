@@ -56,7 +56,6 @@
 
 #include "objectSelectionWidget.hh"
 #include "objectPickDialog.hh"
-#include "TreeModelObjectSelection.hh"
 
 //== NAMESPACES ===============================================================
 

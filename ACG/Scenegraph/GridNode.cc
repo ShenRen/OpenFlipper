@@ -61,9 +61,7 @@
 
 #include "GridNode.hh"
 #include "SceneGraph.hh"
-#include "../GL/gl.hh"
 #include <cstdio>
-#include <cmath>
 
 //== NAMESPACES ===============================================================
 

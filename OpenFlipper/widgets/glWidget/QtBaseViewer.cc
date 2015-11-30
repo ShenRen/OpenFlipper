@@ -63,81 +63,30 @@
 
 #include "QtBaseViewer.hh"
 #include "QtGLViewerLayout.hh"
-#include "CursorPainter.hh"
 #include "PostProcessing.hh"
 
 #include <ACG/QtWidgets/QtWheel.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
 #include <ACG/Scenegraph/CoordsysNode.hh>
 #include <ACG/Scenegraph/SceneGraphAnalysis.hh>
-#include <ACG/GL/gl.hh>
 #include <ACG/GL/GLError.hh>
-#include <ACG/GL/FBO.hh>
 #include <ACG/GL/IRenderer.hh>
-
-#include <iostream>
-#include <string>
-#include <cassert>
 
 #include <QGLFormat>
 #include <QBoxLayout>
 #include <QtNetwork/QUdpSocket>
-#include <QWheelEvent>
-#include <QDropEvent>
-#include <QContextMenuEvent>
-#include <QDragEnterEvent>
-#include <QMouseEvent>
-#include <QAction>
-#include <QKeyEvent>
-#include <QSize>
-#include <QMap>
-#include <QString>
-#include <QMenu>
 #include <QToolBar>
-#include <QTime>
-#include <QTimer>
-#include <QGraphicsWidget>
 #include <QGraphicsSceneDragDropEvent>
 #include <QPropertyAnimation>
 
 #include <QMimeData>
-#include <QToolButton>
-#include <QFrame>
 
 #include <QClipboard>
 #include <QApplication>
 #include <QSplitter>
-#include <QLayout>
-#include <QPushButton>
-#include <QLabel>
-#include <QImage>
 #include <QColorDialog>
-#include <QToolTip>
-#include <QTextStream>
-#include <QDateTime>
-#include <QTimer>
-
-#include <QDesktopWidget>
-#include <QMouseEvent>
-#include <QVBoxLayout>
-#include <QKeyEvent>
-#include <QGridLayout>
-#include <QContextMenuEvent>
-#include <QWheelEvent>
-#include <QDropEvent>
-#include <QPixmap>
-#include <QMenu>
-#include <QVariant>
-#include <QButtonGroup>
-#include <QToolBar>
 
 #include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGraphicsWidget>
-#include <QGraphicsGridLayout>
 #include <QGraphicsProxyWidget>
-#include <QPainter>
-#include <QPaintEngine>
 
 #include <QImageWriter>
 
@@ -161,7 +110,6 @@
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 #include <OpenFlipper/common/RendererInfo.hh>
-#include <OpenFlipper/BasePlugin/PostProcessorInterface.hh>
 
 //== NAMESPACES ===============================================================
 

@@ -51,7 +51,6 @@
 
 
 #include "DataControlPlugin.hh"
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 void DataControlPlugin::slotContextMenuTarget( ) {
   QVariant contextObject = targetAction_->data();

@@ -62,23 +62,15 @@
 #include "CoreWidget.hh"
 
 // -------------------- OpenFlipper Includes
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/common/RecentFiles.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctionsCore.hh>
-#include <OpenFlipper/BasePlugin/KeyInterface.hh>
-#include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 
 #include <OpenFlipper/widgets/videoCaptureDialog/VideoCaptureDialog.hh>
-
-#include <OpenFlipper/widgets/glWidget/CursorPainter.hh>
 
 #include <ACG/Scenegraph/SceneGraphAnalysis.hh>
 #include <ACG/GL/ShaderCache.hh>
 
 // -------------------- Qt event Includes
-#include <QEvent>
-#include <QWhatsThisClickedEvent>
 #include <QGLFormat>
 
 #define WIDGET_HEIGHT 800

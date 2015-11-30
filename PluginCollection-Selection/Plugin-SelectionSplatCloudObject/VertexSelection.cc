@@ -60,10 +60,6 @@
 #include "SplatCloudObjectSelectionPlugin.hh"
 #include "SplatCloudSelection.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
-#include <iostream>
-
 
 //== IMPLEMENTATION ==============================================
 

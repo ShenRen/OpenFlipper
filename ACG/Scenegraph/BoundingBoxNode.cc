@@ -60,7 +60,6 @@
 
 #include "BoundingBoxNode.hh"
 #include "SceneGraph.hh"
-#include "../GL/gl.hh"
 #include "../GL/GLPrimitives.hh"
 
 

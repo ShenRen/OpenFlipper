@@ -60,11 +60,8 @@
 //== INCLUDES =================================================================
 
 #include "GlutPrimitiveNode.hh"
-#include <ACG/GL/gl.hh>
 
 #include <ACG/GL/IRenderer.hh>
-
-#include <ACG/Scenegraph/MaterialNode.hh>
 
 
 //== NAMESPACES ===============================================================

@@ -56,9 +56,7 @@
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 
-#include <ACG/ShaderUtils/GLSLShader.hh>
 #include <ACG/GL/ShaderCache.hh>
-#include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/GLError.hh>
 #include <ACG/GL/ScreenQuad.hh>
 

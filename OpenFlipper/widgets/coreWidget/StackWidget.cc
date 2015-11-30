@@ -61,9 +61,7 @@
 // -------------------- mview
 #include "CoreWidget.hh"
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-//== IMPLEMENTATION ========================================================== 
+//== IMPLEMENTATION ==========================================================
 
 StackWidgetInfo::StackWidgetInfo(bool _editable,QString _name,QWidget* _widget) :
     editable(_editable),

@@ -49,20 +49,9 @@
 
 #include "HoleFillerPlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <ACG/Scenegraph/BaseNode.hh>
-
-#include <MeshTools/MeshFunctions.hh>
 #include <MeshTools/MeshSelectionT.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#include <map>
-#include <limits>
-#include <algorithm>
-
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

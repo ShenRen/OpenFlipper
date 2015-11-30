@@ -50,14 +50,6 @@
 
 #include "SubdividerPlugin.hh"
 
-#include <iostream>
-#include <algorithm>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-#include <OpenFlipper/INIFile/INIFile.hh>
-#include <ACG/Scenegraph/PointNode.hh>
-
 #include <OpenMesh/Tools/Subdivider/Uniform/LoopT.hh>
 #include <OpenMesh/Tools/Subdivider/Uniform/Sqrt3T.hh>
 #include <OpenMesh/Tools/Subdivider/Uniform/Sqrt3InterpolatingSubdividerLabsikGreinerT.hh>
@@ -66,8 +58,7 @@
 
 #include <OpenMesh/Tools/Subdivider/Uniform/CatmullClarkT.hh>
 
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

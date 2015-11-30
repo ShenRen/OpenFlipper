@@ -57,8 +57,6 @@
 
 #include "TextBrowserWidget.hh"
 
-#include <iostream>
-
 QString const TextBrowserWidget::startRenderObjectTag_ = "name:";
 QString const TextBrowserWidget::startVertexShaderTag_ = "--vertex-shader--";
 QString const TextBrowserWidget::endVertexShaderTag_ = "--end-vertex-shader--";

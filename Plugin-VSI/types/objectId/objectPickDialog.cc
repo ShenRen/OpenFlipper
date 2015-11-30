@@ -49,7 +49,6 @@
 
 //== INCLUDES =================================================================
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QPushButton>
 #include <QTreeView>
 #include <QMouseEvent>
@@ -60,7 +59,6 @@
 
 #include "objectPickDialog.hh"
 #include "TreeModel.hh"
-#include "TreeItem.hh"
 
 //== NAMESPACES ===============================================================
 namespace VSI {

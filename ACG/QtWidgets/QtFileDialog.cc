@@ -63,7 +63,6 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QString>
 
 
 //== NAMESPACES ===============================================================

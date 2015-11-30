@@ -49,7 +49,6 @@
 
 #include "HuePartitioningColors.hh"
 
-#include <cmath>
 #include <QColor>
 
 namespace ACG {

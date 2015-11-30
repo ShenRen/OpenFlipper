@@ -65,8 +65,6 @@
 
 #include <QGLFormat>
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 #ifndef WIN32
   #ifndef ARCH_DARWIN
     #include <malloc.h>

@@ -103,9 +103,7 @@ void RenderObject::initFromState( GLState* _glState )
 
     _glState->getBlendFunc(&blendSrc, &blendDest);
 
-    GLclampd zn, zf;
-    _glState->getDepthRange(&zn, &zf);
-    depthRange = Vec2f(zn, zf);
+    glGetFloatv(GL_DEPTH_RANGE, depthRange.data());
 
     depthFunc = _glState->depthFunc();
 

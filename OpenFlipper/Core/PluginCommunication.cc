@@ -62,6 +62,7 @@
 #include "Core.hh"
 
 #include "OpenFlipper/BasePlugin/PluginFunctionsCore.hh"
+#include <stdexcept>
 
 //== IMPLEMENTATION ==========================================================
 

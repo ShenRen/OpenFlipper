@@ -71,6 +71,8 @@
 #include <ACG/GL/GLError.hh>
 #include <ACG/GL/IRenderer.hh>
 
+#include <QGraphicsWidget>
+#include <QString>
 #include <QGLFormat>
 #include <QBoxLayout>
 #include <QtNetwork/QUdpSocket>

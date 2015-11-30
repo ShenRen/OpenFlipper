@@ -60,6 +60,8 @@
 
 
 #include "Logging.hh"
+#include <QStringList>
+
 
 //== IMPLEMENTATION ==========================================================
 

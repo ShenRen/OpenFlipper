@@ -48,6 +48,7 @@
 \*===========================================================================*/
 
 #include "TypesInternal.hh"
+#include "UpdateType.hh"
 #include <QCoreApplication>
 #include <OpenFlipper/common/GlobalOptions.hh>
 

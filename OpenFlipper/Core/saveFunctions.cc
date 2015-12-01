@@ -52,6 +52,8 @@
 
 #include "OpenFlipper/widgets/loadWidget/loadWidget.hh"
 
+#include <ctime>
+
 //========================================================================================
 // ===  Public Slots (called by CoreWidget's File-Menu / Scripting / Plugins)    =========
 //========================================================================================

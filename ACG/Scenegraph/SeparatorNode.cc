@@ -62,10 +62,12 @@
 
 //== NAMESPACES ===============================================================
 
+
+#include "SeparatorNode.hh"
+
 namespace ACG {
 namespace SceneGraph {
 
-#include "SeparatorNode.hh"
   
 //== IMPLEMENTATION ========================================================== 
 

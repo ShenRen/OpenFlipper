@@ -72,7 +72,7 @@ namespace SceneGraph {
 //== IMPLEMENTATION ========================================================== 
 
 /// Constructor.
-SeparatorNode::SeparatorNode( BaseNode* _parent=0,
+SeparatorNode::SeparatorNode( BaseNode* _parent,
    const std::string& _name )
   : BaseNode(_parent, _name)
 {}

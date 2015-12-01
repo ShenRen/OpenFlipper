@@ -1528,8 +1528,7 @@ void MeshCompiler::resolveTriangulation()
       {
         int negCornerID = triIndexBuffer_[drawTriID * 3 + k];
         int cornerID = -1 - negCornerID;
-        int vertexID = triIndexBuffer_[drawTriID * 3 + k] = getInputIndexSplit(faceID, cornerID);
-        assert(vertexID >= 0);
+        triIndexBuffer_[drawTriID * 3 + k] = getInputIndexSplit(faceID, cornerID);
       }
     }
   }

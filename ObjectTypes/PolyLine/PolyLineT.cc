@@ -2132,12 +2132,12 @@ typename PolyLineT<PointT>::CustomPropertyHandle PolyLineT<PointT>::custom_prop_
 
 template <class PointT>
 typename PolyLineT<PointT>::CustomProperty* PolyLineT<PointT>::custom_prop(CustomPropertyHandle _handle) {
-  return (_handle >= 0 && _handle < get_num_custom_properties() ? cprop_enum[_handle] : NULL);
+  return (_handle >= 0 && _handle < int(get_num_custom_properties()) ? cprop_enum[_handle] : NULL);
 }
 
 template <class PointT>
 const typename PolyLineT<PointT>::CustomProperty* PolyLineT<PointT>::custom_prop(CustomPropertyHandle _handle) const {
-  return (_handle >= 0 && _handle < get_num_custom_properties() ? cprop_enum[_handle] : NULL);
+  return (_handle >= 0 && _handle < int(get_num_custom_properties()) ? cprop_enum[_handle] : NULL);
 }
 
 template <class PointT>

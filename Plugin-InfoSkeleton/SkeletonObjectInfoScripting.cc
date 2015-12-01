@@ -49,6 +49,8 @@
 #include "SkeletonObjectInfoPlugin.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
+#include  <limits>
+
 //-----------------------------------------------------------------------------
 /** \brief set the descriptions for scripting slots
  *

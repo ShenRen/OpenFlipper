@@ -54,8 +54,6 @@
 #include <OpenFlipper/widgets/viewModeWidget/viewModeWidget.hh>
 #include <OpenFlipper/widgets/viewModeWidget/viewModeChangeWidget.hh>
 
-#include "OpenFlipper/common/GlobalOptions.hh"
-
 //=============================================================================
 
 /// init ViewModes that were loaded via ini-file

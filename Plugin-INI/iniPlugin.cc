@@ -50,11 +50,9 @@
 // Includes
 #include "iniPlugin.hh"
 
-#include <OpenFlipper/common/Types.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/Light/Light.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 /// Constructor
 INIPlugin::INIPlugin() {

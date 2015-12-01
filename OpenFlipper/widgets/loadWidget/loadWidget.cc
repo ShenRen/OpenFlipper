@@ -51,21 +51,8 @@
 
 
 #include "loadWidget.hh"
-#include <OpenFlipper/common/GlobalOptions.hh>
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
-#include <QCompleter>
-#include <QMessageBox>
-#include <QFile>
-#include <QFileDialog>
-#include <QDir>
-#include <QDebug>
-
-#include <QHBoxLayout>
 
 #include "FileOptionsDialog.hh"
-
-#include <OpenFlipper/INIFile/INIFile.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 
 LoadWidget::LoadWidget(std::vector<fileTypes>& _supportedTypes , QWidget *parent)
   : QFileDialog(parent),

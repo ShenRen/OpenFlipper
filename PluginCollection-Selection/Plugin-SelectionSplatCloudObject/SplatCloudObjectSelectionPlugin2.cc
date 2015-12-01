@@ -61,8 +61,6 @@
 
 #include "SplatCloudSelection.hh"
 
-#include <set>
-
 
 //== IMPLEMENTATION ==============================================
 

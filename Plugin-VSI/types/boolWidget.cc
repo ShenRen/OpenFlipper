@@ -50,7 +50,6 @@
 //== INCLUDES =================================================================
 #include <QHBoxLayout>
 #include <QRadioButton>
-#include <QPushButton>
 
 #include "boolWidget.hh"
 

@@ -61,17 +61,10 @@
 
 
 #include "TranslationManipulatorNode.hh"
-#include "../Math/GLMatrixT.hh"
-#include "../GL/gl.hh"
 
 #include <ACG/GL/IRenderer.hh>
 
-#include <QMouseEvent>
-#include <QEvent>
-#include <cfloat>
-
 #include <Math_Tools/Math_Tools.hh>
-#include <OpenMesh/Core/Geometry/MathDefs.hh>
 
 //== NAMESPACES ===============================================================
 

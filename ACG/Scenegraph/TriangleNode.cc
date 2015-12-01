@@ -60,7 +60,6 @@
 
 
 #include "TriangleNode.hh"
-#include "DrawModes.hh"
 
 
 //== NAMESPACES ============================================================== 

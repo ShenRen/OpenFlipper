@@ -53,7 +53,6 @@
 #include <ACG/GL/AntiAliasing.hh>
 
 #include <OpenFlipper/common/RendererInfo.hh>
-#include <OpenFlipper/BasePlugin/PostProcessorInterface.hh>
 
 
 #include "PostProcessing.hh"

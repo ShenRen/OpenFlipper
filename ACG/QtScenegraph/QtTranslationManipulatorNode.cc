@@ -61,9 +61,6 @@
 
 #include "QtTranslationManipulatorNode.hh"
 
-#include <QMouseEvent>
-#include <QEvent>
-
 
 //== NAMESPACES ===============================================================
 

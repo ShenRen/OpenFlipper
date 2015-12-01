@@ -50,8 +50,6 @@
 
 
 #include "MemInfo.hh"
-#include <ACG/GL/gl.hh>
-#include <QtGlobal>
 #include <OpenFlipper/Utils/Memory/RAMInfo.hh>
 
 // GPU Memory information

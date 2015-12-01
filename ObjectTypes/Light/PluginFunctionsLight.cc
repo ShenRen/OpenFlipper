@@ -60,7 +60,6 @@
 
 
 #include "PluginFunctionsLight.hh"
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {
 

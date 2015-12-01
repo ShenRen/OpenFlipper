@@ -61,8 +61,6 @@
 
 
 #include "ShaderNode.hh"
-#include "DrawModes.hh"
-#include <vector>
 
 
 //== NAMESPACES ===============================================================

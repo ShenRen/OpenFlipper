@@ -52,13 +52,10 @@
 //== INCLUDES =================================================================
 
 #include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QToolButton>
 #include <QAction>
-#include <QFrame>
 #include <QMouseEvent>
-#include <QFont>
 #include <QDialog>
 
 #include <OpenFlipper/common/GlobalOptions.hh>

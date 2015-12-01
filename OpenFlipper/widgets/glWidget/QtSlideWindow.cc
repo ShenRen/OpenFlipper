@@ -329,7 +329,6 @@ void QtSlideWindow::updateParentGeometry() {
 
 //-----------------------------------------------------------------------------
 
-#include <iostream>
 void QtSlideWindow::animationFinished() {
 
     animating_ = false;

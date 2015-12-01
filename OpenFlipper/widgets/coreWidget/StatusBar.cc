@@ -60,7 +60,6 @@
 
 // -------------------- mview
 #include "CoreWidget.hh"
-#include <OpenFlipper/common/GlobalOptions.hh>
 
 //== IMPLEMENTATION ========================================================== 
 

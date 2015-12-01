@@ -57,7 +57,6 @@
 #include <OpenFlipper/common/Types.hh>
 #include "Plane.hh"
 
-#include "PluginFunctionsPlane.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {

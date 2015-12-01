@@ -66,10 +66,8 @@
 #include <QPainter>
 #include <QPaintEngine>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneDragDropEvent>
 
 #include "simpleGLGraphicsScene.hh"
-#include "CursorPainter.hh"
 
 //== NAMESPACES ===============================================================
 

@@ -59,7 +59,6 @@
 #include <OpenFlipper/common/Types.hh>
 #include "Sphere.hh"
 
-#include "PluginFunctionsSphere.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {

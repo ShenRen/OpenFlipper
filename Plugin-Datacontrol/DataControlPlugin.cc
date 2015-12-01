@@ -49,29 +49,14 @@
 
 #include "DataControlPlugin.hh"
 
-#if QT_VERSION >= 0x050000 
-  #include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
   #include <QtGui>
 #endif
 
-#include <QLayout>
-#include <QGridLayout>
-#include <QItemSelectionModel>
-
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <QStringList>
-#include <ACG/Scenegraph/BaseNode.hh>
 #include <ACG/QtWidgets/QtMaterialDialog.hh>
-#include <QModelIndexList>
 
 #include <queue>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <ObjectTypes/Light/Light.hh>
 
 //******************************************************************************
 

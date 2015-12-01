@@ -63,8 +63,6 @@
 
 #include "prototypeVec4d.hh"
 
-#include <iostream>
- 
 prototypeVec4d::prototypeVec4d(QObject *parent ) :
     QObject(parent) 
 {

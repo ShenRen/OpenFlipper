@@ -48,28 +48,18 @@
  \*===========================================================================*/
 
 #include <iostream>
-#include <fstream>
-#include <map>
-#include <string>
 
 #include <ACG/GL/GLState.hh>
 
-#include <OpenMesh/Core/IO/IOManager.hh>
-
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctionsViewControls.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
-#include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
 
 #include "FileOpenVolumeMesh.hh"
 
-#if QT_VERSION >= 0x050000 
-  #include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
   #include <QtGui>
 #endif
-
-#include <QFileInfo>
 
 
 FileOpenVolumeMeshPlugin::FileOpenVolumeMeshPlugin() :

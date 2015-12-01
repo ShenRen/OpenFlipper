@@ -49,12 +49,9 @@
 
 
 #include "ShaderCache.hh"
-#include "ShaderGenerator.hh"
 
 #include <cstdio>
-#include <cstring>
 #include <iostream>
-#include <algorithm>
 #include <fstream>
 
 
@@ -63,7 +60,6 @@
 #include <QDir>
 #include <QTextStream>
 
-#include <ACG/GL/gl.hh>
 #include <ACG/GL/GLError.hh>
 #include <ACG/ShaderUtils/GLSLShader.hh>
 

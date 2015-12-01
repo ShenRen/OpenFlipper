@@ -55,9 +55,6 @@
 #include "TetrahedralCuboidGenerator.hh"
 #endif
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <ACG/Geometry/Algorithms.hh>
-
 #ifdef ENABLE_BSPLINECURVE_SUPPORT
 #include <ObjectTypes/BSplineCurve/BSplineCurve.hh>
 #endif

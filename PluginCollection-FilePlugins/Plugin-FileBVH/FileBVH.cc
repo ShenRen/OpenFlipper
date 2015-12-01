@@ -49,7 +49,6 @@
 
 #include "FileBVH.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 
 #if QT_VERSION >= 0x050000 
   #include <QtWidgets>
@@ -57,15 +56,9 @@
   #include <QtGui>
 #endif
 
-#include <QFileInfo>
-
-#include <iostream>
-#include <fstream>
 #include <sstream>
 
 #include <ACG/Geometry/AlgorithmsAngleT.hh>
-
-#include <bitset>
 
 const std::bitset<4>  HIERARCHY			(static_cast<int>(0));
 const std::bitset<4>  ROOT_DEFINITION	(static_cast<int>(1));

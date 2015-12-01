@@ -48,10 +48,6 @@
 \*===========================================================================*/
 
 #include "SnapshotDialog.hh"
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QFileInfo>
-#include <iostream>
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, int _h, QWidget *parent)

@@ -51,12 +51,6 @@
 
 #include "optionsWidget.hh"
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include "ShortcutButton.hh"
-
-#include <QMessageBox>
-
 /// get the pluginInfo object corresponding to the given pluginName
 int OptionsWidget::getPluginInfo(QString pluginName){
   for (uint i=0; i < plugins_.size(); i++)

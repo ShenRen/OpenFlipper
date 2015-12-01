@@ -61,9 +61,6 @@
 // -------------------- mview
 #include "CoreWidget.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 
 
 //== IMPLEMENTATION ==========================================================

@@ -61,12 +61,9 @@
 
 
 #include "MaterialNode.hh"
-#include "DrawModes.hh"
 
 #include <cstdio>
 #include <sstream>
-
-#include <Qt>
 
 #if QT_VERSION >= 0x050000
 #include <QJsonDocument>

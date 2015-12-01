@@ -48,7 +48,6 @@
 \*===========================================================================*/
 
 #include "TreeView.hh"
-#include <iostream>
 
 DataControlTreeView::DataControlTreeView(QWidget* _parent)
     : QTreeView(_parent)

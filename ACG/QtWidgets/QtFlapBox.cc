@@ -59,12 +59,7 @@
 
 #include "QtFlapBox.hh"
 
-#include <QLayout>
-#include <QLabel>
 #include <QScrollBar>
-#include <QResizeEvent>
-#include <QSize>
-#include <iostream>
 
 //== NAMESPACES ===============================================================
 

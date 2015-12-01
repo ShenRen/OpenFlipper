@@ -68,15 +68,8 @@
   #include <QtGui>
 #endif
 
-#include <QFileInfo>
-#include <QSettings>
-
-#include <fstream>
-
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <OpenMesh/Core/IO/IOManager.hh>
 
 
 //== CONSTANTS ===================================================

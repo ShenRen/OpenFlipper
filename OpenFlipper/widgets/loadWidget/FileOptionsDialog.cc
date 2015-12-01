@@ -49,11 +49,6 @@
 
 #include "FileOptionsDialog.hh"
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <QVBoxLayout>
-#include <QGridLayout>
-
 FileOptionsDialog::FileOptionsDialog(std::vector<fileTypes>& _supportedTypes, QStringList _extensions, bool _loadMode, QWidget *parent)
   : QDialog(parent),
     ext_(_extensions),

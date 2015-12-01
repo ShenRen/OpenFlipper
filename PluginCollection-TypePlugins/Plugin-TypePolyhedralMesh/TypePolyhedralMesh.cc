@@ -48,8 +48,6 @@
 \*===========================================================================*/
 
 #include "TypePolyhedralMesh.hh"
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include <ObjectTypes/Plane/Plane.hh>
 
 TypePolyhedralMeshPlugin::TypePolyhedralMeshPlugin() :

@@ -49,26 +49,12 @@
 
 #include "FileSTL.hh"
 
-#include <ACG/GL/GLState.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <OpenMesh/Core/IO/IOManager.hh>
-
-#include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
-
 
 #if QT_VERSION >= 0x050000 
   #include <QtWidgets>
 #else
   #include <QtGui>
 #endif
-
-#include <QFileInfo>
-#include <QSettings>
-
-#include <iostream>
 
 /// Constructor
 FileSTLPlugin::FileSTLPlugin() :

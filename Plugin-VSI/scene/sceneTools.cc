@@ -50,10 +50,7 @@
 //== INCLUDES =================================================================
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QPushButton>
 #include <QPainter>
-#include <QPalette>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsGridLayout>
 #include <QGraphicsLinearLayout>

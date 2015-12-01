@@ -48,14 +48,12 @@
 \*===========================================================================*/
 
 //== INCLUDES =================================================================
-#include <cmath>
 
 #include <QPolygonF>
 #include <QGraphicsItem>
 #include <QFontMetrics>
 #include <QPen>
 #include <QPainter>
-#include <QPainterPath>
 #include <QGraphicsSceneMouseEvent>
 
 #include "button.hh"

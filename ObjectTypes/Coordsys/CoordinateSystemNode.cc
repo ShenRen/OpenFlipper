@@ -59,8 +59,6 @@
 //== INCLUDES =================================================================
 
 #include <ObjectTypes/Coordsys/CoordinateSystemNode.hh>
-#include <ACG/GL/gl.hh>
-#include <iostream>
 
 
 

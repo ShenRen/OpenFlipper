@@ -56,10 +56,8 @@
 //
 //=============================================================================
 
-#include <OpenFlipper/common/GlobalDefines.hh>
 #include <ACG/Scenegraph/DrawModes.hh>
 #include "ViewerProperties.hh"
-#include <iostream>
 
 namespace Viewer {
 

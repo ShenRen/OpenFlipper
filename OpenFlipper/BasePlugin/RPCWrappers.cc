@@ -49,7 +49,6 @@
 
 
 #include <OpenFlipper/BasePlugin/RPCWrappers.hh>
-#include <iostream>
 #include "RPCWrappersHelper.hh"
 
 #include <QApplication>

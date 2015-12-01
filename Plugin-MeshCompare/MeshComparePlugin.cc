@@ -55,10 +55,6 @@
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
-
-#include <ACG/Geometry/bsp/TriangleBSPT.hh>
-#include <ACG/Geometry/Algorithms.hh>
 #include <ACG/Utils/ColorCoder.hh>
 
 

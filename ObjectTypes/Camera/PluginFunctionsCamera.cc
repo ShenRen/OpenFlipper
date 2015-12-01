@@ -62,7 +62,6 @@
 #include <OpenFlipper/common/Types.hh>
 #include "Camera.hh"
 
-#include "PluginFunctionsCamera.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {

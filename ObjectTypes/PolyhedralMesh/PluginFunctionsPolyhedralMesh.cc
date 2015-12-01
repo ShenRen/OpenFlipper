@@ -50,7 +50,6 @@
 #include <OpenFlipper/common/Types.hh>
 
 #include <ObjectTypes/PolyhedralMesh/PluginFunctionsPolyhedralMesh.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {
 

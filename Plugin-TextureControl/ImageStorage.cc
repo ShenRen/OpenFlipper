@@ -49,7 +49,6 @@
 
 #include "ImageStorage.hh"
 
-#include <iostream>
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 static ImageStore store;

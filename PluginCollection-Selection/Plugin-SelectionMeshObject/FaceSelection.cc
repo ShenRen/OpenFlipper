@@ -49,12 +49,7 @@
 
 #include "MeshObjectSelectionPlugin.hh"
 
-#include <iostream>
-
 #include <MeshTools/MeshSelectionT.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
-#include <QString>
 
 //=========================================================
 //==== Face selections

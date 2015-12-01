@@ -61,16 +61,6 @@
 #include "QtTextureDialog.hh"
 #include "../Scenegraph/TextureNode.hh"
 
-#include <QCheckBox>
-#include <QLabel>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QLayout>
-#include <QVariant>
-#include <QToolTip>
-#include <QColorDialog>
-#include <QSlider>
-
 
 //== NAMESPACES ==============================================================
 

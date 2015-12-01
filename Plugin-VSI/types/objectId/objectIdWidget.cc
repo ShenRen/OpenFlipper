@@ -56,7 +56,6 @@
 
 #include "objectIdWidget.hh"
 #include "objectPickDialog.hh"
-#include "TreeModel.hh"
 
 //== NAMESPACES ===============================================================
 namespace VSI {

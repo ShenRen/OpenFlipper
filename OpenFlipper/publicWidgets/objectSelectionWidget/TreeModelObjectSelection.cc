@@ -55,12 +55,7 @@
   #include <QtGui>
 #endif
 
-#include <QBrush>
-
 #include "TreeModelObjectSelection.hh"
-
-#include <iostream>
-
 
 
 #include "../OpenFlipper/BasePlugin/PluginFunctions.hh"

@@ -50,21 +50,7 @@
 
 #include "Core.hh"
 
-#include "OpenFlipper/common/GlobalOptions.hh"
-
 #include <ObjectTypes/Light/Light.hh>
-
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
-
-#include "OpenFlipper/widgets/loadWidget/loadWidget.hh"
-
-#include <QFileDialog>
-#include <QGroupBox>
-#include <QBoxLayout>
-#include <QMultiMap>
-
-#include <set>
-#include <map>
 
 /// Save Settings (slot is called from CoreWidget's File-Menu)
 void Core::saveSettings(){

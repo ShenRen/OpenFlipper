@@ -65,20 +65,11 @@
 #include "QtCoordFrameDialog.hh"
 #include "QtShaderDialog.hh"
 
-#include "../Scenegraph/BaseNode.hh"
-#include "../Scenegraph/DrawModes.hh"
 #include "../Scenegraph/MaterialNode.hh"
 #include "../Scenegraph/TextureNode.hh"
 #include "../Scenegraph/ClippingNode.hh"
 #include "../Scenegraph/ShaderNode.hh"
 #include "../Scenegraph/CoordFrameNode.hh"
-
-#include <QMenu>
-#include <QCursor>
-#include <QLayout>
-#include <QVBoxLayout>
-#include <QKeyEvent>
-#include <QStringList>
 
 
 //== FORWARDDECLARATIONS ======================================================

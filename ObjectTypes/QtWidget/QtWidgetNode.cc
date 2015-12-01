@@ -49,14 +49,8 @@
 
 #include <ACG/GL/acg_glew.hh>
 #include "QtWidgetNode.hh"
-#include <ACG/GL/gl.hh>
-#include <iostream>
-#include <cmath>
-#include <ACG/Scenegraph/MaterialNode.hh>
 #include <ACG/Geometry/Types/PlaneT.hh>
 
-#include <QImage>
-#include <QMouseEvent>
 #include <QApplication>
 
 #include <QGLWidget>

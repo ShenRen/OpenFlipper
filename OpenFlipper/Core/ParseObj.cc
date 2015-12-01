@@ -62,16 +62,8 @@
 // -------------------- mview
 #include "Core.hh"
 // -------------------- ACG
-#include <ACG/Scenegraph/DrawModes.hh>
 
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/common/RecentFiles.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
-#include <QFile>
-
-#include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
 
 //== IMPLEMENTATION ==========================================================
 

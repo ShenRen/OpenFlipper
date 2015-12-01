@@ -59,7 +59,6 @@
 //== INCLUDES =================================================================
 
 #include <QPixmap>
-#include <QImage>
 #include <QBitmap>
 
 #include <OpenFlipper/common/GlobalOptions.hh>

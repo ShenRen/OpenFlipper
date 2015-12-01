@@ -52,10 +52,6 @@
 
 #include "viewModeChangeWidget.hh"
 #include <OpenFlipper/widgets/coreWidget/CoreWidget.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <QInputDialog>
-#include <QMessageBox>
 
 /// Constructor
 viewModeChangeWidget::viewModeChangeWidget(const QVector< ViewMode* >& _modes, QWidget *_parent)

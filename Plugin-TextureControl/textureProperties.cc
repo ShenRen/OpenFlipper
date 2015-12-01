@@ -52,13 +52,9 @@
 
 #include "textureProperties.hh"
 
-#include <cfloat>
-
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/common/Types.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
-#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 #include "ImageStorage.hh"
 
 texturePropertiesWidget::texturePropertiesWidget(QWidget *parent)

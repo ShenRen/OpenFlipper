@@ -48,7 +48,6 @@
 \*===========================================================================*/
 
 #include "NumberParsing.hh"
-#include <QString>
 #include <cmath>
 #include <sstream>
 

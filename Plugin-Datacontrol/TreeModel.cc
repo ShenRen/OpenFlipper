@@ -55,12 +55,7 @@
   #include <QtGui>
 #endif
 
-#include <QBrush>
 
-#include <iostream>
-
-
-#include <OpenFlipper/common/Types.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 

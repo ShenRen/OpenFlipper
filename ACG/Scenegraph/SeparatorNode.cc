@@ -65,6 +65,7 @@
 namespace ACG {
 namespace SceneGraph {
 
+#include "SeparatorNode.hh"
   
 //== IMPLEMENTATION ========================================================== 
 

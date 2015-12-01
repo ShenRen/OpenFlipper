@@ -65,9 +65,6 @@
 
 
 #include "BaseNode.hh"
-#include "SeparatorNode.hh"
-
-
 
 //== NAMESPACES ===============================================================
 

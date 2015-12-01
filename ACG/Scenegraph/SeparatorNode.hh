@@ -92,7 +92,7 @@ public:
 
 
   /// Destructor.
-  virtual ~SeparatorNode()
+  virtual ~SeparatorNode();
 
 
   ACG_CLASSNAME(SeparatorNode);

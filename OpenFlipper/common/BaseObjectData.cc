@@ -58,10 +58,12 @@
 
 //== INCLUDES =================================================================
 
+#include "BaseObjectData.hh"
 #include "Types.hh"
 #include <ACG/Scenegraph/SceneGraph.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
+
 
 
 

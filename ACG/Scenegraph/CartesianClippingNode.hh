@@ -112,8 +112,6 @@ private:
 
   Vec3f cursor_;
   Plane enabled_;
-
-  GLdouble  xy_plane_[4], yz_plane_[4], xz_plane_[4];
 };
 
 

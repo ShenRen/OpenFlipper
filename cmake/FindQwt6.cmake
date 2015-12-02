@@ -21,7 +21,11 @@ endif()
 
 
 if (QT5_FOUND)
-    SET(ACG_SEARCH_PATH "/ACG/acgdev/gcc-4.9-x86_64/qwt-6.1.2-qt5")
+    if (${Qt5Core_VERSION_STRING} VERSION_EQUAL "5.5.1" OR ${Qt5Core_VERSION_STRING} VERSION_GREATER "5.5.1")
+        SET(ACG_SEARCH_PATH "/ACG/acgdev/gcc-4.9-x86_64/qwt-6.1.2-qt5")
+    else()
+        SET(ACG_SEARCH_PATH "/ACG/acgdev/gcc-4.9-x86_64/qwt-6.1-qt5")
+    endif()
 else()
     SET(ACG_SEARCH_PATH "/usr/local/qwt/")
 endif()

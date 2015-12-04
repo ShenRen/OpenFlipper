@@ -19,13 +19,16 @@ file (
            "${CMAKE_SOURCE_DIR}/Package-*/libs"
            "${CMAKE_BINARY_DIR}/libs"
            "${CMAKE_BINARY_DIR}/Package-*/libs"
+           "${CMAKE_BINARY_DIR}/libs/CoMISo"
+           "${CMAKE_BINARY_DIR}/Package-*/libs/CoMISo"
 )
 
 
 # Find CoMISo config file
 FIND_PATH( COMISO_CONFIG_INCLUDE_DIR CoMISo/Config/config.hh
            PATHS ${_libdirs}
-                 "${CMAKE_BINARY_DIR}/../" )
+                 "${CMAKE_BINARY_DIR}/../"
+                 "${CMAKE_BINARY_DIR}/../CoMISo/" )
 
 FIND_PATH( COMISO_INCLUDE_DIR CoMISo/Solver/MISolver.hh
            PATHS ${_libdirs}

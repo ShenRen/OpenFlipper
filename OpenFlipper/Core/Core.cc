@@ -934,7 +934,14 @@ void Core::updateUI() {
   QApplication::processEvents();
 }
 
+//-----------------------------------------------------------------------------
 
+void Core::blockScenegraphUpdates(bool _block) {
+  if (_block)
+    OpenFlipper::Options::blockSceneGraphUpdates();
+  else
+    OpenFlipper::Options::unblockSceneGraphUpdates();
+}
 
 //-----------------------------------------------------------------------------
 

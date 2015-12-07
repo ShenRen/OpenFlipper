@@ -110,9 +110,9 @@ void QtGLGraphicsScene::drawBackground(QPainter *_painter, const QRectF &_rect)
   static bool initialized = false;
   if (!initialized)
   {
-    // we use GLEW to manage extensions
+    // we use glLoadGen to manage extensions :/
     // initialize it first
-    glewInit();
+    ogl_LoadFunctions();
     for (unsigned int i = 0; i < views_->size (); i++)
     {
       views_->at(i)->initializeGL ();

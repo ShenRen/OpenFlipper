@@ -73,7 +73,7 @@
 
 #else // Unix
 
-    #include <GL/glew.h>
+    #include "gl_compat_4_4.hh"
 
 #endif
 

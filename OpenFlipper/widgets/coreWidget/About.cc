@@ -595,7 +595,8 @@ void CoreWidget::showAboutWidget( ) {
   aboutWidget_->OpenFlipperAbout->append(tr("GLEW Specific Info:"));
   aboutWidget_->OpenFlipperAbout->setCurrentFont(standardFont);
   
-  QString glewVersion = QString(getGlewVersion());
+  //TODO: rename this we are not using glew anymore
+  QString glewVersion = QString(getOpenGLVersion());
   aboutWidget_->OpenFlipperAbout->append(tr("GLEW Version:\t") + glewVersion);
   #endif
   

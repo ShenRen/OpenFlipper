@@ -48,19 +48,23 @@
 \*===========================================================================*/
 
 #include "glew_wrappers.hh"
+#include <ACG/GL/gl_compat_4_4.hh>
 
-#include <GL/glew.h>
 #include <stdio.h>
+#include <string>
 
-DLLEXPORT void initGlew() {
-    GLenum err = glewInit();
-    if (GLEW_OK != err)
+DLLEXPORT void initOpenGLFunctions() {
+
+  int error = ogl_LoadFunctions();
+    if(error != ogl_LOAD_SUCCEEDED)
     {
-      /* Problem: glewInit failed, something is seriously wrong. */
-      fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+      /* Problem: loading the opengl functions failed, something is seriously wrong. */
+      fprintf(stderr, "Error when initializing opengl functions: %d\n",error);
     }
 }
 
-DLLEXPORT const char * getGlewVersion() {
-    return (const char *)glewGetString(GLEW_VERSION);
+DLLEXPORT const char * getOpenGLVersion() {
+    std::string version;
+    version = ogl_GetMajorVersion()+"."+ogl_GetMinorVersion();
+    return version.c_str() ;
 }

@@ -122,6 +122,17 @@ class BaseInterface {
     */
     virtual void updateView() {};
 
+    /** \brief Tell the core to prevent scenegraph updates.
+     *
+     *  Emit this Signal if you want to skip scenegraph updates. E.g. if you add a large number of objects
+     *  or modify them it's much more efficient to block scenegraph updates until you finished and then
+     *  do only one update run.
+     *
+     *  The function itself is counting the number of blocks internally to allow multiple plugins for concurrent
+     *  blocks. The function is queued to ensure that it is processed in line with load save operations.
+     */
+    virtual void blockScenegraphUpdates(bool _block) {};
+
     /** \brief An object has been changed or added by this plugin
       *
       *  Emit this Signal, if you updated any part of an object.\n

@@ -63,19 +63,10 @@
 #include <sstream>
 
 
-#if defined(ARCH_DARWIN)
-
-  #include <gl/glew.h>
-
-#elif defined(WIN32)
-
-  #include <gl/glew.h>
-
-#else // Unix
 
     #include "gl_compat_4_4.hh"
 
-#endif
+
 
 
 //=============================================================================

@@ -61,13 +61,7 @@
 // -------------------- mview
 #include "CoreWidget.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-#include "../../common/GlobalOptions.hh"
-#include <OpenFlipper/common/RendererInfo.hh>
-
 //== IMPLEMENTATION ==========================================================
-#include <ACG/Scenegraph/CoordsysNode.hh>
 
 void CoreWidget::slotCustomContextMenu( const QPoint& _point ) {
 

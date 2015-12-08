@@ -49,8 +49,6 @@
 
 #include "OFFImporter.hh"
 
-#include <OpenMesh/Core/Utils/vector_cast.hh>
-
 //-----------------------------------------------------------------------------
 
 /// base class needs virtual destructor

@@ -62,10 +62,6 @@
 
 #include "../Scenegraph/ClippingNode.hh"
 
-#include <QPushButton>
-#include <QSlider>
-#include <QLineEdit>
-
 
 //== NAMESPACES ===============================================================
 

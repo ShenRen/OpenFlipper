@@ -55,16 +55,10 @@
 #include "common/glew_wrappers.hh"
 
 // Qt
-#include <QApplication>
 #include <qgl.h>
 
 // stdc++
-#include <iostream>
-#include <fstream>
 #include <csignal>
-#include <cstdlib>
-
-#include "OpenFlipper/common/GlobalOptions.hh"
 
 #include <OpenFlipper/SimpleOpt/SimpleOpt.h>
 
@@ -77,7 +71,6 @@
 #endif
 
 #ifdef USE_OPENMP
-#include <omp.h>
 #endif
 
 /* ==========================================================

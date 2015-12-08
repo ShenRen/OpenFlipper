@@ -49,8 +49,6 @@
 
 #include "GroupBackup.hh"
 
-#include <algorithm>
-
 #include <OpenFlipper/common/BackupData.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 

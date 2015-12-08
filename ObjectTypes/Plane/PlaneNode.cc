@@ -50,10 +50,6 @@
 #include <ACG/GL/acg_glew.hh>
 
 #include "PlaneNode.hh"
-#include <ACG/GL/gl.hh>
-#include <iostream>
-#include <cmath>
-#include <ACG/Scenegraph/MaterialNode.hh>
 
 //== IMPLEMENTATION ==========================================================
 

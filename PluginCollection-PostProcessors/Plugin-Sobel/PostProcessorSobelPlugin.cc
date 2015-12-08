@@ -51,13 +51,9 @@
 
 #include "PostProcessorSobelPlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <ACG/GL/gl.hh>
 #include <ACG/GL/ScreenQuad.hh>
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 
 PostProcessorSobelPlugin::PostProcessorSobelPlugin() :
 shader_(0)

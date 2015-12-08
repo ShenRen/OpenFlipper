@@ -49,10 +49,6 @@
 
 #include "PropertyVisualizer.hh"
 
-#include <iostream>
-
-#include <QStringList>
-
 /*! \brief Visualizes the property
  *
  * This method should be implemented by a subclass that specializes on visualizing

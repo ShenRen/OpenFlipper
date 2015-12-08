@@ -59,17 +59,9 @@
 
 #include "SmootherPlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <QStringList>
-#include <ACG/Scenegraph/ManipulatorNode.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 #include "SmootherObject.hh"
 
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

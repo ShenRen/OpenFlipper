@@ -60,16 +60,27 @@
 //== INCLUDES =================================================================
 
 
-#include "SeparatorNode.hh"
-
-
 //== NAMESPACES ===============================================================
+
+
+#include "SeparatorNode.hh"
 
 namespace ACG {
 namespace SceneGraph {
 
   
 //== IMPLEMENTATION ========================================================== 
+
+/// Constructor.
+SeparatorNode::SeparatorNode( BaseNode* _parent,
+   const std::string& _name )
+  : BaseNode(_parent, _name)
+{}
+
+
+/// Destructor.
+SeparatorNode::~SeparatorNode()
+{}
 
 //----------------------------------------------------------------------------
 

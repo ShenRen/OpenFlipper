@@ -62,8 +62,6 @@
 #define PROTOTYPEMATRIX4X4_C 
 
 #include "prototypeMatrix4x4.hh"
-#include <OpenFlipper/Scripting/scriptWrappers/vec3dWrapper.hh>
-#include <iostream>
 
 prototypeMatrix4x4::prototypeMatrix4x4(QObject *parent ) : 
     QObject(parent) 

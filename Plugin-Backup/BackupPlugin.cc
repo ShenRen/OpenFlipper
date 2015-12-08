@@ -48,13 +48,11 @@
 \*===========================================================================*/
 
 #include "BackupPlugin.hh"
-#if QT_VERSION >= 0x050000 
-  #include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
   #include <QtGui>
 #endif
 
-#include <iostream>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 

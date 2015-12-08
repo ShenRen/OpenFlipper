@@ -59,11 +59,6 @@
 
 #include <OpenFlipper/common/GlobalOptions.hh>
 
-#include <iostream>
-
-#include <QTextStream>
-#include <QDir>
-
 //#define DEBUG_HELP_CONTENTS
 
 HelpWidget::HelpWidget(QWidget* parent, const QString& _homeSite /*=""*/, const bool _loadHomeSite /*= true*/)

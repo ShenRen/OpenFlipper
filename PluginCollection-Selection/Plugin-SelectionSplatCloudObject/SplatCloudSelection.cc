@@ -59,8 +59,6 @@
 
 #include "SplatCloudSelection.hh"
 
-#include <stack>
-
 
 //== NAMESPACES ===============================================================
 

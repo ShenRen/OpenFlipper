@@ -49,17 +49,12 @@
 
 
 #include "ViewControlPlugin.hh"
-#include <iostream>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/INIFile/INIFile.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 
-#include <ACG/Geometry/Algorithms.hh>
 #include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
 #include <ACG/Scenegraph/CoordsysNode.hh>
 
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

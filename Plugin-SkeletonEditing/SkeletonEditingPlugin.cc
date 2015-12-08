@@ -49,11 +49,7 @@
 
 #include "SkeletonEditingPlugin.hh"
 
-#include <iostream>
-
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-#include <ObjectTypes/Skeleton/Skeleton.hh>
 #include <ObjectTypes/Skeleton/BaseSkin.hh>
 #include <ObjectTypes/Skeleton/SkeletonObjectData.hh>
 #include <ACG/Geometry/Algorithms.hh>

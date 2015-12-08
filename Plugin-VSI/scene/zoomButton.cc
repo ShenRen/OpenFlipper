@@ -51,7 +51,6 @@
 #include <QPixmap>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneWheelEvent>
 
 #include <OpenFlipper/common/GlobalOptions.hh>
 

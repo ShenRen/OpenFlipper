@@ -62,11 +62,9 @@
 //== INCLUDES =================================================================
 
 #include "BaseObjectCore.hh"
-#include "BaseObject.hh"
 #include "Types.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctionsCore.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <QFileInfo>
 
 
 //== TYPEDEFS =================================================================

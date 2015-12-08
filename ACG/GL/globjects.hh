@@ -788,6 +788,56 @@ private:
   static int supportStatus_;
 };
 
+//== CLASS DEFINITION =========================================================
+
+
+/*
+Query object (occlusion queries):
+
+ref: https://www.opengl.org/wiki/Query_Object
+opengl-core: 1.5
+
+usage:
+query.begin(GL_SAMPLES_PASSED);
+.. gl-calls
+query.end();
+GLuint numSamples = query.result();
+
+\note result() method synchronizes CPU and GPU, so this might stall the cpu
+*/
+
+class ACGDLLEXPORT QueryObject
+{
+public:
+
+  // set the type of the query object:
+  //   GL_SAMPLES_PASSED - number of samples that passed the depth test
+  //   GL_ANY_SAMPLES_PASSED - return true iff there is at least one sample that passed the depth test (gl 3.3+)
+  //   GL_ANY_SAMPLES_PASSED_CONSERVATIVE - return true if there might be a sample that passed the depth test (gl 4.3+)
+  //   GL_TIME_ELAPSED - measure elapsed time (gl 3.3+)
+  // also see: https://www.opengl.org/sdk/docs/man/docbook4/xhtml/glBeginQuery.xml
+  QueryObject(GLenum _type = GL_SAMPLES_PASSED);
+  virtual ~QueryObject();
+
+  /// begin measuring the query
+  void begin();
+
+  /// stop measuring the query
+  void end();
+
+  /// check if the result is available (does not wait for gpu to finish)
+  bool available() const;
+
+  /// get the measurement of the query between the begin() end() calls (waits for the gpu)
+  GLuint result() const;
+
+private:
+
+  GLuint id_;
+  int state_; // -1 : not started,  0 : started,  1 : stopped
+  GLenum type_;
+};
+
 
 //== CLASS DEFINITION =========================================================
 

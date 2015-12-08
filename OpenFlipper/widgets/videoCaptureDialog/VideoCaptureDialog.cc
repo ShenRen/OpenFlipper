@@ -48,9 +48,6 @@
 \*===========================================================================*/
 
 #include "VideoCaptureDialog.hh"
-#include <QMessageBox>
-#include <QFileDialog>
-#include <iostream>
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 VideoCaptureDialog::VideoCaptureDialog(QWidget *parent) : QDialog(parent)

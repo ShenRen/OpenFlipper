@@ -56,7 +56,6 @@
 #include "ToonRenderer.hh"
 
 #include <QDialog>
-#include <QColor>
 #include <QLabel>
 #include <QSlider>
 #include <QVBoxLayout>

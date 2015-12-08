@@ -50,8 +50,6 @@
 #include "IsotropicRemesherPlugin.hh"
 #include "IsotropicRemesherT.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 IsotropicRemesherPlugin::IsotropicRemesherPlugin() :
 tool_(0),
 toolIcon_(0),

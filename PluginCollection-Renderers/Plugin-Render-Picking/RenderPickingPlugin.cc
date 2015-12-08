@@ -49,9 +49,6 @@
 
 #include "RenderPickingPlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 

@@ -61,9 +61,6 @@
 
 #include "CoreWidget.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-#include <OpenFlipper/widgets/glWidget/CursorPainter.hh>
 #include <ACG/Scenegraph/SceneGraphAnalysis.hh>
 
 //-----------------------------------------------------------------------------

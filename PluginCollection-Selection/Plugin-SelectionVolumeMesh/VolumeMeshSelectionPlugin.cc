@@ -49,8 +49,6 @@
 
 #include "VolumeMeshSelectionPlugin.hh"
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 // Primitive type icons
 #define VERTEX_TYPE         "selection_vertex.png"
 #define EDGE_TYPE           "selection_edge.png"

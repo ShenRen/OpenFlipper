@@ -52,9 +52,6 @@
 #include "PropertyModelFactory.hh"
 #include "OpenMesh/OMPropertyModel.hh"
 #include "OpenVolumeMesh/OVMPropertyModel.hh"
-#include "OpenVolumeMesh/Mesh/HexahedralMesh.hh"
-
-#include "Utils.hh"
 
 MultiObjectPropertyModel::MultiObjectPropertyModel(const QStringList& res, QObject *parent) :
     PropertyModel(parent), restriction(res), datatypes(supportedDataTypes()), widget(0)

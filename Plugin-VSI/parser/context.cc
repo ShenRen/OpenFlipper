@@ -49,12 +49,8 @@
 
 //== INCLUDES =================================================================
 #include <QBuffer>
-#include <QStringList>
 #include <QXmlQuery>
 #include <QXmlResultItems>
-#include <QRegExp>
-
-#include <iostream>
 
 #include "context.hh"
 #include "input.hh"

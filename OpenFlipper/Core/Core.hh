@@ -650,6 +650,9 @@ public slots:
     /// Called when a  plugin requests an update in the viewer
     void updateView();
 
+    /// Called when a plugin wants to lock or unlock scenegraph updates
+    void  blockScenegraphUpdates(bool _block);
+
     /// process events during script execution to keep the ui alive
     void updateUI();
 

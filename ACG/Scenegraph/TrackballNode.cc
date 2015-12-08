@@ -61,11 +61,6 @@
 
 
 #include "TrackballNode.hh"
-#include "../Math/GLMatrixT.hh"
-#include "../GL/gl.hh"
-
-#include <QMouseEvent>
-#include <QEvent>
 
 
 //== NAMESPACES ===============================================================

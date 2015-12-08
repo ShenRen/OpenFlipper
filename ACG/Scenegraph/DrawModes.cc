@@ -62,7 +62,6 @@
 #include "DrawModes.hh"
 #include "BaseNode.hh"
 
-#include <algorithm>
 #include <sstream>
 
 

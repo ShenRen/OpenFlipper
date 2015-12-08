@@ -50,8 +50,6 @@
 
 #include "VolumeMeshSelectionPlugin.hh"
 
-#include <OpenVolumeMesh/Attribs/StatusAttrib.hh>
-
 /*
  * Vertices
  */

@@ -54,12 +54,7 @@
 #define PLUGINFUNCTIONS_C
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#include <ACG/GL/gl.hh>
 #include <ACG/QtWidgets/QtColorTranslator.hh>
-
-#include <QEvent>
-#include <QMouseEvent>
-
 
 
 /*******************************************************************************

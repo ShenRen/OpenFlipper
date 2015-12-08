@@ -49,11 +49,6 @@
 
 #include "TypeLight.hh"
 
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
-#include "OpenFlipper/BasePlugin/PluginFunctionsViewControls.hh"
-
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 #define DEF0 "Default Light 0.lgt"
 #define DEF1 "Default Light 1.lgt"
 #define DEF2 "Default Light 2.lgt"

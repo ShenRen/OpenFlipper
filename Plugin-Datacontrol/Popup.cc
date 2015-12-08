@@ -52,13 +52,8 @@
 
 #include "DataControlPlugin.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 #include <ACG/QtWidgets/QtMaterialDialog.hh>
 
-#include <QInputDialog>
-#include <QMessageBox>
 #include "Menu.hh"
 
 #include <ObjectTypes/Light/LightWidget.hh>

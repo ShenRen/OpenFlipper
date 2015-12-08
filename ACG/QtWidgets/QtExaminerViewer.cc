@@ -61,15 +61,9 @@
 #include "QtExaminerViewer.hh"
 
 #include <QTimer>
-#include <QPushButton>
-#include <QClipboard>
 #include <QApplication>
 #include <QInputDialog>
 #include <QStatusBar>
-
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QEvent>
 
 #ifdef max
 #  undef max

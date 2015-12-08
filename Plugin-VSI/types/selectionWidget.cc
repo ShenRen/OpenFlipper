@@ -49,7 +49,6 @@
 
 //== INCLUDES =================================================================
 #include <QHBoxLayout>
-#include <QGridLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QCheckBox>

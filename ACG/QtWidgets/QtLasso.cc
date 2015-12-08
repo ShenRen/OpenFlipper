@@ -61,16 +61,8 @@
 //ACG
 #include "QtLasso.hh"
 #include "QtColorTranslator.hh"
-#include "../GL/gl.hh"
-#include "../Math/GLMatrixT.hh"
 
 // stdc++
-#include <list>
-#include <vector>
-
-#include <QMouseEvent>
-#include <QEvent>
-#include <QRgb>
 
 
 

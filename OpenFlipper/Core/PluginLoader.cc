@@ -62,62 +62,31 @@
 // -------------------- mview
 #include "Core.hh"
 
-#include <QMenuBar>
-#include <QToolBox>
-#include <QMessageBox>
-#include <QApplication>
-#include <QScrollArea>
-#include <QMessageBox>
-#include <QtScript/QScriptValueIterator>
-#include <QThread>
-#include <QMutexLocker>
 #if QT_VERSION >= 0x050000
-#include <QStaticPlugin>
 #endif
 
-#include <QPluginLoader>
-#include "OpenFlipper/BasePlugin/BaseInterface.hh"
 #include "OpenFlipper/BasePlugin/AboutInfoInterface.hh"
 #include "OpenFlipper/BasePlugin/KeyInterface.hh"
 #include "OpenFlipper/BasePlugin/BackupInterface.hh"
-#include "OpenFlipper/BasePlugin/LoggingInterface.hh"
 #include "OpenFlipper/BasePlugin/MouseInterface.hh"
 #include "OpenFlipper/BasePlugin/PickingInterface.hh"
 #include "OpenFlipper/BasePlugin/ToolboxInterface.hh"
 #include "OpenFlipper/BasePlugin/OptionsInterface.hh"
 #include "OpenFlipper/BasePlugin/ToolbarInterface.hh"
 #include "OpenFlipper/BasePlugin/TextureInterface.hh"
-#include "OpenFlipper/BasePlugin/RenderInterface.hh"
-#include "OpenFlipper/BasePlugin/PostProcessorInterface.hh"
-#include "OpenFlipper/BasePlugin/MenuInterface.hh"
-#include "OpenFlipper/BasePlugin/ContextMenuInterface.hh"
 #include "OpenFlipper/BasePlugin/ProcessInterface.hh"
-#include "OpenFlipper/BasePlugin/ViewInterface.hh"
 #include "OpenFlipper/BasePlugin/ViewModeInterface.hh"
 #include "OpenFlipper/BasePlugin/LoadSaveInterface.hh"
-#include "OpenFlipper/BasePlugin/StatusbarInterface.hh"
 #include "OpenFlipper/BasePlugin/INIInterface.hh"
-#include "OpenFlipper/BasePlugin/FileInterface.hh"
 #include "OpenFlipper/BasePlugin/RPCInterface.hh"
 #include "OpenFlipper/BasePlugin/ScriptInterface.hh"
 #include "OpenFlipper/BasePlugin/SecurityInterface.hh"
-#include "OpenFlipper/BasePlugin/SelectionInterface.hh"
-#include "OpenFlipper/BasePlugin/TypeInterface.hh"
 #include "OpenFlipper/BasePlugin/PluginConnectionInterface.hh"
 #include "OpenFlipper/BasePlugin/MetadataInterface.hh"
-
-#include "OpenFlipper/common/RendererInfo.hh"
-
-#include "OpenFlipper/INIFile/INIFile.hh"
-
-#include "OpenFlipper/common/GlobalOptions.hh"
 
 
 #include <ACG/QtWidgets/QtFileDialog.hh>
 #include "OpenFlipper/widgets/PluginDialog/PluginDialog.hh"
-
-#include <deque>
-#include <limits>
 
 /**
  * The number of plugins to load simultaneously.
@@ -906,6 +875,8 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
     if ( checkSignal(plugin,"updateView()") )
       connect(plugin,SIGNAL(updateView()),this,SLOT(updateView()), Qt::AutoConnection);
 
+    if ( checkSignal(plugin,"blockScenegraphUpdates(bool)") )
+      connect(plugin,SIGNAL(blockScenegraphUpdates(bool)),this,SLOT(blockScenegraphUpdates(bool)), Qt::QueuedConnection);
 
     if ( checkSignal(plugin,"updatedObject(int)") && checkSignal(plugin,"updatedObject(int,const UpdateType&)") ){
       

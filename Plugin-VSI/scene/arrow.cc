@@ -48,12 +48,10 @@
 \*===========================================================================*/
 
 //== INCLUDES =================================================================
-#include <cmath>
 
 #include <QPainterPath>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneWheelEvent>
 
 #include <OpenFlipper/common/GlobalOptions.hh>
 

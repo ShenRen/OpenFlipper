@@ -59,8 +59,6 @@
 #include <OpenFlipper/common/Types.hh>
 
 #include <ObjectTypes/PolyMesh/PluginFunctionsPolyMesh.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 
 
 namespace PluginFunctions {

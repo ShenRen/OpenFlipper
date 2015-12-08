@@ -62,7 +62,6 @@
 #include "ScreenQuad.hh"
 #include <ACG/ShaderUtils/GLSLShader.hh>
 #include <ACG/GL/GLError.hh>
-#include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/globjects.hh>
 
 //== NAMESPACES ===============================================================

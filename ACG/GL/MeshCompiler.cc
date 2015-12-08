@@ -50,15 +50,10 @@
 
 #include "MeshCompiler.hh"
 
-#include <map>
-#include <list>
-#include <cassert>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 
 #ifdef USE_OPENMP
-#include <omp.h>
 #endif
 
 #ifdef ACG_MC_USE_STL_HASH
@@ -1533,8 +1528,7 @@ void MeshCompiler::resolveTriangulation()
       {
         int negCornerID = triIndexBuffer_[drawTriID * 3 + k];
         int cornerID = -1 - negCornerID;
-        int vertexID = triIndexBuffer_[drawTriID * 3 + k] = getInputIndexSplit(faceID, cornerID);
-        assert(vertexID >= 0);
+        triIndexBuffer_[drawTriID * 3 + k] = getInputIndexSplit(faceID, cornerID);
       }
     }
   }

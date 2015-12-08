@@ -49,15 +49,12 @@
 
 //== INCLUDES =================================================================
 #include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QPushButton>
 #include <QDialog>
 #include <QTextEdit>
 #include <QFileDialog>
 #include <QMenu>
-#include <QAction>
 #include <QMenuBar>
-#include <QIcon>
 #include <QMessageBox>
 
 #include <QApplication>
@@ -65,11 +62,9 @@
 #include <QScriptEngine>
 
 #include <QDomDocument>
-#include <QDomElement>
 
 #include <QXmlQuery>
 #include <QXmlResultItems>
-#include <QRegExp>
 
 #include <OpenFlipper/common/GlobalOptions.hh>
 
@@ -78,7 +73,6 @@
 #include "scene/sceneElement.hh"
 
 #include "parser/context.hh"
-#include "parser/element.hh"
 
 //== NAMESPACES ===============================================================
 namespace VSI {

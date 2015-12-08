@@ -61,7 +61,6 @@
 // -------------------- mview
 #include "CoreWidget.hh"
 // -------------------- ACG
-#include "OpenFlipper/common/GlobalOptions.hh"
 
 // -------------------- Qt
 

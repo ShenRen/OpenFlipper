@@ -60,7 +60,6 @@
 
 #include "QtShaderDialog.hh"
 #include "../Scenegraph/ShaderNode.hh"
-#include "../Scenegraph/DrawModes.hh"
 #include <QFileInfo>
 #include <QDir>
 

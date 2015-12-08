@@ -61,7 +61,6 @@
 
 
 #include "TextureNode.hh"
-#include "DrawModes.hh"
 #include <QGLWidget>
 
 //== NAMESPACES ===============================================================

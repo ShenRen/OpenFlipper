@@ -49,7 +49,6 @@
 
 #include "MovePlugin.hh"
 
-#include "../OpenFlipper/BasePlugin/PluginFunctions.hh"
 #ifdef ENABLE_POLYLINE_SUPPORT
 #include <ObjectTypes/PolyLine/PolyLine.hh>
 #endif

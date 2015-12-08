@@ -61,7 +61,6 @@
 
 
 #include "EnvMapNode.hh"
-#include "DrawModes.hh"
 
 
 //== NAMESPACES ===============================================================

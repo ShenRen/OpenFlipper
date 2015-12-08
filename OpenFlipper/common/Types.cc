@@ -65,14 +65,11 @@
 //== INCLUDES =================================================================
 
 #include "TypesInternal.hh"
-#include "DataTypes.hh"
-#include <map>
 
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 
 #include <QCoreApplication>
-#include <QMetaType>
 
 
 /** This field defines the start id for custom datatypes. It starts high to avoid conflicts with previously

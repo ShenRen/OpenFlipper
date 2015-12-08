@@ -66,9 +66,6 @@
   #include <QtGui>
 #endif
 
-#include <QFileInfo>
-#include <QSettings>
-
 #include <fstream>
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
@@ -77,10 +74,6 @@
 #include <OpenMesh/Core/IO/IOManager.hh>
 
 #include <ObjectTypes/Camera/Camera.hh>
-
-#include <string>
-
-#include <vector>
 
 
 //== CONSTANTS ===================================================

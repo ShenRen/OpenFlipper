@@ -48,7 +48,6 @@
 \*===========================================================================*/
 
 #include <OpenFlipper/common/Types.hh>
-#include <OpenFlipper/common/BaseObjectData.hh>
 #include "SkeletonMarker.hh"
 
 //******************************************************************************

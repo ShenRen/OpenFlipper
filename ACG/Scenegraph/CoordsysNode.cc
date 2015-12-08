@@ -59,11 +59,7 @@
 //== INCLUDES =================================================================
 
 #include "CoordsysNode.hh"
-#include <ACG/GL/gl.hh>
 #include <ACG/GL/IRenderer.hh>
-
-#include <iostream>
-#include <cmath>
 
 
 //== NAMESPACES ===============================================================

@@ -59,9 +59,7 @@
 //== INCLUDES =================================================================
 #include <ACG/GL/acg_glew.hh>
 #include "LineNode.hh"
-#include <ACG/GL/gl.hh>
 #include <ACG/GL/IRenderer.hh>
-#include <ACG/GL/VertexDeclaration.hh>
 
 //== NAMESPACES ===============================================================
 

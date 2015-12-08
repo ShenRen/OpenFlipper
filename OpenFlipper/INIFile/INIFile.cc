@@ -53,18 +53,7 @@
 #include "INIFile.hh"
 
 //std include
-#include <fstream>
-#include <iostream>
-#include <functional>
-#include <sstream>
-#include <cstring>
-#include <cctype>
 //#include <ios>
-
-#include <QString>
-#include <QFile>
-#include <QTextStream>
-#include <QStringList>
 
 // -----------------------------------------------------------------------------
 

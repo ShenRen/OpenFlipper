@@ -49,20 +49,9 @@
 
 #include "ScriptingPlugin.hh"
 
-#include <ACG/GL/GLState.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 #include "OpenFlipper/common/GlobalOptions.hh"
 
-#include <QFileDialog>
-#include <QFile>
-#include <QFileInfo>
-#include <QTextStream>
-#include <QSyntaxHighlighter>
-
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

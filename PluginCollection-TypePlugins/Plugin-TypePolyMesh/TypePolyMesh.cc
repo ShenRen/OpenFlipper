@@ -50,7 +50,6 @@
 
 #include "TypePolyMesh.hh"
 
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 #include <OpenFlipper/common/BackupData.hh>
 #include "PolyMeshBackup.hh"
 

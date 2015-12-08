@@ -50,8 +50,6 @@
 
 #include "SlicePlugin.hh"
 
-#include <iostream>
-
 #include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 #include <OpenFlipper/common/GlobalOptions.hh>
 

@@ -52,11 +52,6 @@
 #include "TestPlugin.hh"
 
 
-#include <ObjectTypes/PolyMesh/PolyMesh.hh>
-#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 void TestPlugin::initializePlugin()
 {
 

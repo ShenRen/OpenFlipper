@@ -49,16 +49,13 @@
 
 #include "ShaderGenerator.hh"
 #include <cstdio>
-#include <cstring>
 #include <iostream>
-#include <algorithm>
 
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
 #include <QTextStream>
 #include <QDateTime>
-#include <QHash>
 
 namespace ACG
 {

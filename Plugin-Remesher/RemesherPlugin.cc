@@ -59,10 +59,6 @@
  *  - Emit status updates when remeshing
  */
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 // ----------------------------------------------------------------------------------------
 
 RemesherPlugin::RemesherPlugin() :

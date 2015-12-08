@@ -411,8 +411,6 @@ namespace ACG {
     double r  = real_[0];
     Vec3   rv = Vec3(real_[1], real_[2], real_[3]);
 
-    Vec3   dv = Vec3(dual_[1], dual_[2], dual_[3]);
-    
     Vec3 tempVec = (rv % p) + r * p;
     p+=2.0*(rv % tempVec);
 

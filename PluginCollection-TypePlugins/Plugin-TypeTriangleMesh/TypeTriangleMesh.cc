@@ -50,7 +50,6 @@
 
 #include "TypeTriangleMesh.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/BackupData.hh>
 #include "TriMeshBackup.hh"
 

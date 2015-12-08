@@ -59,10 +59,7 @@
 #include "SpinBoxEventFilter.hh"
 
 #include <QAbstractSpinBox>
-#include <QAbstractSlider>
 #include <QEvent>
-#include <QWidget>
-#include <QObjectList>
 #include <QMetaEnum>
 #include <stack>
 

@@ -60,8 +60,6 @@
 
 #include "CoreWidget.hh"
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 #ifdef WIN32
 const QString CoreWidget::homePage_ = "qthelp://org.openflipper.user/user/main.html";
 #else

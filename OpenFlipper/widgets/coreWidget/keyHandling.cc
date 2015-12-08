@@ -50,11 +50,6 @@
 #include "CoreWidget.hh"
 
 #include <OpenFlipper/BasePlugin/KeyInterface.hh>
-#include <OpenFlipper/BasePlugin/BaseInterface.hh>
-
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 //-----------------------------------------------------------------------------
 

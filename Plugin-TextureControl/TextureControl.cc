@@ -50,22 +50,14 @@
 
 #include "TextureControl.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctionsViewControls.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include "ImageStorage.hh"
 
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif
 
 #ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-#include <ObjectTypes/VolumeMeshObject/VolumeMeshDrawModesContainer.hh>
 #endif
 
 #define TEXTUREDATA "TextureData"

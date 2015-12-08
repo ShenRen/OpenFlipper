@@ -59,22 +59,11 @@
 
 #include "MeshObjectInfoPlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <QStringList>
-#include <QLocale>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <MeshTools/MeshInfoT.hh>
-#include <OpenFlipper/common/BaseObject.hh>
-#include <ACG/Geometry/Algorithms.hh>
 
 #include <Math_Tools/Math_Tools.hh>
 
-#include <cfloat>
-
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

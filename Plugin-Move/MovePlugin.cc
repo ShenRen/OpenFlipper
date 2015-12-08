@@ -50,23 +50,12 @@
 
 #include "MovePlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <QStringList>
-#include <ACG/QtScenegraph/QtTranslationManipulatorNode.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <MeshTools/MeshFunctions.hh>
 #include <MeshTools/MeshInfoT.hh>
 
 #ifdef USE_OPENMP
-#include <omp.h>
 #endif
 
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

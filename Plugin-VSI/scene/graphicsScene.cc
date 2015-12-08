@@ -57,7 +57,6 @@
 
 #include "elementInput.hh"
 #include "elementOutput.hh"
-#include "elementInOut.hh"
 #include "elementFunction.hh"
 #include "connection.hh"
 #include "connectionPoint.hh"
@@ -66,21 +65,12 @@
 #include "baseWidget.hh"
 
 #include <QApplication>
-#include <QPainter>
-#include <QPainterPath>
 #include <QPaintEngine>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneDragDropEvent>
 #include <QMimeData>
-#include <QGraphicsRectItem>
-#include <QSet>
 
-#include <QXmlQuery>
 #include <QXmlResultItems>
-#include <QRegExp>
 
 #include "../parser/context.hh"
-#include "../parser/inout.hh"
 #include "../parser/output.hh"
 #include "../parser/function.hh"
 

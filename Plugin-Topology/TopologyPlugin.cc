@@ -49,10 +49,6 @@
   
 
 #include "TopologyPlugin.hh"
-#include <iostream>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
-#include <ACG/Geometry/Algorithms.hh>
 
 #define EDGE_FLIP_POPUP "<B>Flip Edge</B><br>Rotate an edge"
 #define EDGE_COLLAPSE_POPUP "<B>Collapse Edge</B><br>Collapse an edge into one of its vertices."
@@ -61,12 +57,8 @@
 #define FACE_SPLIT_POPUP "<B>Split Face</B><br>Split a face at a clicked point."
 #define FACE_DELETE_POPUP "<B>Delete Face</B><br>Remove a clicked face."
 
-#include <OpenMesh/Core/System/omstream.hh>
-#include <cfloat>
 
-
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif

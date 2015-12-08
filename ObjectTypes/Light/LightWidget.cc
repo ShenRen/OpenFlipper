@@ -49,10 +49,6 @@
 
 #include "LightWidget.hh"
 
-#include <QMessageBox>
-#include <iostream>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 LightWidget::LightWidget(  ACG::SceneGraph::BaseNode* _node, QWidget *parent)
  : QDialog(parent),
  object_(0),

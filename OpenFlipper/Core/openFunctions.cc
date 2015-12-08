@@ -56,18 +56,12 @@
 #include <ACG/QtWidgets/QtFileDialog.hh>
 #include <ACG/Scenegraph/SceneGraphAnalysis.hh>
 
-#include "OpenFlipper/common/GlobalOptions.hh"
 #include <OpenFlipper/common/RecentFiles.hh>
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 
 #include "OpenFlipper/widgets/loadWidget/loadWidget.hh"
 #include "OpenFlipper/widgets/addEmptyWidget/addEmptyWidget.hh"
 
-#include <OpenFlipper/common/Types.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
-
-#include <OpenFlipper/common/DataTypes.hh>
-#include <time.h>
 
 #include "OpenFunctionThread.hh"
 

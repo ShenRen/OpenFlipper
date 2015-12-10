@@ -85,6 +85,8 @@ void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
       align::scaleToUnitCubeNonUniform( mesh );
       align::moveToCOG( mesh );
 
+      emit log(LOGINFO,"Moved Triangle mesh scaleToUnitCubeNonUniform");
+
     } else if(o_it->dataType() == DATA_POLY_MESH) {
 
       PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
@@ -92,7 +94,7 @@ void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
       align::moveToCOG( mesh );
       align::scaleToUnitCubeNonUniform( mesh );
       align::moveToCOG( mesh );
-
+      emit log(LOGINFO,"Moved poly mesh scaleToUnitCubeNonUniform");
     }
 
 
@@ -114,6 +116,8 @@ void PluginAlignMeshes::scaleToUnitCubeUniform() {
       align::scaleToUnitCubeUniform( mesh );
       align::moveToCOG( mesh );
 
+      emit log(LOGINFO,"Moved Triangle mesh scaleToUnitCubeUniform");
+
     } else if(o_it->dataType() == DATA_POLY_MESH) {
 
       PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
@@ -122,6 +126,7 @@ void PluginAlignMeshes::scaleToUnitCubeUniform() {
       align::scaleToUnitCubeUniform( mesh );
       align::moveToCOG( mesh );
 
+      emit log(LOGINFO,"Moved poly mesh scaleToUnitCubeUniform");
     }
 
     emit updatedObject(o_it->id(), UPDATE_GEOMETRY);
@@ -142,6 +147,8 @@ void PluginAlignMeshes::alignMeshes() {
       align::moveToCOG( mesh );
       align::rotate( mesh );
 
+      emit log(LOGINFO,"Moved Triangle mesh alignMeshes");
+
     } else if(o_it->dataType() == DATA_POLY_MESH) {
 
       PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
@@ -149,6 +156,7 @@ void PluginAlignMeshes::alignMeshes() {
       align::moveToCOG( mesh );
       align::rotate( mesh );
 
+      emit log(LOGINFO,"Moved Poly mesh alignMeshes");
     }
 
     emit updatedObject(o_it->id(), UPDATE_GEOMETRY);

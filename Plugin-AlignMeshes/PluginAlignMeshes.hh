@@ -76,11 +76,7 @@ public:
 
 signals:
   // BaseInterface
-  void updateView();
   void updatedObject(int, const UpdateType);
-  void nodeVisibilityChanged(int _identifier);
-  void setSlotDescription(QString     _slotName,   QString     _slotDescription,
-                          QStringList _parameters, QStringList _descriptions);
 
   // LoggingInterface
   void log(Logtype _type, QString _message);

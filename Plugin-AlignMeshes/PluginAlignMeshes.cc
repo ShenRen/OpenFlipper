@@ -81,17 +81,17 @@ void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
 
       TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
 
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
       align::scaleToUnitCubeNonUniform( mesh );
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
 
     } else if(o_it->dataType() == DATA_POLY_MESH) {
 
       PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
 
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
       align::scaleToUnitCubeNonUniform( mesh );
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
 
     }
 
@@ -110,17 +110,17 @@ void PluginAlignMeshes::scaleToUnitCubeUniform() {
 
       TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
 
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
       align::scaleToUnitCubeUniform( mesh );
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
 
     } else if(o_it->dataType() == DATA_POLY_MESH) {
 
       PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
 
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
       align::scaleToUnitCubeUniform( mesh );
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
 
     }
 
@@ -139,14 +139,14 @@ void PluginAlignMeshes::alignMeshes() {
 
       TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
 
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
       align::rotate( mesh );
 
     } else if(o_it->dataType() == DATA_POLY_MESH) {
 
       PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
 
-      align::moveToMean( mesh );
+      align::moveToCOG( mesh );
       align::rotate( mesh );
 
     }

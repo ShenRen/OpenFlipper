@@ -46,7 +46,7 @@ namespace align{
 
 
 template< class MeshT >
-void moveToMean(MeshT& _mesh) {
+void moveToCOG(MeshT& _mesh) {
 
   ACG::Vec3d mean(0.0);
   for (typename MeshT::VertexIter v_it = _mesh.vertices_begin(); v_it != _mesh.vertices_end(); ++v_it) {

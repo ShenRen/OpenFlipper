@@ -67,10 +67,6 @@ void PluginAlignMeshes::initializePlugin() {
   connect(toolBox_->scaleToUnitCubeNonUniformButton, SIGNAL(pressed()), SLOT(scaleToUnitCubeNonUniform()));
 }
 
-void PluginAlignMeshes::pluginsInitialized() {
-
-}
-
 void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
 
   for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH ); o_it

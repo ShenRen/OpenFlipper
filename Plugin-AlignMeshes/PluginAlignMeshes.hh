@@ -98,7 +98,6 @@ private slots:
 
   // BaseInterface
   void initializePlugin();
-  void pluginsInitialized();
 
 private:
   AlignMeshesToolbox* toolBox_;

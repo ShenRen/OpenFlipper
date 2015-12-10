@@ -14,11 +14,19 @@ BUILDPATH=""
 if [ "$COMPILER" == "gcc" ]; then
   echo "Building with GCC";
   BUILDPATH="gcc"
+
+  # without icecc: no options required
+  OPTIONS="-DCMAKE_CXX_COMPILER=/usr/lib/icecc/bin/g++ -DCMAKE_C_COMPILER=/usr/lib/icecc/bin/gcc"
+  export ICECC_CXX=/usr/bin/g++ ; export ICECC_CC=/usr/bin/gcc
 elif [ "$COMPILER" == "clang" ]; then
 
-  OPTIONS="$OPTIONS -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DGTEST_PREFIX=~/sw/gtest-1.7.0-clang/ "
+#  Build options without icecc
+#  OPTIONS="$OPTIONS -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DGTEST_PREFIX=~/sw/gtest-1.7.0-clang/ "
+
+  OPTIONS="$OPTIONS -DCMAKE_CXX_COMPILER=/usr/lib/icecc/bin/g++ -DCMAKE_C_COMPILER=/usr/lib/icecc/bin/gcc -DGTEST_PREFIX=~/sw/gtest-1.7.0-clang/ "
   BUILDPATH="clang"
   echo "Building with CLANG";
+  export ICECC_CXX=/usr/bin/clang++ ; export ICECC_CC=/usr/bin/clang
 fi  
 
 if [ "$LANGUAGE" == "C++98" ]; then
@@ -72,7 +80,7 @@ cd build-release-$BUILDPATH
 cmake -DCMAKE_BUILD_TYPE=Release -DOPENFLIPPER_BUILD_UNIT_TESTS=TRUE -DSTL_VECTOR_CHECKS=ON $OPTIONS ../
 
 #build it
-make
+make -j16
 
 #########################################
 # Run Release Unittests

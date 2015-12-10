@@ -1,6 +1,51 @@
+/*===========================================================================*\
+*                                                                            *
+*                              OpenFlipper                                   *
+ *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
+ *           Department of Computer Graphics and Multimedia                  *
+ *                          All rights reserved.                             *
+ *                            www.openflipper.org                            *
+ *                                                                           *
+ *---------------------------------------------------------------------------*
+ * This file is part of OpenFlipper.                                         *
+ *---------------------------------------------------------------------------*
+ *                                                                           *
+ * Redistribution and use in source and binary forms, with or without        *
+ * modification, are permitted provided that the following conditions        *
+ * are met:                                                                  *
+ *                                                                           *
+ * 1. Redistributions of source code must retain the above copyright notice, *
+ *    this list of conditions and the following disclaimer.                  *
+ *                                                                           *
+ * 2. Redistributions in binary form must reproduce the above copyright      *
+ *    notice, this list of conditions and the following disclaimer in the    *
+ *    documentation and/or other materials provided with the distribution.   *
+ *                                                                           *
+ * 3. Neither the name of the copyright holder nor the names of its          *
+ *    contributors may be used to endorse or promote products derived from   *
+ *    this software without specific prior written permission.               *
+ *                                                                           *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       *
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED *
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A           *
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER *
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,  *
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,       *
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR        *
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF    *
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
+*                                                                            *
+\*===========================================================================*/
+
 #include "PluginAlignMeshes.hh"
 
-#include <Eigen/Dense>
+#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
+#include <ObjectTypes/PolyMesh/PolyMesh.hh>
+
+#include "AlignT.hh"
+
 
 PluginAlignMeshes::PluginAlignMeshes() :
 toolBox_(0) {
@@ -28,44 +73,30 @@ void PluginAlignMeshes::pluginsInitialized() {
 
 void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
 
-  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH); o_it
+  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH ); o_it
       != PluginFunctions::objectsEnd(); ++o_it) {
-    TriMeshObject* tri_object = PluginFunctions::triMeshObject(*o_it);
 
-    if (!tri_object)
-      continue;
 
-    moveToMean(*tri_object);
+    if(o_it->dataType() == DATA_TRIANGLE_MESH){
 
-    ACG::Vec3d min(DBL_MAX);
-    ACG::Vec3d max(-DBL_MAX);
+      TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
 
-    TriMesh& mesh = *tri_object->mesh();
-    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-      min.minimize(mesh.point(*v_it));
-      max.maximize(mesh.point(*v_it));
+      align::moveToMean( mesh );
+      align::scaleToUnitCubeNonUniform( mesh );
+      align::moveToMean( mesh );
+
+    } else if(o_it->dataType() == DATA_POLY_MESH) {
+
+      PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
+
+      align::moveToMean( mesh );
+      align::scaleToUnitCubeNonUniform( mesh );
+      align::moveToMean( mesh );
+
     }
 
-    const ACG::Vec3d diagonal = max - min;
 
-    const double maxDiag = std::max(std::max(diagonal[0],diagonal[1]),diagonal[2]);
-
-    OpenMesh::MPropHandleT<ACG::Vec3d> origDiagonal;
-    if (!mesh.get_property_handle(origDiagonal, "origDiagonal"))
-      mesh.add_property(origDiagonal, "origDiagonal");
-
-    mesh.mproperty(origDiagonal).set_persistent(true);
-    mesh.property(origDiagonal) = diagonal;
-
-    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-      mesh.point(*v_it)[0] /= diagonal[0];
-      mesh.point(*v_it)[1] /= diagonal[1];
-      mesh.point(*v_it)[2] /= diagonal[2];
-    }
-
-    moveToMean(*tri_object);
-
-    emit updatedObject(tri_object->id(), UPDATE_ALL);
+    emit updatedObject(o_it->id(), UPDATE_GEOMETRY);
   }
 
 }
@@ -74,42 +105,26 @@ void PluginAlignMeshes::scaleToUnitCubeUniform() {
 
   for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH); o_it
       != PluginFunctions::objectsEnd(); ++o_it) {
-    TriMeshObject* tri_object = PluginFunctions::triMeshObject(*o_it);
 
-    if (!tri_object)
-      continue;
+    if(o_it->dataType() == DATA_TRIANGLE_MESH){
 
-    moveToMean(*tri_object);
+      TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
 
-    ACG::Vec3d min(DBL_MAX);
-    ACG::Vec3d max(-DBL_MAX);
+      align::moveToMean( mesh );
+      align::scaleToUnitCubeUniform( mesh );
+      align::moveToMean( mesh );
 
-    TriMesh& mesh = *tri_object->mesh();
-    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-      min.minimize(mesh.point(*v_it));
-      max.maximize(mesh.point(*v_it));
+    } else if(o_it->dataType() == DATA_POLY_MESH) {
+
+      PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
+
+      align::moveToMean( mesh );
+      align::scaleToUnitCubeUniform( mesh );
+      align::moveToMean( mesh );
+
     }
 
-    const ACG::Vec3d diagonal = max - min;
-
-    const double maxDiag = std::max(std::max(diagonal[0],diagonal[1]),diagonal[2]);
-
-    OpenMesh::MPropHandleT<ACG::Vec3d> origDiagonal;
-    if (!mesh.get_property_handle(origDiagonal, "origDiagonal"))
-      mesh.add_property(origDiagonal, "origDiagonal");
-
-    mesh.mproperty(origDiagonal).set_persistent(true);
-    mesh.property(origDiagonal) = diagonal;
-
-    for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-      mesh.point(*v_it)[0] /= maxDiag;
-      mesh.point(*v_it)[1] /= maxDiag;
-      mesh.point(*v_it)[2] /= maxDiag;
-    }
-
-    moveToMean(*tri_object);
-
-    emit updatedObject(tri_object->id(), UPDATE_ALL);
+    emit updatedObject(o_it->id(), UPDATE_GEOMETRY);
   }
 
 }
@@ -118,100 +133,26 @@ void PluginAlignMeshes::alignMeshes() {
 
   for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH); o_it
       != PluginFunctions::objectsEnd(); ++o_it) {
-    TriMeshObject* tri_object = PluginFunctions::triMeshObject(*o_it);
-    if (tri_object != NULL) {
 
-      moveToMean(*tri_object);
-      rotate(*tri_object);
 
-      emit updatedObject(tri_object->id(), UPDATE_ALL);
+    if(o_it->dataType() == DATA_TRIANGLE_MESH) {
+
+      TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
+
+      align::moveToMean( mesh );
+      align::rotate( mesh );
+
+    } else if(o_it->dataType() == DATA_POLY_MESH) {
+
+      PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
+
+      align::moveToMean( mesh );
+      align::rotate( mesh );
+
     }
+
   }
 }
-
-void PluginAlignMeshes::moveCenterOfBBToOrigin(TriMeshObject& _object) {
-
-  TriMesh& mesh = *_object.mesh();
-
-  ACG::Vec3d min(DBL_MAX);
-  ACG::Vec3d max(-DBL_MAX);
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-    min.minimize(mesh.point(*v_it));
-    max.maximize(mesh.point(*v_it));
-  }
-
-  const ACG::Vec3d diag = max - min;
-  const ACG::Vec3d center = min + 0.5*diag;
-
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-    mesh.point(*v_it) -= center;
-  }
-}
-
-void PluginAlignMeshes::moveToMean(TriMeshObject& _object) {
-  TriMesh& mesh = *_object.mesh();
-
-  ACG::Vec3d mean(0.0);
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-    mean += mesh.point(*v_it);
-  }
-
-  mean /= (double)mesh.n_vertices();
-
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it) {
-    mesh.set_point(*v_it, mesh.point(*v_it) - mean);
-  }
-}
-
-void PluginAlignMeshes::rotate(TriMeshObject& _object) {
-  using namespace Eigen;
-
-  TriMesh& mesh = *_object.mesh();
-
-  Matrix3Xd data = Matrix3Xd::Zero(3, mesh.n_vertices());
-  size_t i(0);
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it, ++i) {
-    const ACG::Vec3d tmp = mesh.point(*v_it);
-    data.col(i) = Vector3d(tmp[0], tmp[1], tmp[2]);
-  }
-
-  Matrix3d covar = (data * data.transpose()) / (double)mesh.n_vertices();
-
-  JacobiSVD<Matrix3d> svd(covar, ComputeThinU | ComputeThinV);
-
-  const Matrix3d& u = svd.matrixU();
-
-  Eigen::Vector3d v0 = u.col(0);
-  Eigen::Vector3d v1 = u.col(1);
-  Eigen::Vector3d v2 = v0.cross(v1);
-
-  v0.normalize();
-  v1.normalize();
-  v2.normalize();
-
-  Matrix3d trans;
-  trans.col(0) = v0;
-  trans.col(1) = v1;
-  trans.col(2) = v2;
-
-  Matrix3d invTrans = trans.inverse();
-
-  ACG::Matrix4x4d mat;
-  mat.identity();
-  for (i = 0; i < 3; ++i) {
-    for (size_t j = 0; j < 3; ++j) {
-      mat(i,j) = invTrans(i,j);
-    }
-  }
-
-  for (TriMesh::VertexIter v_it = mesh.vertices_begin(); v_it != mesh.vertices_end(); ++v_it, ++i) {
-    const ACG::Vec4d tmp(mesh.point(*v_it)[0], mesh.point(*v_it)[1], mesh.point(*v_it)[2], 1.0);
-    const ACG::Vec4d res = mat * tmp;
-
-    mesh.set_point(*v_it, ACG::Vec3d(res[0], res[1],res[2]));
-  }
-}
-
 
 #if QT_VERSION < 0x050000
   Q_EXPORT_PLUGIN2(pluginalignmeshes, PluginAlignMeshes)

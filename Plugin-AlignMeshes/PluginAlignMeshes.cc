@@ -151,6 +151,8 @@ void PluginAlignMeshes::alignMeshes() {
 
     }
 
+    emit updatedObject(o_it->id(), UPDATE_GEOMETRY);
+
   }
 }
 

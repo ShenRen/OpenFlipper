@@ -451,6 +451,7 @@ int main(int argc, char **argv)
     #ifndef __APPLE__
     initOpenGLFunctions();
     #endif
+    //std::cout<<QGLFormat::openGLVersionFlags();
 
     // After setting all Options from command line, build the real gui
     w->init();   

@@ -54,7 +54,6 @@
 #include <string>
 
 DLLEXPORT void initOpenGLFunctions() {
-
   int error = ogl_LoadFunctions();
     if(error != ogl_LOAD_SUCCEEDED)
     {
@@ -65,6 +64,6 @@ DLLEXPORT void initOpenGLFunctions() {
 
 DLLEXPORT const char * getOpenGLVersion() {
     std::string version;
-    version = ogl_GetMajorVersion()+"."+ogl_GetMinorVersion();
+    version = std::to_string( ogl_GetMajorVersion())+"."+std::to_string(ogl_GetMinorVersion());
     return version.c_str() ;
 }

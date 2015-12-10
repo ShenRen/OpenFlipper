@@ -7,7 +7,6 @@ include_directories (
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${OPENGL_INCLUDE_DIR}
-  ${GLEW_INCLUDE_DIR}
   ${GLUT_INCLUDE_DIR}
 )
 
@@ -28,14 +27,8 @@ if( APPLE )
   endforeach ()
 
   link_directories (
-    ${GLEW_LIBRARY_DIR}
     ${ADDITIONAL_PLUGINLIB_LINK_DIRS}
   )
-
-else (APPLE)
-   link_directories (
-      ${GLEW_LIBRARY_DIR}
-   )
 endif(APPLE)
 
 if (WIN32)
@@ -221,7 +214,6 @@ target_link_libraries (${OPENFLIPPER_PRODUCT_STRING}
   OpenFlipperPluginLib
   ${QT_LIBRARIES}
   ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARY}
   ${GLUT_LIBRARIES}
   ${COREAPP_ADDITIONAL_LINK_LIBRARIES}
   ${OPENFLIPPER_STATIC_PLUGINS}

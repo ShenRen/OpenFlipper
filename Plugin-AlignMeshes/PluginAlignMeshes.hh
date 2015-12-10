@@ -41,18 +41,14 @@
 
 #pragma once
 
-#include <QtGui>
-#include "Widgets/AlignMeshesToolbox.hh"
+#include <QObject>
 
+#include "Widgets/AlignMeshesToolbox.hh"
 
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 #include <OpenFlipper/BasePlugin/ToolboxInterface.hh>
-
 #include <OpenFlipper/common/Types.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 
 
 class PluginAlignMeshes : public QObject, BaseInterface, LoggingInterface, ToolboxInterface {

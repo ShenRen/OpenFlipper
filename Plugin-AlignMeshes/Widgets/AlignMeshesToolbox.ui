@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AlignMeshesToolbox</class>
+ <widget class="QWidget" name="AlignMeshesToolbox">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>385</width>
+    <height>118</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="scaleToUnitCubeUniformButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes &lt;span style=&quot; color:#000000;&quot;&gt;such that their biggest boundingbox axis size is 1.0. The aspect ratio of the mesh is kept.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="statusTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes &lt;span style=&quot; color:#000000;&quot;&gt;such that their biggest boundingbox axis size is 1.0. The aspect ratio of the mesh is kept.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes &lt;span style=&quot; color:#000000;&quot;&gt;such that their biggest boundingbox axis size is 1.0. The aspect ratio of the mesh is kept.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Scale Meshes to Unit Cube Uniformly</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="alignMeshesButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aligns meshes with the unit axis. The plugin analyses the meshes (&lt;span style=&quot; font-weight:600;&quot;&gt;which are marked as target meshes&lt;/span&gt;) and aligns the mesh such that the direction of the biggest extend of the mesh is aligned with the x axis and the second largest is aligned to the y axis.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#aa0000;&quot;&gt;If you want to align meshes to each other, select both meshes as target.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="statusTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aligns meshes with the unit axis. The plugin analyses the meshes (&lt;span style=&quot; font-weight:600;&quot;&gt;which are marked as target meshes&lt;/span&gt;) and aligns the mesh such that the direction of the biggest extend of the mesh is aligned with the x axis and the second largest is aligned to the y axis.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#aa0000;&quot;&gt;If you want to align meshes to each other, select both meshes as target.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aligns meshes with the unit axis. The plugin analyses the meshes (&lt;span style=&quot; font-weight:600;&quot;&gt;which are marked as target meshes&lt;/span&gt;) and aligns the mesh such that the direction of the biggest extend of the mesh is aligned with the x axis and the second largest is aligned to the y axis.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#aa0000;&quot;&gt;If you want to align meshes to each other, select both meshes as target.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Align Meshes with default axis</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="scaleToUnitCubeNonUniformButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes such that their boundingbox axis sizes are all 1.0. The aspect ratio of the mesh is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; kept.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="statusTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes such that their boundingbox axis sizes are all 1.0. The aspect ratio of the mesh is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; kept.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes such that their boundingbox axis sizes are all 1.0. The aspect ratio of the mesh is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; kept.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Scale Meshes to Unit Cube Non-Uniformly</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

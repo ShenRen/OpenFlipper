@@ -99,9 +99,68 @@ namespace ACG
 #define SG_OUTPUT_VERTEXCOLOR "SG_OUTPUT_VERTEXCOLOR"
 
 
+
 int ShaderProgGenerator::numRegisteredModifiers_ = 0;
 std::vector<ShaderModifier*> ShaderProgGenerator::registeredModifiers_;
 
+
+ShaderGenerator::Keywords::Keywords()
+: macro_requestPosVS("#define SG_REQUEST_POSVS"),
+macro_requestPosOS("#define SG_REQUEST_POSOS"),
+macro_requestTexcoord("#define SG_REQUEST_TEXCOORD"),
+macro_requestVertexColor("#define SG_REQUEST_VERTEXCOLOR"),
+macro_requestNormalVS("#define SG_REQUEST_NORMALVS"),
+macro_requestNormalOS("#define SG_REQUEST_NORMALOS"),
+macro_requestRenormalize("#define SG_REQUEST_RENORMARLIZE"),
+
+macro_inputPosVS("SG_INPUT_POSVS"),
+macro_inputPosOS("SG_INPUT_POSOS"),
+macro_inputPosCS("SG_INPUT_POSCS"),
+macro_inputNormalVS("SG_INPUT_NORMALVS"),
+macro_inputNormalOS("SG_INPUT_NORMALOS"),
+macro_inputTexcoord("SG_INPUT_TEXCOORD"),
+macro_inputVertexColor("SG_INPUT_VERTEXCOLOR"),
+
+macro_outputPosVS("SG_OUTPUT_POSVS"),
+macro_outputPosOS("SG_OUTPUT_POSOS"),
+macro_outputPosCS("SG_OUTPUT_POSCS"),
+macro_outputNormalVS("SG_OUTPUT_NORMALVS"),
+macro_outputNormalOS("SG_OUTPUT_NORMALOS"),
+macro_outputTexcoord("SG_OUTPUT_TEXCOORD"),
+macro_outputVertexColor("SG_OUTPUT_VERTEXCOLOR"),
+
+ioPosCS("PosCS"),
+ioPosOS("PosOS"),
+ioPosVS("PosVS"),
+ioNormalVS("NormalVS"),
+ioNormalOS("NormalOS"),
+ioTexcoord("TexCoord"),
+ioColor("Color"),
+
+vs_inputPrefix("in"),
+vs_outputPrefix("outVertex"),
+tcs_outputPrefix("outTc"),
+tes_outputPrefix("outTe"),
+gs_outputPrefix("outGeometry"),
+fs_outputPrefix("outFragment"),
+
+vs_inputPosition(vs_inputPrefix + "Position"),
+vs_inputNormal(vs_inputPrefix + "Normal"),
+vs_inputTexCoord(vs_inputPrefix + ioTexcoord),
+vs_inputColor(vs_inputPrefix + ioColor),
+
+vs_outputPosCS(vs_outputPrefix + ioPosCS),
+vs_outputPosVS(vs_outputPrefix + ioPosVS),
+vs_outputPosOS(vs_outputPrefix + ioPosOS),
+vs_outputTexCoord(vs_outputPrefix + ioTexcoord),
+vs_outputNormalVS(vs_outputPrefix + ioNormalVS),
+vs_outputNormalOS(vs_outputPrefix + ioNormalOS),
+vs_outputVertexColor(vs_outputPrefix + ioColor),
+fs_outputFragmentColor(fs_outputPrefix)
+{
+}
+
+const ShaderGenerator::Keywords ShaderGenerator::keywords;
 
 
 ShaderGenerator::ShaderGenerator()
@@ -120,76 +179,72 @@ void ShaderGenerator::initVertexShaderIO(const ShaderGenDesc* _desc, const Defau
   // set type of IO
   inputArrays_ = false;
   outputArrays_ = false;
-  inputPrefix_ = "in";         // inputs: inPosition, inTexCoord...
-  outputPrefix_ = "outVertex"; // outputs: outVertexPosition, outVertexTexCoord..
+  inputPrefix_ = keywords.vs_inputPrefix;   // inputs: inPosition, inTexCoord...
+  outputPrefix_ = keywords.vs_outputPrefix; // outputs: outVertexPosition, outVertexTexCoord..
 
-  addInput("vec4 inPosition");
-  addOutput("vec4 outVertexPosCS");
-
+  addInput("vec4", keywords.vs_inputPosition);
+  addOutput("vec4", keywords.vs_outputPosCS);
 
   if (_iodesc->inputNormal_)
-    addInput("vec3 inNormal");
+    addInput("vec3", keywords.vs_inputNormal);
 
   if (_desc->textured())
   {
-
     std::map<size_t,ShaderGenDesc::TextureType>::const_iterator iter = _desc->textureTypes().begin();
 
     /// TODO Setup for multiple texture coordinates as input
     if (iter->second.type == GL_TEXTURE_3D) {
-      addInput("vec3 inTexCoord");
-      addOutput("vec3 outVertexTexCoord");
+      addInput("vec3", keywords.vs_inputTexCoord);
+      addOutput("vec3", keywords.vs_outputTexCoord);
     } else {
-      addInput("vec2 inTexCoord");
-      addOutput("vec2 outVertexTexCoord");
+      addInput("vec2", keywords.vs_inputTexCoord);
+      addOutput("vec2", keywords.vs_outputTexCoord);
     }
   }
 
-
   if (_iodesc->inputColor_)
-    addInput("vec4 inColor");
-
+    addInput("vec4", keywords.vs_inputColor);
 
   if (_iodesc->passNormalVS_)
-    addOutput("vec3 outVertexNormal");
+    addOutput("vec3", keywords.vs_outputNormalVS);
 
   if (_iodesc->passNormalOS_)
-    addOutput("vec3 outVertexNormalOS");
-
+    addOutput("vec3", keywords.vs_outputNormalOS);
 
 
   // vertex color output
 
   if (_desc->vertexColorsInterpolator.isEmpty())
   {
-    std::string strColorOut = "";
+    QString strColorOut;
     if (_desc->shadeMode == SG_SHADE_FLAT)
+    {
       if (!_desc->geometryTemplateFile.isEmpty())
-        strColorOut = "vec4 outVertexColor";
-      else {
+        strColorOut = keywords.vs_outputVertexColor;
+      else
+      {
         // Bypass the output setter, as we have to set that directly with the flat.
-        addStringToList("vec4 outVertexColor", &outputs_, "flat out ", ";");
+        addStringToList("vec4 " + keywords.vs_outputVertexColor, &outputs_, "flat out ", "; ");
       }
-    else {
-      if (_desc->shadeMode == SG_SHADE_GOURAUD || _desc->vertexColors || _iodesc->inputColor_)
-        strColorOut = "vec4 outVertexColor";
     }
+    else if (_desc->shadeMode == SG_SHADE_GOURAUD || _desc->vertexColors || _iodesc->inputColor_)
+      strColorOut = keywords.vs_outputVertexColor;
 
     if (strColorOut.size())
-      addOutput(strColorOut.c_str());
+      addOutput("vec4", strColorOut);
   }
   else
-    addStringToList("vec4 outVertexColor", &outputs_, _desc->vertexColorsInterpolator + " out ", ";");
+    addStringToList("vec4" + keywords.vs_outputVertexColor, &outputs_, _desc->vertexColorsInterpolator + " out ", ";");
 
 
 
   // handle other requests: normals, positions, texcoords
 
   if (_iodesc->passPosVS_)
-    addOutput("vec4 outVertexPosVS");
+    addOutput("vec4", keywords.vs_outputPosVS);
 
   if (_iodesc->passPosOS_)
-    addOutput("vec4 outVertexPosOS");
+    addOutput("vec4", keywords.vs_outputPosOS);
 
   if (_iodesc->passTexCoord_ && !_desc->textured())
   {
@@ -199,13 +254,11 @@ void ShaderGenerator::initVertexShaderIO(const ShaderGenDesc* _desc, const Defau
     if (_desc->texGenMode && _desc->texGenDim > 0 && _desc->texGenDim <= 4 && !_desc->texGenPerFragment)
       texdim = _desc->texGenDim;
 
+    QString texcoordType;
+    texcoordType.sprintf("vec%i", texdim);
 
-    QString inTexCoordString, outTexCoordString;
-    inTexCoordString.sprintf("vec%i inTexCoord", texdim);
-    outTexCoordString.sprintf("vec%i outVertexTexCoord", texdim);
-
-    addInput(inTexCoordString);
-    addOutput(outTexCoordString);
+    addInput(texcoordType, keywords.vs_inputTexCoord);
+    addOutput(texcoordType, keywords.vs_outputTexCoord);
   }
 
 
@@ -218,7 +271,7 @@ void ShaderGenerator::initTessControlShaderIO(const ShaderGenDesc* _desc, Shader
   inputArrays_ = true;
   outputArrays_ = true;
   inputPrefix_ = _prevStage->outputPrefix_;
-  outputPrefix_ = "outTc"; // outputs: outTcPosition, outTcTexCoord..
+  outputPrefix_ = keywords.tcs_outputPrefix; // outputs: outTcPosition, outTcTexCoord..
 
   matchInputs(_prevStage, true, inputPrefix_, outputPrefix_);
 
@@ -231,7 +284,7 @@ void ShaderGenerator::initTessEvalShaderIO(const ShaderGenDesc* _desc, ShaderGen
   inputArrays_ = true;
   outputArrays_ = false;
   inputPrefix_ = _prevStage->outputPrefix_;
-  outputPrefix_ = "outTe"; // outputs: outTePosition, outTeTexCoord..
+  outputPrefix_ = keywords.tes_outputPrefix; // outputs: outTePosition, outTeTexCoord..
 
   matchInputs(_prevStage, true, inputPrefix_, outputPrefix_);
 
@@ -244,57 +297,9 @@ void ShaderGenerator::initGeometryShaderIO(const ShaderGenDesc* _desc, ShaderGen
   inputArrays_ = true;
   outputArrays_ = false;
   inputPrefix_ = _prevStage->outputPrefix_;
-  outputPrefix_ = "outGeometry"; // outputs: outGeometryPosition, outGeometryTexCoord..
+  outputPrefix_ = keywords.gs_outputPrefix; // outputs: outGeometryPosition, outGeometryTexCoord..
 
   matchInputs(_prevStage, true, inputPrefix_, outputPrefix_);
-
-  return;
-
-  addInput("vec4 outVertexPosCS[]");
-  addOutput("vec4 outGeometryPosCS");
-
-  if (_desc->textured()) {
-
-    std::map<size_t,ShaderGenDesc::TextureType>::const_iterator iter = _desc->textureTypes().begin();
-
-    /// TODO Setup for multiple texture coordinates as input
-    if (iter->second.type == GL_TEXTURE_3D)
-    {
-      addInput("vec3 outVertexTexCoord[]");
-      addOutput("vec3 outGeometryTexCoord");
-    } else {
-      addInput("vec2 outVertexTexCoord[]");
-      addOutput("vec2 outGeometryTexCoord");
-    }
-
-  }
-
-
-  if (_desc->shadeMode == SG_SHADE_PHONG)
-  {
-    addInput("vec3 outVertexNormal[]");
-    addInput("vec4 outVertexPosVS[]");
-
-    addOutput("vec3 outGeometryNormal");
-    addOutput("vec4 outGeometryPosVS");
-  }
-
-  QString strColorOut = "";
-
-  if (_desc->shadeMode == SG_SHADE_FLAT || _desc->shadeMode == SG_SHADE_GOURAUD || _desc->vertexColors) {
-    addInput("vec4 outVertexColor[]");
-
-
-    if (_desc->shadeMode == SG_SHADE_FLAT)
-      addStringToList("vec4 outGeometryColor", &outputs_, "flat out ", ";");
-    else {
-      if (_desc->shadeMode == SG_SHADE_GOURAUD || _desc->vertexColors)
-        strColorOut = "vec4 outGeometryColor";
-    }
-
-    if ( !strColorOut.isEmpty() )
-      addOutput(strColorOut);
-  }
 
   defineIOAbstraction(_iodesc, false, false);
 }
@@ -307,10 +312,10 @@ void ShaderGenerator::initFragmentShaderIO(const ShaderGenDesc* _desc, ShaderGen
   inputArrays_ = false;
   outputArrays_ = false;
   inputPrefix_ = _prevStage->outputPrefix_;
-  outputPrefix_ = "outFragment";
+  outputPrefix_ = keywords.fs_outputPrefix;
 
   matchInputs(_prevStage, false);
-  addOutput("vec4 outFragment");
+  addOutput("vec4", keywords.fs_outputFragmentColor);
 
   defineIOAbstraction(_iodesc, false, true);
 }
@@ -322,87 +327,87 @@ void ShaderGenerator::defineIOAbstraction( const DefaultIODesc* _iodesc, bool _v
   {
     // input name abstraction
 
-    addDefine(SG_INPUT_POSOS " inPosition");
+    addIODefine(keywords.macro_inputPosOS, keywords.vs_inputPosition);
 
     if (_iodesc->inputTexCoord_)
-      addDefine(SG_INPUT_TEXCOORD " inTexCoord");
+      addIODefine(keywords.macro_inputTexcoord, keywords.vs_inputTexCoord);
 
     if (_iodesc->inputNormal_)
-      addDefine(SG_INPUT_NORMALOS " inNormal");
+      addIODefine(keywords.macro_inputNormalOS, keywords.vs_inputNormal);
 
     if (_iodesc->inputColor_)
-      addDefine(SG_INPUT_VERTEXCOLOR " inColor");
+      addIODefine(keywords.macro_inputVertexColor, keywords.vs_inputColor);
 
 
 
     // output name abstraction
 
-    addDefine(SG_OUTPUT_POSCS " outVertexPosCS");
+    addIODefine(keywords.macro_outputPosCS, keywords.vs_outputPosCS);
 
     if (_iodesc->passPosVS_)
-      addDefine(SG_OUTPUT_POSVS " outVertexPosVS");
+      addIODefine(keywords.macro_outputPosVS, keywords.vs_outputPosVS);
 
     if (_iodesc->passPosOS_)
-      addDefine(SG_OUTPUT_POSOS " outVertexPosOS");
+      addIODefine(keywords.macro_outputPosOS, keywords.vs_outputPosOS);
 
     if (_iodesc->passTexCoord_)
-      addDefine(SG_OUTPUT_TEXCOORD " outVertexTexCoord");
+      addIODefine(keywords.macro_outputTexcoord, keywords.vs_outputTexCoord);
 
     if (_iodesc->passNormalVS_)
-      addDefine(SG_OUTPUT_NORMALVS " outVertexNormal");
+      addIODefine(keywords.macro_outputNormalVS, keywords.vs_outputNormalVS);
 
     if (_iodesc->passNormalOS_)
-      addDefine(SG_OUTPUT_NORMALOS " outVertexNormalOS");
+      addIODefine(keywords.macro_outputNormalOS, keywords.vs_outputNormalOS);
 
     if (_iodesc->passColor_)
-      addDefine(SG_OUTPUT_VERTEXCOLOR " outVertexColor");
+      addIODefine(keywords.macro_outputVertexColor, keywords.vs_outputVertexColor);
   }
   else
   {
     if (_iodesc->passPosVS_)
     {
-      addDefine(QString(SG_INPUT_POSVS) + QString(" ") + inputPrefix_ + QString("PosVS"));
+      addDefine(QString(SG_INPUT_POSVS) + QString(" ") + inputPrefix_ + keywords.ioPosVS);
       if (!_fs)
-        addDefine(QString(SG_OUTPUT_POSVS) + QString(" ") + outputPrefix_ + QString("PosVS"));
+        addDefine(QString(SG_OUTPUT_POSVS) + QString(" ") + outputPrefix_ + keywords.ioPosVS);
     }
 
     if (_iodesc->passPosOS_)
     {
-      addDefine(QString(SG_INPUT_POSOS) + QString(" ") + inputPrefix_ + QString("PosOS"));
+      addDefine(QString(SG_INPUT_POSOS) + QString(" ") + inputPrefix_ + keywords.ioPosOS);
       if (!_fs)
-        addDefine(QString(SG_OUTPUT_POSOS) + QString(" ") + outputPrefix_ + QString("PosOS"));
+        addDefine(QString(SG_OUTPUT_POSOS) + QString(" ") + outputPrefix_ + keywords.ioPosOS);
     }
 
-    addDefine(QString(SG_INPUT_POSCS) + QString(" ") + inputPrefix_ + QString("PosCS"));
+    addDefine(QString(SG_INPUT_POSCS) + QString(" ") + inputPrefix_ + keywords.ioPosCS);
     if (!_fs)
-      addDefine(QString(SG_OUTPUT_POSCS) + QString(" ") + outputPrefix_ + QString("PosCS"));
+      addDefine(QString(SG_OUTPUT_POSCS) + QString(" ") + outputPrefix_ + keywords.ioPosCS);
 
     if (_iodesc->passNormalVS_)
     {
-      addDefine(QString(SG_INPUT_NORMALVS) + QString(" ") + inputPrefix_ + QString("Normal"));
+      addDefine(QString(SG_INPUT_NORMALVS) + QString(" ") + inputPrefix_ + keywords.ioNormalVS);
       if (!_fs)
-        addDefine(QString(SG_OUTPUT_NORMALVS) + QString(" ") + outputPrefix_ + QString("Normal"));
+        addDefine(QString(SG_OUTPUT_NORMALVS) + QString(" ") + outputPrefix_ + keywords.ioNormalVS);
     }
 
     if (_iodesc->passNormalOS_)
     {
-      addDefine(QString(SG_INPUT_NORMALOS) + QString(" ") + inputPrefix_ + QString("NormalOS"));
+      addDefine(QString(SG_INPUT_NORMALOS) + QString(" ") + inputPrefix_ + keywords.ioNormalOS);
       if (!_fs)
-        addDefine(QString(SG_OUTPUT_NORMALOS) + QString(" ") + outputPrefix_ + QString("NormalOS"));
+        addDefine(QString(SG_OUTPUT_NORMALOS) + QString(" ") + outputPrefix_ + keywords.ioNormalOS);
     }
 
     if (_iodesc->passTexCoord_)
     {
-      addDefine(QString(SG_INPUT_TEXCOORD) + QString(" ") + inputPrefix_ + QString("TexCoord"));
+      addDefine(QString(SG_INPUT_TEXCOORD) + QString(" ") + inputPrefix_ + keywords.ioTexcoord);
       if (!_fs)
-        addDefine(QString(SG_OUTPUT_TEXCOORD) + QString(" ") + outputPrefix_ + QString("TexCoord"));
+        addDefine(QString(SG_OUTPUT_TEXCOORD) + QString(" ") + outputPrefix_ + keywords.ioTexcoord);
     }
 
     if (_iodesc->passColor_)
     {
-      addDefine(QString(SG_INPUT_VERTEXCOLOR) + QString(" ") + inputPrefix_ + QString("Color"));
+      addDefine(QString(SG_INPUT_VERTEXCOLOR) + QString(" ") + inputPrefix_ + keywords.ioColor);
       if (!_fs)
-        addDefine(QString(SG_INPUT_VERTEXCOLOR) + QString(" ") + outputPrefix_ + QString("Color"));
+        addDefine(QString(SG_INPUT_VERTEXCOLOR) + QString(" ") + outputPrefix_ + keywords.ioColor);
     }
   }
 
@@ -483,22 +488,27 @@ void ShaderGenerator::addStringToList(QString _str,
 }
 
 
-void ShaderGenerator::addInput(QString _input)
+void ShaderGenerator::addInput(const QString& _input)
 {
   addStringToList(_input, &inputs_, "in ", ";");
 }
 
 
-
-void ShaderGenerator::addOutput(QString _output)
+void ShaderGenerator::addOutput(const QString& _output)
 {
   addStringToList(_output, &outputs_, "out ", ";");
 }
 
 
-void ShaderGenerator::addDefine(QString _def)
+void ShaderGenerator::addDefine(const QString& _def)
 {
   addStringToList(_def, &genDefines_, "#define ");
+}
+
+
+void ShaderGenerator::addIODefine(const QString& _macroName, const QString& _resolvedName)
+{
+  addDefine(_macroName + QString(" ") + _resolvedName);
 }
 
 void ShaderGenerator::addMacros(const QStringList& _macros)
@@ -1168,7 +1178,7 @@ void ShaderProgGenerator::addVertexBeginCode(QStringList* _code)
 {
   // size in pixel of rendered point-lists, set by user via uniform
 
-  _code->push_back("vec4 sg_vPosPS = g_mWVP * inPosition;");
+  _code->push_back(QString("vec4 sg_vPosPS = g_mWVP * ") + ShaderGenerator::keywords.macro_inputPosOS + QString(";"));
   _code->push_back("vec4 sg_vPosVS = g_mWV * inPosition;");
   _code->push_back("vec3 sg_vNormalVS = vec3(0.0, 1.0, 0.0);");
   _code->push_back("vec3 sg_vNormalOS = vec3(0.0, 1.0, 0.0);");
@@ -1217,16 +1227,16 @@ void ShaderProgGenerator::addVertexEndCode(QStringList* _code)
     _code->push_back("outVertexColor = sg_cColor;");
 
   if (ioDesc_.passNormalVS_)
-    _code->push_back("outVertexNormal = sg_vNormalVS;");
+    _code->push_back(ShaderGenerator::keywords.macro_outputNormalVS + QString(" = sg_vNormalVS;"));
 
   if (ioDesc_.passNormalOS_)
-    _code->push_back("outVertexNormalOS = sg_vNormalOS;");
+    _code->push_back(ShaderGenerator::keywords.macro_outputNormalOS + QString(" = sg_vNormalOS;"));
 
   if (ioDesc_.passPosVS_)
-    _code->push_back("outVertexPosVS = sg_vPosVS;");
+    _code->push_back(ShaderGenerator::keywords.macro_outputPosVS + QString(" = sg_vPosVS;"));
 
   if (ioDesc_.passPosOS_)
-    _code->push_back("outVertexPosOS = inPosition;");
+    _code->push_back(ShaderGenerator::keywords.macro_outputPosOS + QString(" = ") + ShaderGenerator::keywords.macro_inputPosOS + QString(";"));
 
 
 

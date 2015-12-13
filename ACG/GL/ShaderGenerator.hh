@@ -587,7 +587,17 @@ public:
    *   in vec4 inPosition;
    * \endcode
   */
-  void addInput(QString _input);
+  void addInput(const QString& _input);
+
+  /** \brief Add one GLSL input specifier
+  *
+  * Stores string pointer only
+  * Example:
+  * \code
+  *   in vec4 inPosition;
+  * \endcode
+  */
+  void addInput(const QString& _type, const QString& _varname) { addInput(_type + QString(" ") + _varname); }
 
   /** \brief Add one GLSL output specifier
    *
@@ -597,7 +607,18 @@ public:
    *   out vec4 inPosition;
    *   \endcode
    */
-  void addOutput(QString _output);
+  void addOutput(const QString& _output);
+
+  /** \brief Add one GLSL output specifier
+  *
+  * Stores string pointer only
+  * Example:
+  * \code
+  *   out vec4 inPosition;
+  * \endcode
+  */
+  void addOutput(const QString& _type, const QString& _varname) { addOutput(_type + QString(" ") + _varname); }
+
 
   /** \brief Add one GLSL uniform specifier
    *
@@ -616,7 +637,12 @@ public:
    *   #define SG_GOURAUD 1
    * \endcode
    */
-  void addDefine(QString _define);
+  void addDefine(const QString& _define);
+
+  /** \brief Assign an opaque name to the abstract macro
+   *
+   */
+  void addIODefine(const QString& _macroName, const QString& _resolvedName);
 
   /** \brief Add a list of preprocessor macros
    *
@@ -732,6 +758,76 @@ public:
    * @return matching output name
   */
   QString getIOMapName(int _inId) const;
+
+
+public:
+
+  struct Keywords 
+  {
+    Keywords();
+
+    // preprocessor macros that can be defined
+
+    // request vertex attributes that should be available in all shader stages:
+    QString macro_requestPosVS, // view space position
+      macro_requestPosOS,       // object space position
+      macro_requestTexcoord,    // mesh texture coordinate
+      macro_requestVertexColor, // vertex color
+      macro_requestNormalVS,    // view space normal
+      macro_requestNormalOS,    // object space normal
+
+      macro_requestRenormalize; // normal should be renormalized before using it for lighting
+
+    // input / output abstraction macros
+    QString macro_inputPosVS,
+      macro_inputPosOS,
+      macro_inputPosCS,
+      macro_inputNormalVS,
+      macro_inputNormalOS,
+      macro_inputTexcoord,
+      macro_inputVertexColor,
+
+      macro_outputPosVS,
+      macro_outputPosOS,
+      macro_outputPosCS,
+      macro_outputNormalVS,
+      macro_outputNormalOS,
+      macro_outputTexcoord,
+      macro_outputVertexColor;
+
+    // default input/output variable names without prefixes
+    QString ioPosCS,
+      ioPosOS,
+      ioPosVS,
+      ioNormalVS,
+      ioNormalOS,
+      ioTexcoord,
+      ioColor;
+
+    // input/output prefix at each shader stage
+    QString vs_inputPrefix,
+      vs_outputPrefix,
+      tcs_outputPrefix,
+      tes_outputPrefix,
+      gs_outputPrefix,
+      fs_outputPrefix;
+
+    // actual input/output of vertex shader
+    QString vs_inputPosition,
+      vs_inputNormal,
+      vs_inputTexCoord,
+      vs_inputColor,
+      vs_outputPosCS,
+      vs_outputPosVS,
+      vs_outputPosOS,
+      vs_outputTexCoord,
+      vs_outputNormalVS,
+      vs_outputNormalOS,
+      vs_outputVertexColor,
+      fs_outputFragmentColor;
+  };
+
+  static const Keywords keywords;
 
 private:
 

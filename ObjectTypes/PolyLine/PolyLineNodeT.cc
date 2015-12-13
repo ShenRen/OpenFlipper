@@ -774,7 +774,16 @@ writeVertexColor(unsigned int _vertex, bool _colorSourceVertex, void* _dst) cons
   unsigned int byteOffset = declToUse->findElementByUsage(VERTEX_USAGE_COLOR)->getByteOffset();
   unsigned char* ucdata = ((unsigned char*)_dst) + byteOffset;
 
-  Point col = _colorSourceVertex ? polyline_.vertex_color(_vertex) : polyline_.edge_color(_vertex % polyline_.n_edges());
+  Point col;
+  if (_colorSourceVertex)
+    col = polyline_.vertex_color(_vertex); // per vertex
+  else
+  {
+    // edge colors
+    // use the 2nd vertex of each edge as the provoking vertex
+    int edgeID = (_vertex + polyline_.n_edges() - 1) % polyline_.n_edges();
+    col = polyline_.edge_color(edgeID);
+  }
 
   // rgb
   for (int i = 0; i < 3; ++i)

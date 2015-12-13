@@ -62,6 +62,7 @@
 
 #include "PolyLineNodeT.hh"
 #include <ACG/GL/gl.hh>
+#include <ACG/GL/ShaderCache.hh>
 #include <ACG/Utils/VSToolsT.hh>
 #include <vector>
 
@@ -448,21 +449,53 @@ void
 PolyLineNodeT<PolyLine>::
 pick_vertices( GLState& _state )
 {
+  if (!polyline_.n_vertices())
+    return;
+
   float point_size_old = _state.point_size();
   glPointSize(18);
 
-  _state.pick_set_name(0);
-
-
   glDepthRange(0.0, 0.999999);
-  for (unsigned int i=0; i< polyline_.n_vertices(); ++i) {
-    _state.pick_set_name (i);
-    glBegin(GL_POINTS);
-      glArrayElement( i );
-    glEnd();
+
+  GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/pick_vertices_vs.glsl", "Picking/pick_vertices_fs.glsl", 0, false);
+
+  if (pickShader && pickShader->isLinked())
+  {
+    // Bind the vertex array
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+
+    unsigned int pickOffsetIndex = _state.pick_current_index();
+
+    vertexDecl_.activateShaderPipeline(pickShader);
+
+    pickShader->use();
+
+    ACG::GLMatrixf transform = _state.projection() * _state.modelview();
+
+    pickShader->setUniform("mWVP", transform);
+    pickShader->setUniform("pickVertexOffset", pickOffsetIndex);
+
+    glDrawArrays(GL_POINTS, 0, polyline_.n_vertices());
+
+    vertexDecl_.deactivateShaderPipeline(pickShader);
+    pickShader->disable();
+
+
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
   }
+  else
+  {
+    for (unsigned int i = 0; i < polyline_.n_vertices(); ++i) {
+      _state.pick_set_name(i);
+      glBegin(GL_POINTS);
+      glArrayElement(i);
+      glEnd();
+    }
+  }
+
   glDepthRange(0.0, 1.0);
   
+
   
   glPointSize(point_size_old);
 }
@@ -531,28 +564,57 @@ pick_edges( GLState& _state, unsigned int _offset)
   if ( polyline_.n_edges() == 0 )
     return;
   
-  // save old values
-  float line_width_old = _state.line_width();
-  //  _state.set_line_width(2*line_width_old);
-  _state.set_line_width(14);
-  
-  unsigned int n_end = polyline_.n_edges()+1;
-  if( !polyline_.is_closed()) --n_end;
-
-  _state.pick_set_name (0);
-
-
   glDepthRange(0.0, 0.999999);
-  for (unsigned int i=0; i<n_end; ++i) {
-    _state.pick_set_name (i+_offset);
-    glBegin(GL_LINES);
-      glArrayElement( i     % polyline_.n_vertices() );
-      glArrayElement( (i+1) % polyline_.n_vertices() );
-    glEnd();
+
+  GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/pick_vertices_fs2.glsl", 0, false);
+
+  if (pickShader && pickShader->isLinked())
+  {
+    // Bind the vertex array
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+
+    int pickOffsetIndex = int(_state.pick_current_index());
+
+    vertexDecl_.activateShaderPipeline(pickShader);
+
+    pickShader->use();
+
+    ACG::GLMatrixf transform = _state.projection() * _state.modelview();
+
+    pickShader->setUniform("mWVP", transform);
+    pickShader->setUniform("pickVertexOffset", pickOffsetIndex);
+
+    int numIndices = polyline_.n_vertices() + (polyline_.is_closed() ? 1 : 0);
+    glDrawArrays(GL_LINE_STRIP, 0, numIndices);
+
+    vertexDecl_.deactivateShaderPipeline(pickShader);
+    pickShader->disable();
+
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
   }
+  else
+  {
+    // save old values
+    float line_width_old = _state.line_width();
+    //  _state.set_line_width(2*line_width_old);
+    _state.set_line_width(14);
+
+    unsigned int n_end = polyline_.n_edges() + 1;
+    if (!polyline_.is_closed()) --n_end;
+
+    for (unsigned int i = 0; i < n_end; ++i) {
+      _state.pick_set_name(i + _offset);
+      glBegin(GL_LINES);
+      glArrayElement(i     % polyline_.n_vertices());
+      glArrayElement((i + 1) % polyline_.n_vertices());
+      glEnd();
+    }
+
+    _state.set_line_width(line_width_old);
+  }
+
   glDepthRange(0.0, 1.0);
-  
-  _state.set_line_width(line_width_old);
+
 }
 
 //----------------------------------------------------------------------------

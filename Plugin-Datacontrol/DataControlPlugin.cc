@@ -390,14 +390,15 @@ void DataControlPlugin::fileOpened(int _id){
 
   BaseObject* obj = 0;
 
-  if ( PluginFunctions::getObject(_id, obj) )
+  if ( PluginFunctions::getObject(_id, obj) ) {
     model_->objectAdded(obj);
 
-  // Only if the added object was a light source, we will traverse the objects!
-  if ( obj->dataType() == DATA_LIGHT)
-    slotShowLightSources(tool_->lightSources->checkState());
+    // Only if the added object was a light source, we will traverse the objects!
+    if ( obj->dataType() == DATA_LIGHT)
+      slotShowLightSources(tool_->lightSources->checkState());
 
-  view_->resizeColumnToContents(0);
+    view_->resizeColumnToContents(0);
+  }
 }
 
 

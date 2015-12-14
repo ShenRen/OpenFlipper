@@ -1547,7 +1547,7 @@ void SelectionBasePlugin::addedEmptyObject (int _id) {
       PluginFunctions::getObject(_id, bObject);
 
       // Groups are ok, others will cause an error
-      if (!bObject->isGroup()) {
+      if (bObject && !bObject->isGroup()) {
         emit log(LOGERR, "Could not retrieve object type! Maybe a selection environment will be missing.");
       }
 

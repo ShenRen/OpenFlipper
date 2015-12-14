@@ -347,6 +347,14 @@ void MovePlugin::initializePlugin()
    tool_->unifyBoundingBoxDiagonal->setWhatsThis(QString(tr("Rescale objects such that its bounding box diagonal has length one."))
           +whatsThis.generateLink("unifyBB"));
 
+   connect(tool_->unifyBoundingBoxLongest,SIGNAL(clicked() ),this,SLOT(slotUnifyBoundingBoxLongestAxis()));
+   tool_->unifyBoundingBoxLongest->setIcon( QIcon(OpenFlipper::Options::iconDirStr() + OpenFlipper::Options::dirSeparator() + "unifyBB.png") );
+   tool_->unifyBoundingBoxLongest->setIconSize(QSize(48,48));
+
+   connect(tool_->unifyBoundingBoxAll,SIGNAL(clicked() ),this,SLOT(slotUnifyBoundingBoxAllAxis()));
+   tool_->unifyBoundingBoxAll->setIcon( QIcon(OpenFlipper::Options::iconDirStr() + OpenFlipper::Options::dirSeparator() + "unifyBB.png") );
+   tool_->unifyBoundingBoxAll->setIconSize(QSize(48,48));
+
    lastActiveManipulator_ = -1;
 
    toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"move-toolBox.png");
@@ -1846,6 +1854,21 @@ void MovePlugin::slotMoveToOrigin() {
  */
 void MovePlugin::slotUnifyBoundingBoxDiagonal()
 {
+  unifyBoundingBox(MovePlugin::DIAGONAL);
+}
+
+void MovePlugin::slotUnifyBoundingBoxLongestAxis()
+{
+  unifyBoundingBox((MovePlugin::LONGEST_AXIS));
+}
+
+void MovePlugin::slotUnifyBoundingBoxAllAxis()
+{
+  unifyBoundingBox(MovePlugin::ALL_AXIS);
+}
+
+void MovePlugin::unifyBoundingBox(Unificationtype u)
+{
   bool useCommonBB = false;
   ACG::Vec3d bb_min = ACG::Vec3d(FLT_MAX,FLT_MAX,FLT_MAX);
   ACG::Vec3d bb_max = ACG::Vec3d(FLT_MIN,FLT_MIN,FLT_MIN);
@@ -1912,37 +1935,37 @@ void MovePlugin::slotUnifyBoundingBoxDiagonal()
   for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS) ; o_it != PluginFunctions::objectsEnd(); ++o_it)  {
     if ( useCommonBB ) {
       if ( o_it->dataType( DATA_TRIANGLE_MESH ) )
-        unifyBBDiag(*PluginFunctions::triMesh(*o_it),bb_min,bb_max);
+        unifyBB(*PluginFunctions::triMesh(*o_it),bb_min,bb_max, u);
       else if ( o_it->dataType( DATA_POLY_MESH ) )
-        unifyBBDiag(*PluginFunctions::polyMesh(*o_it),bb_min,bb_max);
+        unifyBB(*PluginFunctions::polyMesh(*o_it),bb_min,bb_max, u);
 #ifdef ENABLE_TSPLINEMESH_SUPPORT
       else if ( o_it->dataType( DATA_TSPLINE_MESH ) )
-        unifyBBDiag(*PluginFunctions::tsplineMesh(*o_it),bb_min,bb_max);
+        unifyBB(*PluginFunctions::tsplineMesh(*o_it),bb_min,bb_max, u);
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
       else if ( o_it->dataType( DATA_HEXAHEDRAL_MESH ) )
-        unifyBBDiagVolumeMesh(*PluginFunctions::hexahedralMesh(*o_it),(PluginFunctions::hexahedralMeshObject(*o_it)->normals()),bb_min,bb_max);
+        unifyBBVolumeMesh(*PluginFunctions::hexahedralMesh(*o_it),(PluginFunctions::hexahedralMeshObject(*o_it)->normals()),bb_min,bb_max, u);
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
       else if ( o_it->dataType( DATA_POLYHEDRAL_MESH ) )
-        unifyBBDiagVolumeMesh(*PluginFunctions::polyhedralMesh(*o_it),(PluginFunctions::polyhedralMeshObject(*o_it)->normals()),bb_min,bb_max);
+        unifyBBVolumeMesh(*PluginFunctions::polyhedralMesh(*o_it),(PluginFunctions::polyhedralMeshObject(*o_it)->normals()),bb_min,bb_max, u);
 #endif
     } else {
       if ( o_it->dataType( DATA_TRIANGLE_MESH ) )
-        unifyBBDiag(*PluginFunctions::triMesh(*o_it));
+        unifyBB(*PluginFunctions::triMesh(*o_it), u);
       else if ( o_it->dataType( DATA_POLY_MESH ) )
-        unifyBBDiag(*PluginFunctions::polyMesh(*o_it));
+        unifyBB(*PluginFunctions::polyMesh(*o_it), u);
 #ifdef ENABLE_TSPLINEMESH_SUPPORT
       else if ( o_it->dataType( DATA_TSPLINE_MESH ) )
-        unifyBBDiag(*PluginFunctions::tsplineMesh(*o_it));
+        unifyBB(*PluginFunctions::tsplineMesh(*o_it), u);
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
       else if ( o_it->dataType( DATA_HEXAHEDRAL_MESH ) )
-        unifyBBDiagVolumeMesh(*PluginFunctions::hexahedralMesh(*o_it),(PluginFunctions::hexahedralMeshObject(*o_it)->normals()));
+        unifyBBVolumeMesh(*PluginFunctions::hexahedralMesh(*o_it),(PluginFunctions::hexahedralMeshObject(*o_it)->normals()), u);
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
       else if ( o_it->dataType( DATA_POLYHEDRAL_MESH ) )
-        unifyBBDiagVolumeMesh(*PluginFunctions::polyhedralMesh(*o_it),(PluginFunctions::polyhedralMeshObject(*o_it)->normals()));
+        unifyBBVolumeMesh(*PluginFunctions::polyhedralMesh(*o_it),(PluginFunctions::polyhedralMeshObject(*o_it)->normals()), u);
 #endif
     }
 
@@ -2288,7 +2311,7 @@ void MovePlugin::getBBVolumeMesh( VolumeMeshT& _mesh, ACG::Vec3d& _bb_min, ACG::
  * @param _normalAttrib the normal attribute
  */
 template< typename VolumeMeshT >
-void MovePlugin::unifyBBDiagVolumeMesh(VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib)
+void MovePlugin::unifyBBVolumeMesh(VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, Unificationtype u)
 {
     // no vertices?
     if( _mesh.n_vertices() == 0) return;
@@ -2296,24 +2319,42 @@ void MovePlugin::unifyBBDiagVolumeMesh(VolumeMeshT& _mesh, OpenVolumeMesh::Norma
     ACG::Vec3d bb_min, bb_max;
     getBBVolumeMesh( _mesh, bb_min, bb_max );
 
-    unifyBBDiagVolumeMesh( _mesh, _normalAttrib, bb_min, bb_max );
+    unifyBBVolumeMesh( _mesh, _normalAttrib, bb_min, bb_max, u );
 }
 
 //------------------------------------------------------------------------------
 
-/** \brief Scales object such that bounding box diagonal has unit length
+/** \brief Scales object such that bounding box to have unit length as specified by parameter u
  *
  * @param _mesh the mesh
  * @param _normalAttrib the normal attribute
  * @param _bb_min Lower left corner of bounding box
  * @param _bb_max Upper right corner of bounding box
+ * @param u the unification type (Diagonal, longest axis, all axis)
  */
 template< typename VolumeMeshT >
-void MovePlugin::unifyBBDiagVolumeMesh( VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max )
+void MovePlugin::unifyBBVolumeMesh( VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max, Unificationtype u)
 {
     ACG::Vec3d bb_center =  0.5 * (_bb_min + _bb_max) ;
+    ACG::Vec3d bb_diagonal = _bb_max-_bb_min;
+    double bb_longestAxis = bb_diagonal.max();
 
-    double scale = 1.0/(_bb_max-_bb_min).norm();
+    ACG::Vec3d scale;
+    switch(u)
+    {
+      case MovePlugin::DIAGONAL :
+        scale = ACG::Vec3d(1.0/(_bb_max-_bb_min).norm());
+        break;
+      case MovePlugin::LONGEST_AXIS :
+        scale = ACG::Vec3d(1.0/(bb_longestAxis));
+        break;
+      case MovePlugin::ALL_AXIS :
+        scale = ACG::Vec3d(ACG::Vec3d(1.0)/bb_diagonal);
+        break;
+      default:
+        scale = ACG::Vec3d(1.0/(_bb_max-_bb_min).norm());
+    }
+
 
     for( OpenVolumeMesh::VertexIter v_it = _mesh.vertices_begin(); v_it!=_mesh.vertices_end(); ++v_it)
       _mesh.set_vertex(*v_it, (_mesh.vertex(*v_it) - bb_center) * scale + bb_center);
@@ -2325,12 +2366,13 @@ void MovePlugin::unifyBBDiagVolumeMesh( VolumeMeshT& _mesh, OpenVolumeMesh::Norm
 
 //------------------------------------------------------------------------------
 
-/** \brief scale mesh to have a boundingboxdiagonal of one
+/** \brief scale mesh to have a boundingbox axis('s) or diagonal of one
  *
  * @param _mesh the mesh
+ * @param u the unification type (Diagonal, longest axis, all axis)
  */
 template< typename MeshT >
-void MovePlugin::unifyBBDiag(MeshT& _mesh )
+void MovePlugin::unifyBB(MeshT& _mesh , Unificationtype u)
 {
   typename MeshT::VertexIter v_it  = _mesh.vertices_begin();
   typename MeshT::VertexIter v_end = _mesh.vertices_end();
@@ -2348,8 +2390,24 @@ void MovePlugin::unifyBBDiag(MeshT& _mesh )
   }
 
   typename MeshT::Point bb_center =  0.5 * (bb_min + bb_max) ;
+  ACG::Vec3d bb_diagonal = bb_max-bb_min;
+  typename MeshT::Scalar bb_longestAxis = bb_diagonal.max();
 
-  typename MeshT::Scalar scale = 1.0/(bb_max-bb_min).norm();
+  ACG::Vec3d scale;
+  switch(u)
+  {
+    case MovePlugin::DIAGONAL :
+      scale = ACG::Vec3d(1.0/(bb_max-bb_min).norm());
+      break;
+    case MovePlugin::LONGEST_AXIS :
+      scale = ACG::Vec3d(1.0 / bb_longestAxis);
+      break;
+    case MovePlugin::ALL_AXIS :
+      scale = ACG::Vec3d(ACG::Vec3d(1.0)/bb_diagonal);
+      break;
+    default:
+      scale = ACG::Vec3d(1.0/(bb_max-bb_min).norm());
+  }
 
   for( v_it = _mesh.vertices_begin(); v_it!=v_end; ++v_it)
   {
@@ -2388,19 +2446,35 @@ void MovePlugin::getBB( MeshT& _mesh, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max  
 
 }
 
-/** \brief Scales object such that bounding box diagonal has unit length
+/** \brief Scales object such that bounding box axis('s) or diagonal have unit length
  *
  * @param _mesh the mesh
  * @param _bb_min Lower left corner of bounding box
  * @param _bb_max Upper right corner of bounding box
+ * @param u the unification type (Diagonal, longest axis, all axis)
  */
 template< typename MeshT >
-void MovePlugin::unifyBBDiag( MeshT& _mesh, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max  )
+void MovePlugin::unifyBB(MeshT& _mesh, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max  , Unificationtype u)
 {
 
   typename MeshT::Point bb_center =  0.5 * (_bb_min + _bb_max) ;
-
-  typename MeshT::Scalar scale = 1.0/(_bb_max-_bb_min).norm();
+  ACG::Vec3d bb_diagonal = _bb_max-_bb_min;
+  typename MeshT::Scalar bb_longestAxis = bb_diagonal.max();
+  ACG::Vec3d scale;
+  switch(u)
+  {
+    case MovePlugin::DIAGONAL :
+      scale = ACG::Vec3d(1.0/(_bb_max-_bb_min).norm());
+      break;
+    case MovePlugin::LONGEST_AXIS :
+      scale = ACG::Vec3d(1.0 / bb_longestAxis);
+      break;
+    case MovePlugin::ALL_AXIS :
+      scale = ACG::Vec3d(ACG::Vec3d(1.0)/bb_diagonal);
+      break;
+    default:
+      scale = ACG::Vec3d(1.0/(_bb_max-_bb_min).norm());
+  }
 
   typename MeshT::VertexIter v_it;
 

@@ -202,6 +202,13 @@ public:
     int axisA_;
     int axisB_;
 
+    enum Unificationtype
+    {
+      DIAGONAL,
+      LONGEST_AXIS,
+      ALL_AXIS
+    };
+
   private slots:
 
     /// Position of manipulator in tab changed
@@ -236,6 +243,12 @@ public:
 
     /// Scale Boundingbox Diagonal to unit size
     void slotUnifyBoundingBoxDiagonal();
+
+    /// Scale Boundingbox longest axis to unit size (keeps aspect ratio)
+    void slotUnifyBoundingBoxLongestAxis();
+
+    /// Scale all Boundingbox axis to unit size
+    void slotUnifyBoundingBoxAllAxis();
 
     void slotEnableSelectionMode();
 
@@ -338,6 +351,8 @@ public:
 
   private:
 
+    void unifyBoundingBox(Unificationtype u);
+
     ///Transform a mesh with the given transformation matrix
     template< typename MeshT >
     void transformMesh(ACG::Matrix4x4d _mat , MeshT& _mesh );
@@ -368,11 +383,11 @@ public:
 
     /// scale volume mesh to have a boundingboxdiagonal of one
     template< typename VolumeMeshT >
-    void unifyBBDiagVolumeMesh(VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib);
+    void unifyBBVolumeMesh(VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, Unificationtype u = MovePlugin::DIAGONAL);
 
     /// Scales volume mesh such that bounding box diagonal has unit length
     template< typename VolumeMeshT >
-    void unifyBBDiagVolumeMesh( VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max  );
+    void unifyBBVolumeMesh( VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max, Unificationtype u = MovePlugin::DIAGONAL  );
     #endif
 
     /** Get the Matrix of the last active Manipulator ( Identity if not found or hidden Manipulator )
@@ -390,7 +405,7 @@ public:
 
     /// scale mesh to have a boundingboxdiagonal of one
     template< typename MeshT >
-    void unifyBBDiag(MeshT& _mesh );
+    void unifyBB(MeshT& _mesh , Unificationtype u = MovePlugin::DIAGONAL);
 
     /// get bounding box diagonal of a mesh
     template< typename MeshT >
@@ -398,7 +413,7 @@ public:
 
     /// Scales object such that bounding box diagonal has unit length
     template< typename MeshT >
-    void unifyBBDiag( MeshT& _mesh, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max  );
+    void unifyBB( MeshT& _mesh, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max, Unificationtype u = MovePlugin::DIAGONAL  );
 
     /// Size for the manipulators
     double manip_size_;

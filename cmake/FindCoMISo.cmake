@@ -242,7 +242,7 @@ if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
                                                                           
   endif()
 
-  add_definitions (-DCOMISODLL -DUSECOMISO )
+  add_definitions (-DCOMISODLL -DUSECOMISO -DBASEDLL -DUSEBASE )
 
   include(FindPackageHandleStandardArgs)
   SET(COMISO_FOUND TRUE)

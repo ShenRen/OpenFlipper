@@ -62,9 +62,11 @@
 #include <cstdlib>
 #include <sstream>
 
-
-
+#ifndef __APPLE__
     #include "gl_compat_4_4.hh"
+#else
+    #include <qgl>
+#endif
 
 
 

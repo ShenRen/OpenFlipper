@@ -112,7 +112,9 @@ void QtGLGraphicsScene::drawBackground(QPainter *_painter, const QRectF &_rect)
   {
     // we use glLoadGen to manage extensions :/
     // initialize it first
-    ogl_LoadFunctions();
+    #ifndef __APPLE__
+        ogl_LoadFunctions();    //maybe replace this with a call to the wrapper function. initOpenGLFunctions()
+    #endif
     for (unsigned int i = 0; i < views_->size (); i++)
     {
       views_->at(i)->initializeGL ();

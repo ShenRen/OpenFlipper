@@ -53,14 +53,15 @@ toolBox_(0) {
 }
 
 PluginAlignMeshes::~PluginAlignMeshes() {
-
+  delete toolIcon_;
 }
 
 void PluginAlignMeshes::initializePlugin() {
 
   toolBox_ = new AlignMeshesToolbox();
 
-  emit addToolbox("Align Meshes", toolBox_);
+  toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"alignMeshes.png");
+  emit addToolbox("Align Meshes", toolBox_, toolIcon_);
 
   connect(toolBox_->alignMeshesButton, SIGNAL(pressed()), SLOT(alignMeshes()));
 }

@@ -348,11 +348,11 @@ void MovePlugin::initializePlugin()
           +whatsThis.generateLink("unifyBB"));
 
    connect(tool_->unifyBoundingBoxLongest,SIGNAL(clicked() ),this,SLOT(slotUnifyBoundingBoxLongestAxis()));
-   tool_->unifyBoundingBoxLongest->setIcon( QIcon(OpenFlipper::Options::iconDirStr() + OpenFlipper::Options::dirSeparator() + "unifyBB.png") );
+   tool_->unifyBoundingBoxLongest->setIcon( QIcon(OpenFlipper::Options::iconDirStr() + OpenFlipper::Options::dirSeparator() + "unifyBB_longest.png") );
    tool_->unifyBoundingBoxLongest->setIconSize(QSize(48,48));
 
    connect(tool_->unifyBoundingBoxAll,SIGNAL(clicked() ),this,SLOT(slotUnifyBoundingBoxAllAxis()));
-   tool_->unifyBoundingBoxAll->setIcon( QIcon(OpenFlipper::Options::iconDirStr() + OpenFlipper::Options::dirSeparator() + "unifyBB.png") );
+   tool_->unifyBoundingBoxAll->setIcon( QIcon(OpenFlipper::Options::iconDirStr() + OpenFlipper::Options::dirSeparator() + "unifyBB_all.png") );
    tool_->unifyBoundingBoxAll->setIconSize(QSize(48,48));
 
    lastActiveManipulator_ = -1;

@@ -88,8 +88,6 @@ public slots:
   QString version() { return QString("1.0"); }
 
   void alignMeshes();
-  void scaleToUnitCubeUniform();
-  void scaleToUnitCubeNonUniform();
 
 private slots:
 

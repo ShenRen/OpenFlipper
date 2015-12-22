@@ -16,22 +16,6 @@
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QPushButton" name="scaleToUnitCubeUniformButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes &lt;span style=&quot; color:#000000;&quot;&gt;such that their biggest boundingbox axis size is 1.0. The aspect ratio of the mesh is kept.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="statusTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes &lt;span style=&quot; color:#000000;&quot;&gt;such that their biggest boundingbox axis size is 1.0. The aspect ratio of the mesh is kept.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="whatsThis">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes &lt;span style=&quot; color:#000000;&quot;&gt;such that their biggest boundingbox axis size is 1.0. The aspect ratio of the mesh is kept.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>Scale Meshes to Unit Cube Uniformly</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="alignMeshesButton">
        <property name="toolTip">
@@ -45,22 +29,6 @@
        </property>
        <property name="text">
         <string>Align Meshes with default axis</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="scaleToUnitCubeNonUniformButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes such that their boundingbox axis sizes are all 1.0. The aspect ratio of the mesh is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; kept.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="statusTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes such that their boundingbox axis sizes are all 1.0. The aspect ratio of the mesh is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; kept.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="whatsThis">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scale meshes such that their boundingbox axis sizes are all 1.0. The aspect ratio of the mesh is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; kept.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>Scale Meshes to Unit Cube Non-Uniformly</string>
        </property>
       </widget>
      </item>

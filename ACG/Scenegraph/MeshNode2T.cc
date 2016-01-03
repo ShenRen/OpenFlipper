@@ -834,6 +834,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
       ro.shaderDesc.vertexColors = true;
 
       // note: colored edges are in sysmem, so they are directly bound to the VertexDeclaration
+      drawMesh_->updateEdgeHalfedgeVertexDeclarations();
       ro.vertexDecl = drawMesh_->getEdgeColoredVertexDeclaration();
       ro.glDrawArrays(GL_LINES, 0, int(mesh_.n_edges() * 2));
 
@@ -855,6 +856,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
       ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
 
       // buffers in system memory
+      drawMesh_->updateEdgeHalfedgeVertexDeclarations();
       if (props->colored())
         ro.vertexDecl = drawMesh_->getHalfedgeVertexDeclaration();
       else

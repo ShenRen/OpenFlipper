@@ -30,6 +30,9 @@
              - Disable use of custom GL blend functions in LineNode.
         - Shader Generator
              - Added Texture coordinate generation
+             - Added DepthStencil FBO handling
+             - New Query Object
+             - Depth Range Render Object
      - <b>Core</b>
         - IO
              - Emit warning in save object function, if object can't be retrieved
@@ -45,6 +48,8 @@
              - fix screenshot buffer creation (fixes screenshot with multiple instances of OF)
              - fix alpha channel of snapshots refs #2506
      - <b>Interfaces</b>
+        - Base Interface 
+             - Added signals slot to block scenegraph updates (Enables blocking through the event queue to keep the order fixed)
         - Process Interface
              - Fixed memory leak
              - Process Manager: removed redudant code/speed up
@@ -61,6 +66,7 @@
              - New feature: Copy view as C-style string. Holding Ctrl while clicking the "Copy View" context menu action now copies a C-style string to the clipboard.
      - <b>License Manager</b>
         - Remove function pointers which produce errors in C++11
+        - Improved handling of time constraints for License management
      - <b>Documentation</b>
         - More scripting documentation
         - OpenFlipperThread: Add more information about reimplementing the interface
@@ -68,13 +74,20 @@
         - added examples for gathering object ids via script
      - <b>ObjectTypes</b>
         - Added PolyLine colored segment rendering
+        - PolyLine fixes (performance, rendering bug for segments)
+        - PolyLine: improved picking via shader
      - <b>Plugins</b>
+         - Align Meshes 
+             - New plugin which can be used to align meshes 
+             - Requires Eigen3 to compute PCA
          - Backup
              - Added Optionswidget for max backups
              - Added missing restore signal for ui buttons (refs #2407)
              - fixes problem with textures after undo operation (refs #2407)
              - update re/undo buttons after clear all
              - create correct object on poly/tri mesh copy
+         - Datacontrol
+             - Some null pointer checks to avoid a crash
          - Decimater
              - Added process interface to decimater and using the observer pattern for progress bar
              - gui-only slots declared as private slots
@@ -98,6 +111,8 @@
              - Added Mac support
          - PrimitiveGenerator
              - add initial backups for each generated primitive (refs #2407)
+         - PropertyVis
+             - force static property casts in property visualizer due to failing dynamic cast caused be different typeids over different shared objects on mac
          - Remesher
              - add nogui support (closes #2384)
          - Selection
@@ -105,6 +120,8 @@
          - TextureControl
              - image storage checks last modification of a texture and reloads it again if necessary closes #2381
      - <b>Build System</b>
+         - Optional static linking of plugins into core (for debugging)
+         - Sort plugin configuration
          - Catching of SIGSEGV can now be controlled through CMake flag.
          - CMake flag for enabled debug console  on windows in release mode
          - Make OpenVolumeMesh non mandatory for build

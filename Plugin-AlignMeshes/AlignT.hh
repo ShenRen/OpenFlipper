@@ -22,20 +22,6 @@ void rotate(MeshT& _mesh);
 template< class MeshT >
 void moveCenterOfBBToOrigin(MeshT& _mesh);
 
-/** \brief Scale mesh such that it has length 1 on each separate axis
- *
- * @param _mesh Mesh to modify
- */
-template< class MeshT >
-void scaleToUnitCubeNonUniform(MeshT& _mesh);
-
-/** \brief Scale mesh such that it has length 1 on the largest axis (keeps ratios of axis)
- *
- * @param _mesh Mesh to modify
- */
-template< class MeshT >
-void scaleToUnitCubeUniform(MeshT& _mesh);
-
 } // namespace align
 
 

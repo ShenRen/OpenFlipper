@@ -48,22 +48,29 @@
 
 
 PluginAlignMeshes::PluginAlignMeshes() :
-toolBox_(0) {
+toolBox_(0),
+toolIcon_(0)
+{
 
 }
 
 PluginAlignMeshes::~PluginAlignMeshes() {
-  delete toolIcon_;
+  if ( OpenFlipper::Options::gui()) {
+    delete toolBox_;
+    delete toolIcon_;
+  }
 }
 
 void PluginAlignMeshes::initializePlugin() {
 
-  toolBox_ = new AlignMeshesToolbox();
+  if ( OpenFlipper::Options::gui()) {
+    toolBox_ = new AlignMeshesToolbox();
 
-  toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"alignMeshes.png");
-  emit addToolbox("Align Meshes", toolBox_, toolIcon_);
+    toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"alignMeshes.png");
+    emit addToolbox("Align Meshes", toolBox_, toolIcon_);
 
-  connect(toolBox_->alignMeshesButton, SIGNAL(pressed()), SLOT(alignMeshes()));
+    connect(toolBox_->alignMeshesButton, SIGNAL(pressed()), SLOT(alignMeshes()));
+  }
 }
 
 void PluginAlignMeshes::alignMeshes() {

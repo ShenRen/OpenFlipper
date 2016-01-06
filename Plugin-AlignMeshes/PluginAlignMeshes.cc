@@ -48,86 +48,29 @@
 
 
 PluginAlignMeshes::PluginAlignMeshes() :
-toolBox_(0) {
+toolBox_(0),
+toolIcon_(0)
+{
 
 }
 
 PluginAlignMeshes::~PluginAlignMeshes() {
-
+  if ( OpenFlipper::Options::gui()) {
+    delete toolBox_;
+    delete toolIcon_;
+  }
 }
 
 void PluginAlignMeshes::initializePlugin() {
 
-  toolBox_ = new AlignMeshesToolbox();
+  if ( OpenFlipper::Options::gui()) {
+    toolBox_ = new AlignMeshesToolbox();
 
-  emit addToolbox("Align Meshes", toolBox_);
+    toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"alignMeshes.png");
+    emit addToolbox("Align Meshes", toolBox_, toolIcon_);
 
-  connect(toolBox_->alignMeshesButton, SIGNAL(pressed()), SLOT(alignMeshes()));
-  connect(toolBox_->scaleToUnitCubeUniformButton, SIGNAL(pressed()), SLOT(scaleToUnitCubeUniform()));
-  connect(toolBox_->scaleToUnitCubeNonUniformButton, SIGNAL(pressed()), SLOT(scaleToUnitCubeNonUniform()));
-}
-
-void PluginAlignMeshes::scaleToUnitCubeNonUniform() {
-
-  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH | DATA_POLY_MESH ); o_it
-      != PluginFunctions::objectsEnd(); ++o_it) {
-
-
-    if(o_it->dataType() == DATA_TRIANGLE_MESH){
-
-      TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
-
-      align::moveToCOG( mesh );
-      align::scaleToUnitCubeNonUniform( mesh );
-      align::moveToCOG( mesh );
-
-      emit log(LOGINFO,"Moved Triangle mesh scaleToUnitCubeNonUniform");
-
-    } else if(o_it->dataType() == DATA_POLY_MESH) {
-
-      PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
-
-      align::moveToCOG( mesh );
-      align::scaleToUnitCubeNonUniform( mesh );
-      align::moveToCOG( mesh );
-      emit log(LOGINFO,"Moved poly mesh scaleToUnitCubeNonUniform");
-    }
-
-
-    emit updatedObject(o_it->id(), UPDATE_GEOMETRY);
+    connect(toolBox_->alignMeshesButton, SIGNAL(pressed()), SLOT(alignMeshes()));
   }
-
-}
-
-void PluginAlignMeshes::scaleToUnitCubeUniform() {
-
-  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS, DATA_TRIANGLE_MESH); o_it
-      != PluginFunctions::objectsEnd(); ++o_it) {
-
-    if(o_it->dataType() == DATA_TRIANGLE_MESH){
-
-      TriMesh& mesh = * PluginFunctions::triMesh(*o_it);
-
-      align::moveToCOG( mesh );
-      align::scaleToUnitCubeUniform( mesh );
-      align::moveToCOG( mesh );
-
-      emit log(LOGINFO,"Moved Triangle mesh scaleToUnitCubeUniform");
-
-    } else if(o_it->dataType() == DATA_POLY_MESH) {
-
-      PolyMesh& mesh = * PluginFunctions::polyMesh(*o_it);
-
-      align::moveToCOG( mesh );
-      align::scaleToUnitCubeUniform( mesh );
-      align::moveToCOG( mesh );
-
-      emit log(LOGINFO,"Moved poly mesh scaleToUnitCubeUniform");
-    }
-
-    emit updatedObject(o_it->id(), UPDATE_GEOMETRY);
-  }
-
 }
 
 void PluginAlignMeshes::alignMeshes() {

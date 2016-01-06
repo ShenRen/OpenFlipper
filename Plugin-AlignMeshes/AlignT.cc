@@ -127,66 +127,6 @@ void moveCenterOfBBToOrigin(MeshT& _mesh) {
   }
 }
 
-template< class MeshT >
-void scaleToUnitCubeNonUniform(MeshT& _mesh) {
-
-  ACG::Vec3d min(DBL_MAX);
-  ACG::Vec3d max(-DBL_MAX);
-
-  for (typename MeshT::VertexIter v_it = _mesh.vertices_begin(); v_it != _mesh.vertices_end(); ++v_it) {
-    min.minimize(_mesh.point(*v_it));
-    max.maximize(_mesh.point(*v_it));
-  }
-
-  const ACG::Vec3d diagonal = max - min;
-
-  const double maxDiag = std::max(std::max(diagonal[0],diagonal[1]),diagonal[2]);
-
-  OpenMesh::MPropHandleT<ACG::Vec3d> origDiagonal;
-  if (!_mesh.get_property_handle(origDiagonal, "origDiagonal"))
-    _mesh.add_property(origDiagonal, "origDiagonal");
-
-  _mesh.mproperty(origDiagonal).set_persistent(true);
-  _mesh.property(origDiagonal) = diagonal;
-
-  for (typename MeshT::VertexIter v_it = _mesh.vertices_begin(); v_it != _mesh.vertices_end(); ++v_it) {
-    _mesh.point(*v_it)[0] /= diagonal[0];
-    _mesh.point(*v_it)[1] /= diagonal[1];
-    _mesh.point(*v_it)[2] /= diagonal[2];
-  }
-
-}
-
-template< class MeshT >
-void scaleToUnitCubeUniform(MeshT& _mesh) {
-
-  ACG::Vec3d min(DBL_MAX);
-  ACG::Vec3d max(-DBL_MAX);
-
-  for (typename MeshT::VertexIter v_it = _mesh.vertices_begin(); v_it != _mesh.vertices_end(); ++v_it) {
-    min.minimize(_mesh.point(*v_it));
-    max.maximize(_mesh.point(*v_it));
-  }
-
-  const ACG::Vec3d diagonal = max - min;
-
-  const double maxDiag = std::max(std::max(diagonal[0],diagonal[1]),diagonal[2]);
-
-  OpenMesh::MPropHandleT<ACG::Vec3d> origDiagonal;
-  if (!_mesh.get_property_handle(origDiagonal, "origDiagonal"))
-    _mesh.add_property(origDiagonal, "origDiagonal");
-
-  _mesh.mproperty(origDiagonal).set_persistent(true);
-  _mesh.property(origDiagonal) = diagonal;
-
-  for (typename MeshT::VertexIter v_it = _mesh.vertices_begin(); v_it != _mesh.vertices_end(); ++v_it) {
-    _mesh.point(*v_it)[0] /= maxDiag;
-    _mesh.point(*v_it)[1] /= maxDiag;
-    _mesh.point(*v_it)[2] /= maxDiag;
-  }
-
-}
-
 } // namespace align
 
 #define ALIGNT_CC

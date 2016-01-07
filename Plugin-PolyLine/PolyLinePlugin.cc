@@ -1038,6 +1038,9 @@ me_insert( QMouseEvent* _event )
 
         clearStatusMessage();
 
+        // Quick and dirty hack for Plugin-MultiResQuadMeshing
+        RPC::callFunction(QString("multiresquadmeshing"), QString("slot_finishedPolyline"));
+
         break;
       }
 

@@ -76,6 +76,7 @@
 #include <OpenFlipper/BasePlugin/StatusbarInterface.hh>
 #include <OpenFlipper/BasePlugin/ScriptInterface.hh>
 #include <OpenFlipper/BasePlugin/ContextMenuInterface.hh>
+#include <OpenFlipper/BasePlugin/RPCInterface.hh>
 #include <OpenFlipper/common/Types.hh>
 #include <ObjectTypes/PolyLine/PolyLine.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
@@ -109,7 +110,8 @@ class PolyLinePlugin: public QObject,
                       StatusbarInterface,
                       KeyInterface,
                       ScriptInterface,
-                      ContextMenuInterface {
+                      ContextMenuInterface,
+                      RPCInterface {
     Q_OBJECT
     Q_INTERFACES(BaseInterface)
     Q_INTERFACES(MouseInterface)
@@ -122,6 +124,7 @@ class PolyLinePlugin: public QObject,
     Q_INTERFACES(KeyInterface)
     Q_INTERFACES(ScriptInterface)
     Q_INTERFACES(ContextMenuInterface)
+    Q_INTERFACES(RPCInterface)
 
 #if QT_VERSION >= 0x050000
   Q_PLUGIN_METADATA(IID "org.OpenFlipper.Plugins.Plugin-PolyLine")

@@ -80,7 +80,7 @@ signals:
   void log(QString _message);
 
   // ToolboxInterface
-  void addToolbox(QString _name, QWidget* _widget);
+  void addToolbox(QString _name, QWidget* _widget, QIcon* _icon);
 
 public slots:
 
@@ -88,8 +88,6 @@ public slots:
   QString version() { return QString("1.0"); }
 
   void alignMeshes();
-  void scaleToUnitCubeUniform();
-  void scaleToUnitCubeNonUniform();
 
 private slots:
 
@@ -98,6 +96,7 @@ private slots:
 
 private:
   AlignMeshesToolbox* toolBox_;
+  QIcon* toolIcon_;
 };
 
 

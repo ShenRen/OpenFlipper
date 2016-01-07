@@ -2430,11 +2430,11 @@ void ACG::DrawMeshT<Mesh>::updateEdgeHalfedgeVertexDeclarations()
 {
   vertexDeclEdgeCol_->clear();
   vertexDeclEdgeCol_->addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION, perEdgeVertexBuffer());
-  vertexDeclEdgeCol_->addElement(GL_UNSIGNED_BYTE, 4, VERTEX_USAGE_COLOR, perEdgeColorBuffer());
+  vertexDeclEdgeCol_->addElement(GL_FLOAT, 4, VERTEX_USAGE_COLOR, perEdgeColorBuffer());
 
   vertexDeclHalfedgeCol_->clear();
   vertexDeclHalfedgeCol_->addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION, perHalfedgeVertexBuffer());
-  vertexDeclHalfedgeCol_->addElement(GL_UNSIGNED_BYTE, 4, VERTEX_USAGE_COLOR, perHalfedgeColorBuffer());
+  vertexDeclHalfedgeCol_->addElement(GL_FLOAT, 4, VERTEX_USAGE_COLOR, perHalfedgeColorBuffer());
   
   vertexDeclHalfedgePos_->clear();
   vertexDeclHalfedgePos_->addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION, perHalfedgeVertexBuffer());

@@ -57,7 +57,7 @@
 
 #if QT_VERSION >= 0x050000
  #include <QOpenGLContext>
- #include <QSurfaceFormat>
+
 #else
  #include <QGLFormat>
 #endif

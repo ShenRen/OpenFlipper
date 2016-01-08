@@ -63,52 +63,25 @@
 // -------------------- mview
 #include "Core.hh"
 // -------------------- ACG
-#include <ACG/Scenegraph/DrawModes.hh>
-#include <ACG/Scenegraph/SceneGraph.hh>
 
 #include <ACG/QtWidgets/QtFileDialog.hh>
 // -------------------- Qt
 
-#include <QKeyEvent>
-#include <QSplitter>
-#include <QMenuBar>
-#include <QToolBox>
-#include <QApplication>
-#include <QStatusBar>
-#include <QMessageBox>
-#include <QFile>
-#include <QSettings>
-
 #if QT_VERSION >= 0x050000
- #include <QOpenGLContext>
- #include <QSurfaceFormat>
 #else
  #undef QT_NO_OPENGL
  #include <QGLFormat>
 #endif
 
-#include <QPluginLoader>
-#include "OpenFlipper/BasePlugin/BaseInterface.hh"
 #include "OpenFlipper/BasePlugin/KeyInterface.hh"
 #include "OpenFlipper/BasePlugin/MouseInterface.hh"
 #include "OpenFlipper/BasePlugin/PickingInterface.hh"
 #include "OpenFlipper/BasePlugin/ToolboxInterface.hh"
 #include "OpenFlipper/BasePlugin/TextureInterface.hh"
-#include "OpenFlipper/BasePlugin/MenuInterface.hh"
 #include "OpenFlipper/BasePlugin/INIInterface.hh"
 
-#include "OpenFlipper/INIFile/INIFile.hh"
-
-#include "OpenFlipper/common/GlobalOptions.hh"
 #include <OpenFlipper/common/RecentFiles.hh>
-#include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
 
-#include <QStringList>
-#include <QtScript/QScriptValueIterator>
-
-#include <ACG/Scenegraph/SeparatorNode.hh>
-
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 #include "OpenFlipper/BasePlugin/PluginFunctionsCore.hh"
 
 #include "OpenFlipper/BasePlugin/RPCWrappers.hh"
@@ -117,8 +90,6 @@
 
 #include <OpenFlipper/common/BaseObjectCore.hh>
 #include <OpenFlipper/common/TypesInternal.hh>
-
-#include <OpenFlipper/common/RendererInfo.hh>
 
 #include <OpenFlipper/widgets/messageBox/StaysOnTopMessageBox.hh>
 
@@ -963,7 +934,14 @@ void Core::updateUI() {
   QApplication::processEvents();
 }
 
+//-----------------------------------------------------------------------------
 
+void Core::blockScenegraphUpdates(bool _block) {
+  if (_block)
+    OpenFlipper::Options::blockSceneGraphUpdates();
+  else
+    OpenFlipper::Options::unblockSceneGraphUpdates();
+}
 
 //-----------------------------------------------------------------------------
 

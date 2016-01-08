@@ -51,7 +51,6 @@
 #include "function.hh"
 #include "element.hh"
 #include "input.hh"
-#include "output.hh"
 
 //== NAMESPACES ===============================================================
 namespace VSI {

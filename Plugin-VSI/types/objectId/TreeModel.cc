@@ -51,15 +51,10 @@
 
 #include "TreeModel.hh"
 
-#include <iostream>
 
-
-#include <OpenFlipper/common/Types.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#include <QBrush>
-
-#if QT_VERSION >= 0x050000 
+#if QT_VERSION >= 0x050000
 #include <QtWidgets>
 #else
 #include <QtGui>

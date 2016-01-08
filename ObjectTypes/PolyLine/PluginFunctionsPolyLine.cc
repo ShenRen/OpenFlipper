@@ -62,7 +62,6 @@
 #include <OpenFlipper/common/Types.hh>
 #include "PolyLine.hh"
 
-#include "PluginFunctionsPolyLine.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {

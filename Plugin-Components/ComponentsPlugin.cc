@@ -49,13 +49,10 @@
 
 #include "ComponentsPlugin.hh"
 
-#if QT_VERSION >= 0x050000 
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
 #endif
-
-#include <MeshTools/MeshInfoT.hh>
 
 const char *SPLIT_COMPONENTS = "SplitComponents";
 const char *BIGGEST_COMPONENT = "ComponentsPluginBiggestComponent";

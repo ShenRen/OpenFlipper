@@ -59,12 +59,9 @@
 #include <QDir>
 
 #include "GlobalOptions.hh"
-#include <cstdlib>
 #include <iostream>
-#include <ACG/Scenegraph/DrawModes.hh>
 #include <ACG/GL/ShaderGenerator.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctionsViewControls.hh>
-#include <QDir>
 #include <QCoreApplication>
 
 namespace OpenFlipper {

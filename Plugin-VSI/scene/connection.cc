@@ -51,8 +51,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 
-#include <QPen>
-
 #include "elementInOut.hh"
 #include "elementInput.hh"
 #include "elementOutput.hh"
@@ -61,8 +59,6 @@
 #include "graphicsScene.hh"
 #include "elementArea.hh"
 #include "wayfind.hh"
-
-#include "../parser/inout.hh"
 
 //== NAMESPACES ===============================================================
 namespace VSI {

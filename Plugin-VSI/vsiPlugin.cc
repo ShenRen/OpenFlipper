@@ -56,7 +56,6 @@
 //== INCLUDES =================================================================
 
 #include <QAction>
-#include <QIcon>
 #include <QScriptEngine>
 #include <QMessageBox>
 
@@ -68,7 +67,6 @@
 
 #include "baseWidget.hh"
 #include "parser/context.hh"
-#include "parser/element.hh"
 #include "parser/input.hh"
 #include "config/dynamicDialog.hh"
 

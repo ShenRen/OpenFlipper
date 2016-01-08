@@ -50,8 +50,6 @@
 #include "MovePlugin.hh"
 #include <ACG/QtScenegraph/QtManipulatorNode.hh>
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 //***********************************************************************************
 
 void MovePlugin::hideManipulator() {

@@ -61,7 +61,6 @@
 #include "RecentFiles.hh"
 
 #include <OpenFlipper/common/GlobalOptions.hh>
-#include <OpenFlipper/common/Types.hh>
 
 namespace OpenFlipper {
 namespace Options {

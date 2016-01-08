@@ -55,7 +55,6 @@
 
 #include "DepthPeeling.hh"
 
-#include <QAction>
 #include <QMenu>
 
 QAction* DepthPeeling::optionsAction()

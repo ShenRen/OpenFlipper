@@ -55,7 +55,6 @@
 
 #include "SideArea.hh"
 #include "SideElement.hh"
-#include <OpenFlipper/common/GlobalOptions.hh>
 //== IMPLEMENTATION ==========================================================
 
 SideArea::SideArea (QWidget *_parent) :

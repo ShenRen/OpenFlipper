@@ -53,8 +53,6 @@
 
 #include <OpenFlipper/common/GlobalOptions.hh>
 
-#include <iostream>
-
 AboutWidget::AboutWidget(QWidget *parent )
     : QMainWindow(parent)
 {

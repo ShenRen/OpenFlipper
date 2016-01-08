@@ -62,65 +62,39 @@
 // -------------------- mview
 #include "Core.hh"
 
-#include <QMenuBar>
-#include <QToolBox>
-#include <QMessageBox>
-#include <QApplication>
-#include <QScrollArea>
-#include <QMessageBox>
-#include <QtScript/QScriptValueIterator>
-#include <QThread>
-#include <QMutexLocker>
+#if QT_VERSION >= 0x050000
+#endif
 
-#include <QPluginLoader>
-#include "OpenFlipper/BasePlugin/BaseInterface.hh"
 #include "OpenFlipper/BasePlugin/AboutInfoInterface.hh"
 #include "OpenFlipper/BasePlugin/KeyInterface.hh"
 #include "OpenFlipper/BasePlugin/BackupInterface.hh"
-#include "OpenFlipper/BasePlugin/LoggingInterface.hh"
 #include "OpenFlipper/BasePlugin/MouseInterface.hh"
 #include "OpenFlipper/BasePlugin/PickingInterface.hh"
 #include "OpenFlipper/BasePlugin/ToolboxInterface.hh"
 #include "OpenFlipper/BasePlugin/OptionsInterface.hh"
 #include "OpenFlipper/BasePlugin/ToolbarInterface.hh"
 #include "OpenFlipper/BasePlugin/TextureInterface.hh"
-#include "OpenFlipper/BasePlugin/RenderInterface.hh"
-#include "OpenFlipper/BasePlugin/PostProcessorInterface.hh"
-#include "OpenFlipper/BasePlugin/MenuInterface.hh"
-#include "OpenFlipper/BasePlugin/ContextMenuInterface.hh"
 #include "OpenFlipper/BasePlugin/ProcessInterface.hh"
-#include "OpenFlipper/BasePlugin/ViewInterface.hh"
 #include "OpenFlipper/BasePlugin/ViewModeInterface.hh"
 #include "OpenFlipper/BasePlugin/LoadSaveInterface.hh"
-#include "OpenFlipper/BasePlugin/StatusbarInterface.hh"
 #include "OpenFlipper/BasePlugin/INIInterface.hh"
-#include "OpenFlipper/BasePlugin/FileInterface.hh"
 #include "OpenFlipper/BasePlugin/RPCInterface.hh"
 #include "OpenFlipper/BasePlugin/ScriptInterface.hh"
 #include "OpenFlipper/BasePlugin/SecurityInterface.hh"
-#include "OpenFlipper/BasePlugin/SelectionInterface.hh"
-#include "OpenFlipper/BasePlugin/TypeInterface.hh"
 #include "OpenFlipper/BasePlugin/PluginConnectionInterface.hh"
 #include "OpenFlipper/BasePlugin/MetadataInterface.hh"
-
-#include "OpenFlipper/common/RendererInfo.hh"
-
-#include "OpenFlipper/INIFile/INIFile.hh"
-
-#include "OpenFlipper/common/GlobalOptions.hh"
 
 
 #include <ACG/QtWidgets/QtFileDialog.hh>
 #include "OpenFlipper/widgets/PluginDialog/PluginDialog.hh"
-
-#include <deque>
-#include <limits>
 
 /**
  * The number of plugins to load simultaneously.
 
  */
 static const int PRELOAD_THREADS_COUNT = (QThread::idealThreadCount() != -1) ? QThread::idealThreadCount() : 8;
+
+namespace cmake { extern const char *static_plugins; };
 
 class PreloadAggregator {
     public:
@@ -342,6 +316,26 @@ void Core::loadPlugins()
   // Prepend the additional Plugins to the plugin list
   pluginlist = additionalPlugins << pluginlist;
 
+#if QT_VERSION >= 0x050000
+  /*
+   * Remove static plugins from dynamically loaded list.
+   */
+  {
+      QSet<QString> staticPlugins = QSet<QString>::fromList(
+          QString::fromUtf8(cmake::static_plugins).split("\n"));
+      for (int i = 0; i < pluginlist.size(); ) {
+          const QString bn = QFileInfo(pluginlist[i]).fileName();
+          if (staticPlugins.contains(bn)) {
+              emit log(LOGOUT, trUtf8("Not loading dynamic %1 as it is statically "
+                      "linked against OpenFlipper.").arg(bn));
+              pluginlist.removeAt(i);
+          } else {
+              ++i;
+          }
+      }
+  }
+#endif
+
   /*
    * Note: This call is not necessary, anymore. Initialization order
    * is determined later.
@@ -435,6 +429,26 @@ void Core::loadPlugins()
       }
       delete *it;
   }
+
+#if QT_VERSION >= 0x050000
+  /*
+   * Initialize static plugins.
+   */
+  QVector<QStaticPlugin> staticPlugins = QPluginLoader::staticPlugins();
+  for (QVector<QStaticPlugin>::iterator it = staticPlugins.begin();
+          it != staticPlugins.end(); ++it) {
+      QObject *instance = it->instance();
+      BaseInterface* basePlugin = qobject_cast< BaseInterface * >(instance);
+      if (basePlugin) {
+          QString fakeName = QString::fromUtf8("<Statically Linked>::/%1.%2")
+              .arg(basePlugin->name())
+              .arg(OpenFlipper::Options::isWindows() ? "dll" : "so");
+          QString pluginLicenseText  = "";
+          loadPlugin(fakeName, true, pluginLicenseText, instance);
+          licenseTexts += pluginLicenseText;
+      }
+  }
+#endif
 
   emit log(LOGINFO, tr("Total time needed to load plugins was %1 ms.").arg(time.elapsed()));
 
@@ -861,6 +875,8 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
     if ( checkSignal(plugin,"updateView()") )
       connect(plugin,SIGNAL(updateView()),this,SLOT(updateView()), Qt::AutoConnection);
 
+    if ( checkSignal(plugin,"blockScenegraphUpdates(bool)") )
+      connect(plugin,SIGNAL(blockScenegraphUpdates(bool)),this,SLOT(blockScenegraphUpdates(bool)), Qt::QueuedConnection);
 
     if ( checkSignal(plugin,"updatedObject(int)") && checkSignal(plugin,"updatedObject(int,const UpdateType&)") ){
       
@@ -1850,7 +1866,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
     // Plugins to core
     if ( checkSignal(plugin,"emptyObjectAdded(int)" ) )
       connect(plugin , SIGNAL( emptyObjectAdded( int ) ) ,
-              this   , SLOT( slotEmptyObjectAdded ( int ) ),Qt::DirectConnection);
+              this   , SLOT( slotEmptyObjectAdded ( int ) ),Qt::QueuedConnection);
 
     // core to plugins
     if ( checkSlot(plugin,"addedEmptyObject(int)" ) )

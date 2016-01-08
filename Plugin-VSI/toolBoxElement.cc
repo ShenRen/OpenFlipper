@@ -54,7 +54,6 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QMouseEvent>
-#include <QPalette>
 
 #include "toolBoxElement.hh"
 #include "parser/element.hh"

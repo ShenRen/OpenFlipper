@@ -801,8 +801,8 @@ public:
   }
 
   /// get forward projection matrix
-  const GLMatrixd& forward_projection() const {
-    return forward_projection_;
+  GLMatrixd forward_projection() const {
+    return window2viewport_ * projection_ * modelview_;
   }
 
   /// get inverse projection matrix
@@ -1148,12 +1148,6 @@ public:
 
 private: //--------------------------------------------------------------------
 
-  // update forward projection and backward projection matrices
-  void update_matrices(bool _changedModelView = true, 
-    bool _changedProjection = true, 
-    bool _changedViewport = true);
-
-
   // matrix stacks
   std::stack<GLMatrixd>  stack_projection_,
                          stack_modelview_,
@@ -1166,9 +1160,7 @@ private: //--------------------------------------------------------------------
              modelview_,
              inverse_modelview_,
              window2viewport_,
-             inverse_window2viewport_,
-             forward_projection_,
-             backward_projection_;
+             inverse_window2viewport_;
 
   // viewport
   int left_, bottom_, width_, height_;

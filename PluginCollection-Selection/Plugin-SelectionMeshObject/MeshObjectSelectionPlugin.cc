@@ -49,13 +49,6 @@
 
 #include "MeshObjectSelectionPlugin.hh"
 
-#include <set>
-#include <sstream>
-
-#include <QColorDialog>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include <MeshTools/MeshSelectionT.hh>
 
 // Primitive type icons
@@ -123,7 +116,11 @@ edgeType_(0),
 halfedgeType_(0),
 faceType_(0),
 allSupportedTypes_(0u),
-conversionDialog_(0) {
+conversionDialog_(0),
+colorButtonSelection_(0),
+colorButtonArea_(0),
+colorButtonHandle_(0),
+colorButtonFeature_(0){
 }
       
 MeshObjectSelectionPlugin::~MeshObjectSelectionPlugin() {

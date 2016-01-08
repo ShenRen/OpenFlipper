@@ -53,8 +53,6 @@
 #include "loggerWidget.hh"
 
 #include <OpenFlipper/common/GlobalOptions.hh>
-#include <iostream>
-#include <cmath>
 
 #include <OpenMesh/Core/System/omstream.hh>
 

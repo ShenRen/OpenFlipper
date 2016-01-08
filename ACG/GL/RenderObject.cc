@@ -48,7 +48,6 @@
 \*===========================================================================*/
 
 #include <cstdio>
-#include <cstring>
 #include <iostream>
 #include <cstdlib>
 #include <QFile>
@@ -59,11 +58,7 @@
 #include <ACG/GL/IRenderer.hh>
 
 #include <ACG/GL/VertexDeclaration.hh>
-#include <ACG/GL/GLState.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
-#include <ACG/Scenegraph/MaterialNode.hh>
 
-#include <ACG/ShaderUtils/GLSLShader.hh>
 #include <ACG/GL/ShaderCache.hh>
 
 
@@ -103,9 +98,7 @@ void RenderObject::initFromState( GLState* _glState )
 
     _glState->getBlendFunc(&blendSrc, &blendDest);
 
-    GLclampd zn, zf;
-    _glState->getDepthRange(&zn, &zf);
-    depthRange = Vec2f(zn, zf);
+    glGetFloatv(GL_DEPTH_RANGE, depthRange.data());
 
     depthFunc = _glState->depthFunc();
 
@@ -351,6 +344,46 @@ QString RenderObject::toString() const
 
 
   resultStrm << "\ninternalFlags: " << internalFlags_;
+
+  // textures
+  for (std::map<size_t, Texture>::const_iterator it = textures_.begin(); it != textures_.end(); ++it)
+  {
+    resultStrm << "\ntexture unit " << it->first << ": ";
+
+    switch (it->second.type)
+    {
+    case GL_TEXTURE_1D: resultStrm << "GL_TEXTURE_1D"; break;
+    case GL_TEXTURE_2D: resultStrm << "GL_TEXTURE_2D"; break;
+    case GL_TEXTURE_3D: resultStrm << "GL_TEXTURE_3D"; break;
+#ifdef GL_TEXTURE_RECTANGLE
+    case GL_TEXTURE_RECTANGLE: resultStrm << "GL_TEXTURE_RECTANGLE"; break;
+#endif
+#ifdef GL_TEXTURE_CUBE_MAP
+    case GL_TEXTURE_CUBE_MAP: resultStrm << "GL_TEXTURE_CUBE_MAP"; break;
+#endif 
+#ifdef GL_TEXTURE_1D_ARRAY
+    case GL_TEXTURE_1D_ARRAY: resultStrm << "GL_TEXTURE_1D_ARRAY"; break;
+#endif 
+#ifdef GL_TEXTURE_2D_ARRAY
+    case GL_TEXTURE_2D_ARRAY: resultStrm << "GL_TEXTURE_2D_ARRAY"; break;
+#endif 
+#ifdef GL_TEXTURE_CUBE_MAP_ARRAY
+    case GL_TEXTURE_CUBE_MAP_ARRAY: resultStrm << "GL_TEXTURE_CUBE_MAP_ARRAY"; break;
+#endif
+#ifdef GL_TEXTURE_BUFFER
+    case GL_TEXTURE_BUFFER: resultStrm << "GL_TEXTURE_BUFFER"; break;
+#endif
+#ifdef GL_TEXTURE_2D_MULTISAMPLE
+    case GL_TEXTURE_2D_MULTISAMPLE: resultStrm << "GL_TEXTURE_2D_MULTISAMPLE"; break;
+#endif
+#ifdef GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+    case GL_TEXTURE_2D_MULTISAMPLE_ARRAY: resultStrm << "GL_TEXTURE_2D_MULTISAMPLE_ARRAY"; break;
+#endif
+    default: resultStrm << "unknown_type"; break;
+    }
+
+    resultStrm << " - id " << it->second.id;
+  }
 
   if (vertexDecl)
     resultStrm << "\n" << vertexDecl->toString();

@@ -49,29 +49,14 @@
 
 #include "DataControlPlugin.hh"
 
-#if QT_VERSION >= 0x050000 
-  #include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
   #include <QtGui>
 #endif
 
-#include <QLayout>
-#include <QGridLayout>
-#include <QItemSelectionModel>
-
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <QStringList>
-#include <ACG/Scenegraph/BaseNode.hh>
 #include <ACG/QtWidgets/QtMaterialDialog.hh>
-#include <QModelIndexList>
 
 #include <queue>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <ObjectTypes/Light/Light.hh>
 
 //******************************************************************************
 
@@ -405,14 +390,15 @@ void DataControlPlugin::fileOpened(int _id){
 
   BaseObject* obj = 0;
 
-  if ( PluginFunctions::getObject(_id, obj) )
+  if ( PluginFunctions::getObject(_id, obj) ) {
     model_->objectAdded(obj);
 
-  // Only if the added object was a light source, we will traverse the objects!
-  if ( obj->dataType() == DATA_LIGHT)
-    slotShowLightSources(tool_->lightSources->checkState());
+    // Only if the added object was a light source, we will traverse the objects!
+    if ( obj->dataType() == DATA_LIGHT)
+      slotShowLightSources(tool_->lightSources->checkState());
 
-  view_->resizeColumnToContents(0);
+    view_->resizeColumnToContents(0);
+  }
 }
 
 

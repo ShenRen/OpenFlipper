@@ -63,9 +63,7 @@
 
 #include "prototypeVec3d.hh"
 
-#include <iostream>
- 
-prototypeVec3d::prototypeVec3d(QObject *parent ) : 
+prototypeVec3d::prototypeVec3d(QObject *parent ) :
     QObject(parent) 
 {
   

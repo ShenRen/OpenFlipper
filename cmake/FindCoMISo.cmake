@@ -2,34 +2,45 @@
 # Once done this will define
 #  
 #  COMISO_FOUND        - system has COMISO
-#  COMISO_INCLUDE_DIR  - the COMISO include directory
+#  COMISO_INCLUDE_DIRS - the COMISO include directory
 #  COMISO_LIBRARY_DIR  - where the libraries are
 #  COMISO_LIBRARY      - Link these to use COMISO
 
 
-IF (COMISO_INCLUDE_DIR)
+IF (COMISO_INCLUDE_DIRS)
   # Already in cache, be silent
   SET(COMISO_FIND_QUIETLY TRUE)
-ENDIF (COMISO_INCLUDE_DIR)
+ENDIF (COMISO_INCLUDE_DIRS)
 
 # search all lib directories in packages for OpenFlipper
 file (
   GLOB _libdirs
            "${CMAKE_SOURCE_DIR}/libs"
            "${CMAKE_SOURCE_DIR}/Package-*/libs"
+           "${CMAKE_BINARY_DIR}/libs"
+           "${CMAKE_BINARY_DIR}/Package-*/libs"
+           "${CMAKE_BINARY_DIR}/libs/CoMISo"
+           "${CMAKE_BINARY_DIR}/Package-*/libs/CoMISo"
 )
 
-          
+
 # Find CoMISo config file
-FIND_PATH( COMISO_INCLUDE_DIR CoMISo/Config/config.hh
-           PATHS "${CMAKE_SOURCE_DIR}"
-                 "${CMAKE_SOURCE_DIR}/libs/" 
-                 "${_libdirs}"
+FIND_PATH( COMISO_CONFIG_INCLUDE_DIR CoMISo/Config/config.hh
+           PATHS ${_libdirs}
+                 "${CMAKE_BINARY_DIR}/../"
+                 "${CMAKE_BINARY_DIR}/../CoMISo/" )
+
+FIND_PATH( COMISO_INCLUDE_DIR CoMISo/Solver/MISolver.hh
+           PATHS ${_libdirs}
+                 "${CMAKE_SOURCE_DIR}"
                  "${CMAKE_SOURCE_DIR}/../" )
 
-if ( COMISO_INCLUDE_DIR )
+if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
 
-  FILE(READ ${COMISO_INCLUDE_DIR}/CoMISo/Config/config.hh CURRENT_COMISO_CONFIG)
+  # add COMISO_INCLUDE_DIR/CoMISo so stuff in CoMISo/Base can be included by <Base/...>
+  set(COMISO_INCLUDE_DIR "${COMISO_INCLUDE_DIR};${COMISO_INCLUDE_DIR}/CoMISo")
+
+  FILE(READ ${COMISO_CONFIG_INCLUDE_DIR}/CoMISo/Config/config.hh CURRENT_COMISO_CONFIG)
 
   set(COMISO_OPT_DEPS "")
 
@@ -231,11 +242,8 @@ if ( COMISO_INCLUDE_DIR )
                                                                           
   endif()
 
-  add_definitions (-DCOMISODLL -DUSECOMISO )
+  add_definitions (-DCOMISODLL -DUSECOMISO -DBASEDLL -DUSEBASE )
 
-endif(COMISO_INCLUDE_DIR)
-
-IF (COMISO_INCLUDE_DIR)
   include(FindPackageHandleStandardArgs)
   SET(COMISO_FOUND TRUE)
   SET( COMISO_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_LIBDIR}" )
@@ -244,8 +252,11 @@ IF (COMISO_INCLUDE_DIR)
   SET( COMISO_DEPS "GMM")
 #  SET( COMISO_OPT_DEPS ${COMISO_OPT_DEPS} CACHE STRING "Comiso optional dependecies")
 #  mark_as_advanced(COMISO_DEPS COMISO_OPT_DEPS)
-ELSE (COMISO_INCLUDE_DIR)
+  SET( COMISO_INCLUDE_DIRS ${COMISO_INCLUDE_DIR};${COMISO_CONFIG_INCLUDE_DIR} )
+  # For backwards compat:
+  SET( COMISO_INCLUDE_DIR ${COMISO_INCLUDE_DIRS} )
+ELSE (COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR)
   SET( COMISO_FOUND FALSE )
   SET( COMISO_LIBRARY_DIR )
-ENDIF (COMISO_INCLUDE_DIR)
+ENDIF (COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR)
 

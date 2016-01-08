@@ -18,6 +18,13 @@ project (OpenFlipper)
 # add our macro directory to cmake search path
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
+# search for more macro directories in Package-* folders
+file (
+  GLOB _more_macro_directories
+       "${CMAKE_SOURCE_DIR}/Package-*/cmake"
+)
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
+
 # include our cmake files
 include (ACGCommon)
 
@@ -62,7 +69,7 @@ if (QT4_FOUND)
 	message(STATUS "Using QT4 for OpenFlipper")
 elseif(QT5_FOUND)
 	message(STATUS "Using QT5 for OpenFlipper")
-	set (OF_MAX_QT_VERSION "5.3.2")
+	set (OF_MAX_QT_VERSION "5.5.1")
     if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
       message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n"
         "OpenFlipper has not been tested with this QT Version on Windows.")
@@ -248,6 +255,9 @@ endif()
 
 # start with an empty plugin list
 acg_set (OPENFLIPPER_PLUGINS "")
+acg_set (OPENFLIPPER_STATIC_PLUGINS "")
+acg_set (OPENFLIPPER_STATIC_PLUGIN_FILES "")
+acg_set (OPENFLIPPER_STATIC_PLUGIN_NAMES "")
 
 foreach (package ${PREFOUND_PACKAGES})
 find_package(${package})

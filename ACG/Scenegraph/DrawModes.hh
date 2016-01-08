@@ -141,6 +141,7 @@ namespace DrawModes {
   {
     COLOR_NONE,         /**< Use material colors only */
     COLOR_PER_VERTEX,   /**< Load per vertex colors and modulate with material color */
+    COLOR_PER_EDGE, /**< Load per edge colors and modulate with material color */
     COLOR_PER_HALFEDGE, /**< Load per halfedge colors and modulate with material color */
     COLOR_PER_FACE      /**< Load per face colors and modulate with material color */
   };

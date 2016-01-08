@@ -50,8 +50,6 @@
 #include <ACG/GL/acg_glew.hh>
 #include "MeshNode2T.hh"
 
-#include <stdexcept>
-
 namespace ACG {
 namespace SceneGraph {
 

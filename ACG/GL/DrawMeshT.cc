@@ -593,7 +593,7 @@ DrawMeshT<Mesh>::rebuild()
   meshComp_->setVertices(mesh_.n_vertices(), mesh_.points(), 24, false, GL_DOUBLE, 3);
   
   // normals
-  if (mesh_.has_halfedge_normals())
+  if (halfedgeNormalMode_ && mesh_.has_halfedge_normals())
     meshComp_->setNormals(mesh_.n_halfedges(), mesh_.property(mesh_.halfedge_normals_pph()).data(), 24, false, GL_DOUBLE, 3);
   else if (mesh_.has_vertex_normals())
     meshComp_->setNormals(mesh_.n_vertices(), mesh_.vertex_normals(), 24, false, GL_DOUBLE, 3);
@@ -2430,11 +2430,11 @@ void ACG::DrawMeshT<Mesh>::updateEdgeHalfedgeVertexDeclarations()
 {
   vertexDeclEdgeCol_->clear();
   vertexDeclEdgeCol_->addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION, perEdgeVertexBuffer());
-  vertexDeclEdgeCol_->addElement(GL_UNSIGNED_BYTE, 4, VERTEX_USAGE_COLOR, perEdgeColorBuffer());
+  vertexDeclEdgeCol_->addElement(GL_FLOAT, 4, VERTEX_USAGE_COLOR, perEdgeColorBuffer());
 
   vertexDeclHalfedgeCol_->clear();
   vertexDeclHalfedgeCol_->addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION, perHalfedgeVertexBuffer());
-  vertexDeclHalfedgeCol_->addElement(GL_UNSIGNED_BYTE, 4, VERTEX_USAGE_COLOR, perHalfedgeColorBuffer());
+  vertexDeclHalfedgeCol_->addElement(GL_FLOAT, 4, VERTEX_USAGE_COLOR, perHalfedgeColorBuffer());
   
   vertexDeclHalfedgePos_->clear();
   vertexDeclHalfedgePos_->addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION, perHalfedgeVertexBuffer());

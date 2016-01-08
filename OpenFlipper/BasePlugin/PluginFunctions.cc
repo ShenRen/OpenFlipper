@@ -63,7 +63,6 @@
 #include <../ObjectTypes/TriangleMesh/TriangleMesh.hh>
 #include <../ObjectTypes/PolyMesh/PolyMesh.hh>
 
-#include "PluginFunctions.hh"
 #include "PluginFunctionsCore.hh"
 
 namespace PluginFunctions {

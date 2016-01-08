@@ -49,20 +49,11 @@
 
 #include "FileScript.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#if QT_VERSION >= 0x050000 
+#if QT_VERSION >= 0x050000
   #include <QtWidgets>
 #else
   #include <QtGui>
 #endif
-
-#include <QFileInfo>
-#include <QSettings>
-
-#include <iostream>
-
 
 
 QString FileScriptPlugin::getLoadFilters() {

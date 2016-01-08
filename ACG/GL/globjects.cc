@@ -459,7 +459,6 @@ void Texture2D::buildMipMaps( GLenum _internalfmt,
       // compute number of mipmaps
 
       Vec2i curSize = Vec2i(_width, _height);
-      int curOffset = 0;
 
       std::vector<int> mipMemsize(1, 0);
       std::vector<Vec2i> mipSize(1, curSize);
@@ -1138,6 +1137,54 @@ bool AtomicCounter::isValid() const
   return buffer_ && numCounters_ > 0;
 }
 
+//-----------------------------------------------------------------------------
+
+QueryObject::QueryObject(GLenum _type) 
+  : id_(0), state_(-1), type_(_type)
+{
+
+}
+
+QueryObject::~QueryObject()
+{
+  if (id_)
+    glDeleteQueries(1, &id_);
+}
+
+void QueryObject::begin()
+{
+  if (!id_)
+    glGenQueries(1, &id_);
+
+  glBeginQuery(type_, id_);
+  state_ = 0;
+}
+
+void QueryObject::end()
+{
+  if (!state_)
+  {
+    glEndQuery(type_);
+    state_ = 1;
+  }
+}
+
+bool QueryObject::available() const
+{
+  GLint r = GL_FALSE;
+  if (state_ > 0)
+    glGetQueryObjectiv(id_, GL_QUERY_RESULT_AVAILABLE, &r);
+  return r != GL_FALSE;
+}
+
+GLuint QueryObject::result() const
+{
+  GLuint r = 0xffffffff;
+  if (state_ > 0)
+    glGetQueryObjectuiv(id_, GL_QUERY_RESULT, &r);
+  return r;
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -1449,6 +1496,9 @@ int ShaderStorageBufferObject::getMaxCombinedShaderBlocks()
 
   return maxCombinedShaderBlocks_;
 }
+
+
+
 
 
 } /* namespace ACG */

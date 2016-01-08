@@ -59,12 +59,8 @@
 
 #include "TypeSplatCloud.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 #include <OpenFlipper/common/BackupData.hh>
 #include "SplatCloudBackup.hh"
-
-#include <ACG/GL/GLState.hh>
 
 
 //== CONSTANTS ===================================================

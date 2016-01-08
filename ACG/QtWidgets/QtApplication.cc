@@ -65,19 +65,10 @@
 
 
 // Qt
-#include <QCursor>
 #include <QWidget>
 #include <QWheelEvent>
-#include <QCloseEvent>
-#include <QMoveEvent>
-#include <QKeyEvent>
-#include <QEvent>
-#include <QTimerEvent>
-#include <QContextMenuEvent>
-#include <QMouseEvent>
 
 // stdc++
-#include <iostream>
 #include <fstream>
 
 

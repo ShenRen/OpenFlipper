@@ -52,8 +52,6 @@
 
 #include "SplatCloudBackup.hh"
 
-#include <iostream>
-
 
 //== DEFINES =====================================================
 

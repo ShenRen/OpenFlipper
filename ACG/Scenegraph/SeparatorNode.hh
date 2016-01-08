@@ -66,8 +66,6 @@
 
 #include "BaseNode.hh"
 
-
-
 //== NAMESPACES ===============================================================
 
 namespace ACG {
@@ -88,14 +86,11 @@ class ACGDLLEXPORT SeparatorNode : public BaseNode
 public:
 
   /// Constructor.
-  SeparatorNode( BaseNode* _parent=0,
-		 const std::string& _name="<separator>" )
-    : BaseNode(_parent, _name)
-  {}
+  SeparatorNode( BaseNode* _parent=0, const std::string& _name="<separator>" );
 
 
   /// Destructor.
-  virtual ~SeparatorNode() {}
+  virtual ~SeparatorNode();
 
 
   ACG_CLASSNAME(SeparatorNode);

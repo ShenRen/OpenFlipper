@@ -57,23 +57,7 @@
 
 #include "PropertyVisPlugin.hh"
 
-#include <Qt>
-
-#include <QSpacerItem>
-#include <QFileDialog>
-
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <cmath>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <ACG/Utils/ColorCoder.hh>
-
 #include "PropertyModelFactory.hh"
-
-#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
-#include <ObjectTypes/PolyMesh/PolyMesh.hh>
 
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
     #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>

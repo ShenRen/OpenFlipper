@@ -62,6 +62,7 @@
 
 #include "PolyLineNodeT.hh"
 #include <ACG/GL/gl.hh>
+#include <ACG/GL/ShaderCache.hh>
 #include <ACG/Utils/VSToolsT.hh>
 #include <vector>
 
@@ -92,10 +93,18 @@ PolyLineNodeT<PolyLine>::PolyLineNodeT(PolyLine& _pl, BaseNode* _parent, std::st
   POINTS_SPHERES_SCREEN = DrawModes::DrawMode(ACG::SceneGraph::DrawModes::addDrawMode("Points (as Spheres, constant screen size)",
                                                                                ACG::SceneGraph::DrawModes::DrawModeProperties(ACG::SceneGraph::DrawModes::PRIMITIVE_POLYGON,
                                                                                ACG::SceneGraph::DrawModes::LIGHTSTAGE_SMOOTH,
-                                                                               ACG::SceneGraph::DrawModes::NORMAL_PER_VERTEX)));;
+                                                                               ACG::SceneGraph::DrawModes::NORMAL_PER_VERTEX)));
 
   // Initial default draw mode
   drawMode(DrawModes::WIREFRAME | DrawModes::POINTS );
+}
+
+//----------------------------------------------------------------------------
+
+template <class PolyLine>
+PolyLineNodeT<PolyLine>::~PolyLineNodeT()
+{
+  delete sphere_;
 }
 
 //----------------------------------------------------------------------------
@@ -121,7 +130,7 @@ DrawModes::DrawMode
 PolyLineNodeT<PolyLine>::
 availableDrawModes() const
 {
-  return (DrawModes::WIREFRAME | DrawModes::POINTS | POINTS_SPHERES | POINTS_SPHERES_SCREEN );
+  return (DrawModes::WIREFRAME | DrawModes::POINTS | DrawModes::POINTS_COLORED | POINTS_SPHERES | POINTS_SPHERES_SCREEN | DrawModes::EDGES_COLORED);
 }
 
 
@@ -147,24 +156,13 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
   // Bind the vertex array
   ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
 
-  // We have to define the correct stride here, as the array ay be interleaved with normals
-  // or binormals
-  int stride = 0;
-
-  if ( polyline_.vertex_normals_available() )
-    stride = 24;
-
-  ACG::GLState::vertexPointer(3, GL_FLOAT , stride, 0);
-
-
-  ACG::GLState::enableClientState(GL_VERTEX_ARRAY);
-
   ACG::Vec4f color = _state.ambient_color()  + _state.diffuse_color();
 
   // draw points
-  if (_drawMode & DrawModes::POINTS)
+  if (_drawMode & DrawModes::POINTS || _drawMode & DrawModes::POINTS_COLORED)
   {
-   
+    vertexDecl_.activateFixedFunction();
+
     // draw selection
     if( polyline_.vertex_selections_available() && !selectedVertexIndexBuffer_.empty())
     {
@@ -180,13 +178,25 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 
     _state.set_color( color );
 
-    // Draw all vertices (don't care about selection)
-    glDrawArrays(GL_POINTS,0,polyline_.n_vertices());
+
+    if (_drawMode & DrawModes::POINTS_COLORED)
+    {
+      vertexDecl_.deactivateFixedFunction();
+      vertexDeclVCol_.activateFixedFunction();
+    }
     
+    // Draw all vertices (don't care about selection)
+    glDrawArrays(GL_POINTS, 0, polyline_.n_vertices());
+    
+    if (_drawMode & DrawModes::POINTS_COLORED)
+      vertexDeclVCol_.deactivateFixedFunction();
+    else
+      vertexDecl_.deactivateFixedFunction();
   }
 
   // draw line segments
   if (_drawMode & DrawModes::WIREFRAME) {
+    vertexDecl_.activateFixedFunction();
 
     // draw selection
     if (polyline_.edge_selections_available() && !selectedEdgeIndexBuffer_.empty()) {
@@ -207,6 +217,37 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
     else
       glDrawArrays(GL_LINE_STRIP, 0, polyline_.n_vertices());
 
+    vertexDecl_.deactivateFixedFunction();
+  }
+
+
+  if (_drawMode & DrawModes::EDGES_COLORED) {
+    vertexDecl_.activateFixedFunction();
+
+    // draw selection
+    if (polyline_.edge_selections_available() && !selectedEdgeIndexBuffer_.empty()) {
+      // save old values
+      float line_width_old = _state.line_width();
+      _state.set_color(Vec4f(1, 0, 0, 1));
+      _state.set_line_width(2 * line_width_old);
+
+      glDrawElements(GL_LINES, selectedEdgeIndexBuffer_.size(), GL_UNSIGNED_INT, &(selectedEdgeIndexBuffer_[0]));
+
+      _state.set_line_width(line_width_old);
+    }
+
+    vertexDecl_.deactivateFixedFunction();
+
+    _state.set_color(color);
+
+
+    vertexDeclECol_.activateFixedFunction();
+    if (polyline_.is_closed())
+      glDrawArrays(GL_LINE_STRIP, 0, polyline_.n_vertices() + 1);
+    else
+      glDrawArrays(GL_LINE_STRIP, 0, polyline_.n_vertices());
+
+    vertexDeclECol_.deactivateFixedFunction();
   }
 
 
@@ -320,9 +361,6 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 
     }
   }
-
-
-
 }
 
 //----------------------------------------------------------------------------
@@ -411,21 +449,53 @@ void
 PolyLineNodeT<PolyLine>::
 pick_vertices( GLState& _state )
 {
+  if (!polyline_.n_vertices())
+    return;
+
   float point_size_old = _state.point_size();
   glPointSize(18);
 
-  _state.pick_set_name(0);
-
-
   glDepthRange(0.0, 0.999999);
-  for (unsigned int i=0; i< polyline_.n_vertices(); ++i) {
-    _state.pick_set_name (i);
-    glBegin(GL_POINTS);
-      glArrayElement( i );
-    glEnd();
+
+  GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/pick_vertices_vs.glsl", "Picking/pick_vertices_fs.glsl", 0, false);
+
+  if (pickShader && pickShader->isLinked())
+  {
+    // Bind the vertex array
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+
+    unsigned int pickOffsetIndex = _state.pick_current_index();
+
+    vertexDecl_.activateShaderPipeline(pickShader);
+
+    pickShader->use();
+
+    ACG::GLMatrixf transform = _state.projection() * _state.modelview();
+
+    pickShader->setUniform("mWVP", transform);
+    pickShader->setUniform("pickVertexOffset", pickOffsetIndex);
+
+    glDrawArrays(GL_POINTS, 0, polyline_.n_vertices());
+
+    vertexDecl_.deactivateShaderPipeline(pickShader);
+    pickShader->disable();
+
+
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
   }
+  else
+  {
+    for (unsigned int i = 0; i < polyline_.n_vertices(); ++i) {
+      _state.pick_set_name(i);
+      glBegin(GL_POINTS);
+      glArrayElement(i);
+      glEnd();
+    }
+  }
+
   glDepthRange(0.0, 1.0);
   
+
   
   glPointSize(point_size_old);
 }
@@ -494,28 +564,110 @@ pick_edges( GLState& _state, unsigned int _offset)
   if ( polyline_.n_edges() == 0 )
     return;
   
-  // save old values
-  float line_width_old = _state.line_width();
-  //  _state.set_line_width(2*line_width_old);
-  _state.set_line_width(14);
-  
-  unsigned int n_end = polyline_.n_edges()+1;
-  if( !polyline_.is_closed()) --n_end;
-
-  _state.pick_set_name (0);
-
-
   glDepthRange(0.0, 0.999999);
-  for (unsigned int i=0; i<n_end; ++i) {
-    _state.pick_set_name (i+_offset);
-    glBegin(GL_LINES);
-      glArrayElement( i     % polyline_.n_vertices() );
-      glArrayElement( (i+1) % polyline_.n_vertices() );
-    glEnd();
+
+  GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/pick_vertices_fs2.glsl", 0, false);
+
+  if (pickShader && pickShader->isLinked())
+  {
+    // Bind the vertex array
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+
+    int pickOffsetIndex = int(_state.pick_current_index());
+
+    vertexDecl_.activateShaderPipeline(pickShader);
+
+    pickShader->use();
+
+    ACG::GLMatrixf transform = _state.projection() * _state.modelview();
+
+    pickShader->setUniform("mWVP", transform);
+    pickShader->setUniform("pickVertexOffset", pickOffsetIndex);
+
+    int numIndices = polyline_.n_vertices() + (polyline_.is_closed() ? 1 : 0);
+    glDrawArrays(GL_LINE_STRIP, 0, numIndices);
+
+    vertexDecl_.deactivateShaderPipeline(pickShader);
+    pickShader->disable();
+
+    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
   }
+  else
+  {
+    // save old values
+    float line_width_old = _state.line_width();
+    //  _state.set_line_width(2*line_width_old);
+    _state.set_line_width(14);
+
+    unsigned int n_end = polyline_.n_edges() + 1;
+    if (!polyline_.is_closed()) --n_end;
+
+    for (unsigned int i = 0; i < n_end; ++i) {
+      _state.pick_set_name(i + _offset);
+      glBegin(GL_LINES);
+      glArrayElement(i     % polyline_.n_vertices());
+      glArrayElement((i + 1) % polyline_.n_vertices());
+      glEnd();
+    }
+
+    _state.set_line_width(line_width_old);
+  }
+
   glDepthRange(0.0, 1.0);
-  
-  _state.set_line_width(line_width_old);
+
+}
+
+//----------------------------------------------------------------------------
+
+template <class PolyLine>
+void 
+PolyLineNodeT<PolyLine>::
+setupVertexDeclaration(VertexDeclaration* _dst, int _colorSource) const {
+  // Update the vertex declaration based on the input data:
+  _dst->clear();
+
+
+  // We always output vertex positions
+  _dst->addElement(GL_FLOAT, 3, ACG::VERTEX_USAGE_POSITION);
+
+  // current byte offset
+  size_t curOffset = 12;
+
+  // Use the normals if available
+  if (polyline_.vertex_normals_available())
+  {
+    _dst->addElement(GL_FLOAT, 3, ACG::VERTEX_USAGE_NORMAL, curOffset);
+    curOffset += 12;
+  }
+
+  // colors
+  if (polyline_.vertex_colors_available())
+  {
+    if (_colorSource == 1)
+      _dst->addElement(GL_UNSIGNED_BYTE, 4, ACG::VERTEX_USAGE_COLOR, curOffset);
+    curOffset += 4;
+  }
+
+  if (polyline_.edge_colors_available())
+  {
+    if (_colorSource == 2)
+      _dst->addElement(GL_UNSIGNED_BYTE, 4, ACG::VERTEX_USAGE_COLOR, curOffset);
+    curOffset += 4;
+  }
+
+
+  // Add custom vertex elements to declaration
+  for (size_t i = 0; i < customBuffers_.size(); ++i) {
+    ACG::VertexElement tmp = customBuffers_[i].first;
+    tmp.pointer_ = 0;
+    tmp.usage_ = ACG::VERTEX_USAGE_SHADER_INPUT;
+    tmp.setByteOffset(curOffset);
+    _dst->addElement(&tmp);
+
+    curOffset += VertexDeclaration::getElementSize(&tmp);
+  }
+
+  _dst->setVertexStride(curOffset);
 }
 
 //----------------------------------------------------------------------------
@@ -557,30 +709,19 @@ updateVBO() {
   }
 
 
-  // Update the vertex declaration based on the input data:
-  vertexDecl_.clear();
+  // Update vertex declarations
+  setupVertexDeclaration(&vertexDecl_, 0);
+  setupVertexDeclaration(&vertexDeclVCol_, 1);
+  setupVertexDeclaration(&vertexDeclECol_, 2);
 
-  // We always output vertex positions
-  vertexDecl_.addElement(GL_FLOAT, 3, ACG::VERTEX_USAGE_POSITION);
-
-  // Use the normals if available
-  if ( polyline_.vertex_normals_available() )
-    vertexDecl_.addElement(GL_FLOAT, 3 , ACG::VERTEX_USAGE_NORMAL);
-
-  // Add custom vertex elements to declaration
-  for (size_t i = 0; i < customBuffers_.size(); ++i) {
-    ACG::VertexElement tmp = customBuffers_[i].first;
-    tmp.pointer_ = 0;
-    tmp.usage_ = ACG::VERTEX_USAGE_SHADER_INPUT;
-    vertexDecl_.addElement(&tmp);
-  }
+  const unsigned int stride = vertexDecl_.getVertexStride();
 
   // create vbo if it does not exist
   if (!vbo_)
     GLState::genBuffersARB(1, &vbo_);
 
   // size in bytes of vbo,  create additional vertex for closed loop indexing
-  unsigned int bufferSize = vertexDecl_.getVertexStride() * (polyline_.n_vertices() + 1);
+  unsigned int bufferSize = stride * (polyline_.n_vertices() + 1);
 
   // Create the required array
   char* vboData_ = new char[bufferSize];
@@ -593,7 +734,7 @@ updateVBO() {
 
   for (unsigned int  i = 0 ; i < polyline_.n_vertices(); ++i) {
 
-    writeVertex(i, vboData_ + i * vertexDecl_.getVertexStride());
+    writeVertex(i, vboData_ + i * stride);
 
     // Create an ibo in system memory for vertex selection
     if ( polyline_.vertex_selections_available() && polyline_.vertex_selected(i) )
@@ -608,7 +749,7 @@ updateVBO() {
   }
 
   // First point is added to the end for a closed loop
-  writeVertex(0, vboData_ + polyline_.n_vertices() * vertexDecl_.getVertexStride());
+  writeVertex(0, vboData_ + polyline_.n_vertices() * stride);
 
   // Move data to the buffer in gpu memory
   GLState::bindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_);
@@ -619,6 +760,40 @@ updateVBO() {
 
   // Update done.
   updateVBO_ = false;
+}
+
+//----------------------------------------------------------------------------
+
+template <class PolyLine>
+void 
+PolyLineNodeT<PolyLine>::
+writeVertexColor(unsigned int _vertex, bool _colorSourceVertex, void* _dst) const
+{
+  const VertexDeclaration* declToUse = _colorSourceVertex ? &vertexDeclVCol_ : &vertexDeclECol_;
+
+  unsigned int byteOffset = declToUse->findElementByUsage(VERTEX_USAGE_COLOR)->getByteOffset();
+  unsigned char* ucdata = ((unsigned char*)_dst) + byteOffset;
+
+  Point col;
+  if (_colorSourceVertex)
+    col = polyline_.vertex_color(_vertex); // per vertex
+  else
+  {
+    // edge colors
+    // use the 2nd vertex of each edge as the provoking vertex
+    int edgeID = (_vertex + polyline_.n_edges() - 1) % polyline_.n_edges();
+    col = polyline_.edge_color(edgeID);
+  }
+
+  // rgb
+  for (int i = 0; i < 3; ++i)
+  {
+    // convert to normalized ubyte
+    int ival = int(col[i] * 255.0);
+    ival = std::min(std::max(ival, 0), 255);
+    ucdata[i] = ival;
+  }
+  ucdata[3] = 0xff; // alpha
 }
 
 //----------------------------------------------------------------------------
@@ -640,30 +815,35 @@ writeVertex(unsigned int _vertex, void* _dst) {
     for ( unsigned int j = 0 ; j < 3 ; ++j)
       *(fdata++) = polyline_.vertex_normal(_vertex)[j];
 
-  // id offset of custom elements in the vertex declaration
-  unsigned int customElementOffset = 1;
-  if ( polyline_.vertex_normals_available()  )
-    customElementOffset++;
+  if (polyline_.vertex_colors_available())
+    writeVertexColor(_vertex, true, _dst);
 
-  // copy custom data byte-wise
-  for (unsigned int i = 0; i < customBuffers_.size(); ++i) {
+  if (polyline_.edge_colors_available())
+    writeVertexColor(_vertex, false, _dst);
 
-    // element in custom input buffer
-    const ACG::VertexElement* veInput = &customBuffers_[i].first;
-    unsigned int elementInputStride = veInput->getByteOffset();
-    unsigned int elementSize = ACG::VertexDeclaration::getElementSize(veInput);
+  int customElementOffset = vertexDeclVCol_.findElementIdByUsage(VERTEX_USAGE_SHADER_INPUT);
 
-    if (!elementInputStride)
-      elementInputStride = elementSize;
+  if (customElementOffset >= 0)
+  {
+    // copy custom data byte-wise
+    for (unsigned int i = 0; i < customBuffers_.size(); ++i) {
 
-    // element in vertex buffer
-    const ACG::VertexElement* ve = vertexDecl_.getElement(i + customElementOffset);
+      // element in custom input buffer
+      const ACG::VertexElement* veInput = &customBuffers_[i].first;
+      unsigned int elementInputStride = veInput->getByteOffset();
+      unsigned int elementSize = ACG::VertexDeclaration::getElementSize(veInput);
 
-    const char* src = (const char*)customBuffers_[i].second;
+      if (!elementInputStride)
+        elementInputStride = elementSize;
 
-    memcpy((char*)_dst + ve->getByteOffset(), src + elementInputStride * _vertex, elementSize);
+      // element in vertex buffer
+      const ACG::VertexElement* ve = vertexDeclVCol_.getElement(i + static_cast<unsigned int>(customElementOffset));
+
+      const char* src = (const char*)customBuffers_[i].second;
+
+      memcpy((char*)_dst + ve->getByteOffset(), src + elementInputStride * _vertex, elementSize);
+    }
   }
-
 }
 
 //----------------------------------------------------------------------------
@@ -696,9 +876,6 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
   // Set to the right vbo
   ro.vertexBuffer = vbo_;
 
-  // decl must be static or member,  renderer does not make a copy
-  ro.vertexDecl = &vertexDecl_;
-
   // Set style
   ro.debugName = "PolyLine";
   ro.blending = false;
@@ -718,6 +895,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
 
     ro.setupShaderGenFromDrawmode(props);
     ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+    ro.vertexDecl = &vertexDecl_;
 
     //---------------------------------------------------
     // No lighting!
@@ -726,7 +904,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
     localMaterial.baseColor(defaultColor);
     ro.setMaterial(&localMaterial);
 
-
+  
     switch (props->primitive()) {
 
       case ACG::SceneGraph::DrawModes::PRIMITIVE_POINT:
@@ -738,6 +916,9 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
 
         // Point Size geometry shader
         ro.setupPointRendering(_mat->pointSize(), screenSize);
+        
+        // selection without colors
+        ro.shaderDesc.vertexColors = false;
 
         if (!selectedVertexIndexBuffer_.empty())
         {
@@ -754,6 +935,13 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         ro.setMaterial(&localMaterial);
         ro.glDrawArrays(GL_POINTS, 0, polyline_.n_vertices());
 
+        if (props->colored() && polyline_.vertex_colors_available())
+        {
+          ro.vertexDecl = &vertexDeclVCol_;
+          ro.shaderDesc.vertexColors = true;
+        }
+
+
         // Point Size geometry shader
         ro.setupPointRendering(_mat->pointSize(), screenSize);
 
@@ -764,6 +952,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
 
         break;
       case ACG::SceneGraph::DrawModes::PRIMITIVE_WIREFRAME:
+      case ACG::SceneGraph::DrawModes::PRIMITIVE_EDGE:
 
         // Render all edges which are selected via an index buffer
         ro.debugName = "polyline.Wireframe.selected";
@@ -772,6 +961,9 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
 
         // Line Width geometry shader
         ro.setupLineRendering(_state.line_width(), screenSize);
+
+        // selection without colors
+        ro.shaderDesc.vertexColors = false;
 
         if (!selectedEdgeIndexBuffer_.empty())
         {
@@ -792,6 +984,12 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
           ro.glDrawArrays(GL_LINE_STRIP, 0, polyline_.n_vertices() + 1);
         else
           ro.glDrawArrays(GL_LINE_STRIP, 0, polyline_.n_vertices());
+
+        if (props->colored() && polyline_.edge_colors_available())
+        {
+          ro.vertexDecl = &vertexDeclECol_;
+          ro.shaderDesc.vertexColors = true;
+        }
 
         // Line Width geometry shader
         ro.setupLineRendering(_state.line_width(), screenSize);

@@ -66,9 +66,6 @@
 #include <QtCore>
 #endif
 
-#include <ACG/Scenegraph/CoordsysNode.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/widgets/snapshotDialog/SnapshotDialog.hh>
 
 

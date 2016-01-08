@@ -64,7 +64,6 @@
 
 #include <QApplication>
 #include <QStatusBar>
-#include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
 

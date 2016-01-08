@@ -488,7 +488,7 @@ public:
   }
   */
 
-  typedef void* CustomPropertyHandle;
+  typedef int CustomPropertyHandle;
 
   // request properties,  returns handle of custom property
   CustomPropertyHandle request_custom_property(const std::string& _name, unsigned int _prop_size);
@@ -718,14 +718,14 @@ private:
 
     char* buffer() {return prop_data.empty() ? 0 : &prop_data[0];}
     const char* buffer() const {return prop_data.empty() ? 0 : &prop_data[0];}
-
-    CustomPropertyHandle handle() const;
   };
   
   typedef std::map< std::string, CustomProperty* > CustomPropertyMap;
 
   CustomProperty* custom_prop(CustomPropertyHandle _handle);
   const CustomProperty* custom_prop(CustomPropertyHandle _handle) const;
+
+  CustomPropertyHandle custom_prop_handle(const CustomProperty*) const;
 
   // map from property name to property data
   CustomPropertyMap custom_properties;

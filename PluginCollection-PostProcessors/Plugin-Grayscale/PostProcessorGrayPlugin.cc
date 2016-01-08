@@ -51,13 +51,9 @@
 
 #include "PostProcessorGrayPlugin.hh"
 
-#include <iostream>
-#include <ACG/GL/GLState.hh>
-#include <ACG/GL/gl.hh>
 #include <ACG/GL/ScreenQuad.hh>
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 
 PostProcessorGrayscalePlugin::PostProcessorGrayscalePlugin() :
 shader_(0)

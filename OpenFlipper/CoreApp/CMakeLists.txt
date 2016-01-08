@@ -19,6 +19,7 @@ if( APPLE )
      GLOB _plugin_buildinfos
      RELATIVE "${CMAKE_SOURCE_DIR}"
      "${CMAKE_SOURCE_DIR}/ObjectTypes/*/CMakeLists.txt"
+     "${CMAKE_SOURCE_DIR}/Package*/ObjectTypes/*/CMakeLists.txt"
   )
 
 
@@ -99,6 +100,24 @@ if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/branding.qrc )
   	    list(APPEND RC_SRC ${BRANDING_RC_SRC})
         endif()
 endif()
+
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "#include <QtPlugin>\n\n")
+
+foreach (plugin ${OPENFLIPPER_STATIC_PLUGIN_NAMES})
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "Q_IMPORT_PLUGIN(${plugin});\n")
+endforeach()
+
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\nnamespace cmake {\n")
+
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\nconst char *static_plugins = \"\"\n")
+
+foreach (plugin ${OPENFLIPPER_STATIC_PLUGIN_FILES})
+  file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" "\"${plugin}\\n\"\n")
+endforeach()
+
+file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" ";\n} /* namespace cmake */\n")
+
+list(APPEND RC_SRC "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc")
 
 if (WIN32)
   # add app icon rc file to windows build
@@ -206,6 +225,7 @@ target_link_libraries (${OPENFLIPPER_PRODUCT_STRING}
   ${GLEW_LIBRARY}
   ${GLUT_LIBRARIES}
   ${COREAPP_ADDITIONAL_LINK_LIBRARIES}
+  ${OPENFLIPPER_STATIC_PLUGINS}
 )
 
 if (APPLE)

@@ -50,7 +50,6 @@
 //== INCLUDES =================================================================
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneWheelEvent>
 
 #include "../parser/element.hh"
 #include "elementArea.hh"

@@ -54,8 +54,6 @@
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#include <QDir>
-
 void DepthPeelingPlugin::reloadResources(int _viewerId) {
   // called in constructor and resizeEvent()
 

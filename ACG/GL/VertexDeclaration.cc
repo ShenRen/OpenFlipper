@@ -52,8 +52,6 @@
 #include <ACG/GL/GLState.hh>
 #include <ACG/ShaderUtils/GLSLShader.hh>
 
-#include <cassert>
-#include <iostream>
 #include <QTextStream>
 
 #include "VertexDeclaration.hh"

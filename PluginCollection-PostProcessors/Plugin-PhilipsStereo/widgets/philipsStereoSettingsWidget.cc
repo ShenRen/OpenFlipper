@@ -51,8 +51,6 @@
 
 #include <OpenFlipper/common/GlobalOptions.hh>
 
-#include <iostream>
-
 PhilipsStereoSettingsWidget::PhilipsStereoSettingsWidget(QWidget* _parent) : QWidget(_parent) {
   setupUi(this);
 

@@ -49,10 +49,7 @@
 
 //== INCLUDES =================================================================
 #include <QWidget>
-#include <QPushButton>
 #include <QPainter>
-#include <QPainterPath>
-#include <QPalette>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsGridLayout>
@@ -60,7 +57,6 @@
 #include "baseWidget.hh"
 
 #include "functionDisplay.hh"
-#include "graphicsScene.hh"
 #include "elementFunction.hh"
 #include "text.hh"
 #include "button.hh"

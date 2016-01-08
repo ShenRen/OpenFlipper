@@ -52,8 +52,6 @@
 
 #include "DataControlPlugin.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 
 //******************************************************************************
 

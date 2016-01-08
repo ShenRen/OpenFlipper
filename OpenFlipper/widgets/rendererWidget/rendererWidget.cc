@@ -55,9 +55,6 @@
   #include <QtGui>
 #endif
 
-#include <QMessageBox>
-
-#include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 

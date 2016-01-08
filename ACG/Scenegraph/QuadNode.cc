@@ -61,7 +61,6 @@
 
 
 #include "QuadNode.hh"
-#include "DrawModes.hh"
 
 
 //== NAMESPACES ============================================================== 

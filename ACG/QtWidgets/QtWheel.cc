@@ -60,23 +60,13 @@
 #include "QtWheel.hh"
 
 #include <cmath>
-#include <cfloat>
 #include <iostream>
-#include <algorithm>
 
 //#include <QDrawutil>
 
-#include <QEvent>
 #include <QPainter>
 #include <QMenu>
-#include <QPixmap>
 #include <QTimer>
-#include <QCursor>
-#include <QBrush>
-#include <QPaintEvent>
-#include <QKeyEvent>
-#include <QResizeEvent>
-#include <QMouseEvent>
 #include <qdrawutil.h>
 
 

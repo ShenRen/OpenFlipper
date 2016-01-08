@@ -49,8 +49,6 @@
 
 //== INCLUDES =================================================================
 #include <QRectF>
-#include <QRect>
-#include <QPointF>
 #include <QVector>
 #include <QHash>
 #include <QLinkedList>

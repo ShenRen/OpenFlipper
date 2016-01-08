@@ -207,6 +207,7 @@ function (of_print_plugin_stats)
 
   # Print all plugins, which are ok
   acg_color_message ("\n${_escape}[4mPlugins configured successfully:${_escape}[0m\n")
+  list( SORT PLUGINS_OK )
   foreach (_plugin ${PLUGINS_OK})
     string (REPLACE "Plugin-" "" _plugin_name ${_plugin})
     acg_format_string (${_plugin_name} ${SPACING} _plugin_name)
@@ -219,6 +220,7 @@ function (of_print_plugin_stats)
 
   # Print all plugins, which are disabled
   acg_color_message ("\n${_escape}[4mPlugins disabled:${_escape}[0m\n")
+  list( SORT PLUGINS_DISABLED )
   foreach (_plugin ${PLUGINS_DISABLED})
     string (REPLACE "Plugin-" "" _plugin_name ${_plugin})
     acg_format_string (${_plugin_name} ${SPACING} _plugin_name)
@@ -230,6 +232,7 @@ function (of_print_plugin_stats)
 
   # Print all plugins, which have missing dependencies
   acg_color_message ("\n${_escape}[4mPlugins with missing dependencies:${_escape}[0m\n")
+  list( SORT PLUGINS_DEPENDENCIES )
   foreach (_plugin ${PLUGINS_DEPENDENCIES})
     string (REPLACE "Plugin-" "" _plugin_name ${_plugin})
     string (TOUPPER ${_plugin_name} _PLUGIN)

@@ -65,7 +65,6 @@
 //== INCLUDES =================================================================
 
 #include <OpenFlipper/common/FileTypes.hh>
-#include <vector>
 
 
 static std::vector<fileTypes> supportedTypes_;

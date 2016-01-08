@@ -51,13 +51,10 @@
 #include "Renderer.hh"
 
 
-#include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <ACG/GL/ShaderCache.hh>
 
 
-
-#include <QMenu>
 
 // =================================================
 

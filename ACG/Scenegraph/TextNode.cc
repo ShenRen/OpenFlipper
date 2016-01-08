@@ -63,8 +63,6 @@
 #include <ACG/GL/acg_glew.hh>
 
 #include "TextNode.hh"
-#include "../GL/gl.hh"
-#include <cstdlib>
 
 
 //== NAMESPACES ===============================================================

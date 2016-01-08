@@ -49,7 +49,6 @@
 
 #include "ComponentsPlugin.hh"
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <MeshTools/MeshInfoT.hh>
 
 //------------------------------------------------------------------------------

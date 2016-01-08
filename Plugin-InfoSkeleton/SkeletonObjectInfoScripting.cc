@@ -48,9 +48,8 @@
 \*===========================================================================*/
 #include "SkeletonObjectInfoPlugin.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <ObjectTypes/Skeleton/Skeleton.hh>
-#include <ACG/Geometry/Algorithms.hh>
-#include <limits>
+
+#include  <limits>
 
 //-----------------------------------------------------------------------------
 /** \brief set the descriptions for scripting slots

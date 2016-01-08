@@ -49,10 +49,6 @@
 
 #include "TypeQtWidget.hh"
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-
 TypeQtWidgetPlugin::TypeQtWidgetPlugin():
 widgets_()
 {

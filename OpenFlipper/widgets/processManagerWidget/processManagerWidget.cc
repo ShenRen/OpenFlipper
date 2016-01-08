@@ -57,8 +57,6 @@
 
 #include "processManagerWidget.hh"
 
-#include <OpenFlipper/common/GlobalOptions.hh>
-
 void ProcessManagerWidget::updateStatus(QString _id, int _status) {
 
     QHash<QString, JobContainer>::iterator it = processMap_.find(_id);

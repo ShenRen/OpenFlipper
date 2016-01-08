@@ -49,8 +49,6 @@
 
 #include "Toolbox.hh"
 
-#include <iostream>
-
 DatacontrolToolboxWidget::DatacontrolToolboxWidget(QWidget* _parent)
     : QWidget(_parent)
 {

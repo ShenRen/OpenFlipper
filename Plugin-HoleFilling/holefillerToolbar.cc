@@ -48,7 +48,6 @@
 \*===========================================================================*/
 
 #include "holefillerToolbar.hh"
-#include <QtGui>
 
 HoleFillerToolbarWidget::HoleFillerToolbarWidget(QWidget *parent)
     : QWidget(parent)

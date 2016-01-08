@@ -59,8 +59,6 @@
 //== INCLUDES =================================================================
 
 #include "PointNode.hh"
-#include "../Utils/StopWatch.hh"
-#include "../GL/gl.hh"
 #include <ACG/GL/IRenderer.hh>
 
 //== NAMESPACES ===============================================================

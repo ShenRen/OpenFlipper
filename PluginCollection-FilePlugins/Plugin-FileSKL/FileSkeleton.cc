@@ -48,25 +48,15 @@
 \*===========================================================================*/
 
 #include "FileSkeleton.hh"
-#include <ACG/GL/GLState.hh>
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
 
 #include <OpenMesh/Core/IO/IOManager.hh>
 
-#if QT_VERSION >= 0x050000 
-  #include <QtWidgets>
+#if QT_VERSION >= 0x050000
 #else
   #include <QtGui>
 #endif
-
-#include <QFileInfo>
-
-
-
-#include <iostream>
-#include <fstream>
 
 
 void FileSKLPlugin::initializePlugin() {

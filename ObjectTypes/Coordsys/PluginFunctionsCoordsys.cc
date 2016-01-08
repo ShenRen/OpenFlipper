@@ -57,7 +57,6 @@
 #include <OpenFlipper/common/Types.hh>
 #include "Coordsys.hh"
 
-#include "PluginFunctionsCoordsys.hh"
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
 namespace PluginFunctions {

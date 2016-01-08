@@ -49,7 +49,6 @@
 
 
 #include "JobInfo.hh"
-#include <iostream>
 
 
 JobInfo::JobInfo() :

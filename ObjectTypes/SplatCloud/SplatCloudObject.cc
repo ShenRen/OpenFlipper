@@ -61,11 +61,8 @@
 
 
 #include "SplatCloud.hh"
-#include <OpenFlipper/common/Types.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
-#include <QString>
 
 
 //== DEFINES =====================================================

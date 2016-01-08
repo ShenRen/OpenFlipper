@@ -140,6 +140,9 @@ getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMod
     ro.setupShaderGenFromDrawmode(props);
     ro.depthTest = true;
 
+    // generated texcoords for environment mapping should be computed in fragment shader,
+    // because normals aren't available in the vertex shader 
+    ro.shaderDesc.texGenPerFragment = true;
 
     if (props->primitive() == DrawModes::PRIMITIVE_POLYGON || props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)
     {
@@ -408,7 +411,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
   }
 
 
-  if ( (_drawMode & DrawModes::SOLID_TEXTURED )  ) {
+  if ((_drawMode & DrawModes::SOLID_TEXTURED) || (_drawMode & DrawModes::SOLID_ENV_MAPPED)) {
     ACG::GLState::enable(GL_AUTO_NORMAL);
     ACG::GLState::enable(GL_NORMALIZE);
     ACG::GLState::enable (GL_BLEND); 
@@ -1649,12 +1652,12 @@ void
 BSplineSurfaceNodeT<BSplineSurfaceType>::
 updateTexBuffers()
 {
-  size_t knotBufSizeU = bsplineSurface_.get_knots_m().size();
-  size_t knotBufSizeV = bsplineSurface_.get_knots_n().size();
+  const size_t knotBufSizeU = bsplineSurface_.get_knots_m().size();
+  const size_t knotBufSizeV = bsplineSurface_.get_knots_n().size();
 
-  size_t numControlPointsU = bsplineSurface_.n_control_points_m();
-  size_t numControlPointsV = bsplineSurface_.n_control_points_n();
-  size_t controlPointBufSize = numControlPointsU * numControlPointsV;
+  const size_t numControlPointsU = bsplineSurface_.n_control_points_m();
+  const size_t numControlPointsV = bsplineSurface_.n_control_points_n();
+
 
   if (knotBufSizeU)
   {
@@ -1678,6 +1681,9 @@ updateTexBuffers()
 
 
 #ifdef GL_VERSION_3_0
+
+  const size_t controlPointBufSize = numControlPointsU * numControlPointsV;
+
   if (controlPointBufSize)
   {
     std::vector<float> controlPointBuf(controlPointBufSize * 3);

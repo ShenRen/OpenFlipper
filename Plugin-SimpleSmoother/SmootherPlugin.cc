@@ -55,8 +55,6 @@
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
-
 SmootherPlugin::SmootherPlugin() :
         iterationsSpinbox_(0)
 {

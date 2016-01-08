@@ -60,9 +60,6 @@
 
 #include "QtManipulatorNode.hh"
 
-#include <QMouseEvent>
-#include <QEvent>
-
 
 //== NAMESPACES ===============================================================
 

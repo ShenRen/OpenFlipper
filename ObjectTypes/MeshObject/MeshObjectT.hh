@@ -340,6 +340,8 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
      */
      OMTriangleBSP* resetTriangleBsp();
 
+     bool hasBsp() { return triangle_bsp_ != 0; }
+
 
   private :
     /// If requested a bsp is created for this object

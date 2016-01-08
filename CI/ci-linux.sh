@@ -30,7 +30,7 @@ elif [ "$COMPILER" == "clang" ]; then
 #  export ICECC_CXX=/usr/bin/clang++ ; export ICECC_CC=/usr/bin/clang
 
   BUILDPATH="clang"
-  MAKE_OPTIONS="-j4"
+  MAKE_OPTIONS="-j6"
 
   echo "Building with CLANG";
 fi  

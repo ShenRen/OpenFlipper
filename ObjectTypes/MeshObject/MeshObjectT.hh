@@ -340,7 +340,15 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
      */
      OMTriangleBSP* resetTriangleBsp();
 
-     bool hasBsp() { return triangle_bsp_ != 0; }
+     /** \brief check if a BSP has been computed and is valid
+     *
+     * This function checks if a bsp has been computed for this mesh object and
+     * if it is still valid (meaning, nothing has been changed on the object after
+     * the BSP has been computed
+     *
+     * @return BSP valid?
+     */
+     bool hasBsp() const;
 
 
   private :

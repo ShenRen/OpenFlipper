@@ -70,7 +70,7 @@ OMPropertyVisualizerInteger<MeshT, T>::OMPropertyVisualizerInteger(MeshT* _mesh,
 template <typename MeshT,typename T>
 QString OMPropertyVisualizerInteger<MeshT, T>::getPropertyText(unsigned int index)
 {
-    return OMPropertyVisualizer<MeshT>::template getPropertyText_<int>(index);
+    return OMPropertyVisualizer<MeshT>::template getPropertyText_<T>(index);
 }
 
 template <typename MeshT, typename T>

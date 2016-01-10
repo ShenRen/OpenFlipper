@@ -805,6 +805,13 @@
   }
 
 
+  template < class MeshT  >
+  bool 
+  MeshObject< MeshT >::hasBsp() const { 
+    return triangle_bsp_ != 0; 
+  }
+
+
   //=============================================================================
 
   template < class MeshT  >

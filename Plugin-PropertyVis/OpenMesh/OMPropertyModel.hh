@@ -168,6 +168,7 @@ public:
 	static const TypeInfoWrapper proptype_bool;
     static const TypeInfoWrapper proptype_int;
     static const TypeInfoWrapper proptype_uint;
+    static const TypeInfoWrapper proptype_uint8_t;
     static const TypeInfoWrapper proptype_double;
     static const TypeInfoWrapper proptype_Vec3d;
     static const TypeInfoWrapper proptype_Vec3f;
@@ -205,6 +206,8 @@ template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_int
 	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<int>), "int");
 template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_uint
 	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<unsigned int>), "unsigned int");
+template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_uint8_t
+    = TypeInfoWrapper(typeid(OpenMesh::PropertyT<uint8_t>), "uint8_t");
 template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_double
 	= TypeInfoWrapper(typeid(OpenMesh::PropertyT<double>), "double");
 template <typename T> const TypeInfoWrapper OMPropertyModel<T>::proptype_Vec3d

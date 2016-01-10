@@ -74,7 +74,7 @@ void rotate(MeshT& _mesh) {
 
   Matrix3d covar = (data * data.transpose()) / (double)_mesh.n_vertices();
 
-  JacobiSVD<Matrix3d> svd(covar, ComputeThinU | ComputeThinV);
+  JacobiSVD<Matrix3d> svd(covar, ComputeFullU | ComputeFullV);
 
   const Matrix3d& u = svd.matrixU();
 

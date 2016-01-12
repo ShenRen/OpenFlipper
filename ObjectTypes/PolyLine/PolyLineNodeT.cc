@@ -459,38 +459,38 @@ pick_vertices( GLState& _state )
 
   GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/pick_vertices_vs.glsl", "Picking/pick_vertices_fs.glsl", 0, false);
 
-  if (pickShader && pickShader->isLinked())
-  {
-    // Bind the vertex array
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
-
-    unsigned int pickOffsetIndex = _state.pick_current_index();
-
-    vertexDecl_.activateShaderPipeline(pickShader);
-
-    pickShader->use();
-
-    ACG::GLMatrixf transform = _state.projection() * _state.modelview();
-
-    pickShader->setUniform("mWVP", transform);
-    pickShader->setUniform("pickVertexOffset", pickOffsetIndex);
-
-    glDrawArrays(GL_POINTS, 0, polyline_.n_vertices());
-
-    vertexDecl_.deactivateShaderPipeline(pickShader);
-    pickShader->disable();
-
-
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-  }
-  else
-  {
+//  if (pickShader && pickShader->isLinked())
+//  {
+//    // Bind the vertex array
+//    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+//
+//    unsigned int pickOffsetIndex = _state.pick_current_index();
+//
+//    vertexDecl_.activateShaderPipeline(pickShader);
+//
+//    pickShader->use();
+//
+//    ACG::GLMatrixf transform = _state.projection() * _state.modelview();
+//
+//    pickShader->setUniform("mWVP", transform);
+//    pickShader->setUniform("pickVertexOffset", pickOffsetIndex);
+//
+//    glDrawArrays(GL_POINTS, 0, polyline_.n_vertices());
+//
+//    vertexDecl_.deactivateShaderPipeline(pickShader);
+//    pickShader->disable();
+//
+//
+//    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+//  }
+//  else
+//  {
     for (unsigned int i = 0; i < polyline_.n_vertices(); ++i) {
       _state.pick_set_name(i);
       glBegin(GL_POINTS);
       glArrayElement(i);
       glEnd();
-    }
+//    }
   }
 
   glDepthRange(0.0, 1.0);

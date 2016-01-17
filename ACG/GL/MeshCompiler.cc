@@ -1534,6 +1534,78 @@ void MeshCompiler::resolveTriangulation()
   }
 }
 
+bool MeshCompiler::reconstructTriangulation(int _face, std::vector<int>& _triangulation) const
+{
+  int fsize = getFaceSize(_face);
+  int ftris = fsize - 2;
+
+  if (int(_triangulation.size() < ftris) * 3)
+    _triangulation.resize(ftris * 3);
+
+  if (fsize == 3)
+  {
+    // fast version for triangles
+    int drawTriID = mapToDrawTriID(_face);
+
+    // first vertex of the triangle
+    int drawVertexID = mapToDrawVertexID(_face, 0);
+
+    // account for rotation in the index buffer
+    for (int k = 0; k < 3; ++k)
+    {
+      if (indices_[drawTriID * 3 + k] == drawVertexID)
+      {
+        _triangulation[k] = 0;
+        _triangulation[(k + 1) % 3] = 1;
+        _triangulation[(k + 2) % 3] = 2;
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+  else
+  {
+    // map from drawVertexID -> local corner id in face
+    std::map<int, int> cornerMap; // potential optimization: find better data structure to store this info
+
+    // init cornerMap
+    for (int k = 0; k < fsize; ++k)
+    {
+      int drawVertexID = mapToDrawVertexID(_face, k);
+    
+      cornerMap[drawVertexID] = k;
+    }
+
+    // use cornerMap for simple reconstruction
+    for (int t = 0; t < ftris; ++t)
+    {
+      int drawTriID = mapToDrawTriID(_face, t);
+
+      for (int k = 0; k < 3; ++k)
+      {
+        // get vertexID from index buffer
+        int drawVertexID = indices_[drawTriID * 3 + k];
+
+#ifdef _DEBUG
+        if (!cornerMap.count(drawVertexID))
+        {
+          std::cerr << "error: MeshCompiler::reconstructTriangulation - invalid mappings for face " << _face << std::endl;
+          return false;
+        }
+#endif // _DEBUG
+
+        int cornerID = cornerMap[drawVertexID];
+
+        _triangulation[t * 3 + k] = cornerID;
+      }
+    }
+  }
+
+  return true;
+}
+
 void MeshCompiler::sortFacesByGroup()
 {
   // sort faces based on their group id
@@ -1854,6 +1926,164 @@ void MeshCompiler::build(bool _weldVertices, bool _optimizeVCache, bool _needPer
 
 
 
+
+void MeshCompiler::fastVertexUpdate()
+{
+  /*
+  
+  1. alloc vertex array that stores which (face, corner) is using it. init to all 0 (unused)
+  2. for each face and each corner
+       vertexID = mapToDrawVertex(face, corner);
+
+       if (unused[vertexID])
+         writeVertexData(vertexID, face, corner)
+       else
+         
+         char oldVertexData[] = getVertexDataFromVBO(vertexID)
+         char newVertexData[] = getInputVertexData(face, corner)
+
+         if (!compareVertex(oldVertexData, newVertexData))
+           add new vertex   // might be optimized to reduce split count.
+                            // use VertexSplitter to check if there is no previous split with the same vertex data
+           update mappings
+  */
+
+  // memory storage for comparing two vertices
+  int vstride = getVertexDeclaration()->getVertexStride();
+  std::vector<char> vdata0(vstride, 0);
+  std::vector<char> vdata1(vstride, 0);
+
+
+  int numReferencedVertices = numDrawVerts_ - numIsolatedVerts_;
+
+  int numSplits = 0;
+
+  // alloc buffer to store the triangulation of a polygon
+  std::vector<int> triangulation((maxFaceSize_ - 2) * 3);
+
+  // keep references from vertexID -> (face, corner) as they are in mapToOriginalVertexID at the moment
+
+  for (int faceID = 0; faceID < numFaces_; ++faceID)
+  {
+    int fsize = getFaceSize(faceID);
+
+    // only reconstruct triangulation when necessary
+    bool triangulationReady = false;
+
+    for (int cornerID = 0; cornerID < fsize; ++cornerID)
+    {
+      int vertexID = mapToDrawVertexID(faceID, cornerID);
+
+      int refFaceID, refCornerID;
+      mapToOriginalVertexID(vertexID, refFaceID, refCornerID);
+
+      if (faceID != refFaceID)
+      {
+        // this is a shared vertex
+        // compare vertex data with the reference
+
+        // get data of existing reference
+        getInputFaceVertexData(refFaceID, refCornerID, &vdata0[0]);
+
+        // get data of new vertex
+        getInputFaceVertexData(faceID, cornerID, &vdata1[0]);
+
+        if (!vertexCompare_->equalVertex(&vdata0[0], &vdata1[0], &decl_))
+        {
+          // split
+          ++numSplits;
+
+          // update mapToDrawVertexID:
+          const int newVertexID = numReferencedVertices;
+          const int indexOffset = getInputIndexOffset(faceID, cornerID);
+          faceBufSplit_[indexOffset] = newVertexID;
+
+          ++numReferencedVertices;
+          numDrawVerts_ = numReferencedVertices + numIsolatedVerts_;
+
+          // update mapToOriginalVertexID:
+          // - this is done in createVertexMap() later
+
+
+          // update indices_ :
+
+
+          //  need to know which indices are associated with the (face, corner)
+          //  -> there might be more than one!
+          //  this is no easy task because of the triangulation of n-polys
+          //  might have to precompute this information somehow
+          //          mapToDrawTriID();
+
+//           if (!triangulationReady)
+//           {
+//             if (!reconstructTriangulation(faceID, triangulation))
+//             {
+//               std::cerr << "error: MeshCompiler::partialVertexUpdate() can't reconstruct triangulation for face " << faceID << std::endl;
+//               
+//               // todo: error handling and rollback
+//             }
+//             else
+//               triangulationReady = true;
+//           }
+// 
+// 
+//           // compute mapping  corner -> index offsets into ibo
+// 
+//           // there is probably a better solution than doing a linear search in the triangulation here
+//           for (int tri = 0; tri < fsize - 2; ++tri)
+//           {
+//             for (int triCorner = 0; triCorner < 3; ++triCorner)
+//             {
+//               int triFaceCorner = triangulation[tri * 3 + triCorner];
+// 
+//               if (triFaceCorner == cornerID)
+//               {
+//                 int drawTriID = mapToDrawTriID(faceID, tri);
+// 
+//                 // offset into index buffer of the corner of the triangle
+//                 int triFaceCornerOffset = drawTriID * 3 + triCorner;
+// 
+//                 assert(indices_[triFaceCornerOffset] == vertexID);
+//                 indices_[triFaceCornerOffset] = ;
+//               }
+//             }
+//           }
+
+
+          // without reconstructing the triangulation:
+          for (int tri = 0; tri < fsize - 2; ++tri)
+          {
+            int drawTriID = mapToDrawTriID(faceID, tri);
+
+            for (int triCorner = 0; triCorner < 3; ++triCorner)
+            {
+              int triIndexOffset = drawTriID * 3 + triCorner;
+              int triVertex = indices_[triIndexOffset];
+
+              if (triVertex == vertexID)
+              {
+                // change index to to new split vertex
+                indices_[triIndexOffset] = newVertexID;
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
+
+
+  if (numSplits)
+  {
+    // fix isolated vertices
+    // resolve overlapping indices from the split vertices and isolates
+    numDrawVerts_ = numReferencedVertices; // isolated vertices are fixed in createVertexMap()
+
+    // update vertex -> (face, corner) map
+    createVertexMap(numIsolatedVerts_ > 0);
+  }
+}
 
 
 

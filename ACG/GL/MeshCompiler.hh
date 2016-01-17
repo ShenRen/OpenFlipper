@@ -513,6 +513,16 @@ public:
   */
   void build(bool _weldVertices = false, bool _optimizeVCache = true, bool _needPerFaceAttribute = false, bool _keepIsolatedVertices = false);
 
+
+  /** \brief Fast update of vertices
+   * 
+   * Use this if some attributes of vertices have changed, but the face topology is unchanged.
+   * This might introduce new vertex splits, which are added to the end of the vertex buffer.
+   * In that case the mappings are also updated.
+   */
+  void fastVertexUpdate();
+
+
   /** Get number of vertices in final buffer.
   */
   int getNumVertices() const {return numDrawVerts_;}
@@ -1011,11 +1021,15 @@ private:
   // fix incomplete welding map if mesh contains isolated vertices
   void fixWeldMap();
 
-  // convert n-poly -> tris (triangle fans)
+  // convert n-poly -> tris
   void triangulate();
 
   // resolve triangulation
   void resolveTriangulation();
+
+  // reconstruct triangulation of a face from the final index buffer.
+  // the triangulation is an array of 3 local corner ids for each triangle of the face.
+  bool reconstructTriangulation(int _face, std::vector<int>& _triangulation) const;
 
   // sort input faces by group ids
   void sortFacesByGroup();

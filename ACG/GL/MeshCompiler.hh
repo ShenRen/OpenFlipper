@@ -628,6 +628,16 @@ public:
   */
   int getIndex(int _i) const;
 
+  /** Get the triangulation of a face
+   *
+   * The triangulation is an array of 3 local corner ids for each triangle of the face.
+   * This data is not directly available, but has to be reconstructed from the final index buffer.
+   * This is done by matching the vertex ids with the (face, corner) mapping, so there is some overhead.
+   * @param _face face ID in input data
+   * @param _triangulation target buffer receiving the triangulation
+   * @return report if matching was successful
+  */
+  bool reconstructTriangulation(int _face, std::vector<int>& _triangulation) const;
 
 /** @} */  
 
@@ -1026,10 +1036,6 @@ private:
 
   // resolve triangulation
   void resolveTriangulation();
-
-  // reconstruct triangulation of a face from the final index buffer.
-  // the triangulation is an array of 3 local corner ids for each triangle of the face.
-  bool reconstructTriangulation(int _face, std::vector<int>& _triangulation) const;
 
   // sort input faces by group ids
   void sortFacesByGroup();

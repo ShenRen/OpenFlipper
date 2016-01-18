@@ -221,6 +221,15 @@
 
     meshNode_    = new ACG::SceneGraph::MeshNodeT<MeshT>(*mesh_, shaderNode_, "NEW MeshNode");
 
+    if (meshNode_->getDrawMesh())
+    {
+      bool fastUpdate = OpenFlipperSettings().value("Core/Debug/FastVertexUpdate", false).toBool();
+      if (fastUpdate)
+        meshNode_->getDrawMesh()->enableFastVertexUpdate();
+      else
+        meshNode_->getDrawMesh()->disableFastVertexUpdate();
+    }
+
     QString shaderDir = OpenFlipper::Options::shaderDirStr() + OpenFlipper::Options::dirSeparator();
 
     std::string shaderDirectory = std::string( shaderDir.toUtf8() );

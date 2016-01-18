@@ -81,6 +81,7 @@ template <class Mesh>
 DrawMeshT<Mesh>::DrawMeshT(Mesh& _mesh)
 :  mesh_(_mesh),
    rebuild_(REBUILD_NONE),
+   enableFastVertexUpdate_(false),
    prevNumFaces_(0), prevNumVerts_(0),
    colorMode_(1),
    curVBOColorMode_(1),
@@ -542,9 +543,14 @@ DrawMeshT<Mesh>::rebuild()
   }
 
 
-  // full rebuild:
-  delete meshComp_;
-  meshComp_ = new MeshCompiler(*vertexDecl_);
+  bool doFastUpdate = !(rebuild_ & (REBUILD_TOPOLOGY | REBUILD_FULL)) &&  enableFastVertexUpdate_ && meshComp_ != 0;
+
+  if (!doFastUpdate)
+  {
+    // full rebuild:
+    delete meshComp_;
+    meshComp_ = new MeshCompiler(*vertexDecl_);
+  }
 
 
   // search for convenient attribute indices
@@ -640,8 +646,17 @@ DrawMeshT<Mesh>::rebuild()
   }
 
 
-  // compile draw buffers
-  meshComp_->build(true, true, true, true);
+
+  if (doFastUpdate)
+  {
+    // just update vertices
+    meshComp_->fastVertexUpdate();
+  }
+  else
+  {
+    // compile draw buffers
+    meshComp_->build(true, true, true, true);
+  }
 
 
   // create inverse vertex map

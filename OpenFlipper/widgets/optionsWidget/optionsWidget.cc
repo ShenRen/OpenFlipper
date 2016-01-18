@@ -341,6 +341,8 @@ void OptionsWidget::showEvent ( QShowEvent * /*event*/ ) {
   // debugging
   slotDebugging->setChecked(OpenFlipper::Options::doSlotDebugging());
 
+  fastVertexUpdate->setChecked(OpenFlipperSettings().value("Core/Debug/FastVertexUpdate", false).toBool());
+
   //keyBindings
   initKeyTree();
 
@@ -666,6 +668,7 @@ void OptionsWidget::slotApply() {
 
   // Debugging
   OpenFlipper::Options::doSlotDebugging(slotDebugging->isChecked());
+  OpenFlipperSettings().setValue("Core/Debug/FastVertexUpdate", fastVertexUpdate->isChecked());
 
   //viewer defaults
   for (int i=0; i < PluginFunctions::viewers(); i++){

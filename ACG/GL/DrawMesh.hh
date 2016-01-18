@@ -293,6 +293,21 @@ public:
    */
   void updateFull() {rebuild_ |= REBUILD_FULL;}
 
+  /** \brief enable fast update for vertex-only changes
+   *
+   * Updates after changing halfedge attributes might introduce new vertex splits.
+   * In that case the fast update mode adds these splits to the end of the vbo.
+   * This might introduce more splits than necessary in favor for speed.
+   * 
+  */
+  void enableFastVertexUpdate() { enableFastVertexUpdate_ = true; }
+
+  /** \brief disable fast update for vertex-only changes
+   *
+   * Do a full rebuild if per halfedge attributes are changed.
+  */
+  void disableFastVertexUpdate() { enableFastVertexUpdate_ = false; }
+
   /** \brief returns the number of used textured of this mesh
    *
    * @return Number of different textures used in the mesh
@@ -827,6 +842,9 @@ private:
 
   /// hint on what to rebuild
   unsigned int rebuild_;
+
+  /// fast updates are possible at the cost of potentially more splits
+  bool enableFastVertexUpdate_;
 
   /** used to track mesh changes, that require a full rebuild
     * values directly taken from Mesh template

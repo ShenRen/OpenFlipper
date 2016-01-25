@@ -446,12 +446,6 @@ int main(int argc, char **argv)
         }
       }
      }
-    
-    //On Apple systems the extensions are loaded automagically by qt so dont call the init functions or include the opengl headers (gl_compat_4_4).
-    #ifndef __APPLE__
- //   initOpenGLFunctions();
-    #endif
-    //std::cout<<QGLFormat::openGLVersionFlags();
 
     // After setting all Options from command line, build the real gui
     w->init();   

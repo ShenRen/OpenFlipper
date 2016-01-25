@@ -60,6 +60,7 @@
 
 // -------------------- mview
 #include "CoreWidget.hh"
+#include <ACG/GL/acg_glew.hh>
 
 //== IMPLEMENTATION ==========================================================
 

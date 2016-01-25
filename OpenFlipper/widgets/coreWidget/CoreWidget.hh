@@ -67,6 +67,7 @@
 
 #include <set>
 
+
 #include "OpenFlipper/common/Types.hh"
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/ContextMenuInterface.hh>

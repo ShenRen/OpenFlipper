@@ -69,6 +69,7 @@
 
 #elif defined(WIN32)
 
+  #include "acg_glew.hh"
   #include <windows.h>
   #include <gl/glut.h>
 

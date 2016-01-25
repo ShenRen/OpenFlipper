@@ -60,6 +60,8 @@
 //== INCLUDES =================================================================
 
 #include <common/glew_wrappers.hh>
+#include <ACG/GL/gl_compat_4_4.hh>
+
 #include "CoreWidget.hh"
 #include <OpenFlipper/common/FileTypes.hh>
 

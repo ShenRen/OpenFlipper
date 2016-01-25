@@ -2020,7 +2020,7 @@ void Core::showReducedMenuBar(bool reduced) {
 }
 
 void Core::finishSplash() {
-    splash_->finish(coreWidget_);
+    splash_->finish(coreWidget_);	
 }
 
 

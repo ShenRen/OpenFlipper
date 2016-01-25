@@ -435,13 +435,14 @@ getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawM
     Material localMaterial = *_mat;
     if (setColor_)
     {
-      localMaterial.color(primitives_[i].color);
-      localMaterial.ambientColor(primitives_[i].color);
+      //localMaterial.color(primitives_[i].color);
+      //localMaterial.ambientColor(primitives_[i].color);
       localMaterial.diffuseColor(primitives_[i].color);
-      localMaterial.baseColor(primitives_[i].color);
+      localMaterial.baseColor(primitives_[i].color * .5);
     }
 
     ro.setMaterial(&localMaterial);
+    ro.shaderDesc.shadeMode = SG_SHADE_PHONG;
 
     switch (primitives_[i].type) {
       case SPHERE:

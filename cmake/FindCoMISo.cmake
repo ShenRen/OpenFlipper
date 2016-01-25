@@ -37,6 +37,9 @@ FIND_PATH( COMISO_INCLUDE_DIR CoMISo/Solver/MISolver.hh
 
 if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
 
+  # add COMISO_INCLUDE_DIR/CoMISo so stuff in CoMISo/Base can be included by <Base/...>
+  set(COMISO_INCLUDE_DIR "${COMISO_INCLUDE_DIR};${COMISO_INCLUDE_DIR}/CoMISo")
+
   FILE(READ ${COMISO_CONFIG_INCLUDE_DIR}/CoMISo/Config/config.hh CURRENT_COMISO_CONFIG)
 
   set(COMISO_OPT_DEPS "")
@@ -239,7 +242,7 @@ if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
                                                                           
   endif()
 
-  add_definitions (-DCOMISODLL -DUSECOMISO )
+  add_definitions (-DCOMISODLL -DUSECOMISO -DBASEDLL -DUSEBASE )
 
   include(FindPackageHandleStandardArgs)
   SET(COMISO_FOUND TRUE)

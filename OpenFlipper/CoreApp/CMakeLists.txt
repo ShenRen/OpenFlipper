@@ -18,6 +18,7 @@ if( APPLE )
      GLOB _plugin_buildinfos
      RELATIVE "${CMAKE_SOURCE_DIR}"
      "${CMAKE_SOURCE_DIR}/ObjectTypes/*/CMakeLists.txt"
+     "${CMAKE_SOURCE_DIR}/Package*/ObjectTypes/*/CMakeLists.txt"
   )
 
 

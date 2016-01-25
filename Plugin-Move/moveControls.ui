@@ -38,7 +38,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -86,6 +86,32 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="text">
           <string>Unify Boundingbox Diagonal</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="unifyBoundingBoxLongest">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normalize Bounding box longest axis of objects&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normalize Bounding box longest axis of objects&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Unify Boundingbox Longest Axis</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="unifyBoundingBoxAll">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normalize Bounding box all axis of objects&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normalize Bounding box all axis of objects&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Unify Boundingbox All Axis</string>
          </property>
         </widget>
        </item>

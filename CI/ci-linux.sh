@@ -8,16 +8,30 @@ LANGUAGE=$2
 QTVERSION=$3
 
 OPTIONS=""
+MAKE_OPTIONS=""
 
 BUILDPATH=""
 
 if [ "$COMPILER" == "gcc" ]; then
   echo "Building with GCC";
   BUILDPATH="gcc"
+
+  # without icecc: no options required
+  OPTIONS="-DCMAKE_CXX_COMPILER=/usr/lib/icecc/bin/g++ -DCMAKE_C_COMPILER=/usr/lib/icecc/bin/gcc"
+  MAKE_OPTIONS="-j16"
+  export ICECC_CXX=/usr/bin/g++ ; export ICECC_CC=/usr/bin/gcc
+
 elif [ "$COMPILER" == "clang" ]; then
 
   OPTIONS="$OPTIONS -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DGTEST_PREFIX=~/sw/gtest-1.7.0-clang/ "
+
+#  Build options with icecc /not working due to strange symbol errors
+#  OPTIONS="$OPTIONS -DCMAKE_CXX_COMPILER=/usr/lib/icecc/bin/g++ -DCMAKE_C_COMPILER=/usr/lib/icecc/bin/gcc -DGTEST_PREFIX=~/sw/gtest-1.7.0-clang/ "
+#  export ICECC_CXX=/usr/bin/clang++ ; export ICECC_CC=/usr/bin/clang
+
   BUILDPATH="clang"
+  MAKE_OPTIONS="-j6"
+
   echo "Building with CLANG";
 fi  
 
@@ -72,7 +86,7 @@ cd build-release-$BUILDPATH
 cmake -DCMAKE_BUILD_TYPE=Release -DOPENFLIPPER_BUILD_UNIT_TESTS=TRUE -DSTL_VECTOR_CHECKS=ON $OPTIONS ../
 
 #build it
-make
+make $MAKE_OPTIONS
 
 #########################################
 # Run Release Unittests

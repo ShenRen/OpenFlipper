@@ -51,6 +51,9 @@ These vertices can usually be removed without destroying the features of the mes
           <property name="suffix">
            <string>°</string>
           </property>
+          <property name="decimals">
+           <number>4</number>
+          </property>
           <property name="maximum">
            <double>180.000000000000000</double>
           </property>
@@ -179,7 +182,7 @@ These vertices can usually be removed without destroying the features of the mes
            <string>Edge length</string>
           </property>
           <property name="decimals">
-           <number>4</number>
+           <number>10</number>
           </property>
           <property name="maximum">
            <double>999999999.000000000000000</double>
@@ -262,6 +265,9 @@ These vertices can usually be removed without destroying the features of the mes
           </property>
           <property name="suffix">
            <string>°</string>
+          </property>
+          <property name="decimals">
+           <number>4</number>
           </property>
           <property name="maximum">
            <double>180.000000000000000</double>
@@ -352,6 +358,9 @@ There is no automatic algorithm to fix these foldovers here. So you will have to
           <property name="suffix">
            <string>°</string>
           </property>
+          <property name="decimals">
+           <number>4</number>
+          </property>
           <property name="maximum">
            <double>180.000000000000000</double>
           </property>
@@ -409,7 +418,7 @@ There is no automatic algorithm to fix these foldovers here. So you will have to
            </sizepolicy>
           </property>
           <property name="decimals">
-           <number>4</number>
+           <number>6</number>
           </property>
           <property name="maximum">
            <double>999999999.000000000000000</double>
@@ -559,7 +568,7 @@ There is no automatic algorithm to fix these foldovers here. So you will have to
            </sizepolicy>
           </property>
           <property name="decimals">
-           <number>6</number>
+           <number>10</number>
           </property>
           <property name="minimum">
            <double>0.000000000000000</double>
@@ -615,7 +624,7 @@ There is no automatic algorithm to fix these foldovers here. So you will have to
            </sizepolicy>
           </property>
           <property name="decimals">
-           <number>6</number>
+           <number>10</number>
           </property>
           <property name="minimum">
            <double>0.000010000000000</double>
@@ -640,6 +649,12 @@ There is no automatic algorithm to fix these foldovers here. So you will have to
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
      </property>
     </spacer>
    </item>

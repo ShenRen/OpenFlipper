@@ -238,18 +238,6 @@ public:
     /// Scale (with values from Tab)
     void slotScale();
 
-    /// Move target Meshes cog to the origin
-    void slotMoveToOrigin();
-
-    /// Scale Boundingbox Diagonal to unit size
-    void slotUnifyBoundingBoxDiagonal();
-
-    /// Scale Boundingbox longest axis to unit size (keeps aspect ratio)
-    void slotUnifyBoundingBoxLongestAxis();
-
-    /// Scale all Boundingbox axis to unit size
-    void slotUnifyBoundingBoxAllAxis();
-
     void slotEnableSelectionMode();
 
     void slotEnableObjectMode();
@@ -517,6 +505,18 @@ public:
 //===========================================================================
 
 public slots :
+
+  /// Move target Meshes cog to the origin
+  void slotMoveToOrigin();
+
+  /// Scale Boundingbox Diagonal to unit size
+  void slotUnifyBoundingBoxDiagonal();
+
+  /// Scale Boundingbox longest axis to unit size (keeps aspect ratio)
+  void slotUnifyBoundingBoxLongestAxis();
+
+  /// Scale all Boundingbox axis to unit size
+  void slotUnifyBoundingBoxAllAxis();
 
   /// translate an Object by a given vector
   void translate( int _objectId , Vector _vector );

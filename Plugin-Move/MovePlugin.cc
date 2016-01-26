@@ -1710,10 +1710,12 @@ void MovePlugin::slotMoveToOrigin() {
   ACG::Vec3d cog = ACG::Vec3d(0.0,0.0,0.0);
 
   if ( PluginFunctions::targetCount() > 1 ) {
-    QMessageBox::StandardButton button = QMessageBox::question( 0, tr("Use common COG?"), tr("Should the targets be moved depending on their common cog?"),QMessageBox::Yes|QMessageBox::No);
+    if ( OpenFlipper::Options::gui()) {
+      QMessageBox::StandardButton button = QMessageBox::question( 0, tr("Use common COG?"), tr("Should the targets be moved depending on their common cog?"),QMessageBox::Yes|QMessageBox::No);
 
 
-    useCommonCOG =  ( button == QMessageBox::Yes );
+      useCommonCOG =  ( button == QMessageBox::Yes );
+    }
 
     if ( useCommonCOG ) {
 
@@ -1874,10 +1876,12 @@ void MovePlugin::unifyBoundingBox(Unificationtype u)
   ACG::Vec3d bb_max = ACG::Vec3d(FLT_MIN,FLT_MIN,FLT_MIN);
 
   if ( PluginFunctions::targetCount() > 1 ) {
-    QMessageBox::StandardButton button = QMessageBox::question( 0, tr("Use common BB?"), tr("Should the targets be scaled depending on their common Bounding Box?"),QMessageBox::Yes|QMessageBox::No);
+    if ( OpenFlipper::Options::gui()) {
+      QMessageBox::StandardButton button = QMessageBox::question( 0, tr("Use common BB?"), tr("Should the targets be scaled depending on their common Bounding Box?"),QMessageBox::Yes|QMessageBox::No);
 
 
-    useCommonBB =  ( button == QMessageBox::Yes );
+      useCommonBB =  ( button == QMessageBox::Yes );
+    }
 
 
     if ( useCommonBB ) {

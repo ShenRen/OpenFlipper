@@ -76,7 +76,6 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
     for (typename MeshT::FaceIter f_it = mesh.faces_begin(),
             f_end = mesh.faces_end(); f_it != f_end; ++f_it) {
         size_t valence = mesh.valence(*f_it);
-        std::cout << "Face " << f_it->idx() << " has valence " << valence << "." << std::endl;
         if (face_valence_hist.size() <= valence) {
             face_valence_hist.resize(
                     valence + 1, 0);

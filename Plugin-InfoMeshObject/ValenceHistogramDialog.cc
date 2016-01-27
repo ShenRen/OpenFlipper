@@ -16,8 +16,8 @@ ValenceHistogramDialog::ValenceHistogramDialog(TriMesh &mesh, QWidget *parent)
 
 ValenceHistogramDialog::ValenceHistogramDialog(PolyMesh &mesh, QWidget *parent)
     : QDialog(parent) {
-    init(mesh);
     setupUi(this);
+    init(mesh);
 }
 
 static void fillHistogramTable(std::vector<size_t> &hist, QTableWidget &tw) {
@@ -58,7 +58,7 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
      * Vertices
      */
     vertex_valence_hist.clear();
-    for (TriMesh::VertexIter v_it = mesh.vertices_begin(),
+    for (typename MeshT::VertexIter v_it = mesh.vertices_begin(),
             v_end = mesh.vertices_end(); v_it != v_end; ++v_it) {
         size_t valence = mesh.valence(*v_it);
         if (vertex_valence_hist.size() <= valence) {
@@ -73,15 +73,21 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
      * Faces
      */
     face_valence_hist.clear();
-    for (TriMesh::FaceIter f_it = mesh.faces_begin(),
+    for (typename MeshT::FaceIter f_it = mesh.faces_begin(),
             f_end = mesh.faces_end(); f_it != f_end; ++f_it) {
         size_t valence = mesh.valence(*f_it);
+        std::cout << "Face " << f_it->idx() << " has valence " << valence << "." << std::endl;
         if (face_valence_hist.size() <= valence) {
             face_valence_hist.resize(
-                    valence - face_valence_hist.size() + 1, 0);
+                    valence + 1, 0);
         }
-        ++face_valence_hist[valence];
+        face_valence_hist[valence] += 1;
     }
+
+    for (int i = 0; i < face_valence_hist.size(); ++i) {
+        std::cout << "Got " << face_valence_hist[i] << " faces of valence " << i << "." << std::endl;
+    }
+
     faceValenceChart_wdgt->setHistogram(&face_valence_hist);
     fillHistogramTable(face_valence_hist, *faceValence_tw);
 }

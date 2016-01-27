@@ -8,6 +8,9 @@
 #ifndef PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMDIALOG_HH_
 #define PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMDIALOG_HH_
 
+#include <ObjectTypes/PolyMesh/PolyMeshTypes.hh>
+#include <ObjectTypes/TriangleMesh/TriangleMeshTypes.hh>
+
 #include "ui_infoValenceHistograms.hh"
 
 #if QT_VERSION >= 0x050000
@@ -16,8 +19,6 @@
   #include <QtGui>
 #endif
 
-#include <ObjectTypes/PolyMesh/PolyMeshTypes.hh>
-#include <ObjectTypes/TriangleMesh/TriangleMeshTypes.hh>
 
 class ValenceHistogramDialog: public QDialog, public Ui::ValenceHistogramsDlg {
     Q_OBJECT

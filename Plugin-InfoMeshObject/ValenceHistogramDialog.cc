@@ -84,7 +84,7 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
         face_valence_hist[valence] += 1;
     }
 
-    for (int i = 0; i < face_valence_hist.size(); ++i) {
+    for (unsigned int i = 0; i < face_valence_hist.size(); ++i) {
         std::cout << "Got " << face_valence_hist[i] << " faces of valence " << i << "." << std::endl;
     }
 

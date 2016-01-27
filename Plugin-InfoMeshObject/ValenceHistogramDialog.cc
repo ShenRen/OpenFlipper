@@ -84,10 +84,6 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
         face_valence_hist[valence] += 1;
     }
 
-    for (unsigned int i = 0; i < face_valence_hist.size(); ++i) {
-        std::cout << "Got " << face_valence_hist[i] << " faces of valence " << i << "." << std::endl;
-    }
-
     faceValenceChart_wdgt->setHistogram(&face_valence_hist);
     fillHistogramTable(face_valence_hist, *faceValence_tw);
 }

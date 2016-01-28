@@ -23,32 +23,56 @@ if (CBC_INCLUDE_DIR)
 else (CBC_INCLUDE_DIR)
 
 
-find_path(CBC_INCLUDE_DIR 
+find_path(CBC_INCLUDE_DIR
           NAMES CbcConfig.h
           PATHS "$ENV{CBC_DIR}/include/coin"
                  "/usr/include/coin"
                  "C:\\libs\\cbc\\include"
-				 "${VS_SEARCH_PATH}CBC-2.9.4/Cbc/include"
+                                 "${VS_SEARCH_PATH}CBC-2.9.4/Cbc/include"
           )
 
-find_library( CBC_LIBRARY 
-              NAMES Cbc libCbc
-              PATHS "$ENV{CBC_DIR}/lib" 
+find_library( CBC_LIBRARY_DEBUG
+              NAMES Cbcd libCbcd
+              PATHS "$ENV{CBC_DIR}/lib"
                     "/usr/lib"
                     "/usr/lib/coin"
                     "C:\\libs\\cbc\\lib"
-					"${VS_SEARCH_PATH}CBC-2.9.4/Cbc/lib"
+                                        "${VS_SEARCH_PATH}CBC-2.9.4/Cbc/lib"
               )
 
-find_library( CBC_SOLVER_LIBRARY 
+find_library( CBC_SOLVER_LIBRARY_DEBUG
+              NAMES CbcSolverd libCbcSolverd
+
+              PATHS "$ENV{CBC_DIR}/lib"
+                    "/usr/lib"
+                    "/usr/lib/coin"
+                    "C:\\libs\\cbc\\lib"
+                                        "${VS_SEARCH_PATH}CBC-2.9.4/Cbc/lib"
+              )
+
+find_library( CBC_LIBRARY_RELEASE
+              NAMES Cbc libCbc
+              PATHS "$ENV{CBC_DIR}/lib"
+                    "/usr/lib"
+                    "/usr/lib/coin"
+                    "C:\\libs\\cbc\\lib"
+                                        "${VS_SEARCH_PATH}CBC-2.9.4/Cbc/lib"
+              )
+
+find_library( CBC_SOLVER_LIBRARY_RELEASE
               NAMES CbcSolver libCbcSolver
 
-              PATHS "$ENV{CBC_DIR}/lib" 
+              PATHS "$ENV{CBC_DIR}/lib"
                     "/usr/lib"
                     "/usr/lib/coin"
                     "C:\\libs\\cbc\\lib"
-					"${VS_SEARCH_PATH}CBC-2.9.4/Cbc/lib"
+                                        "${VS_SEARCH_PATH}CBC-2.9.4/Cbc/lib"
               )
+
+
+  include(SelectLibraryConfigurations)
+  select_library_configurations( CBC_LIBRARY )
+  select_library_configurations( CBC_SOLVER_LIBRARY )
 
 set(CBC_INCLUDE_DIRS "${CBC_INCLUDE_DIR}" )
 set(CBC_LIBRARIES "${CBC_LIBRARY};${CBC_SOLVER_LIBRARY}" )

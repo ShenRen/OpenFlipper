@@ -123,6 +123,8 @@ class InfoMeshObjectPlugin : public QObject, BaseInterface, InformationInterface
     void slotInformationRequested(const QPoint _clickedPoint, DataType _type);
     DataType supportedDataTypes();
 
+    void slotShowHistogram();
+
   public :
 
     // default constructor
@@ -221,6 +223,9 @@ class InfoMeshObjectPlugin : public QObject, BaseInterface, InformationInterface
     
 /** @} */
 
+  private:
+    BaseObjectData *lastPickedObject_;
+    int lastPickedObjectId_;
 };
 
 #endif //MOVEPLUGIN_HH

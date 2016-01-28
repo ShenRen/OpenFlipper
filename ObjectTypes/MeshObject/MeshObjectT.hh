@@ -243,6 +243,23 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     /// get color for handles. returns -1 vector, if handle node does not exists
     ACG::Vec4f handleColor() const;
 
+    /// Returns the status node (visualizing the selection) if available,
+    /// nullptr otherwise.
+    ACG::SceneGraph::SelectionNodeT<MeshT> *
+    statusNode() { return statusNode_; }
+
+    /// Returns the area selection node if available, nullptr otherwise.
+    ACG::SceneGraph::StatusNodeT<MeshT, AreaNodeMod<MeshT> > *
+    areaNode() { return areaNode_; }
+
+    /// Returns the handle selection node if available, nullptr otherwise.
+    ACG::SceneGraph::StatusNodeT<MeshT, HandleNodeMod<MeshT> > *
+    handleNode() { return handleNode_; }
+
+    /// Returns the feature selection node if available, nullptr otherwise.
+    ACG::SceneGraph::StatusNodeT<MeshT, FeatureNodeMod<MeshT> > *
+    featureNode() { return featureNode_; }
+
   private :
     /// Status Node for a mesh, visualizing the selection state of a mesh
     ACG::SceneGraph::SelectionNodeT<MeshT>*  statusNode_;

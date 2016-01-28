@@ -90,7 +90,7 @@ namespace SceneGraph {
 */
 
 template <class Mesh>
-class MeshNodeT : public BaseNode
+class MeshNodeDeprecatedT : public BaseNode
 {
 
 public:
@@ -101,12 +101,12 @@ public:
    * @param _parent parent node
    * @param _name   Name of the node, which defaults to "<MeshNode>"
    */
-  MeshNodeT(const Mesh&  _mesh,
+  MeshNodeDeprecatedT(const Mesh&  _mesh,
 	    BaseNode*    _parent=0,
 	    std::string  _name="<MeshNode>");
 
   /// Destructor
-  virtual ~MeshNodeT();
+  virtual ~MeshNodeDeprecatedT();
 
 
   ACG_CLASSNAME(MeshNode);

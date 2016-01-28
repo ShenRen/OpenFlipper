@@ -346,6 +346,9 @@ public:
 
   /// Get the nodes parent node
   BaseNode* parent() { return parent_; }
+
+  /// Get the nodes parent node
+  const BaseNode* parent() const { return parent_; }
   
   /** \brief Set the parent of this node.
   *

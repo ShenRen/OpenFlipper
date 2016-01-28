@@ -49,7 +49,6 @@
 #include "ValenceHistogramWidget.hh"
 
 #include <QPainter>
-#include <iostream>
 
 ValenceHistogramWidget::ValenceHistogramWidget(QWidget *parent) :
     histogram_(0) {

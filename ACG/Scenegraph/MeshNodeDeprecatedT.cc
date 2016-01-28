@@ -52,7 +52,7 @@
 
 //=============================================================================
 //
-//  CLASS MeshNodeT - IMPLEMENTATION
+//  CLASS MeshNodeDeprecatedT - IMPLEMENTATION
 //
 //=============================================================================
 
@@ -62,7 +62,7 @@
 //== INCLUDES =================================================================
 
 
-#include "MeshNodeT.hh"
+#include "MeshNodeDeprecatedT.hh"
 #include "ShaderNode.hh"
 #include "DrawModes.hh"
 #include <ACG/GL/gl.hh>
@@ -85,8 +85,8 @@ namespace SceneGraph {
 
 
 template<class Mesh>
-MeshNodeT<Mesh>::
-MeshNodeT(const Mesh&  _mesh,
+MeshNodeDeprecatedT<Mesh>::
+MeshNodeDeprecatedT(const Mesh&  _mesh,
 	  BaseNode*    _parent,
 	  std::string  _name)
   : BaseNode(_parent, _name),
@@ -124,8 +124,8 @@ MeshNodeT(const Mesh&  _mesh,
 
 
 template<class Mesh>
-MeshNodeT<Mesh>::
-~MeshNodeT()
+MeshNodeDeprecatedT<Mesh>::
+~MeshNodeDeprecatedT()
 {
   if (vertex_buffer_)
     glDeleteBuffersARB(1, (GLuint*) &vertex_buffer_);
@@ -155,7 +155,7 @@ MeshNodeT<Mesh>::
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 boundingBox(Vec3d& _bbMin, Vec3d& _bbMax)
 {
   _bbMin.minimize(bbMin_);
@@ -168,7 +168,7 @@ boundingBox(Vec3d& _bbMin, Vec3d& _bbMax)
 
 template<class Mesh>
 DrawModes::DrawMode
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 availableDrawModes() const
 {
   DrawModes::DrawMode drawModes(DrawModes::NONE);
@@ -242,7 +242,7 @@ availableDrawModes() const
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 enable_arrays(unsigned int _arrays)
 {
   // special case: VBO
@@ -392,7 +392,7 @@ enable_arrays(unsigned int _arrays)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 update_geometry()
 {
   updateFaceList_ = true;
@@ -496,7 +496,7 @@ update_geometry()
     // unbind buffers
     ACG::GLState::bindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 
-  } else omlog() << "MeshNodeT: VBO not supported on this machine\n";
+  } else omlog() << "MeshNodeDeprecatedT: VBO not supported on this machine\n";
 }
 
 
@@ -505,7 +505,7 @@ update_geometry()
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 update_topology()
 {
   updateFaceList_ = true;
@@ -573,7 +573,7 @@ update_topology()
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 {
   GLenum prev_depth = _state.depthFunc();
@@ -900,7 +900,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 draw_vertices()
 {
   glDrawArrays(GL_POINTS, 0, mesh_.n_vertices());
@@ -912,7 +912,7 @@ draw_vertices()
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 draw_faces(FaceMode _mode)
 {
   typename Mesh::ConstFaceIter        f_it(mesh_.faces_sbegin()),
@@ -1204,7 +1204,7 @@ draw_faces(FaceMode _mode)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 pick(GLState& _state, PickTarget _target)
 {
   switch (_target)
@@ -1254,7 +1254,7 @@ pick(GLState& _state, PickTarget _target)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 pick_vertices(GLState& _state, bool _front)
 {
   GLenum prev_depth = _state.depthFunc();
@@ -1356,7 +1356,7 @@ pick_vertices(GLState& _state, bool _front)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 pick_faces(GLState& _state)
 {
   typename Mesh::ConstFaceIter        f_it(mesh_.faces_sbegin()),
@@ -1509,7 +1509,7 @@ pick_faces(GLState& _state)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 pick_edges(GLState& _state, bool _front)
 {
   typename Mesh::ConstEdgeIter        e_it(mesh_.edges_sbegin()),
@@ -1613,7 +1613,7 @@ pick_edges(GLState& _state, bool _front)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 pick_any(GLState& _state)
 {
   GLenum prev_depth = _state.depthFunc();
@@ -1857,7 +1857,7 @@ pick_any(GLState& _state)
 
 template<class Mesh>
 void
-MeshNodeT<Mesh>::
+MeshNodeDeprecatedT<Mesh>::
 update_pick_buffers ()
 {
   unsigned int nfv = 0;

@@ -60,7 +60,6 @@
 //== INCLUDES =================================================================
 
 #include <common/glew_wrappers.hh>
-#include <ACG/GL/acg_glew.hh>
 
 #include "CoreWidget.hh"
 #include <OpenFlipper/common/FileTypes.hh>

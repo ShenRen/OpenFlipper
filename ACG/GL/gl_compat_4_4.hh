@@ -2,6 +2,32 @@
 generated using the following command line:
 lua LoadGen.lua -style=pointer_c -spec=gl -version=4.4 -profile=compatibility compat_4_4 -stdext=gl_ubiquitous.txt -stdext=gl_core_post_3_3.txt -stdext=gl_macosx_3_2.txt -stdext=gl_plat_3_3.txt  -exts EXT_framebuffer_object ARB_vertex_buffer_object EXT_blend_minmax EXT_geometry_shader4 ARB_texture_rectangle ARB_texture_buffer_object_rgb32 ARB_occlusion_query EXT_gpu_shader4 ARB_multitexture ARB_imaging ARB_texture_float ARB_fragment_program ARB_tessellation_shader ARB_texture_multisample ARB_texture_buffer_object EXT_framebuffer_multisample
 afterwards renamed to .hh and .cc
+
+in the hh and cc files replace all occurences of
+extern void (CODEGEN_FUNCPTR *
+with
+extern void ACGDLLEXPORT (CODEGEN_FUNCPTR *
+Do the same with GLint and Gluint and replace
+all occurences of
+extern void * (CODEGEN_FUNCPTR *
+with
+extern ACGDLLEXPORT void *  (CODEGEN_FUNCPTR *
+
+add ACGDLLEXPORT to the version and load functioncalls
+ACGDLLEXPORT int ogl_GetMinorVersion(void);
+ACGDLLEXPORT int ogl_GetMajorVersion(void);
+ACGDLLEXPORT int ogl_IsVersionGEQ(int majorVersion, int minorVersion);
+
+add the qopengl workaround and this documentary comment to the file
+
+//workaround for qtopenglfunctions header
+#ifdef _MSC_VER
+#define QOPENGLFUNCTIONS_H
+//debug flags are handled separately on qt 5.3 so we define them here
+#define GL_ARB_debug_output
+#define GL_AMD_debug_output
+#define GL_KHR_debug
+#endif
 */
 
 #ifndef POINTER_C_GENERATED_HEADER_OPENGL_H
@@ -12,6 +38,10 @@ afterwards renamed to .hh and .cc
 //workaround for qtopenglfunctions header
 #ifdef _MSC_VER
 	#define QOPENGLFUNCTIONS_H
+	//debug flags are handled separately on qt 5.3 so we define them here
+	#define GL_ARB_debug_output			
+	#define GL_AMD_debug_output
+	#define GL_KHR_debug
 #endif
 
 #if defined(__glew_h__) || defined(__GLEW_H__)

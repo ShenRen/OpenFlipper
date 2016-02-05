@@ -12,6 +12,7 @@ elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
   SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
 elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
   SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
+  SET(VS_SUBDIR "x64-v120-")
 elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
   SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
 endif()
@@ -30,10 +31,23 @@ find_path(CLP_INCLUDE_DIR
                  "/usr/include/coin"
                  "C:\\libs\\clp\\include"
                  "C:\\libs\\cbc\\include"
-				 "${VS_SEARCH_PATH}CBC-2.9.4/Clp/include"
-          )
+                 "${VS_SEARCH_PATH}CBC-2.9.7/Clp/include"
+                 "${VS_SEARCH_PATH}CBC-2.9.4/Clp/include"
+              )
 
-find_library( CLP_LIBRARY 
+find_library( CLP_LIBRARY_DEBUG
+              NAMES Clpd libClpd
+              PATHS "$ENV{CLP_DIR}/lib"
+                    "$ENV{CBC_DIR}/lib" 
+                    "/usr/lib"
+                    "/usr/lib/coin"
+                    "C:\\libs\\clp\\lib"
+                    "C:\\libs\\cbc\\lib"
+                    "${VS_SEARCH_PATH}CBC-2.9.7/lib/${VS_SUBDIR}Debug"
+                    "${VS_SEARCH_PATH}CBC-2.9.4/Clp/lib"
+              )
+              
+find_library( CLP_LIBRARY_RELEASE
               NAMES Clp libClp
               PATHS "$ENV{CLP_DIR}/lib"
                     "$ENV{CBC_DIR}/lib" 
@@ -41,8 +55,12 @@ find_library( CLP_LIBRARY
                     "/usr/lib/coin"
                     "C:\\libs\\clp\\lib"
                     "C:\\libs\\cbc\\lib"
-					"${VS_SEARCH_PATH}CBC-2.9.4/Clp/lib"
-              )
+                    "${VS_SEARCH_PATH}CBC-2.9.7/lib/${VS_SUBDIR}Release"
+                    "${VS_SEARCH_PATH}CBC-2.9.4/Clp/lib"
+              )              
+
+include(SelectLibraryConfigurations)
+select_library_configurations( CLP )
 
 set(CLP_INCLUDE_DIRS "${CLP_INCLUDE_DIR}" )
 set(CLP_LIBRARIES "${CLP_LIBRARY}" )

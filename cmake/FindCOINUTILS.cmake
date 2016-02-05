@@ -29,10 +29,23 @@ find_path(COINUTILS_INCLUDE_DIR
                  "/usr/include/coin"
                  "C:\\libs\\coinutils\\include"
                  "C:\\libs\\cbc\\include"
-				 "${VS_SEARCH_PATH}CBC-2.9.4/CoinUtils/include"
+                 "${VS_SEARCH_PATH}CBC-2.9.7/CoinUtils/include"
+                 "${VS_SEARCH_PATH}CBC-2.9.4/CoinUtils/include"
           )
 
-find_library( COINUTILS_LIBRARY 
+find_library( COINUTILS_LIBRARY_DEBUG
+              NAMES CoinUtilsd libCoinUtilsd
+              PATHS "$ENV{COINUTILS_DIR}/lib"
+                    "$ENV{CBC_DIR}/lib" 
+                    "/usr/lib"
+                    "/usr/lib/coin"
+                    "C:\\libs\\coinutils\\lib"
+                    "C:\\libs\\cbc\\lib"
+                    "${VS_SEARCH_PATH}CBC-2.9.7/lib/${VS_SUBDIR}Debug"
+                    "${VS_SEARCH_PATH}CBC-2.9.4/CoinUtils/lib"
+              )
+              
+find_library( COINUTILS_LIBRARY_RELEASE
               NAMES CoinUtils libCoinUtils
               PATHS "$ENV{COINUTILS_DIR}/lib"
                     "$ENV{CBC_DIR}/lib" 
@@ -40,8 +53,13 @@ find_library( COINUTILS_LIBRARY
                     "/usr/lib/coin"
                     "C:\\libs\\coinutils\\lib"
                     "C:\\libs\\cbc\\lib"
-					"${VS_SEARCH_PATH}CBC-2.9.4/CoinUtils/lib"
-              )
+                    "${VS_SEARCH_PATH}CBC-2.9.7/lib/${VS_SUBDIR}Release"
+                    "${VS_SEARCH_PATH}CBC-2.9.4/CoinUtils/lib"
+              )    
+              
+include(SelectLibraryConfigurations)
+select_library_configurations( COINUTILS )
+
 
 set(COINUTILS_INCLUDE_DIRS "${COINUTILS_INCLUDE_DIR}" )
 set(COINUTILS_LIBRARIES "${COINUTILS_LIBRARY}" )

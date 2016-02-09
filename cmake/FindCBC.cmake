@@ -17,14 +17,7 @@ elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
 endif()
 
 
-
-if (CBC_INCLUDE_DIR)
-  # in cache already
-  set(CBC_FOUND TRUE)
-  set(CBC_INCLUDE_DIRS "${CBC_INCLUDE_DIR}" )
-  set(CBC_LIBRARIES "${CBC_LIBRARY};${CBC_SOLVER_LIBRARY}" )
-else (CBC_INCLUDE_DIR)
-
+if (NOT CBC_FOUND )
 
 find_path(CBC_INCLUDE_DIR 
           NAMES CbcConfig.h
@@ -82,15 +75,14 @@ find_library( CBC_SOLVER_LIBRARY_RELEASE
   select_library_configurations( CBC_SOLVER )
 
 set(CBC_INCLUDE_DIRS "${CBC_INCLUDE_DIR}" )
-set(CBC_LIBRARIES "${CBC_LIBRARY};${CBC_SOLVER_LIBRARY}" )
-
+set(CBC_LIBRARIES "${CBC_LIBRARIES};${CBC_SOLVER_LIBRARIES}" )
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set CBC_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(CBC  DEFAULT_MSG
-                                  CBC_LIBRARY CBC_SOLVER_LIBRARY CBC_INCLUDE_DIR)
+                                  CBC_LIBRARY CBC_SOLVER_LIBRARY CBC_INCLUDE_DIR CBC_LIBRARIES)
 
-mark_as_advanced(CBC_INCLUDE_DIR CBC_LIBRARY CBC_SOLVER_LIBRARY)
+mark_as_advanced(CBC_INCLUDE_DIR CBC_LIBRARY CBC_SOLVER_LIBRARY CBC_LIBRARIES)
 
-endif(CBC_INCLUDE_DIR)
+endif(NOT CBC_FOUND)

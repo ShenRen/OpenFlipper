@@ -16,12 +16,7 @@ elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
   SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
 endif()
 
-if (CGL_INCLUDE_DIR)
-  # in cache already
-  set(CGL_FOUND TRUE)
-  set(CGL_INCLUDE_DIRS "${CGL_INCLUDE_DIR}" )
-  set(CGL_LIBRARIES "${CGL_LIBRARY}" )
-else (CGL_INCLUDE_DIR)
+if ( NOT CGL_FOUND)
 
 find_path(CGL_INCLUDE_DIR 
           NAMES CglConfig.h
@@ -73,4 +68,4 @@ find_package_handle_standard_args(CGL  DEFAULT_MSG
 
 mark_as_advanced(CGL_INCLUDE_DIR CGL_LIBRARY)
 
-endif(CGL_INCLUDE_DIR)
+endif(NOT CGL_FOUND)

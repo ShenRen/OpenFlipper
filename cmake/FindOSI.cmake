@@ -17,12 +17,7 @@ elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
 endif()
 
 
-if (OSI_INCLUDE_DIR)
-  # in cache already
-  set(OSI_FOUND TRUE)
-  set(OSI_INCLUDE_DIRS "${OSI_INCLUDE_DIR}" )
-  set(OSI_LIBRARIES "${OSI_LIBRARY};${OSI_CBC_LIBRARY};${OSI_CLP_LIBRARY}" )
-else (OSI_INCLUDE_DIR)
+if (NOT OSI_FOUND )
 
 find_path(OSI_INCLUDE_DIR 
           NAMES OsiConfig.h
@@ -120,7 +115,7 @@ select_library_configurations( OSI_CLP )
 
               
 set(OSI_INCLUDE_DIRS "${OSI_INCLUDE_DIR}" )
-set(OSI_LIBRARIES "${OSI_LIBRARY};${OSI_CBC_LIBRARY};${OSI_CLP_LIBRARY}" )
+set(OSI_LIBRARIES "${OSI_LIBRARIES};${OSI_CBC_LIBRARIES};${OSI_CLP_LIBRARIES}" )
 
 
 include(FindPackageHandleStandardArgs)
@@ -129,6 +124,6 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OSI  DEFAULT_MSG
                                   OSI_LIBRARY OSI_CBC_LIBRARY OSI_CLP_LIBRARY OSI_INCLUDE_DIR)
 
-mark_as_advanced(OSI_INCLUDE_DIR OSI_LIBRARY OSI_CBC_LIBRARY OSI_CLP_LIBRARY)
+mark_as_advanced(OSI_INCLUDE_DIR OSI_LIBRARY OSI_CBC_LIBRARY OSI_CLP_LIBRARY OSI_LIBRARIES)
 
-endif(OSI_INCLUDE_DIR)
+endif(NOT OSI_FOUND)

@@ -15,12 +15,7 @@ elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
   SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
 endif()
 
-if (COINUTILS_INCLUDE_DIR)
-  # in cache already
-  set(COINUTILS_FOUND TRUE)
-  set(COINUTILS_INCLUDE_DIRS "${COINUTILS_INCLUDE_DIR}" )
-  set(COINUTILS_LIBRARIES "${COINUTILS_LIBRARY}" )
-else (COINUTILS_INCLUDE_DIR)
+if ( NOT COINUTILS_FOUND )
 
 find_path(COINUTILS_INCLUDE_DIR 
           NAMES CoinUtilsConfig.h
@@ -73,4 +68,4 @@ find_package_handle_standard_args(COINUTILS  DEFAULT_MSG
 
 mark_as_advanced(COINUTILS_INCLUDE_DIR COINUTILS_LIBRARY)
 
-endif(COINUTILS_INCLUDE_DIR)
+endif(NOT COINUTILS_FOUND)

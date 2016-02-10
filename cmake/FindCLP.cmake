@@ -17,12 +17,7 @@ elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
   SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
 endif()
 
-if (CLP_INCLUDE_DIR)
-  # in cache already
-  set(CLP_FOUND TRUE)
-  set(CLP_INCLUDE_DIRS "${CLP_INCLUDE_DIR}" )
-  set(CLP_LIBRARIES "${CLP_LIBRARY}" )
-else (CLP_INCLUDE_DIR)
+if (NOT CLP_FOUND)
 
 find_path(CLP_INCLUDE_DIR 
           NAMES ClpConfig.h
@@ -74,4 +69,4 @@ find_package_handle_standard_args(CLP  DEFAULT_MSG
 
 mark_as_advanced(CLP_INCLUDE_DIR CLP_LIBRARY)
 
-endif(CLP_INCLUDE_DIR)
+endif(CLP_FOUND)

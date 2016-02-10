@@ -35,8 +35,6 @@ FIND_PATH( COMISO_CONFIG_INCLUDE_DIR CoMISo/Config/config.hh
                  "${CMAKE_BINARY_DIR}/../CoMISo/" 
                  "${COMISO_INCLUDE_DIR}" )
 
-message("COMISO_CONFIG_INCLUDE_DIR: ${COMISO_CONFIG_INCLUDE_DIR}")
-
 if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
 
   # add COMISO_INCLUDE_DIR/CoMISo so stuff in CoMISo/Base can be included by <Base/...>
@@ -240,7 +238,7 @@ if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
      message(ERROR "COMISO configured with DCO but DCO not available")
    endif()
                                                                           
-   list (APPEND  COMISO_OPT_DEPS “DCO”)
+   list (APPEND  COMISO_OPT_DEPS "DCO")
                                                                           
   endif()
 

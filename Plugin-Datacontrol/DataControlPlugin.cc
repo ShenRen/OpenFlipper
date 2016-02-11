@@ -900,7 +900,10 @@ void DataControlPlugin::slotObjectUpdated( int _identifier, const UpdateType& _t
   BaseObjectData* obj = 0;
 
   if ( PluginFunctions::getObject( _identifier, obj) )
+  {
     updateBoundingBox (obj);
+    model_->objectChanged(obj->id());
+  }
 }
 
 #if QT_VERSION < 0x050000

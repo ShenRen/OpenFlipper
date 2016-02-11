@@ -187,18 +187,10 @@ int FileOMPlugin::loadObject(QString _filename) {
         }
         
         // Note: If in non-gui mode, we will never enter this case branch
-        QMessageBox msgBox;
-        QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
-//         QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
-        QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
-        
-        msgBox.setWindowTitle( tr("Mesh types in file") );
-        msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
-        msgBox.setDefaultButton( detectButton );
-        msgBox.exec();
-        
-        if ((msgBox.clickedButton() == polyButton) ||
-            (msgBox.clickedButton() == detectButton && !triMesh)) {
+
+        QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
+        if ((trimeshOptions == TYPEPOLY) ||
+            (trimeshOptions == TYPEASK && !triMesh)) {
             
             PolyMeshObject* object(0);
             if(PluginFunctions::getObject( objectId, object )) {
@@ -250,6 +242,24 @@ int FileOMPlugin::loadObject(QString _filename) {
     
     return objectId;
 };
+
+void FileOMPlugin::handleTrimeshDialog()
+{
+   QMessageBox msgBox;
+   QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
+   QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
+   QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
+   msgBox.setWindowTitle( tr("Mesh types in file") );
+   msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
+   msgBox.setDefaultButton( detectButton );
+   msgBox.exec();
+
+
+   if (msgBox.clickedButton() == triButton)
+    trimeshOptions =  TYPETRIANGLE ;
+   else if (msgBox.clickedButton() == polyButton)
+    trimeshOptions = TYPEPOLY ;
+}
 
 //-----------------------------------------------------------------------------------------------------
 

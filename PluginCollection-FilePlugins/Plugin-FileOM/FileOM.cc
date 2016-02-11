@@ -259,6 +259,8 @@ void FileOMPlugin::handleTrimeshDialog()
     trimeshOptions =  TYPETRIANGLE ;
    else if (msgBox.clickedButton() == polyButton)
     trimeshOptions = TYPEPOLY ;
+   else
+     trimeshOptions = TYPEASK;
 }
 
 //-----------------------------------------------------------------------------------------------------

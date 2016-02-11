@@ -1749,7 +1749,6 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
         break;
 
       case TYPEASK: //ask
-             //LoadType t;
         QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
         if (trimeshOptions == OBJImporter::TRIMESH )
           _importer.forceMeshType( OBJImporter::TRIMESH );

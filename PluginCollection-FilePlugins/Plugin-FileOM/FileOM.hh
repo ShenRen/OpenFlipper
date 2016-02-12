@@ -98,7 +98,10 @@ class FileOMPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInter
 
     void noguiSupported( ) {} ;
 
-    void initializePlugin();  
+    void initializePlugin();
+
+    /// Displays a dialog to ask how to load the mesh (triangle, polymesh , autodetect)
+    void handleTrimeshDialog();
     
     /// Slot called when user wants to save the given Load options as default
     void slotLoadDefault();
@@ -166,6 +169,7 @@ class FileOMPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInter
     QCheckBox*   loadFaceColor_;
     QCheckBox*   loadFaceNormal_;
     QPushButton* loadDefaultButton_;
+    int trimeshOptions;
 };
 
 #endif //FILEOMPLUGIN_HH

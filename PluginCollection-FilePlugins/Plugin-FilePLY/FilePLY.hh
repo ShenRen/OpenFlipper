@@ -103,6 +103,9 @@ class FilePLYPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
 
     void initializePlugin();
 
+    /// Displays a dialog to ask how to load the mesh (triangle, polymesh , autodetect)
+    void handleTrimeshDialog();
+
     /// Slot called when user wants to save the given Load options as default
     void slotLoadDefault();
 
@@ -172,6 +175,7 @@ class FilePLYPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     QCheckBox*   loadFaceNormal_;
     QCheckBox*   loadFaceColor_;
     QPushButton* loadDefaultButton_;
+    int trimeshOptions;
 };
 
 #if defined(INCLUDE_TEMPLATES) && !defined(FILEPLYPLUGIN_C)

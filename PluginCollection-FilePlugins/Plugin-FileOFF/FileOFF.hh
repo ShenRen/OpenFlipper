@@ -107,6 +107,8 @@ class FileOFFPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
 
     void initializePlugin();
 
+    /// Displays a dialog to ask how to load the mesh (triangle, polymesh , autodetect)
+    void handleTrimeshDialog();
 
     /// Slot called when user wants to save the given Load options as default
     void slotLoadDefault();
@@ -267,6 +269,7 @@ class FileOFFPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     bool forceTriangleMesh_;
     bool forcePolyMesh_;
     bool readColorComp_;
+    OFFImporter::ObjectOptionsE trimeshOptions;
 };
 
 #if defined(INCLUDE_TEMPLATES) && !defined(FILEOFFPLUGIN_C)

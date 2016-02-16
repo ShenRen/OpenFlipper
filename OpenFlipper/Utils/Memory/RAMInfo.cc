@@ -133,10 +133,8 @@ namespace Utils
               physical_memory = 0;
           }
           // retrieve free memory
-          double total = vmstat.wire_count + vmstat.active_count + vmstat.inactive_count + vmstat.free_count;
-          double free = vmstat.free_count / total;
           _outMemoryVacancy.totalRamMB = physical_memory / 1024 / 1024;
-          _outMemoryVacancy.freeRamMB = (long)(free + vmstat.inactive_count) * PAGE_SIZE / 1024/1024;
+          _outMemoryVacancy.freeRamMB = (long)(vmstat.free_count + vmstat.inactive_count) * PAGE_SIZE / 1024 / 1024;
           _outMemoryVacancy.bufferRamMB =0;
       }
 

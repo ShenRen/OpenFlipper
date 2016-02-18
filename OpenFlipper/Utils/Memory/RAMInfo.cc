@@ -40,6 +40,8 @@
  \*===========================================================================*/
 
 #include "RAMInfo.hh"
+
+#include <QString>
 #include <stdio.h>
 
 // Main Memory information
@@ -134,7 +136,8 @@ namespace Utils
           }
           // retrieve free memory
           _outMemoryVacancy.totalRamMB = physical_memory / 1024 / 1024;
-          _outMemoryVacancy.freeRamMB = (long)(vmstat.free_count + vmstat.inactive_count) * PAGE_SIZE / 1024 / 1024;
+          unsigned long active = vmstat.active_count * PAGE_SIZE / 1024 / 1024;
+          _outMemoryVacancy.freeRamMB =  _outMemoryVacancy.totalRamMB - active;
           _outMemoryVacancy.bufferRamMB =0;
       }
 

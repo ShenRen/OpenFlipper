@@ -47,6 +47,7 @@
  *                                                                            *
  \*===========================================================================*/
 
+#include <ACG/GL/acg_glew.hh>
 #include <ACG/GL/GLFormatInfo.hh>
 #include <iostream>
 #include <QString>

@@ -100,9 +100,9 @@ public:
     tessEvaluationTemplateFile(""),
     geometryTemplateFile(""),
     fragmentTemplateFile(""),
-    normalizeTexColors(true),
     colorMaterialMode(GL_AMBIENT_AND_DIFFUSE),
-    textureTypes_(),
+    textureType(0),
+    textureUnit(0),
     texGenDim(0),
     texGenMode(GL_EYE_LINEAR),
     texGenPerFragment(false)
@@ -140,11 +140,14 @@ public:
   // default: 150 (OpenGL 3.2, supports geometry shaders, msaa samplers, gl_PrimitiveID )
   int version;
 
-  int numLights;
+  // active light types
+  int numLights; // IRenderer fills this out with the active scene light configuration if numLights == 0
   ShaderGenLightType lightTypes[SG_MAX_SHADER_LIGHTS];
 
+  // lighting model
   ShaderGenShadeMode shadeMode;
 
+  // use color from vertex attribute for shading
   bool vertexColors;
 
   // optionally specify shader template file names
@@ -161,9 +164,6 @@ public:
   /// convert ShaderGenDesc to string format for debugging
   QString toString() const;
 
-  /// Defines if the textureVariable is normalized or not, if multiple textures are used
-  bool normalizeTexColors;
-
   /// interpolation qualifier for input vertex colors: "flat", "smooth", "noperspective"
   QString vertexColorsInterpolator;
 
@@ -172,34 +172,35 @@ public:
   // default: GL_AMBIENT_AND_DIFFUSE
   GLenum colorMaterialMode;
 
-  struct TextureType
-  {
-    GLenum type;
-    bool shadow;
-  };
-private:
-  // TODO: remove this, multitexturing always requires some customization! should be done via custom shader templates or mods. only allow one diffuse texture, as this is something commonly used and intentions are clear
-  /// holds the texture types (second) and the stage id (first). if empty, shader does not support textures
-  std::map<size_t,TextureType> textureTypes_;
+  // type of diffuse color texture (optional) : GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D 
+  // default = 0 (disabled)
+  GLenum textureType;
 
-public:
-  const std::map<size_t,TextureType>& textureTypes() const {return textureTypes_;}
+  // index of texture sampler unit
+  // index in range [0, maxTextureUnits]
+  // the sampler uniform name of the color texture is generated as "g_Texturei" where i = value of textureUnit
+  //  default = 0 (sampler name = "g_Texture0")
+  int textureUnit;
 
   /** \brief adds a texture type to the shader and enables texturing.
    *
+   *  This only affects the diffuse texture. 
+   *  Multi texturing can be done via ShaderMods instead.
+   *
+   * @param _type OpenGL texture type (GL_TEXTURE_2D etc.)
+   * @param _shadow unused
+   * @param _stage index of texture sampler unit in range [0, maxTextureUnits]
    */
-  void addTextureType(GLenum _type, bool _shadow, size_t _stage)
+  void addTextureType(GLenum _type, bool _shadow = false, size_t _stage = 0)
   {
-    TextureType t;
-    t.type = _type;
-    t.shadow = _shadow;
-    textureTypes_[_stage] = t;
+    textureType = _type;
+    textureUnit = int(_stage);
   }
 
   ///disables texture support and removes all texture types
-  void clearTextures(){textureTypes_.clear();}
+  void clearTextures(){ textureType = 0; }
 
-  bool textured()const {return !textureTypes_.empty();}
+  bool textured()const { return textureType != 0; }
 
 
 

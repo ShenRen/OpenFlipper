@@ -162,13 +162,18 @@ void ShaderGenerator::initVertexShaderIO(const ShaderGenDesc* _desc, const Defau
 
   if (_desc->textured())
   {
-    std::map<size_t,ShaderGenDesc::TextureType>::const_iterator iter = _desc->textureTypes().begin();
-
-    /// TODO Setup for multiple texture coordinates as input
-    if (iter->second.type == GL_TEXTURE_3D) {
+    if (_desc->textureType == GL_TEXTURE_3D || _desc->textureType == GL_TEXTURE_CUBE_MAP) 
+    {
       addInput("vec3", keywords.vs_inputTexCoord);
       addOutput("vec3", keywords.vs_outputTexCoord);
-    } else {
+    } 
+    else if (_desc->textureType == GL_TEXTURE_1D) 
+    {
+      addInput("float", keywords.vs_inputTexCoord);
+      addOutput("float", keywords.vs_outputTexCoord);
+    } 
+    else
+    {
       addInput("vec2", keywords.vs_inputTexCoord);
       addOutput("vec2", keywords.vs_outputTexCoord);
     }
@@ -1669,41 +1674,34 @@ void ShaderProgGenerator::buildFragmentShader()
   // texture sampler id
   if (desc_.textured())
   {
-    for (std::map<size_t,ShaderGenDesc::TextureType>::const_iterator iter = desc_.textureTypes().begin();
-        iter != desc_.textureTypes().end(); ++iter)
+    QString name = QString("g_Texture%1").arg(desc_.textureUnit);
+    QString type = "";
+    switch (desc_.textureType)
     {
-      QString name = QString("g_Texture%1").arg(iter->first);
-      QString type = "";
-      switch (iter->second.type)
-      {
-        case GL_TEXTURE_1D: type = "sampler1D"; break;
-        case GL_TEXTURE_2D: type = "sampler2D"; break;
-        case GL_TEXTURE_3D: type = "sampler3D"; break;
-        case GL_TEXTURE_CUBE_MAP: type = "samplerCube"; break;
+    case GL_TEXTURE_1D: type = "sampler1D"; break;
+    case GL_TEXTURE_2D: type = "sampler2D"; break;
+    case GL_TEXTURE_3D: type = "sampler3D"; break;
+    case GL_TEXTURE_CUBE_MAP: type = "samplerCube"; break;
 #ifdef GL_ARB_texture_rectangle //ARCH_DARWIN doesn't support all texture defines with all xcode version (xcode 5.0 seems to support all)
-        case GL_TEXTURE_RECTANGLE_ARB: type = "sampler2DRect"; break;
+    case GL_TEXTURE_RECTANGLE_ARB: type = "sampler2DRect"; break;
 #endif
 #ifdef GL_ARB_texture_buffer_object
-        case GL_TEXTURE_BUFFER_ARB: type = "samplerBuffer"; break;
+    case GL_TEXTURE_BUFFER_ARB: type = "samplerBuffer"; break;
 #endif
 #ifdef GL_EXT_texture_array
-        case GL_TEXTURE_1D_ARRAY_EXT: type = "sampler1DArray"; break;
-        case GL_TEXTURE_2D_ARRAY_EXT: type = "sampler2DArray"; break;
+    case GL_TEXTURE_1D_ARRAY_EXT: type = "sampler1DArray"; break;
+    case GL_TEXTURE_2D_ARRAY_EXT: type = "sampler2DArray"; break;
 #endif
 #ifdef GL_ARB_texture_cube_map_array
-        case GL_TEXTURE_CUBE_MAP_ARRAY_ARB: type = "samplerCubeArray"; break;
+    case GL_TEXTURE_CUBE_MAP_ARRAY_ARB: type = "samplerCubeArray"; break;
 #endif
 #ifdef GL_ARB_texture_multisample
-        case GL_TEXTURE_2D_MULTISAMPLE: type = "sampler2DMS"; break;
-        case GL_TEXTURE_2D_MULTISAMPLE_ARRAY: type = "sampler2DMSArray"; break;
+    case GL_TEXTURE_2D_MULTISAMPLE: type = "sampler2DMS"; break;
+    case GL_TEXTURE_2D_MULTISAMPLE_ARRAY: type = "sampler2DMSArray"; break;
 #endif
-        default: std::cerr << "Texture Type not supported "<< iter->second.type << std::endl; break;
-      }
-      // todo: check if texture type supports shadowtype
-      if (iter->second.shadow)
-        type += "Shadow";
-      fragment_->addUniform(type + " " + name);
+    default: std::cerr << "Texture Type not supported " << desc_.textureType << std::endl; break;
     }
+    fragment_->addUniform(type + " " + name);
   }
 
   // apply i/o modifiers
@@ -1806,14 +1804,7 @@ void ShaderProgGenerator::addFragmentBeginCode(QStringList* _code)
 
   if (desc_.textured())
   {
-    std::map<size_t,ShaderGenDesc::TextureType>::const_iterator iter = desc_.textureTypes().begin();
-    _code->push_back("vec4 sg_cTex = texture(g_Texture"+QString::number(iter->first)+", sg_vTexCoord);");
-
-    for (++iter; iter != desc_.textureTypes().end(); ++iter)
-      _code->push_back("sg_cTex += texture(g_Texture"+QString::number(iter->first)+", sg_vTexCoord);");
-
-    if (desc_.textureTypes().size() > 1 && desc_.normalizeTexColors)
-      _code->push_back("sg_cTex = sg_cTex * 1.0/" + QString::number(desc_.textureTypes().size()) +".0 ;");
+    _code->push_back("vec4 sg_cTex = texture(g_Texture"+QString::number(desc_.textureUnit)+", sg_vTexCoord);");
 
     if (desc_.shadeMode == SG_SHADE_UNLIT)
       _code->push_back("sg_cColor += sg_cTex;");
@@ -1936,8 +1927,7 @@ void ShaderProgGenerator::addTexGenCode( QStringList* _code, bool _fragmentShade
   // declare local texcoord variable name as "sg_vTexCoord"
   int texcoordVarDim = 2;
   if (ioDesc_.inputTexCoord_ && 
-    !desc_.textureTypes().empty() &&
-    desc_.textureTypes().begin()->second.type == GL_TEXTURE_3D)
+    desc_.textureType == GL_TEXTURE_3D)
     texcoordVarDim = 3;
 
   bool generateTexCoord = desc_.texGenDim && desc_.texGenMode && (_fragmentShader == desc_.texGenPerFragment);
@@ -2727,38 +2717,34 @@ QString ShaderGenDesc::toString() const
 
   resStrm << "\nshaderDesc.shadeMode: " << shadeModeString[shadeMode];
   resStrm << "\nshaderDesc.vertexColors: " << vertexColors;
+
   resStrm << "\nshaderDesc.textured(): " << textured();
-  for (std::map<size_t,TextureType>::const_iterator iter = textureTypes_.begin(); iter != textureTypes_.end();++iter)
+  resStrm << "\nTexture stage: " << textureUnit;
+  resStrm << "\nTexture Type: ";
+  switch (textureType)
   {
-    resStrm << "\nTexture stage: " << iter->first;
-    resStrm << "\nTexture Type: ";
-    switch (iter->second.type)
-    {
-        case GL_TEXTURE_1D: resStrm << "GL_TEXTURE_1D"; break;
-        case GL_TEXTURE_2D: resStrm << "GL_TEXTURE_2D"; break;
-        case GL_TEXTURE_3D: resStrm << "GL_TEXTURE_3D"; break;
-        case GL_TEXTURE_CUBE_MAP: resStrm << "GL_TEXTURE_CUBE_MAP"; break;
+  case GL_TEXTURE_1D: resStrm << "GL_TEXTURE_1D"; break;
+  case GL_TEXTURE_2D: resStrm << "GL_TEXTURE_2D"; break;
+  case GL_TEXTURE_3D: resStrm << "GL_TEXTURE_3D"; break;
+  case GL_TEXTURE_CUBE_MAP: resStrm << "GL_TEXTURE_CUBE_MAP"; break;
 #ifdef GL_ARB_texture_rectangle //ARCH_DARWIN doesn't support all texture defines with all xcode version (xcode 5.0 seems to support all)
-        case GL_TEXTURE_RECTANGLE_ARB: resStrm << "GL_TEXTURE_RECTANGLE"; break;
+  case GL_TEXTURE_RECTANGLE_ARB: resStrm << "GL_TEXTURE_RECTANGLE"; break;
 #endif
 #ifdef GL_ARB_texture_buffer_object
-        case GL_TEXTURE_BUFFER_ARB: resStrm << "GL_TEXTURE_BUFFER"; break;
+  case GL_TEXTURE_BUFFER_ARB: resStrm << "GL_TEXTURE_BUFFER"; break;
 #endif
 #ifdef GL_EXT_texture_array
-        case GL_TEXTURE_1D_ARRAY_EXT: resStrm << "GL_TEXTURE_1D_ARRAY"; break;
-        case GL_TEXTURE_2D_ARRAY_EXT: resStrm << "GL_TEXTURE_2D_ARRAY"; break;
+  case GL_TEXTURE_1D_ARRAY_EXT: resStrm << "GL_TEXTURE_1D_ARRAY"; break;
+  case GL_TEXTURE_2D_ARRAY_EXT: resStrm << "GL_TEXTURE_2D_ARRAY"; break;
 #endif
 #ifdef GL_ARB_texture_cube_map_array
-        case GL_TEXTURE_CUBE_MAP_ARRAY_ARB: resStrm << "GL_TEXTURE_CUBE_MAP_ARRAY"; break;
+  case GL_TEXTURE_CUBE_MAP_ARRAY_ARB: resStrm << "GL_TEXTURE_CUBE_MAP_ARRAY"; break;
 #endif
 #ifdef GL_ARB_texture_multisample
-        case GL_TEXTURE_2D_MULTISAMPLE: resStrm << "GL_TEXTURE_2D_MULTISAMPLE"; break;
-        case GL_TEXTURE_2D_MULTISAMPLE_ARRAY: resStrm << "GL_TEXTURE_2D_MULTISAMPLE_ARRAY"; break;
+  case GL_TEXTURE_2D_MULTISAMPLE: resStrm << "GL_TEXTURE_2D_MULTISAMPLE"; break;
+  case GL_TEXTURE_2D_MULTISAMPLE_ARRAY: resStrm << "GL_TEXTURE_2D_MULTISAMPLE_ARRAY"; break;
 #endif
-        default: std::cerr << "Texture Type with number "<< iter->second.type << " on stage "<< iter->first << " is not supported "  << std::endl; break;
-    }
-
-    resStrm  << "\nShadowTexture: " <<  iter->second.shadow;
+  default: std::cerr << "Texture Type with number " << textureType << " on stage " << textureUnit << " is not supported " << std::endl; break;
   }
 
   resStrm << "\nshaderDesc.texGenDim: " << texGenDim;

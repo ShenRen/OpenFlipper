@@ -352,6 +352,55 @@ void ScriptingPlugin::slotExecuteScript( QString _script ) {
   // Get the filename of the script and set it in the scripting environment
   engine->globalObject().setProperty("ScriptPath",OpenFlipper::Options::currentScriptDirStr());
 
+  // Check if the script contains include statements
+  if (_script.contains(QRegExp("^include <")) ) {
+
+    // Split input script into lines
+    QStringList script = _script.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+
+    // Find first include statement
+    int include_index = script.indexOf(QRegExp("^include.*"));
+
+    while ( include_index != -1) {
+
+      QString include_statement =  script[include_index];
+
+      // Extract the file path of the include
+      include_statement.remove(QRegExp("^include") );
+      include_statement.remove("<" );
+      include_statement.remove(">" );
+      include_statement = include_statement.trimmed();
+
+      // Replace the ScriptPath component
+      include_statement.replace("ScriptPath",OpenFlipper::Options::currentScriptDirStr());
+
+      QFile includeFile(include_statement);
+
+      if (!includeFile.exists() ) {
+        emit log(LOGERR,"Script file include not found : " + include_statement + " from " + script[include_index] );
+        return;
+      } else {
+
+        if (!includeFile.open(QFile::ReadOnly | QFile::Text))  {
+          emit log(LOGERR,"Unable to open file : " + include_statement);
+          return;
+        }
+
+        QTextStream in(&includeFile);
+        script[include_index] = in.readAll();
+        includeFile.close();
+      }
+
+      // Recombine all script components
+      _script = script.join("\n");
+
+      // Check for next occurence of an include statement
+      include_index = script.indexOf(QRegExp("^include.*"));
+
+    }
+
+  }
+
   // Execute the script
   engine->evaluate( _script );
 

@@ -100,6 +100,19 @@ GLSL::Program* ACG::ShaderCache::getProgram( const ShaderGenDesc* _desc )
   return getProgram(_desc, dummy);
 }
 
+
+QString ShaderCache::normalizeFilename(const char* _filename) const
+{
+  // maybe convert to lowercase here, if opening files is case insensitive on all platforms
+
+  QFileInfo fileInfo(_filename);
+  if (fileInfo.isRelative())
+    return ACG::ShaderProgGenerator::getShaderDir() + QDir::separator() + QString(_filename);
+  else
+    return QString(_filename);
+}
+
+
 //***********************************************************************
 // TODO implement binary search eventually (if cache access is getting too slow)
 // - modify compareShaderGenDescs s.t. it defines an order
@@ -605,11 +618,269 @@ void ACG::ShaderCache::clearCache()
   cache_.clear();
   cacheStatic_.clear();
   cacheComputeShaders_.clear();
+  cacheAttributes_.clear();
 }
 
 void ACG::ShaderCache::setDebugOutputDir(const char* _outputDir)
 {
   dbgOutputDir_ = _outputDir;
+}
+
+
+std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShaderAttributeInfo(const char* _vertexShaderFile, QStringList* _macros /*= 0*/)
+{
+  QString absFilename = normalizeFilename(_vertexShaderFile);
+
+  QFileInfo fileInfo(absFilename);
+
+  // check cache
+  ShaderFileKey key(_vertexShaderFile, _macros ? _macros->join('\n') : QString(""));
+  QHash<ShaderFileKey, VertexShaderAttributeVector>::iterator entry = cacheAttributes_.find(key);
+
+  if (entry != cacheAttributes_.end())
+  {
+    // check if file was modified
+
+    if (!timeCheck_ || entry->lastMod == fileInfo.lastModified())
+      return entry->attributes; // return cached entry
+  }
+
+
+  // load file and analyze it for attributes
+  VertexShaderAttributeVector data;
+  data.lastMod = fileInfo.lastModified();
+
+
+
+  /*
+  https://www.opengl.org/wiki/Program_Introspection
+
+  old style:
+  glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &n);
+
+  for i = 0..n
+    glGetActiveAttrib(program, i, bufSize, &nameLen, &size, &type, &name[0]);
+
+
+  new style:  (opengl 4.3+)
+  glGetProgramInterfaceiv(program, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES?, &n);
+
+  for i = 0..n
+    const GLenum props[3] = {GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_SIZE};
+    GLint values[3];
+    glGetProgramResourceiv?(program, GL_PROGRAM_INPUT, i, 3, props, 3, 0, values);
+    glGetProgramResourceName(program, GL_PROGRAM_INPUT, i, props[0], 0, &name[0]);
+
+    
+  type may be one of GL_FLOAT, GL_FLOAT_VEC2, ..
+  */
+
+  // todo: generate dummy fragment shader, link and query information
+
+
+  std::ifstream file;
+
+  file.open(_vertexShaderFile, std::ios_base::in);
+
+  if (file.is_open())
+  {
+    bool tokenize = false;
+    if (tokenize)
+    {
+
+      QString shaderSource;
+
+      if (fileInfo.size())
+      {
+        std::vector<char> fileData(fileInfo.size(), 0);
+        file.read(&fileData[0], fileInfo.size());
+
+        shaderSource = &fileData[0];
+      }
+
+//      shaderSource = shaderSource.simplified();
+
+      // remove comments
+
+      // single line comments
+      for (int i = 0; i < shaderSource.length() - 1; ++i)
+      {
+        if (shaderSource[i] == '/' && shaderSource[i + 1] == '/')
+        {
+          int commentEnd = shaderSource.indexOf('\n', i);
+
+          if (commentEnd < 0)
+            commentEnd = shaderSource.length() - 1;
+
+          shaderSource.remove(i, commentEnd - i);
+          --i; // check again at same position
+        }
+      }
+
+      // multi line comments
+      for (int i = 0; i < shaderSource.length() - 1; ++i)
+      {
+        if (shaderSource[i] == '/' && shaderSource[i + 1] == '*')
+        {
+          // find comment end
+          int commentEnd = -1;
+
+          for (int k = i + 2; k < shaderSource.length() - 1; ++k)
+          {
+            if (shaderSource[k] == '*' && shaderSource[k + 1] == '/')
+              commentEnd = k + 1;
+          }
+
+          if (commentEnd < 0)
+            commentEnd = shaderSource.length() - 1;
+
+          shaderSource.remove(i, commentEnd - i);
+          --i; // check again at same position
+        }
+      }
+
+      
+
+      shaderSource.replace('\t', ' ');
+      shaderSource.replace('\n', ' ');
+      shaderSource = shaderSource.simplified();
+
+      // tokenize
+      QRegExp separators("(\\ |\\,|\\.|\\:|\\}|\\{|\\)|\\(|\\;");
+      QStringList tokens = shaderSource.split(separators);
+
+    }
+    else
+    {
+      while (!file.eof())
+      {
+        char line[0xff];
+        file.getline(line, 0xff);
+
+        // todo:
+        // - identify and remove multi line comments from file
+        // - check if qt can tokenize the text file for more robust scanning
+
+        // get rid of whitespaces at begin/end, and internal padding
+        QString strLine = line;
+        strLine = strLine.simplified();
+
+        // pattern matching for vertex input attributes
+        if (!strLine.startsWith("//") && !strLine.startsWith("*/"))
+        {
+
+          if (strLine.startsWith("in ") || strLine.contains(" in "))
+          {
+            // extract 
+            int semIdx = strLine.indexOf(';');
+
+
+            if (semIdx >= 0)
+            {
+              // property name = string before semicolon without whitespace
+
+              // remove parts after semicolon
+              QString strName = strLine;
+              strName.remove(semIdx, strName.length());
+
+              strName = strName.simplified();
+
+              // property name = string between last whitespace and last character
+              int lastWhite = strName.lastIndexOf(' ');
+
+              if (lastWhite >= 0 && !strName.contains(")"))
+              {
+                strName.remove(0, lastWhite);
+
+                strName = strName.simplified();
+
+                VertexShaderAttributeInfo attribute;
+                attribute.name = strName.toStdString();
+
+                // check for reserved input attributes
+                if (strName != "inPosition" ||
+                  strName != "inTexCoord" ||
+                  strName != "inNormal" ||
+                  strName != "inColor")
+                  attribute.generated = true;
+                else
+                  attribute.generated = false;
+
+
+                if (strLine.contains("flat "))
+                  attribute.flat = true;
+
+
+                // analyze type
+
+                attribute.integer = false;
+                attribute.size = 0;
+
+                if (strLine.indexOf("float ") >= 0 ||
+                  strLine.indexOf("half ") >= 0)
+                  attribute.size = 1;
+                else if (strLine.indexOf("int ") >= 0 ||
+                  strLine.indexOf("uint ") >= 0 ||
+                  strLine.indexOf("short ") >= 0 ||
+                  strLine.indexOf("ushort ") >= 0)
+                {
+                  attribute.size = 1;
+                  attribute.integer = true;
+                }
+                else
+                {
+                  // vector attribute
+                  int vecStartIndex = strLine.indexOf("vec");
+
+                  // get vector size
+                  if (vecStartIndex >= 0 &&
+                    vecStartIndex + 3 < strLine.length())
+                  {
+                    QChar sizeChar = strLine[vecStartIndex + 3];
+
+                    if (sizeChar.isDigit())
+                    {
+                      int vecSize = sizeChar.digitValue();
+
+                      if (vecSize > 1 && vecSize < 5)
+                      {
+                        attribute.size = vecSize;
+
+                        // now check vector data type
+
+                        if (vecStartIndex + 4 < strLine.length())
+                        {
+                          QChar typeChar = strLine[vecStartIndex + 4];
+
+                          if (typeChar == QChar(' '))
+                            attribute.integer = false;
+                          else if (typeChar == QChar('i') ||
+                            typeChar == QChar('u'))
+                            attribute.integer = true;
+                          else
+                            std::cerr << "warning - ACG::ShaderCache - vector type analysis failed" << std::endl;
+                        }
+                      }
+                    }
+                  }
+                }
+
+                // save attribute
+                data.attributes.push_back(attribute);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (entry == cacheAttributes_.end())
+    entry = cacheAttributes_.insert(key, data);
+  else
+    *entry = data;
+
+  return entry->attributes;
 }
 
 //=============================================================================

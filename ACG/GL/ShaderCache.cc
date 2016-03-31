@@ -726,9 +726,9 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
 
         if (oldStyle)
         {
+#ifdef glGetProgramiv
           // get number of attributes
           int n = 0;
-#ifdef glGetProgramiv
           glGetProgramiv(prog->getProgramId(), GL_ACTIVE_ATTRIBUTES, &n);
 
           // get attribute info
@@ -752,9 +752,9 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
         }
         else
         {
+#ifdef glGetProgramInterfaceiv
           // get number of attributes
           int n = 0;
-#ifdef glGetProgramInterfaceiv
           glGetProgramInterfaceiv(prog->getProgramId(), GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &n);
 
           for (int i = 0; i < n; ++i)
@@ -772,8 +772,8 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
             attribute.integer = false; // todo: interpret type variable
             attribute.generated = false; // todo: check name for shadergenerator keywords
           }
-        }
 #endif
+        }
       }
 
       delete prog;

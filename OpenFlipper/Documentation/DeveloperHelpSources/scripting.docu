@@ -111,6 +111,16 @@
          // The path of the currently executed script is stored in the ScriptPath variable.
          print(ScriptPath)
        \endcode
+     \subsection scripting_misc_includes Can i include additional script files?
+       Yes, just use the keyword include. You can also use paths relative to the current script.
+       The scripts will be joined internally so variables are available across the scripts.
+       \code
+         // Include with full path:
+         include <Path/script1.ofs>
+
+         // Relative to current script:
+         include <ScriptPath/script2.ofs>
+       \endcode
   
   \section scripting_examples Scripting Examples
     \subsection scripting_examples_qstringlist Iterating over a QStringList

@@ -2,11 +2,15 @@
 \page branding OpenFlipper Branding
 
   OpenFlipper supports branding of the UI and several components by an integrated branding mechanism.
-  Generally you need to create a branding directory in the toplevel source directory.
+  Generally you can create a branding directory either directly inside the toplevel directory or within 
+  a package. 
+
+  \note You can have only one branding directory at a time (cmake will throw a warning and use only the first one).
   
   Configurations made in this directory will overwrite some icons, settings and configurations.  
   \code
     SourceDir/branding/branding.cmake  // General cmake file for branding flags
+    SourceDir/branding/branding.h      // Header file that could be included to allow source code changes
   \endcode
   
   \section cmake_options CMake Options

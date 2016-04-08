@@ -10,37 +10,18 @@ if (METIS_INCLUDE_DIR)
   SET(METIS_FIND_QUIETLY TRUE)
 endif (METIS_INCLUDE_DIR)
 
-if ( WIN32 ) 
+# I8 Search paths for windows libraries
+if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2012/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
+  SET(VS_SUBDIR "x64-v120-")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
+  SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
+endif()
 
- if ( CMAKE_GENERATOR MATCHES ".*Win64" )
-   SET( DIRSUFFIX "lib64" )
- else ()
-   SET( DIRSUFFIX "lib" )
- endif()
-
-  if ( CMAKE_GENERATOR MATCHES "^Visual Studio 10.*" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2010/x32/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2012/x64/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
-  endif()
-
-find_path(METIS_INCLUDE_DIR NAMES metis.h
-     PATHS "$ENV{IPOPT_HOME}/ThirdParty/Metis/metis-4.0/Lib/"        
-	       "${VS_SEARCH_PATH}suitesparse-metis-for-windows-1.2.2-install/include/"
-           
-   )
-   
-find_library( METIS_LIBRARY 
-              metis metis
-              PATHS "${VS_SEARCH_PATH}suitesparse-metis-for-windows-1.2.2-install/${DIRSUFFIX}" )
-					
-else(WIN32)
 
 find_path(METIS_INCLUDE_DIR NAMES metis.h
      PATHS "$ENV{IPOPT_HOME}/ThirdParty/Metis/metis-4.0/Lib/"
@@ -48,17 +29,27 @@ find_path(METIS_INCLUDE_DIR NAMES metis.h
            "/usr/include/metis"
            "/opt/local/include"
            "/opt/local/include/metis"
-           
-           
+           "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/include/metis"
    )
    
-find_library( METIS_LIBRARY 
+find_library( METIS_LIBRARY_RELEASE
               metis coinmetis
               PATHS "$ENV{IPOPT_HOME}/lib/"
                     "/usr/lib"
-                    "/opt/local/lib" )
-					
-endif()					
+                    "/opt/local/lib"
+                    "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+                    )
+                    
+find_library( METIS_LIBRARY_DEBUG
+              metisd coinmetisd
+              PATHS "$ENV{IPOPT_HOME}/lib/"
+                    "/usr/lib"
+                    "/opt/local/lib" 
+                    "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+                    )      
+                    
+include(SelectLibraryConfigurations)
+select_library_configurations( METIS )                   
 
 set(METIS_INCLUDE_DIRS "${METIS_INCLUDE_DIR}" )
 set(METIS_LIBRARIES "${METIS_LIBRARY}" )

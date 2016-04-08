@@ -249,18 +249,9 @@ int FilePLYPlugin::loadObject(QString _filename) {
       else if (triMeshControl == TYPEASK) {
 
         // If Ask is selected -> show dialog
-        QMessageBox msgBox;
-        QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
-        //         QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
-        QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
-
-        msgBox.setWindowTitle( tr("Mesh types in file") );
-        msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
-        msgBox.setDefaultButton( detectButton );
-        msgBox.exec();
-
-        if ((msgBox.clickedButton() == polyButton) ||
-            (msgBox.clickedButton() == detectButton && !isTriMesh)) {
+        QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
+        if ((trimeshOptions == TYPEPOLY) ||
+            (trimeshOptions == TYPEASK && !isTriMesh)) {
 
           PolyMeshObject* object(0);
           if(PluginFunctions::getObject( objectId, object )) {
@@ -312,6 +303,26 @@ int FilePLYPlugin::loadObject(QString _filename) {
 
     return objectId;
 };
+
+void FilePLYPlugin::handleTrimeshDialog()
+{
+   QMessageBox msgBox;
+   QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
+   QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
+   QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
+   msgBox.setWindowTitle( tr("Mesh types in file") );
+   msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
+   msgBox.setDefaultButton( detectButton );
+   msgBox.exec();
+
+
+   if (msgBox.clickedButton() == triButton)
+    trimeshOptions =  TYPETRIANGLE ;
+   else if (msgBox.clickedButton() == polyButton)
+    trimeshOptions = TYPEPOLY ;
+   else
+     trimeshOptions = TYPEASK;
+}
 
 //-----------------------------------------------------------------------------------------------------
 

@@ -63,6 +63,8 @@
 
 #include <Math_Tools/Math_Tools.hh>
 
+#include "ValenceHistogramDialog.hh"
+
 #if QT_VERSION >= 0x050000
 #else
 #include <QtGui>
@@ -73,7 +75,9 @@
 
 InfoMeshObjectPlugin::InfoMeshObjectPlugin() :
         info_(0),
-        infoBar_(0)
+        infoBar_(0),
+        lastPickedObject_(0),
+        lastPickedObjectId_(-1)
 {
 }
 
@@ -100,6 +104,9 @@ void InfoMeshObjectPlugin::pluginsInitialized() {
 
     // Create info dialog
     info_ = new InfoDialog();
+
+    connect(info_->valenceHistograms_pb, SIGNAL( clicked() ),
+            this, SLOT( slotShowHistogram() ));
 
     // Set default pick mode in dialog box
     info_->pickMode->setCurrentIndex(0); // PICK_FACES
@@ -742,12 +749,18 @@ InfoMeshObjectPlugin::
 
          emit log( LOGINFO , object->getObjectinfo() );
 
+         lastPickedObject_ = object;
+         lastPickedObjectId_ = object->id();
+
          if ( object->dataType(DATA_TRIANGLE_MESH) )
            printMeshInfo( PluginFunctions::triMesh(object) , object->id(), target_idx, hit_point );
 
          if ( object->dataType(DATA_POLY_MESH) )
            printMeshInfo( PluginFunctions::polyMesh(object) , object->id(), target_idx, hit_point );
-      } else return;
+      } else {
+          lastPickedObject_ = 0;
+          return;
+      }
     }
     else
     {
@@ -827,6 +840,11 @@ void InfoMeshObjectPlugin::updateData( int _identifier , const UpdateType& _type
 
   BaseObjectData* object;
   PluginFunctions::getObject(_identifier,object);
+
+  if (_identifier == lastPickedObjectId_ && _deleted) {
+      lastPickedObject_ = 0;
+      lastPickedObjectId_ = -1;
+  }
 
   // Last object that is target has been removed.
   if ( _deleted && object && object->target() && (PluginFunctions::targetCount() == 1) ) {
@@ -925,6 +943,29 @@ void InfoMeshObjectPlugin::slotAllCleared(){
   if ( infoBar_ )
     infoBar_->hideCounts();
 
+}
+
+void InfoMeshObjectPlugin::slotShowHistogram() {
+    if (!lastPickedObject_) return;
+
+    ValenceHistogramDialog *dialog = 0;
+    {
+        TriMeshObject *tmo = dynamic_cast<TriMeshObject*>(lastPickedObject_);
+        if (tmo) {
+            dialog = new ValenceHistogramDialog(*tmo->mesh(), info_);
+        }
+    }
+
+    if (!dialog) {
+        PolyMeshObject *pmo = dynamic_cast<PolyMeshObject*>(lastPickedObject_);
+        if (pmo) {
+            dialog = new ValenceHistogramDialog(*pmo->mesh(), info_);
+        }
+    }
+
+    dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+    dialog->show();
+    dialog->raise();
 }
 
 #if QT_VERSION < 0x050000

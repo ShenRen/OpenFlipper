@@ -31,22 +31,60 @@ include (ACGCommon)
 acg_get_version (OpenFlipper)
 
 # ========================================================================
-# Branding Flags
+# Branding 
 # ========================================================================
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/branding.cmake )
-	include(${CMAKE_SOURCE_DIR}/branding/branding.cmake)
+
+
+# search all branding dirs in the packages and in toplevel
+file (
+  GLOB _local_branding_in
+  RELATIVE "${CMAKE_SOURCE_DIR}"
+           "${CMAKE_SOURCE_DIR}/branding"
+           "${CMAKE_SOURCE_DIR}/Package-*/branding"
+)
+
+# Get number of found branding dirs
+list(LENGTH _local_branding_in branding_dir_count)
+
+# Check if we found at least one branding directory
+if (  ${branding_dir_count} GREATER 0 )
+
+  list(GET _local_branding_in 0 BRANDING_DIRECTORY_TMP)
+  set( BRANDING_DIRECTORY "${CMAKE_SOURCE_DIR}/${BRANDING_DIRECTORY_TMP}" CACHE PATH "Path to the branding files")
+
+  if ( ${branding_dir_count} GREATER 1 )
+    message(WARNING "Found multiple branding dirs in : ${_local_branding_in}")
+    message(WARNING "Using only first branding directory: ${BRANDING_DIRECTORY}")    
+  endif()
+  
+elseif()
+  set( BRANDING_DIRECTORY "branding" CACHE PATH "Path to the branding files")
+
 endif()
 
+if ( EXISTS ${BRANDING_DIRECTORY}/branding.cmake )
+	include(${BRANDING_DIRECTORY}/branding.cmake)
+endif()
+
+if ( EXISTS ${BRANDING_DIRECTORY}/branding.h )
+  set( BRANDING_HEADER true CACHE String "Indicate there is a branding.h inside the branding folder that should be included.")
+endif()
+
+
+#Initialize with defaults, if not already set via branding cmake file
 set( OPENFLIPPER_PRODUCT_STRING "OpenFlipper" CACHE String "Product string used e.g. to determine the config file path. Should only contain alphanumeric characters (no spaces)." )
 set( OPENFLIPPER_PRODUCT_NAME "OpenFlipper" CACHE String "Product name used in all visible places (e.g. about box)." )
-set( BRANDING_HEADER false CACHE String "Indicate there is a branding.h inside the branding folder.")
-add_definitions(-DPRODUCT_STRING=${OPENFLIPPER_PRODUCT_STRING})
-add_definitions(-DPRODUCT_NAME=${OPENFLIPPER_PRODUCT_NAME})
 
 if (BRANDING_HEADER)
 add_definitions(-DBRANDING_HEADER)
 endif ()
+
+add_definitions(-DPRODUCT_STRING=${OPENFLIPPER_PRODUCT_STRING})
+add_definitions(-DPRODUCT_NAME=${OPENFLIPPER_PRODUCT_NAME})
+
+# ========================================================================
+# ========================================================================
 
 include (package)
 include (ACGOutput)
@@ -79,7 +117,6 @@ else()
 endif()
 
 acg_openmp ()
-#acg_ftgl ()
 
 # check for OpenGL, GLEW and GLUT as our required dependencies
 find_package (OpenGL)

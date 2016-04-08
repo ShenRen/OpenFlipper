@@ -79,31 +79,31 @@ endforeach ()
 
 
 if (WIN32)
-  if ( EXISTS ${CMAKE_SOURCE_DIR}/branding ) 
+  if ( EXISTS ${BRANDING_DIRECTORY} ) 
     IF ( NOT WINDOWS_INSTALLER_ICON )
         # option to set the used Icon for OpenFlipper
-        set ( WINDOWS_INSTALLER_ICON "${CMAKE_SOURCE_DIR}\\branding\\win\\OpenFlipper_Icon_128x128x32.ico" CACHE FILEPATH "Path to the Executables Icon" )
+        set ( WINDOWS_INSTALLER_ICON "${BRANDING_DIRECTORY}\\win\\OpenFlipper_Icon_128x128x32.ico" CACHE FILEPATH "Path to the Executables Icon" )
     ENDIF(NOT WINDOWS_INSTALLER_ICON )
 
     IF ( NOT WINDOWS_INSTALLER_IMAGE_ICON )
         # option to set the used Icon for OpenFlipper
-        set ( WINDOWS_INSTALLER_IMAGE_ICON "${CMAKE_SOURCE_DIR}/branding/win/installer.bmp" CACHE FILEPATH "Path to the Installer Image Icon ( This has to be a bmp )" )
+        set ( WINDOWS_INSTALLER_IMAGE_ICON "${BRANDING_DIRECTORY}/win/installer.bmp" CACHE FILEPATH "Path to the Installer Image Icon ( This has to be a bmp )" )
     ENDIF(NOT WINDOWS_INSTALLER_IMAGE_ICON )
 
     
     IF ( NOT WINDOWS_LICENSE_FILE )
         # option to set the used License file for OpenFlipper
-        set ( WINDOWS_LICENSE_FILE "${CMAKE_SOURCE_DIR}\\branding\\win\\License.txt" CACHE FILEPATH "Path to the License file for installer" )
+        set ( WINDOWS_LICENSE_FILE "${BRANDING_DIRECTORY}\\win\\License.txt" CACHE FILEPATH "Path to the License file for installer" )
     ENDIF(NOT WINDOWS_LICENSE_FILE )
 
     IF ( NOT WINDOWS_WELCOME_FILE )
         # option to set the used License file for OpenFlipper
-        set ( WINDOWS_WELCOME_FILE "${CMAKE_SOURCE_DIR}\\branding\\win\\Welcome.txt" CACHE FILEPATH "Path to the welcome file for installer" )
+        set ( WINDOWS_WELCOME_FILE "${BRANDING_DIRECTORY}\\win\\Welcome.txt" CACHE FILEPATH "Path to the welcome file for installer" )
     ENDIF(NOT WINDOWS_WELCOME_FILE )
 
     IF ( NOT WINDOWS_DESCRIPTION_FILE )
         # option to set the used License file for OpenFlipper
-        set ( WINDOWS_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}\\branding\\win\\Description.txt" CACHE FILEPATH "Path to the description file for installer" )
+        set ( WINDOWS_DESCRIPTION_FILE "${BRANDING_DIRECTORY}\\win\\Description.txt" CACHE FILEPATH "Path to the description file for installer" )
     ENDIF(NOT WINDOWS_DESCRIPTION_FILE )
 
   else()
@@ -217,20 +217,20 @@ if (WIN32)
 
 elseif (APPLE)
 
-  if ( EXISTS ${CMAKE_SOURCE_DIR}/branding )
+  if ( EXISTS ${BRANDING_DIRECTORY} )
     IF ( NOT APPLE_INSTALLER_ICON )
         # option to set the used Icon for OpenFlipper
-        set ( APPLE_INSTALLER_ICON "${CMAKE_SOURCE_DIR}\\branding\\mac\\OpenFlipper_Icon_128x128x32.ico" CACHE FILEPATH "Path to the Executables Icon" )
+        set ( APPLE_INSTALLER_ICON "${BRANDING_DIRECTORY}\\mac\\OpenFlipper_Icon_128x128x32.ico" CACHE FILEPATH "Path to the Executables Icon" )
     ENDIF(NOT APPLE_INSTALLER_ICON )
 
     IF ( NOT APPLE_INSTALLER_IMAGE_ICON )
         # option to set the used Icon for OpenFlipper
-        set ( APPLE_INSTALLER_IMAGE_ICON "${CMAKE_SOURCE_DIR}/branding/mac/installer.bmp" CACHE FILEPATH "Path to the Installer Image Icon ( This has to be a bmp )" )
+        set ( APPLE_INSTALLER_IMAGE_ICON "${BRANDING_DIRECTORY}/mac/installer.bmp" CACHE FILEPATH "Path to the Installer Image Icon ( This has to be a bmp )" )
     ENDIF(NOT APPLE_INSTALLER_IMAGE_ICON )
 
     IF ( NOT APPLE_LICENSE_FILE )
         # option to set the used License file for OpenFlipper
-        set ( APPLE_LICENSE_FILE "${CMAKE_SOURCE_DIR}\\branding\\mac\\License.txt" CACHE FILEPATH "Path to the License file for installer" )
+        set ( APPLE_LICENSE_FILE "${BRANDING_DIRECTORY}mac\\License.txt" CACHE FILEPATH "Path to the License file for installer" )
     ENDIF(NOT APPLE_LICENSE_FILE )
 
   else()

@@ -1,3 +1,0 @@
-The OpenFlipper project uses the FreeFont fonts for rendering.
-
-You can get the fonts from https://savannah.gnu.org/projects/freefont/

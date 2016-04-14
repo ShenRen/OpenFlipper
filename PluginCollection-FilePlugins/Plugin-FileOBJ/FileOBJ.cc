@@ -120,7 +120,7 @@ FileOBJPlugin::FileOBJPlugin()
 
 //-----------------------------------------------------------------------------------------------------
 
-void FileOBJPlugin::initializePlugin() {
+void FileOBJPlugin::initializePlugin() {  
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1742,26 +1742,17 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
 
   // If we do not have a gui, we will always use the last default
   // If we need a gui and the triMeshHandling box is not generated (==0) we also use the last default
-  if ( OpenFlipper::Options::gui() && triMeshHandling_ != 0 ){
-
-    QMessageBox msgBox;
-    QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
-    QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
-    QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
+  if ( OpenFlipper::Options::gui() && triMeshHandling_ != 0 ){                 
 
     switch( triMeshHandling_->currentIndex() ){
       case TYPEAUTODETECT : //Detect
         break;
 
       case TYPEASK: //ask
-        msgBox.setWindowTitle( tr("Mesh types in file") );
-        msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
-        msgBox.setDefaultButton( detectButton );
-        msgBox.exec();
-
-        if (msgBox.clickedButton() == triButton)
+        QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
+        if (trimeshOptions == OBJImporter::TRIMESH )
           _importer.forceMeshType( OBJImporter::TRIMESH );
-        else if (msgBox.clickedButton() == polyButton)
+        else if (trimeshOptions == OBJImporter::POLYMESH)
           _importer.forceMeshType( OBJImporter::POLYMESH );
 
         break;
@@ -1778,6 +1769,24 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
 
   }
 
+}
+
+void FileOBJPlugin::handleTrimeshDialog()
+{
+   QMessageBox msgBox;
+   QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
+   QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
+   QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
+   msgBox.setWindowTitle( tr("Mesh types in file") );
+   msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
+   msgBox.setDefaultButton( detectButton );
+   msgBox.exec();
+
+
+   if (msgBox.clickedButton() == triButton)
+    trimeshOptions =  OBJImporter::TRIMESH ;
+   else if (msgBox.clickedButton() == polyButton)
+    trimeshOptions = OBJImporter::POLYMESH ;
 }
 
 //-----------------------------------------------------------------------------------------------------

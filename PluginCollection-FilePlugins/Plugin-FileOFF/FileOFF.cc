@@ -532,19 +532,11 @@ bool FileOFFPlugin::readOFFFile(QString _filename, OFFImporter& _importer) {
     case TYPEASK:
         if( !OpenFlipper::Options::nogui() ) {
             // Create message box
-            QMessageBox msgBox;
-            QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
-            QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
-            QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
+            QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
 
-            msgBox.setWindowTitle( tr("Mesh types in file") );
-            msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
-            msgBox.setDefaultButton( detectButton );
-            msgBox.exec();
-
-            if (msgBox.clickedButton() == triButton)
+            if (trimeshOptions == OFFImporter::TRIMESH)
                 type = DATA_TRIANGLE_MESH;
-            else if (msgBox.clickedButton() == polyButton)
+            else if (trimeshOptions == OFFImporter::POLYMESH)
                 type = DATA_POLY_MESH;
             else
                 type = _importer.isTriangleMesh() ? DATA_TRIANGLE_MESH : DATA_POLY_MESH;
@@ -572,6 +564,24 @@ bool FileOFFPlugin::readOFFFile(QString _filename, OFFImporter& _importer) {
   }
 
   return _importer.isBinary() ? parseBinary(ifile, _importer, type, _filename) : parseASCII(ifile, _importer, type, _filename);
+}
+
+void FileOFFPlugin::handleTrimeshDialog()
+{
+   QMessageBox msgBox;
+   QPushButton *detectButton = msgBox.addButton(tr("Auto-Detect"), QMessageBox::ActionRole);
+   QPushButton *triButton    = msgBox.addButton(tr("Open as triangle mesh"), QMessageBox::ActionRole);
+   QPushButton *polyButton   = msgBox.addButton(tr("Open as poly mesh"), QMessageBox::ActionRole);
+   msgBox.setWindowTitle( tr("Mesh types in file") );
+   msgBox.setText( tr("You are about to open a file containing one or more mesh types. \n\n Which mesh type should be used?") );
+   msgBox.setDefaultButton( detectButton );
+   msgBox.exec();
+
+
+   if (msgBox.clickedButton() == triButton)
+    trimeshOptions =  OFFImporter::TRIMESH ;
+   else if (msgBox.clickedButton() == polyButton)
+    trimeshOptions = OFFImporter::POLYMESH ;
 }
 
 //-----------------------------------------------------------------------------------------------------

@@ -655,6 +655,10 @@ void FileOBJPlugin::readOBJFile(QByteArray& _bufferedFile, QString _filename, OB
   // Now add all meshes for every group (if exists)
   createAllGroupObjects(_importer);
 
+  const bool omerr_enabled = omerr().is_enabled();
+  if (omerr_enabled)
+    omerr().disable();
+
   while(  !input.atEnd() )
   {
     line=input.readLine();
@@ -1248,6 +1252,9 @@ void FileOBJPlugin::readOBJFile(QByteArray& _bufferedFile, QString _filename, OB
 #endif
 
   }
+
+  if (omerr_enabled)
+    omerr().enable();
 
 
   //checks, if an object with a specified type was added. if not, point cloud was read

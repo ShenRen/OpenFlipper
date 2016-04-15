@@ -752,6 +752,10 @@ bool FileOFFPlugin::parseASCII(std::istream& _in, OFFImporter& _importer, DataTy
         break;
     }
 
+    const bool omerr_enabled = omerr().is_enabled();
+    if (omerr_enabled)
+      omerr().disable();
+
     // faces
     // #N <v1> <v2> .. <v(n-1)> [color spec]
     for (uint i=0; i<nF; ++i)
@@ -857,6 +861,9 @@ bool FileOFFPlugin::parseASCII(std::istream& _in, OFFImporter& _importer, DataTy
             }
         }
     }
+
+    if (omerr_enabled)
+      omerr().enable();
 
     // File was successfully parsed.
     return true;
@@ -967,6 +974,10 @@ bool FileOFFPlugin::parseBinary(std::istream& _in, OFFImporter& _importer, DataT
 
     // Reserve memory
     _importer.reserve(nV, nF * _importer.maxFaceValence() /*Upper bound*/, nF);
+
+    const bool omerr_enabled = omerr().is_enabled();
+    if (omerr_enabled)
+      omerr().disable();
 
     // read vertices: coord [hcoord] [normal] [color] [texcoord]
     for (uint i=0; i<nV && !_in.eof(); ++i)
@@ -1138,6 +1149,9 @@ bool FileOFFPlugin::parseBinary(std::istream& _in, OFFImporter& _importer, DataT
             }
         }
     }
+
+    if (omerr_enabled)
+      omerr().enable();
 
     // File was successfully parsed.
     return true;

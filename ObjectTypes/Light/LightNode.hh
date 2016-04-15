@@ -76,13 +76,13 @@
 
 namespace ACG {
 namespace SceneGraph {
-  
+
 
 //== CLASS DEFINITION =========================================================
 
 /** \class LightNode LightNode.hh <ACG/Scenegraph/LightNode.hh>
 
-    Set LightSources (0 to 7) for this node and all its children.  
+    Set LightSources (0 to 7) for this node and all its children.
     All changes will be done in the enter() method undone
     in the leave() method.
 **/
@@ -92,159 +92,159 @@ class DLLEXPORT LightSource
 {
   // Declare Node as friend for direct access to memberss
   friend class LightNode;
-  
+
 public:
-    
+
   /// Default Constructor
   LightSource();
-  
+
   /** \brief Set position for LightSource
-  * 
+  *
   * This function sets the position of a light source. OpenGL handles
   * a position for a light source if the homogeneous coordinate is
   * 1.0. If it is 0.0 the light source will be directional. So a
   * 1.0 is set in this function to get a positioned light source.
   */
   void position( Vec3d _pos);
-  
+
   /** \brief Get the position of the LightSource
   *
   * Be careful with this function. Check if the light source is not directional with
   * the directional() function
   */
-  Vec3d position();
-  
+  Vec3d position() const;
+
   /** \brief Check if the light source is a directional light source
   *
   * If this light Source is a directional light source the function will return true.
   * Otherwise false as the light source has a position.
   */
-  bool directional();
-  
+  bool directional() const;
+
   /** \brief Get direction of the light source
   *
   * Get direction of light.
   */
-  Vec3d direction();
-  
+  Vec3d direction() const;
+
   /** \brief Set the direction of the light source
   *
   * This function creates a directional light source. The position is not used by OpenGL.
   * Internally the positions homogeneous coordinate is set to 0.0.
   */
   void direction( Vec3d _pos);
-  
-   /// enable LightSource 
+
+   /// enable LightSource
   void enable();
 
-  /// disable LightSource 
+  /// disable LightSource
   void disable();
-  
+
   /// Get light source status
-  bool enabled();
-  
-  /** \brief Set spot direction 
+  bool enabled() const;
+
+  /** \brief Set spot direction
   *
   * \todo Improve documentation
   */
   void spotDirection(Vec3d _pos);
-  
+
   /** \brief get spot direction
   *
   * \todo Improve documentation
   */
-  Vec3d spotDirection( );
+  Vec3d spotDirection( ) const;
 
-  /// set Ambient color for LightSource 
+  /// set Ambient color for LightSource
   void ambientColor(  Vec4f _color);
-  
-  /// get Ambient color for LightSource 
-  Vec4f ambientColor();
 
-  /// set Diffuse color for LightSource 
+  /// get Ambient color for LightSource
+  Vec4f ambientColor() const;
+
+  /// set Diffuse color for LightSource
   void diffuseColor(  Vec4f _color);
 
-  /// get Diffuse color for LightSource 
-  Vec4f diffuseColor();
-  
-  /// set Specular color for LightSource 
+  /// get Diffuse color for LightSource
+  Vec4f diffuseColor() const;
+
+  /// set Specular color for LightSource
   void specularColor(  Vec4f _color);
-  
-  /// get Specular color for LightSource 
-  Vec4f specularColor();
-  
+
+  /// get Specular color for LightSource
+  Vec4f specularColor() const;
+
   void setColor(const Vec4f& _ambient, const Vec4f& _diffuse, const Vec4f& _specular);
 
   /// make LightSource fixed or moveable with ModelViewMatrix
   void fixedPosition( bool _state);
-  
-  bool fixedPosition();
-  
+
+  bool fixedPosition() const;
+
   void spotExponent(float _exponent);
-  
-  float spotExponent();
-  
+
+  float spotExponent() const;
+
   void spotCutoff(float _cutoff);
-  
-  float spotCutoff();
-  
+
+  float spotCutoff() const;
+
   void constantAttenuation(float _constantAttenuation);
-  
-  float constantAttenuation();
-  
+
+  float constantAttenuation() const;
+
   void linearAttenuation(float _linearAttenuation);
-  
-  float linearAttenuation();
-  
+
+  float linearAttenuation() const;
+
   void quadraticAttenuation(float _quadraticAttenuation);
-  
-  float quadraticAttenuation();
-  
+
+  float quadraticAttenuation() const;
+
   void brightness(const float _brightness);
-  
+
   float brightness() const;
-  
+
   /** \brief Get light source radius
-  * 
+  *
   * The light radius is the size of the lightsource. In OpenGL rendering this value is ignored.
   * You can use it for example in raytracers to implement soft shadows.
   */
-  float radius() { return radius_; }
-  
+  float radius() const { return radius_; }
+
   /** \brief Set light source radius
   *
   * The light radius is the size of the lightsource. In OpenGL rendering this value is ignored.
   * You can use it for example in raytracers to implement soft shadows.
   */
   void radius(const float _radius) { radius_ = _radius; }
-  
+
 protected:
 
   Vec4f position_;
   Vec4f realPosition_;
-  
+
   bool enabled_;
   bool fixedPosition_;
   Vec4f ambientColor_;
   Vec4f diffuseColor_;
   Vec4f specularColor_;
-  
+
   Vec3d spotDirection_;
   Vec3d realSpotDirection_;
-  
+
   // Only if in fixed mode
   Vec4f initialPosition_;
   Vec3d initialSpotDirection_;
   bool initialPositionInit_;
-  
+
   float spotExponent_;
   float spotCutoff_;
   float constantAttenuation_;
   float linearAttenuation_;
   float quadraticAttenuation_;
-  
+
   float brightness_;
-  
+
   /// When using ray tracing, light sources can have
   /// extent. We simplify to spherical light sources with
   /// radius radius_.
@@ -263,7 +263,7 @@ public:
 
   /// Destructor.
   virtual ~LightNode();
-  
+
   /// Set the light source parameters
   void setLightSource(LightSource _light ) { light_ = _light; };
 
@@ -279,22 +279,22 @@ public:
 
   /// Get bounding box (for visualization purposes)
   void boundingBox(ACG::Vec3d& /* _bbMin */, ACG::Vec3d& /*_bbMax*/ );
-  
+
   /// set current Light Sources
   void enter(GLState& _state, const DrawModes::DrawMode& _drawmode);
-  
+
   /// restores original Light Sources
   void leave(GLState& _state, const DrawModes::DrawMode& _drawmode);
-  
+
   /// Draw light source node
   void draw(GLState& _state, const DrawModes::DrawMode& _drawMode);
-  
+
   /// Picking
   void pick(GLState& _state, PickTarget _target);
 
   /// Should node be visualized?
   bool visualize() { return visualize_; }
-  
+
   /// Set whether node should be visualized
   void visualize(bool _visualize) { visualize_ = _visualize; }
 
@@ -321,10 +321,10 @@ private:
 
   /// save old LightSources
   LightSource lightSave_;
-  
+
   /// Indicates whether light node should be visualized or not
   bool visualize_;
-  
+
   /// Internal light id
   GLenum lightId_;
 
@@ -391,4 +391,3 @@ class DLLEXPORT LightSourceHandle {
 //=============================================================================
 #endif // ACG_LIGHT_NODE_HH defined
 //=============================================================================
-

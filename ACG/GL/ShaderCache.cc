@@ -627,7 +627,7 @@ void ACG::ShaderCache::setDebugOutputDir(const char* _outputDir)
 }
 
 
-std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShaderAttributeInfo(const char* _vertexShaderFile, QStringList* _macros /*= 0*/)
+const std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShaderAttributeInfo(const char* _vertexShaderFile, QStringList* _macros /*= 0*/)
 {
   QString absFilename = normalizeFilename(_vertexShaderFile);
 
@@ -687,7 +687,7 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
 
     if (fileInfo.size())
     {
-      std::vector<char> fileData(fileInfo.size(), 0);
+      std::vector<char> fileData(fileInfo.size() + 1, 0);
       file.read(&fileData[0], fileInfo.size());
 
       shaderSource = &fileData[0];
@@ -695,14 +695,14 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
 
     file.seekg(std::ios_base::beg);
 
-    bool useGL = false;
+    bool useGL = true;
 
     if (useGL)
     {
       // compile shader and query information from the driver
 
       // dummy fragment shader
-      const QString dummyShader = QString("#version 130\nout vec4 __dummy_Color__;\nvoid main(){__dummy_Color__ = vec4(1,1,1,1);}");
+      const QString dummyShader = QString("#version 130\nout vec4 _acg_dummy_Color_;\nvoid main(){_acg_dummy_Color_ = vec4(1,1,1,1);}");
 
       GLSL::FragmentShader* fragShader = new GLSL::FragmentShader();
       GLSL::VertexShader* vertShader = new GLSL::VertexShader();
@@ -742,11 +742,8 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
             glGetActiveAttrib(prog->getProgramId(), i, 0xff, &nameLen, &size, &type, name);
 
             VertexShaderAttributeInfo attribute;
-            attribute.name = name;
-            attribute.flat = false; // can't query interpolation mode from driver
-            attribute.size = size;
-            attribute.integer = false; // todo: interpret type variable
-            attribute.generated = false; // todo: check name for shadergenerator keywords
+            attribute.init(name, type);
+            data.attributes.push_back(attribute);
           }
 #endif
         }
@@ -766,11 +763,9 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
             glGetProgramResourceName(prog->getProgramId(), GL_PROGRAM_INPUT, i, props[0], 0, name);
 
             VertexShaderAttributeInfo attribute;
-            attribute.name = name;
-            attribute.flat = false; // can't query interpolation mode from driver
-            attribute.size = values[2];
-            attribute.integer = false; // todo: interpret type variable
-            attribute.generated = false; // todo: check name for shadergenerator keywords
+            attribute.init(name, values[1]);
+
+            data.attributes.push_back(attribute);
           }
 #endif
         }
@@ -888,20 +883,7 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
                   strName = strName.simplified();
 
                   VertexShaderAttributeInfo attribute;
-                  attribute.name = strName.toStdString();
-
-                  // check for reserved input attributes
-                  if (strName != "inPosition" ||
-                    strName != "inTexCoord" ||
-                    strName != "inNormal" ||
-                    strName != "inColor")
-                    attribute.generated = true;
-                  else
-                    attribute.generated = false;
-
-
-                  if (strLine.contains("flat "))
-                    attribute.flat = true;
+                  attribute.init(strName.toStdString());
 
 
                   // analyze type
@@ -978,6 +960,70 @@ std::vector<ShaderCache::VertexShaderAttributeInfo>& ShaderCache::getVertexShade
 
   return entry->attributes;
 }
+
+
+void ShaderCache::VertexShaderAttributeInfo::init(const std::string& _name)
+{
+  name = _name;
+
+  // check for reserved input attributes
+  generated = (_name.c_str() == ShaderGenerator::keywords.vs_inputPosition ||
+    _name.c_str() == ShaderGenerator::keywords.vs_inputTexCoord ||
+    _name.c_str() == ShaderGenerator::keywords.vs_inputNormal ||
+    _name.c_str() == ShaderGenerator::keywords.vs_inputColor);
+}
+
+void ShaderCache::VertexShaderAttributeInfo::init(const std::string& _name, GLenum _gltype)
+{
+  init(_name);
+
+  // map GL_TYPE to (isInt, size)
+  static std::map < GLenum, std::pair<bool, int> > gltypemap;
+
+#ifdef GL_FLOAT_VEC2
+
+  if (gltypemap.empty())
+  {
+    // init map
+    gltypemap[GL_FLOAT] = std::pair<bool, int>(false, 1);
+    gltypemap[GL_FLOAT_VEC2] = std::pair<bool, int>(false, 2);
+    gltypemap[GL_FLOAT_VEC3] = std::pair<bool, int>(false, 3);
+    gltypemap[GL_FLOAT_VEC4] = std::pair<bool, int>(false, 4);
+
+    gltypemap[GL_DOUBLE] = std::pair<bool, int>(false, 1);
+    gltypemap[GL_DOUBLE_VEC2] = std::pair<bool, int>(false, 2);
+    gltypemap[GL_DOUBLE_VEC3] = std::pair<bool, int>(false, 3);
+    gltypemap[GL_DOUBLE_VEC4] = std::pair<bool, int>(false, 4);
+
+    gltypemap[GL_INT] = std::pair<bool, int>(true, 1);
+    gltypemap[GL_INT_VEC2] = std::pair<bool, int>(true, 2);
+    gltypemap[GL_INT_VEC3] = std::pair<bool, int>(true, 3);
+    gltypemap[GL_INT_VEC4] = std::pair<bool, int>(true, 4);
+
+    gltypemap[GL_UNSIGNED_INT] = std::pair<bool, int>(true, 1);
+    gltypemap[GL_UNSIGNED_INT_VEC2] = std::pair<bool, int>(true, 2);
+    gltypemap[GL_UNSIGNED_INT_VEC3] = std::pair<bool, int>(true, 3);
+    gltypemap[GL_UNSIGNED_INT_VEC4] = std::pair<bool, int>(true, 4);
+
+    gltypemap[GL_BOOL] = std::pair<bool, int>(true, 1);
+    gltypemap[GL_BOOL_VEC2] = std::pair<bool, int>(true, 2);
+    gltypemap[GL_BOOL_VEC3] = std::pair<bool, int>(true, 3);
+    gltypemap[GL_BOOL_VEC4] = std::pair<bool, int>(true, 4);
+  }
+
+#endif
+
+  std::map < GLenum, std::pair<bool, int> >::iterator entry = gltypemap.find(_gltype);
+
+  if (entry != gltypemap.end())
+  {
+    integer = entry->second.first;
+    size = entry->second.second;
+  }
+  else
+    std::cout << "error - ShaderCache::VertexShaderAttributeInfo - unknown GL_TYPE: " << _gltype << std::endl;
+}
+
 
 //=============================================================================
 } // namespace ACG

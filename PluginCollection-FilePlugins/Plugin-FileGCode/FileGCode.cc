@@ -51,6 +51,7 @@
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
+#include <fstream>
 
 #if QT_VERSION >= 0x050000
   #include <QtWidgets>
@@ -78,78 +79,46 @@ DataType  FileGCodePlugin::supportedType() {
 int FileGCodePlugin::loadObject(QString _filename)
 {
   int id = -1;
-  emit addEmptyObject( DATA_GCODE, id );
 
-  GCodeObject* gcode = 0;
-  if(PluginFunctions::getObject( id, gcode))
-  {    
-    if (gcode)
+  QFileInfo fi(_filename);
+
+  if (fi.isReadable())
+  {
+    emit addEmptyObject(DATA_GCODE, id);
+
+    GCodeObject* gcode = 0;
+    if (PluginFunctions::getObject(id, gcode))
     {
+      if (gcode)
+      {
+        gcode->gcode()->parse_from_file(_filename.toStdString(), 2.0);
 
-//       QFileInfo fi(_filename);
-// 
-//       if ( fi.exists() ){
-// 
-//         ACG::Vec3d position;
-//         ACG::Vec3d xDirection;
-//         ACG::Vec3d yDirection;
-// 
-//         QSettings settings(_filename, QSettings::IniFormat);
-//         settings.beginGroup("PLANE");
-// 
-//         if ( settings.contains("Position0") ){
-// 
-//           position[0] = settings.value("Position0").toDouble();
-//           position[1] = settings.value("Position1").toDouble();
-//           position[2] = settings.value("Position2").toDouble();
-//           xDirection[0] = settings.value("XDirection0").toDouble();
-//           xDirection[1] = settings.value("XDirection1").toDouble();
-//           xDirection[2] = settings.value("XDirection2").toDouble();
-//           yDirection[0] = settings.value("YDirection0").toDouble();
-//           yDirection[1] = settings.value("YDirection1").toDouble();
-//           yDirection[2] = settings.value("YDirection2").toDouble();
-//           settings.endGroup();
-// 
-//           plane->plane().setPlane(position, xDirection, yDirection);
-// 
-//           plane->setFromFileName(_filename);
-//         }
-//      }
-
-      emit updatedObject( gcode->id(), UPDATE_ALL );
-
+        emit updatedObject(gcode->id(), UPDATE_ALL);
+      }
     }
-
   }
 
   return id;
 };
 
+
 bool FileGCodePlugin::saveObject(int _id, QString _filename)
 {
-
   BaseObjectData*     obj(0);
   if(PluginFunctions::getObject( _id, obj))
   {
     GCodeObject* gcode = PluginFunctions::gcodeObject(obj);
     if (gcode)
     {
+      std::ofstream file(_filename.toStdString());
 
-//       obj->setFromFileName(_filename);
-//       obj->setName(obj->filename());
-// 
-//       QSettings settings(_filename, QSettings::IniFormat);
-//       settings.beginGroup("PLANE");
-//       settings.setValue("Position0",  plane->planeNode()->position()[0]);
-//       settings.setValue("Position1",  plane->planeNode()->position()[1]);
-//       settings.setValue("Position2",  plane->planeNode()->position()[2]);
-//       settings.setValue("XDirection0",  plane->planeNode()->xDirection()[0]);
-//       settings.setValue("XDirection1",  plane->planeNode()->xDirection()[1]);
-//       settings.setValue("XDirection2",  plane->planeNode()->xDirection()[2]);
-//       settings.setValue("YDirection0",  plane->planeNode()->yDirection()[0]);
-//       settings.setValue("YDirection1",  plane->planeNode()->yDirection()[1]);
-//       settings.setValue("YDirection2",  plane->planeNode()->yDirection()[2]);
-//       settings.endGroup();
+      if (file.is_open())
+      {
+        gcode->gcode()->write(file);
+
+        file.close();
+      }
+
     }
   } else {
     emit log(LOGERR, tr("saveObject : cannot get object id %1 for save name %2").arg(_id).arg(_filename) );

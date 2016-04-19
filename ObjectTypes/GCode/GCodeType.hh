@@ -10,7 +10,7 @@
 #include <iostream>
 #include <iomanip>
 
-class GCode : public ptr::enable_shared_from_this<GCode>{
+class DLLEXPORT GCode : public ptr::enable_shared_from_this<GCode>{
 public:
     typedef ptr::shared_ptr<GCode> Shared;
 

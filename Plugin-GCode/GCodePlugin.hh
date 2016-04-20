@@ -1,6 +1,6 @@
 /*===========================================================================*\
-*                                                                            *
-*                              OpenFlipper                                   *
+ *                                                                           *
+ *                              OpenFlipper                                  *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,100 +36,108 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                            *
+ *                                                                           *
 \*===========================================================================*/
+
 
 /*===========================================================================*\
-*                                                                            *
-*   $Revision$                                                       *
-*   $LastChangedBy$                                                *
-*   $Date$                     *
-*                                                                            *
+*                                                                           *
+*   $Revision$                              *
+*   $Author$                            *
+*   $Date$                          *
+*                                                                           *
 \*===========================================================================*/
 
-#include "FileGCode.hh"
+#ifndef GCODEPLUGIN_HH
+#define GCODEPLUGIN_HH
 
-#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/common/GlobalOptions.hh>
-#include <fstream>
+
+#include <OpenFlipper/BasePlugin/BaseInterface.hh>
+#include <OpenFlipper/BasePlugin/LoggingInterface.hh>
+#include <OpenFlipper/BasePlugin/ToolboxInterface.hh>
+#include <OpenFlipper/common/Types.hh>
+
+#include <ObjectTypes/GCode/GCode.hh>
+#include <ObjectTypes/PolyLine/PolyLine.hh>
+
+#include <QObject>
+#include <QMenuBar>
+
+#include "GCodeToolbar.hh"
+
+
+
+
+class GCodePlugin : public QObject, BaseInterface, ToolboxInterface, LoggingInterface
+{
+  Q_OBJECT
+    Q_INTERFACES(BaseInterface)
+    Q_INTERFACES(ToolboxInterface)
+    Q_INTERFACES(LoggingInterface)
 
 #if QT_VERSION >= 0x050000
-  #include <QtWidgets>
-#else
-  #include <QtGui>
+    Q_PLUGIN_METADATA(IID "org.OpenFlipper.Plugins.Plugin-GCode")
 #endif
 
+signals:
+  //BaseInterface
+  void updateView();
+  void updatedObject(int, const UpdateType&);
 
-void FileGCodePlugin::initializePlugin() {
-}
+  //LoggingInterface
+  void log(Logtype _type, QString _message);
+  void log(QString _message);
 
-QString FileGCodePlugin::getLoadFilters() {
-  return QString( tr("GCode files ( *.gcode )") );
+  // ToolboxInterface
+  void addToolbox(QString _name, QWidget* _toolbox, QIcon* icon);
+
+public:
+  GCodePlugin() : gcode_play_timer(0) { }
+
+  // BaseInterface
+  ~GCodePlugin();
+  QString name() { return (QString("GCode Plugin")); };
+  QString description() { return (QString("GCode plugin")); };
+
+  private slots:
+
+  ///Plugin Initialization
+  void initializePlugin();
+
+  /// Button slots
+  void slotSliderGCodeValueChanged();
+  void slotGCodePositionBoxChanged();
+
+
+  void onGCodePlayPressed();
+  void onGCodePlayTimer();
+
+
+  public slots:
+
+  QString version() { return QString("1.0"); };
+
+  /// Create an empty gcode object
+//  GCodeObject* create_gcode_object();
+
+
+private:
+
+  // Update timer
+  QTimer updateTimer_;
+
+  // The UI
+  GCodeToolbarWidget* tool_;
+
+  // The Plugin icon
+  QIcon* toolIcon_;
+
+  // Id of the gcode object
+  int gcode_object_id_;
+
+  // Update timer for gcode visualization
+  QTimer* gcode_play_timer;
 };
 
-QString FileGCodePlugin::getSaveFilters() {
-  return QString( tr("GCode files ( *.gcode )") );
-};
 
-DataType  FileGCodePlugin::supportedType() {
-  DataType type = DATA_GCODE;
-  return type;
-}
-
-int FileGCodePlugin::loadObject(QString _filename)
-{
-  int id = -1;
-
-  QFileInfo fi(_filename);
-
-  if (fi.isReadable())
-  {
-    emit addEmptyObject(DATA_GCODE, id);
-
-    GCodeObject* gcode = 0;
-    if (PluginFunctions::getObject(id, gcode))
-    {
-      if (gcode)
-      {
-        gcode->gcode()->parse_from_file(_filename.toStdString(), 2.0);
-        gcode->update();
-
-        emit updatedObject(gcode->id(), UPDATE_ALL);
-      }
-    }
-  }
-
-  return id;
-};
-
-
-bool FileGCodePlugin::saveObject(int _id, QString _filename)
-{
-  BaseObjectData*     obj(0);
-  if(PluginFunctions::getObject( _id, obj))
-  {
-    GCodeObject* gcode = PluginFunctions::gcodeObject(obj);
-    if (gcode)
-    {
-      std::ofstream file(_filename.toStdString());
-
-      if (file.is_open())
-      {
-        gcode->gcode()->write(file);
-
-        file.close();
-      }
-
-    }
-  } else {
-    emit log(LOGERR, tr("saveObject : cannot get object id %1 for save name %2").arg(_id).arg(_filename) );
-    return false;
-  }
-
-  return true;
-}
-#if QT_VERSION < 0x050000
-  Q_EXPORT_PLUGIN2( filegcodeplugin , FileGCodePlugin );
-#endif
-
-
+#endif //GCODEPLUGIN_HH

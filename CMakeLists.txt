@@ -1,5 +1,10 @@
 cmake_minimum_required (VERSION 2.8.9)
 
+if ( WIN32 )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
+endif
+
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)

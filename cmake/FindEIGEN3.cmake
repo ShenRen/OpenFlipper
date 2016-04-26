@@ -9,6 +9,27 @@ if (EIGEN3_INCLUDE_DIR)
   set(EIGEN3_INCLUDE_DIRS "${EIGEN3_INCLUDE_DIR}" )
 else (EIGEN3_INCLUDE_DIR)
 
+# Check if the base path is set
+if ( NOT CMAKE_WINDOWS_LIBS_DIR )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:\libs" CACHE STRING "Default Library search dir on windows." )
+endif()
+
+if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x32/")
+endif()
+
+
 find_path( EIGEN3_INCLUDE_DIR 
 	   NAMES Eigen/Dense 
            PATHS $ENV{EIGEN_DIR}
@@ -16,13 +37,13 @@ find_path( EIGEN3_INCLUDE_DIR
                  /usr/local/include
                  /usr/local/include/eigen3/
                  /opt/local/include/eigen3/
-                 "c:\\libs\\Eigen-3.2.6"
-		 "c:\\libs\\Eigen-3.2.6\\include"                 
-                 "c:\\libs\\Eigen-3.2.1"
-		 "c:\\libs\\Eigen-3.2.1\\include"
-		 "c:\\libs\\Eigen-3.2\\include"
-                 "c:\\libs\\eigen3\\include"
-		 "c:\\libs\\eigen\\include"
+                 "${CMAKE_WINDOWS_LIBS_DIR}/Eigen-3.2.6"
+		 "${CMAKE_WINDOWS_LIBS_DIR}/Eigen-3.2.6/include"                 
+                 "${CMAKE_WINDOWS_LIBS_DIR}/Eigen-3.2.1"
+		 "${CMAKE_WINDOWS_LIBS_DIR}/Eigen-3.2.1/include"
+		 "${CMAKE_WINDOWS_LIBS_DIR}/Eigen-3.2/include"
+                 "${CMAKE_WINDOWS_LIBS_DIR}/eigen3/include"
+		 "${CMAKE_WINDOWS_LIBS_DIR}/eigen/include"
 		  ${PROJECT_SOURCE_DIR}/MacOS/Libs/eigen3/include
                   ../../External/include
                   ${module_file_path}/../../../External/include

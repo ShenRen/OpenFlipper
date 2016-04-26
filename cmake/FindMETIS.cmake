@@ -13,7 +13,7 @@ endif (METIS_INCLUDE_DIR)
 # Check if the base path is set
 if ( NOT CMAKE_WINDOWS_LIBS_DIR )
   # This is the base directory for windows library search used in the finders we shipp.
-  set(CMAKE_WINDOWS_LIBS_DIR "c:\libs" CACHE STRING "Default Library search dir on windows." )
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
 endif()
 
 if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )

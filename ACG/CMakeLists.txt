@@ -27,15 +27,10 @@ endif ()
 
 acg_openmp ()
 
-# check for OpenGL, GLEW and GLUT as our required dependencies
+# check for OpenGL and GLUT as our required dependencies
 find_package (OpenGL)
 if (NOT OPENGL_FOUND)
   message (FATAL_ERROR "OpengGL not found!")
-endif ()
-
-find_package (GLEW)
-if (NOT GLEW_FOUND)
-  message (FATAL_ERROR "GLEW not found!")
 endif ()
 
 find_package (GLUT)
@@ -53,7 +48,6 @@ set(INCLUDE_DIRS ${OPENMESH_INCLUDE_DIRS}
                  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderUtils
                  ${CMAKE_CURRENT_BINARY_DIR}
                  ${OPENGL_INCLUDE_DIR}
-                 ${GLEW_INCLUDE_DIR}
                  ${GLUT_INCLUDE_DIR} )
 
 set(ADDITIONAL_LINK_LIBRARIES "" )
@@ -90,7 +84,6 @@ include_directories (
 )
 
 link_directories (
-  ${GLEW_LIBRARY_DIR}
   ${GLUT_LIBRARY_DIR}
 )
 
@@ -159,7 +152,6 @@ acg_print_configure_header (ACG "ACG")
 target_link_libraries ( ACG  ${OPENMESH_LIBRARIES}
                              ${QT_LIBRARIES}
                              ${OPENGL_LIBRARIES}
-                             ${GLEW_LIBRARY}
                              ${GLUT_LIBRARIES}
                              ${ADDITIONAL_LINK_LIBRARIES} )
 

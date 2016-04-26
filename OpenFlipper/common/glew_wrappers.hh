@@ -52,7 +52,7 @@
 
 #include <OpenFlipper/common/GlobalDefines.hh>
 
-DLLEXPORT void initGlew();
-DLLEXPORT const char * getGlewVersion();
+DLLEXPORT void initOpenGLFunctions();
+DLLEXPORT const char * getOpenGLVersion();
 
 #endif /* GLEW_WRAPPERS_HH_ */

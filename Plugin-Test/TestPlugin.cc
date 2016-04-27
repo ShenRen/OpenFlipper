@@ -50,20 +50,54 @@
 
 
 #include "TestPlugin.hh"
+#include <ACG/GL/ShaderCache.hh>
+
+
+
+
+
+
 
 
 void TestPlugin::initializePlugin()
 {
-
 }
 
 void TestPlugin::pluginsInitialized() {
     
+  QWidget* tool_ = new QWidget();
+  QSize size(100, 100);
+  tool_->resize(size);
+
+  QVBoxLayout* layout = new QVBoxLayout(tool_);
+
+  QPushButton* button = new QPushButton("click", tool_);
+  
+  layout->addWidget(button);
+
+  // connect signals->slots
+  connect(button, SIGNAL(clicked()), this, SLOT(btnclick()));
+
+
+  emit addToolbox(tr("Test"), tool_);
 
 }
 
 
 
+
+void TestPlugin::btnclick()
+{
+  const char* filename = "c:/dbg/attrinfo/1.glsl";
+
+//   const ACG::ShaderCache::VertexShaderAttributeInfoVec& attr =
+//     ACG::ShaderCache::getInstance()->getVertexShaderAttributeInfo(filename);
+// 
+//   std::cout << "attributes found in :" << filename << std::endl;
+//   for (int i = 0; i < attr.size(); ++i)
+//     std::cout << i << ": " << attr[i].name << " -  size: " << attr[i].size << std::endl;
+
+}
 
 #if QT_VERSION < 0x050000
   Q_EXPORT_PLUGIN2( testplugin , TestPlugin );

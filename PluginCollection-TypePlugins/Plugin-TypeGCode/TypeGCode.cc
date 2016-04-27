@@ -75,7 +75,7 @@ int TypeGCodePlugin::addEmpty(){
   if (PluginFunctions::targetCount() == 0 )
     object->target(true);
 
-  QString name = QString(tr("New GCode %1.pla").arg( object->id() ));
+  QString name = QString(tr("New GCode %1.gcode").arg( object->id() ));
 
   // call the local function to update names
   QFileInfo f(name);

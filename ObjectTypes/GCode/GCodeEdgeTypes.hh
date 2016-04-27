@@ -1,6 +1,6 @@
-/* ========================================================================= *
-*                                                                           *
-*                               OpenFlipper                                 *
+/*===========================================================================*\
+*                                                                            *
+*                              OpenFlipper                                   *
 *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
 *           Department of Computer Graphics and Multimedia                  *
 *                          All rights reserved.                             *
@@ -36,62 +36,58 @@
 * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                           *
-* ========================================================================= */
+*                                                                            *
+\*===========================================================================*/
 
 /*===========================================================================*\
-*
-*   $Revision$
-*   $Date$
-*
+*                                                                            *
+*   $Revision$                                                       *
+*   $LastChangedBy$                                                *
+*   $Date$                     *
+*                                                                            *
 \*===========================================================================*/
 
 
-//=============================================================================
-//
-//  Standard Functions
-//
-//=============================================================================
+#ifndef GCODE_EDGE_TYPES_HH
+#define GCODE_EDGE_TYPES_HH
 
-/**
- * \file PluginFunctionsPolyLine.hh
- * This file contains functions which can be used by plugins to access polylines in the framework.
- */
+#include <string>
 
-#ifndef PLUGINFUNCTIONSGCODE_HH
-#define PLUGINFUNCTIONSGCODE_HH
+namespace Ultimaker{
+ enum EdgeType{
+     GC_WALL_OUTER = 0,
+     GC_INFILL = 1,
+     GC_MOVE = 2,
+     GC_WALL_INNER = 3,
+     GC_TOPBOTTOM = 4,
+     GC_SUPPORT_ACC = 5,
+     GC_SUPPORT_ACC_LE = 6,
+     GC_SUPPORT = 7,
+     GC_BRIM = 8,
+     GC_RETRACT = 9, // Retract (no move allowed)
+     GC_UNRETRACT = 10, // Unrectract (no move allowed)
+     GC_PART = 11, // Inserted before starting a new part
+     GC_PART_SYNC = 12, // Inserted instead of GC_PART, if the part is directly above the current one
+     GC_COUNT
+ };
 
-#include "GCodeObject.hh"
-#include <OpenFlipper/common/Types.hh>
-
-
-/** The Namespace PluginFunctions contains functions for all plugins. */
-namespace PluginFunctions {
-
-
-/** This functions returns the object with the given id if it is a PolyLineObject.
- * See get_object(  int _identifier , BaseObject*& _object ) for more details.
- */
-DLLEXPORT
-bool getObject(  int _identifier , GCodeObject*& _object );
-
-/** \brief Get a poly Line from an object.
- *
- * @param _object The object should be of type BaseDataObject. If the content is a poly Line, a
- *                poly line will be returned. Otherwise a NULL pointer is returned.
- */
-DLLEXPORT
-GCode::Shared gcode( BaseObjectData* _object );
-
-/** \brief Cast an BaseObject to a PolyLineObject if possible
- *
- * @param _object The object should be of type BaseDataObject. If the content is a polyLine, a
- *                a PolyLineObject is returned. Otherwise a NULL pointer is returned.
- */
-DLLEXPORT
-GCodeObject* gcodeObject( BaseObjectData* _object );
-
+ static std::string EdgeType_names[] = {
+     "WALL_OUTER",
+     "INFILL",
+     "MOVE",
+     "WALL_INNER",
+     "TOPBOTTOM",
+     "SUPPORT_ACC",
+     "SUPPORT_ACC_LE",
+     "SUPPORT",
+     "BRIM",
+     "RETRACT",
+     "UNRETRACT",
+     "GC_PART",
+     "GC_PART_SYNC",
+     "GC_COUNT"
+ };
 }
 
 
-#endif // PLUGINFUNCTIONSGCODE_HH
+#endif //GCODE_EDGE_TYPES_HH

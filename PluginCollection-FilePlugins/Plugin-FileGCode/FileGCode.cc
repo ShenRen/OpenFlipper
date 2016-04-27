@@ -91,7 +91,7 @@ int FileGCodePlugin::loadObject(QString _filename)
     {
       if (gcode)
       {
-        gcode->gcode()->parse_from_file(_filename.toStdString(), 2.0);
+        gcode->gcode()->parse_from_file(_filename.toStdString());
         gcode->update();
 
         emit updatedObject(gcode->id(), UPDATE_ALL);

@@ -60,7 +60,8 @@
  */
 
 
-#pragma once
+#ifndef GCODEOBJECT_HH
+#define GCODEOBJECT_HH
 
 
 
@@ -201,3 +202,7 @@ class DLLEXPORT GCodeObject : public BaseObjectData {
                                  const unsigned int _targetIdx );
 
 };
+
+
+
+#endif //GCODEOBJECT_HH

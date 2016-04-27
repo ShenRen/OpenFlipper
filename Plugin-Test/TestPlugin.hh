@@ -52,12 +52,14 @@
 
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
+#include <OpenFlipper/BasePlugin/ToolboxInterface.hh>
 #include <OpenFlipper/common/Types.hh>
 
-class TestPlugin: public QObject, BaseInterface, LoggingInterface {
+class TestPlugin: public QObject, BaseInterface, LoggingInterface, ToolboxInterface {
   Q_OBJECT
   Q_INTERFACES(BaseInterface)
   Q_INTERFACES(LoggingInterface)
+  Q_INTERFACES(ToolboxInterface)
 
 #if QT_VERSION >= 0x050000
   Q_PLUGIN_METADATA(IID "org.OpenFlipper.Plugins.Plugin-Test")
@@ -71,6 +73,9 @@ class TestPlugin: public QObject, BaseInterface, LoggingInterface {
   //LoggingInterface
   void log(Logtype _type, QString _message);
   void log(QString _message);
+
+  //ToolboxInterface
+  void addToolbox(QString  _name, QWidget* _widget);
 
 public:
 
@@ -87,9 +92,12 @@ private slots:
   /// Tell system that this plugin runs without ui
   void noguiSupported( ) {} ;
 
+
 public slots:
 
   QString version() { return QString("1.0"); };
+
+  void btnclick();
 
 };
 

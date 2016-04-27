@@ -74,68 +74,77 @@ void GCodePlugin::slotGCodePositionBoxChanged()
   tool_->slider_gcode->setValue(seconds);
   tool_->slider_gcode->blockSignals(false);
 
-  GCodeObject* gcode_object;
-  PluginFunctions::getObject(gcode_object_id_, gcode_object);
 
-  if (gcode_object)
+  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS); o_it != PluginFunctions::objectsEnd(); ++o_it)
   {
-    gcode_object->set_distance(seconds);
-
-    ptr::shared_ptr<PolyLine> polyline = gcode_object->gcode()->polyline();
-    const std::vector<GCode::State>& states = gcode_object->gcode()->polyline_states();
-
-    GCode::State state, next_state;
-    for (size_t i = 1; i < polyline->n_vertices(); ++i)
+    if (o_it->dataType(DATA_GCODE))
     {
-      if (states[i].time > seconds)
+      GCodeObject* gcode_object = PluginFunctions::gcodeObject(*o_it);
+      
+      if (gcode_object)
       {
-        state = states[i - 1];
-        next_state = states[i];
-        break;
+        gcode_object->set_distance(seconds);
+
+        ptr::shared_ptr<PolyLine> polyline = gcode_object->gcode()->polyline();
+        const std::vector<GCode::State>& states = gcode_object->gcode()->polyline_states();
+
+        GCode::State state, next_state;
+        for (size_t i = 1; i < polyline->n_vertices(); ++i)
+        {
+          if (states[i].time > seconds)
+          {
+            state = states[i - 1];
+            next_state = states[i];
+            break;
+          }
+        }
+
+        double x = 0.0;
+        if (fabs((next_state.time - state.time)) > 0.0)
+        {
+          x = (seconds - state.time) / (next_state.time - state.time);
+        }
+
+        if (state.unit == GCode::Unit_Millimeters)
+        {
+          tool_->lbl_gcode_unit->setText(QString("Unit: Metric"));
+        }
+        else
+        {
+          tool_->lbl_gcode_unit->setText(QString("Unit: Inch"));
+        }
+
+        if (state.mode_positioning == GCode::PositioningMode_Absolute)
+        {
+          tool_->lbl_gcode_posmode->setText(QString("Position Mode: Absolute"));
+        }
+        else
+        {
+          tool_->lbl_gcode_posmode->setText(QString("Position Mode: Relative"));
+        }
+
+        if (state.mode_extruder == GCode::PositioningMode_Absolute)
+        {
+          tool_->lbl_gcode_extmode->setText(QString("Position Mode: Absolute"));
+        }
+        else
+        {
+          tool_->lbl_gcode_extmode->setText(QString("Extruder Mode: Relative"));
+        }
+
+        tool_->lbl_gcode_fan->setText(QString("Fan Speed: %1%").arg(100.0*double(state.fan_speed) / 255.0));
+        tool_->lbl_gcode_extrude->setText(QString("Extrude: %1 mm").arg(state.pos_extruder*(1.0 - x) + next_state.pos_extruder*x));
+
+        tool_->lbl_gcode_temp_ext->setText(QString("Temp Extruder: %1°").arg(state.temp_extruder));
+        tool_->lbl_gcode_temp_bed->setText(QString("Temp Bed: %1°").arg(state.temp_bed));
+
+        emit updateView();
       }
     }
-
-    double x = 0.0;
-    if (fabs((next_state.time - state.time)) > 0.0)
-    {
-      x = (seconds - state.time) / (next_state.time - state.time);
-    }
-
-    if (state.unit == GCode::Unit_Millimeters)
-    {
-      tool_->lbl_gcode_unit->setText(QString("Unit: Metric"));
-    }
-    else
-    {
-      tool_->lbl_gcode_unit->setText(QString("Unit: Inch"));
-    }
-
-    if (state.mode_positioning == GCode::PositioningMode_Absolute)
-    {
-      tool_->lbl_gcode_posmode->setText(QString("Position Mode: Absolute"));
-    }
-    else
-    {
-      tool_->lbl_gcode_posmode->setText(QString("Position Mode: Relative"));
-    }
-
-    if (state.mode_extruder == GCode::PositioningMode_Absolute)
-    {
-      tool_->lbl_gcode_extmode->setText(QString("Position Mode: Absolute"));
-    }
-    else
-    {
-      tool_->lbl_gcode_extmode->setText(QString("Extruder Mode: Relative"));
-    }
-
-    tool_->lbl_gcode_fan->setText(QString("Fan Speed: %1%").arg(100.0*double(state.fan_speed) / 255.0));
-    tool_->lbl_gcode_extrude->setText(QString("Extrude: %1 mm").arg(state.pos_extruder*(1.0 - x) + next_state.pos_extruder*x));
-
-    tool_->lbl_gcode_temp_ext->setText(QString("Temp Extruder: %1°").arg(state.temp_extruder));
-    tool_->lbl_gcode_temp_bed->setText(QString("Temp Bed: %1°").arg(state.temp_bed));
-
-    emit updateView();
   }
+
+
+  updateTotalTime();
 }
 
 /**
@@ -170,8 +179,6 @@ void GCodePlugin::initializePlugin()
   QSize size(300, 300);
   tool_->resize(size);
 
-  gcode_object_id_ = -1;
-
   connect(tool_->slider_gcode, SIGNAL(valueChanged(int)), this, SLOT(slotSliderGCodeValueChanged()));
   connect(tool_->te_gcode_time, SIGNAL(timeChanged(QTime)), this, SLOT(slotGCodePositionBoxChanged()));
 
@@ -192,6 +199,8 @@ GCodePlugin::~GCodePlugin()
 */
 void GCodePlugin::onGCodePlayPressed()
 {
+  updateTotalTime();
+
   if (gcode_play_timer)
   {
     // Stop
@@ -225,42 +234,39 @@ void GCodePlugin::onGCodePlayTimer()
   QTime time = tool_->te_gcode_time->time();
   tool_->te_gcode_time->setTime(time.addMSecs(forward_in_ms));
 }
-// 
-// /**
-// * @brief UltimakerPlugin::pb_load_gcode
-// */
-// void UltimakerPlugin::pb_load_gcode()
-// {
-//   QString filename = QFileDialog::getOpenFileName(tool_, QString("Read GCode"), QDir::currentPath(), "GCode files (*.gcode)");
-// 
-//   if (filename != "")
-//   {
-//     GCodeObject* gcode_object = create_gcode_object();
-//     gcode_object_id_ = gcode_object->id();
-// 
-//     gcode_object->setName(QString("GCode %1").arg(gcode_object->id()));
-//     gcode_object->gcode()->parse_from_file(filename.toStdString(), printer_settings_.nozzle_size);
-//     gcode_object->update();
-// 
-//     int seconds = int(gcode_object->gcode()->total_time());
-//     int minutes = seconds / 60;
-//     int hours = minutes / 60;
-// 
-//     seconds %= 60;
-//     minutes %= 60;
-// 
-//     tool_->lbl_gcode_total_time->setText(QString("/ %1:%2:%3").arg(hours).arg(minutes % 60, 2, 10, QChar('0')).arg(seconds % 60, 2, 10, QChar('0')));
-// 
-//     QTime time;
-//     time.setHMS(hours, minutes, seconds);
-// 
-//     tool_->te_gcode_time->setMaximumTime(time);
-//     tool_->slider_gcode->setMaximum(gcode_object->gcode()->total_time());
-//     tool_->slider_gcode->setValue(gcode_object->gcode()->total_time());
-// 
-//     emit updateView();
-//   }
-// }
+
+void GCodePlugin::updateTotalTime()
+{
+  for (PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS); o_it != PluginFunctions::objectsEnd(); ++o_it)
+  {
+    if (o_it->dataType(DATA_GCODE))
+    {
+      GCodeObject* gcode_object = PluginFunctions::gcodeObject(*o_it);
+
+      if (gcode_object)
+      {
+        int seconds = int(gcode_object->gcode()->total_time());
+        int minutes = seconds / 60;
+        int hours = minutes / 60;
+
+        seconds %= 60;
+        minutes %= 60;
+
+        tool_->lbl_gcode_total_time->setText(QString("/ %1:%2:%3").arg(hours).arg(minutes % 60, 2, 10, QChar('0')).arg(seconds % 60, 2, 10, QChar('0')));
+
+        QTime time;
+        time.setHMS(hours, minutes, seconds);
+
+        tool_->te_gcode_time->setMaximumTime(time);
+        tool_->slider_gcode->setMaximum(gcode_object->gcode()->total_time());
+
+        emit updateView();
+      }
+    }
+  }
+}
+
+
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(ultimakerplugin, UltimakerPlugin);

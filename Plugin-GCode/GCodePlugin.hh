@@ -117,9 +117,8 @@ public:
 
   QString version() { return QString("1.0"); };
 
-  /// Create an empty gcode object
-//  GCodeObject* create_gcode_object();
-
+  // set total time to the max time of all gcode objects
+  void updateTotalTime();
 
 private:
 
@@ -131,9 +130,6 @@ private:
 
   // The Plugin icon
   QIcon* toolIcon_;
-
-  // Id of the gcode object
-  int gcode_object_id_;
 
   // Update timer for gcode visualization
   QTimer* gcode_play_timer;

@@ -388,6 +388,172 @@ void GCodeNode_renderer::render(ACG::GLState& _state, const ACG::GLMatrixd& _pro
   }
 }
 
+void GCodeNode_renderer::createRenderObjects(ACG::IRenderer* _renderer, ACG::GLState& _state, DrawMode _mode, double time_ /*= std::numeric_limits<double>::max()*/, ACG::Vec4f color /*= ACG::Vec4f(1.0f, 0.0f, 0.0f, 1.0f)*/)
+{
+  // build transforms and find current time segment
+  ACG::GLMatrixf matViewProj(_state.projection() * _state.modelview());
+  ACG::GLMatrixf viewInv = _state.modelview();
+  viewInv.invert();
+
+  double lerpFactor = 0.0;
+  int currentSegment = find_current_segment(time_, &lerpFactor);
+
+
+
+  // init base render object
+  ACG::RenderObject ro;
+
+  _state.enable(GL_COLOR_MATERIAL);
+  _state.enable(GL_LIGHTING);
+  ro.initFromState(&_state);
+
+  // Update the vbo only if required.
+  if (update_vbo_)
+  {
+    update_vbo();
+    update_vbo_ = false;
+  }
+// 
+//   const char* frag_shader = 0;
+//   switch (_mode)
+//   {
+//   case Color: frag_shader = "GCode/gcode_color_fs.glsl"; break;
+//   case Heat: frag_shader = "GCode/gcode_heat_fs.glsl"; break;
+//   case Speed: frag_shader = "GCode/gcode_speed_fs.glsl"; break;
+//   case Type: frag_shader = "GCode/gcode_type_fs.glsl"; break;
+//   default: return;
+//   }
+// 
+//   ro.shaderDesc.vertexTemplateFile = "GCode/gcode_instanced_vs.glsl";
+//   ro.shaderDesc.
+// 
+//   GLSL::Program* shader = ACG::ShaderCache::getInstance()->getProgram(, frag_shader);
+// 
+//   if (!shader || !shader->isLinked()) return;
+// 
+// 
+//   ACG::Vec2d clipPlanes = _proj.extract_planes();
+// 
+//   shader->use();
+//   shader->setUniform("g_mWVP", matViewProj);
+//   shader->setUniformMat3("g_mWVIT", viewInv, true);
+//   shader->setUniform("uTime", float(time_));
+//   shader->setUniform("uColor", color);
+// 
+// 
+//   int numVisibleInstances = visible_instances_[currentSegment] - 1; // current segment is rendered in a different pass -> subtract
+//   if (numVisibleInstances > 0)
+//   {
+//     instanced_decl_.activateShaderPipeline(shader);
+//     base_cube_ib_.bind();
+// 
+//     glDrawElementsInstanced(GL_TRIANGLES, num_base_cube_indices_, GL_UNSIGNED_INT, 0, numVisibleInstances);
+// 
+//     base_cube_ib_.unbind();
+//     instanced_decl_.deactivateShaderPipeline(shader);
+//     shader->disable();
+// 
+// 
+// 
+//   // Set to the right vbo
+//   ro.vertexBuffer = vbo_;
+// 
+//   // decl must be static or member,  renderer does not make a copy
+//   ro.vertexDecl = &vertexDecl_;
+// 
+//   // Set style
+//   ro.debugName = "PolyLineCollection";
+//   ro.blending = false;
+//   ro.depthTest = true;
+// 
+//   // Default color
+//   ACG::Vec4f defaultColor   = _state.ambient_color()  + _state.diffuse_color();
+//   ACG::Vec4f selectionColor = ACG::Vec4f(1.0,0.0,0.0,1.0);
+// 
+//   // Viewport size
+//   ACG::Vec2f screenSize(float(_state.viewport_width()), float(_state.viewport_height()));
+// 
+//   for (unsigned int i = 0; i < _drawMode.getNumLayers(); ++i) {
+//   ACG::SceneGraph::Material localMaterial = *_mat;
+// 
+//   const ACG::SceneGraph::DrawModes::DrawModeProperties* props = _drawMode.getLayer(i);
+// 
+//   ro.setupShaderGenFromDrawmode(props);
+//   ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+// 
+//   //---------------------------------------------------
+//   // No lighting!
+//   // Therefore we need some emissive color
+//   //---------------------------------------------------
+//   localMaterial.baseColor(defaultColor);
+//   ro.setMaterial(&localMaterial);
+// 
+// 
+//   if(props->primitive() == ACG::SceneGraph::DrawModes::PRIMITIVE_POINT){
+//   // Render all vertices which are selected via an index buffer
+//   ro.debugName = "polyline.Points.selected";
+//   localMaterial.baseColor(selectionColor);
+//   ro.setMaterial(&localMaterial);
+// 
+//   // Point Size geometry shader
+//   ro.setupPointRendering(_mat->pointSize(), screenSize);
+// 
+// 
+//   // Render all vertices (ignore selection here!)
+//   ro.debugName = "polylinecollection.Points";
+//   localMaterial.baseColor(defaultColor);
+//   ro.setMaterial(&localMaterial);
+// 
+//   PolyLine* polyline = gcode_->line();
+//   if(polyline && polyline->n_vertices() > 0){
+//   ro.glDrawArrays(GL_POINTS, offset_.first, offset_.second-1);
+//   }
+// 
+//   // Point Size geometry shader
+//   ro.setupPointRendering(_mat->pointSize(), screenSize);
+// 
+//   // apply user settings
+//   applyRenderObjectSettings(props->primitive(), &ro);
+// 
+//   _renderer->addRenderObject(&ro);
+//   }else if(props->primitive() == ACG::SceneGraph::DrawModes::PRIMITIVE_WIREFRAME){
+//   // Render all edges which are selected via an index buffer
+//   ro.debugName = "polyline.Wireframe.selected";
+//   localMaterial.baseColor(selectionColor);
+//   ro.setMaterial(&localMaterial);
+// 
+//   // Line Width geometry shader
+//   ro.setupLineRendering(_state.line_width(), screenSize);
+// 
+// 
+// 
+//   ro.debugName = "polylinecollection.Wireframe";
+//   localMaterial.baseColor(defaultColor);
+//   ro.setMaterial(&localMaterial);
+//   // The first point is mapped to an additional last point in buffer, so we can
+//   // just Render one point more to get a closed line
+// 
+//   //int offset = 0;
+//   PolyLine* polyline = gcode_->line();
+//   if(polyline && polyline->n_vertices() > 0){
+//   if ( polyline->is_closed() ){
+//   ro.glDrawArrays(GL_LINE_STRIP, offset_.first, offset_.second);
+//   }else{
+//   ro.glDrawArrays(GL_LINE_STRIP, offset_.first, offset_.second-1);
+//   }
+//   }
+// 
+//   // Line Width geometry shader
+//   ro.setupLineRendering(_state.line_width(), screenSize);
+// 
+//   // apply user settings
+//   applyRenderObjectSettings(props->primitive(), &ro);
+// 
+//   _renderer->addRenderObject(&ro);
+//   }
+//   }*/
+}
+
 // Set the gcode to render, updates max_time accordingly
 void GCodeNode_renderer::set_gcode(const GCode::Shared& _gcode)
 {

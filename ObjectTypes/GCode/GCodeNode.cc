@@ -191,54 +191,6 @@ void GCodeNode::draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
     }
 
     renderer->render(_state, _state.projection(), _state.modelview(), drawmode, distance_, color);
-
-   /* // Block if we do not have any polylines
-    if ( gcode_->line() && gcode_->line()->n_vertices() == 0 )
-        return;
-
-    // Update the vbo only if required.
-    if ( updateVBO_ )
-        updateVBO();
-
-    ACG::GLState::disable(GL_LIGHTING);
-    ACG::GLState::disable(GL_TEXTURE_2D);
-
-    // Bind the vertex array
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
-    vertexDecl_.activateFixedFunction();
-
-    ACG::Vec4f color = _state.ambient_color()  + _state.diffuse_color();
-
-    int nb_vertices = std::min(offset_.second-1, int(distance_));
-    std::cout << "Rendering vertices: " << int(distance_) << "  " << distance_ <<  std::endl;
-
-    // draw points
-    if (_drawMode & DrawModes::POINTS)
-    {
-        _state.set_color( color );
-
-        // Draw all vertices (don't care about selection)
-        PolyLine* polyline = gcode_->line();
-
-        if(polyline && nb_vertices > 0){
-            glDrawArrays(GL_POINTS, 0, nb_vertices);
-        }
-    }
-
-    // draw line segments
-    if (_drawMode & DrawModes::WIREFRAME) {
-
-        _state.set_color( color );
-
-        PolyLine* polyline = gcode_->line();
-
-        if(polyline && nb_vertices > 0){
-            glDrawArrays(GL_LINE_STRIP, 0, nb_vertices);
-        }
-    }
-
-    vertexDecl_.deactivateFixedFunction();
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);*/
 }
 
 void GCodeNode::update()
@@ -364,6 +316,31 @@ void GCodeNode::writeVertex(PolyLine* _polyline, unsigned int _vertex, void* _ds
 
 void GCodeNode::getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::SceneGraph::DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat) {
 
+  Ultimaker::GCodeNode_renderer* renderer = (Ultimaker::GCodeNode_renderer*)renderer_;
+
+  Ultimaker::GCodeNode_renderer::DrawMode drawmode = Ultimaker::GCodeNode_renderer::Color;
+
+  ACG::Vec4f color = _state.diffuse_color();
+
+  if (_drawMode & MODE_COLOR)
+  {
+    drawmode = Ultimaker::GCodeNode_renderer::Color;
+
+  }
+  else if (_drawMode & MODE_HEAT)
+  {
+    drawmode = Ultimaker::GCodeNode_renderer::Heat;
+  }
+  else if (_drawMode & MODE_SPEED)
+  {
+    drawmode = Ultimaker::GCodeNode_renderer::Speed;
+  }
+  else if (_drawMode & MODE_TYPE)
+  {
+    drawmode = Ultimaker::GCodeNode_renderer::Type;
+  }
+
+  renderer->createRenderObjects(_renderer, _state, drawmode, distance_, color);
   // init base render object
  /* ACG::RenderObject ro;
 

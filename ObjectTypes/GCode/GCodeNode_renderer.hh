@@ -51,6 +51,7 @@
 #define GCODENODERENDERER_HH
 
 
+#include <ACG/GL/IRenderer.hh>
 #include <ACG/GL/globjects.hh>
 #include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/GLPrimitives.hh>
@@ -69,6 +70,9 @@ public:
 
   // Render the gcode at the given time
   void render(ACG::GLState& _state, const ACG::GLMatrixd& _proj, const ACG::GLMatrixd& _view, DrawMode _mode, double time_ = std::numeric_limits<double>::max(), ACG::Vec4f color = ACG::Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
+
+  // Create render objects and add them to the renderer
+  void createRenderObjects(ACG::IRenderer* _renderer, ACG::GLState& _state, DrawMode _mode, double time_ = std::numeric_limits<double>::max(), ACG::Vec4f color = ACG::Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
 
   // Set the gcode to render, updates max_time accordingly
   void set_gcode(const GCode::Shared& _gcode);

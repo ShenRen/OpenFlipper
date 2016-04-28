@@ -46,6 +46,7 @@ IF (WIN32)
   FIND_PATH( GLUT_INCLUDE_DIR NAMES GL/glut.h 
     PATHS  ${GLUT_ROOT_PATH}/include 
            "${CMAKE_WINDOWS_LIBS_DIR}/glut-3.7/include"
+           "${VS_SEARCH_PATH}/freeglut-3.0.0/include" )
            "${VS_SEARCH_PATH}/freeglut-2.8.1/include" )
 
   FIND_LIBRARY( GLUT_glut_LIBRARY NAMES glut32 glut freeglut
@@ -53,6 +54,7 @@ IF (WIN32)
     ${OPENGL_LIBRARY_DIR}
     ${GLUT_ROOT_PATH}/Release
     "${CMAKE_WINDOWS_LIBS_DIR}/glut-3.7/lib"
+    "${VS_SEARCH_PATH}/freeglut-3.0.0/lib"
     "${VS_SEARCH_PATH}/freeglut-2.8.1/lib"
     )
 

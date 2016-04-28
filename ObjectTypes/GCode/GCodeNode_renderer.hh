@@ -93,6 +93,9 @@ protected:
 
   int find_current_segment(double _time, double* _lerpFactor = 0) const;
 
+  // compute rendering params for interpolated segment
+  bool compute_lerp_segment(int _lerpSegment, double _time, ACG::GLMatrixf& _transform, ACG::Vec4f& _params);
+
 protected:
 
   GCode::Shared gcode_;

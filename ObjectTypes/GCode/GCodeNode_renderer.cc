@@ -140,6 +140,64 @@ int GCodeNode_renderer::find_current_segment(double _time, double* _lerpFactor) 
   return id;
 }
 
+
+bool GCodeNode_renderer::compute_lerp_segment(int _lerpSegment, double _time, ACG::GLMatrixf& _transform, ACG::Vec4f& _params)
+{
+  if (_lerpSegment < 0 || _lerpSegment + 1 >= int(gcode_->polyline()->n_vertices()))
+    return false;
+
+  int etype = int(gcode_->polyline()->edge_scalar(_lerpSegment));
+
+  if (etype != GC_MOVE)
+  {
+    ACG::Vec3d pos = gcode_->polyline()->point(_lerpSegment);
+    ACG::Vec3d dir = gcode_->polyline()->edge_vector(_lerpSegment);
+
+    // compute length
+    double t0 = gcode_->polyline_states()[_lerpSegment].time;
+    double t1 = gcode_->polyline_states()[_lerpSegment + 1].time;
+    double length = 0.0;
+    double dur = t1 - t0;
+
+    if (dir.sqrnorm() > 1e-8 && dur > 1e-8)
+    {
+      double alpha = (_time - t0) / dur;
+      length = dir.norm() * alpha;
+      dir.normalize();
+    }
+    else
+      dir = ACG::Vec3d(0.0, 0.0, 0.0);
+
+    // build transform
+    ACG::Vec3f dx, dy, dz;
+    compute_segment_axes(dir, dx, dy, dz);
+
+    compute_instance_matrix(ACG::Vec3f(pos[0], pos[1], pos[2]),
+      dx, dy, dz,
+      cube_scaling(length),
+      _transform);
+
+    // segment params: start time, end time, speed, edge type
+    _params[0] = gcode_->polyline_states()[_lerpSegment].time;
+    if (_lerpSegment + 1 < int(gcode_->polyline()->n_vertices()))
+    {
+      _params[1] = gcode_->polyline_states()[_lerpSegment + 1].time;
+      _params[2] = gcode_->polyline_states()[_lerpSegment + 1].speed;
+    }
+    else
+    {
+      _params[1] = _params[0];
+      _params[2] = gcode_->polyline_states()[_lerpSegment].speed;
+    }
+
+    _params[3] = gcode_->polyline()->edge_scalar(_lerpSegment);
+
+    return true;
+  }
+
+  return false;
+}
+
 // Render the gcode at the given time
 void GCodeNode_renderer::render(ACG::GLState& _state, const ACG::GLMatrixd& _proj, const ACG::GLMatrixd& _view, DrawMode _mode, double time_, ACG::Vec4f color)
 {
@@ -232,87 +290,40 @@ void GCodeNode_renderer::render(ACG::GLState& _state, const ACG::GLMatrixd& _pro
     if (gcode_)
     {
       ACG::GLMatrixf transformLerp;
+      ACG::Vec4f params;
 
-      if (currentSegment >= 0)
+      if (compute_lerp_segment(currentSegment, time_, transformLerp, params))
       {
-        int etype = int(gcode_->polyline()->edge_scalar(currentSegment));
+        GLSL::Program* shader = ACG::ShaderCache::getInstance()->getProgram("GCode/gcode_cube_lerp_vs.glsl", frag_shader);
 
-        if (etype != GC_MOVE)
-        {
-          GLSL::Program* shader = ACG::ShaderCache::getInstance()->getProgram("GCode/gcode_cube_lerp_vs.glsl", frag_shader);
+        if (!shader || !shader->isLinked()) return;
 
-          if (!shader || !shader->isLinked()) return;
+        ACG::GLMatrixf matViewProjLerp = matViewProj * transformLerp;
+        ACG::GLMatrixf matViewLerpIT = _view;
+        matViewLerpIT *= transformLerp;
+        matViewLerpIT.invert();
 
-          ACG::Vec3d pos = gcode_->polyline()->point(currentSegment);
-          ACG::Vec3d dir = gcode_->polyline()->edge_vector(currentSegment);
+        shader->use();
+        shader->setUniform("g_mWVP", matViewProjLerp);
+        shader->setUniformMat3("g_mWVIT", matViewLerpIT, true);
+        shader->setUniform("uTime", float(time_));
+        shader->setUniform("uColor", color);
+        shader->setUniform("uParams", params);
 
-          // compute length
-          double t0 = gcode_->polyline_states()[currentSegment].time;
-          double t1 = gcode_->polyline_states()[currentSegment + 1].time;
-          double length = 0.0;
-          double dur = t1 - t0;
 
-          if (dir.sqrnorm() > 1e-8 && dur > 1e-8)
-          {
-            double alpha = (time_ - t0) / dur;
-            length = dir.norm() * alpha;
-            dir.normalize();
-          }
-          else
-            dir = ACG::Vec3d(0.0, 0.0, 0.0);
+        base_cube_ib_.bind();
+        base_cube_vb_.bind();
 
-          // build transform
-          ACG::Vec3f dx, dy, dz;
-          compute_segment_axes(dir, dx, dy, dz);
+        base_cube_decl_.activateShaderPipeline(shader);
 
-          compute_instance_matrix(ACG::Vec3f(pos[0], pos[1], pos[2]),
-            dx, dy, dz,
-            cube_scaling(length),
-            transformLerp);
+        glDrawElements(GL_TRIANGLES, num_base_cube_indices_, GL_UNSIGNED_INT, 0);
 
-          ACG::GLMatrixf matViewProjLerp = matViewProj * transformLerp;
-          ACG::GLMatrixf matViewLerpIT = _view;
-          matViewLerpIT *= transformLerp;
-          matViewLerpIT.invert();
+        base_cube_decl_.deactivateShaderPipeline(shader);
 
-          shader->use();
-          shader->setUniform("g_mWVP", matViewProjLerp);
-          shader->setUniformMat3("g_mWVIT", matViewLerpIT, true);
-          shader->setUniform("uTime", float(time_));
-          shader->setUniform("uColor", color);
+        base_cube_vb_.unbind();
+        base_cube_ib_.unbind();
 
-          // segment params: start time, end time, speed, edge type
-          ACG::Vec4f params;
-          params[0] = gcode_->polyline_states()[currentSegment].time;
-          if (currentSegment + 1 < int(gcode_->polyline()->n_vertices()))
-          {
-            params[1] = gcode_->polyline_states()[currentSegment + 1].time;
-            params[2] = gcode_->polyline_states()[currentSegment + 1].speed;
-          }
-          else
-          {
-            params[1] = params[0];
-            params[2] = gcode_->polyline_states()[currentSegment].speed;
-          }
-
-          params[3] = gcode_->polyline()->edge_scalar(currentSegment);
-
-          shader->setUniform("uParams", params);
-
-          base_cube_ib_.bind();
-          base_cube_vb_.bind();
-
-          base_cube_decl_.activateShaderPipeline(shader);
-
-          glDrawElements(GL_TRIANGLES, num_base_cube_indices_, GL_UNSIGNED_INT, 0);
-
-          base_cube_decl_.deactivateShaderPipeline(shader);
-
-          base_cube_vb_.unbind();
-          base_cube_ib_.unbind();
-
-          shader->disable();
-        }
+        shader->disable();
       }
     }
   }
@@ -390,6 +401,12 @@ void GCodeNode_renderer::render(ACG::GLState& _state, const ACG::GLMatrixd& _pro
 
 void GCodeNode_renderer::createRenderObjects(ACG::IRenderer* _renderer, ACG::GLState& _state, DrawMode _mode, double time_ /*= std::numeric_limits<double>::max()*/, ACG::Vec4f color /*= ACG::Vec4f(1.0f, 0.0f, 0.0f, 1.0f)*/)
 {
+  if (update_vbo_)
+  {
+    update_vbo();
+    update_vbo_ = false;
+  }
+
   // build transforms and find current time segment
   ACG::GLMatrixf matViewProj(_state.projection() * _state.modelview());
   ACG::GLMatrixf viewInv = _state.modelview();
@@ -398,14 +415,20 @@ void GCodeNode_renderer::createRenderObjects(ACG::IRenderer* _renderer, ACG::GLS
   double lerpFactor = 0.0;
   int currentSegment = find_current_segment(time_, &lerpFactor);
 
+  if (currentSegment < 0 || currentSegment >= int(visible_instances_.size()))
+    return;
 
+
+  GLSL::UniformPool uniforms;
+  uniforms.setUniform("uTime", float(time_));
+  uniforms.setUniform("uColor", color);
+  uniforms.setUniform("g_Scale", ACG::Vec3f(gcode_->nozzle_size(), gcode_->nozzle_size(), gcode_->layer_height()));
 
   // init base render object
   ACG::RenderObject ro;
 
-  _state.enable(GL_COLOR_MATERIAL);
-  _state.enable(GL_LIGHTING);
   ro.initFromState(&_state);
+  ro.depthTest = true;
 
   // Update the vbo only if required.
   if (update_vbo_)
@@ -413,145 +436,106 @@ void GCodeNode_renderer::createRenderObjects(ACG::IRenderer* _renderer, ACG::GLS
     update_vbo();
     update_vbo_ = false;
   }
-// 
-//   const char* frag_shader = 0;
-//   switch (_mode)
-//   {
-//   case Color: frag_shader = "GCode/gcode_color_fs.glsl"; break;
-//   case Heat: frag_shader = "GCode/gcode_heat_fs.glsl"; break;
-//   case Speed: frag_shader = "GCode/gcode_speed_fs.glsl"; break;
-//   case Type: frag_shader = "GCode/gcode_type_fs.glsl"; break;
-//   default: return;
-//   }
-// 
-//   ro.shaderDesc.vertexTemplateFile = "GCode/gcode_instanced_vs.glsl";
-//   ro.shaderDesc.
-// 
-//   GLSL::Program* shader = ACG::ShaderCache::getInstance()->getProgram(, frag_shader);
-// 
-//   if (!shader || !shader->isLinked()) return;
-// 
-// 
-//   ACG::Vec2d clipPlanes = _proj.extract_planes();
-// 
-//   shader->use();
-//   shader->setUniform("g_mWVP", matViewProj);
-//   shader->setUniformMat3("g_mWVIT", viewInv, true);
-//   shader->setUniform("uTime", float(time_));
-//   shader->setUniform("uColor", color);
-// 
-// 
-//   int numVisibleInstances = visible_instances_[currentSegment] - 1; // current segment is rendered in a different pass -> subtract
-//   if (numVisibleInstances > 0)
-//   {
-//     instanced_decl_.activateShaderPipeline(shader);
-//     base_cube_ib_.bind();
-// 
-//     glDrawElementsInstanced(GL_TRIANGLES, num_base_cube_indices_, GL_UNSIGNED_INT, 0, numVisibleInstances);
-// 
-//     base_cube_ib_.unbind();
-//     instanced_decl_.deactivateShaderPipeline(shader);
-//     shader->disable();
-// 
-// 
-// 
-//   // Set to the right vbo
-//   ro.vertexBuffer = vbo_;
-// 
-//   // decl must be static or member,  renderer does not make a copy
-//   ro.vertexDecl = &vertexDecl_;
-// 
-//   // Set style
-//   ro.debugName = "PolyLineCollection";
-//   ro.blending = false;
-//   ro.depthTest = true;
-// 
-//   // Default color
-//   ACG::Vec4f defaultColor   = _state.ambient_color()  + _state.diffuse_color();
-//   ACG::Vec4f selectionColor = ACG::Vec4f(1.0,0.0,0.0,1.0);
-// 
-//   // Viewport size
-//   ACG::Vec2f screenSize(float(_state.viewport_width()), float(_state.viewport_height()));
-// 
-//   for (unsigned int i = 0; i < _drawMode.getNumLayers(); ++i) {
-//   ACG::SceneGraph::Material localMaterial = *_mat;
-// 
-//   const ACG::SceneGraph::DrawModes::DrawModeProperties* props = _drawMode.getLayer(i);
-// 
-//   ro.setupShaderGenFromDrawmode(props);
-//   ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
-// 
-//   //---------------------------------------------------
-//   // No lighting!
-//   // Therefore we need some emissive color
-//   //---------------------------------------------------
-//   localMaterial.baseColor(defaultColor);
-//   ro.setMaterial(&localMaterial);
-// 
-// 
-//   if(props->primitive() == ACG::SceneGraph::DrawModes::PRIMITIVE_POINT){
-//   // Render all vertices which are selected via an index buffer
-//   ro.debugName = "polyline.Points.selected";
-//   localMaterial.baseColor(selectionColor);
-//   ro.setMaterial(&localMaterial);
-// 
-//   // Point Size geometry shader
-//   ro.setupPointRendering(_mat->pointSize(), screenSize);
-// 
-// 
-//   // Render all vertices (ignore selection here!)
-//   ro.debugName = "polylinecollection.Points";
-//   localMaterial.baseColor(defaultColor);
-//   ro.setMaterial(&localMaterial);
-// 
-//   PolyLine* polyline = gcode_->line();
-//   if(polyline && polyline->n_vertices() > 0){
-//   ro.glDrawArrays(GL_POINTS, offset_.first, offset_.second-1);
-//   }
-// 
-//   // Point Size geometry shader
-//   ro.setupPointRendering(_mat->pointSize(), screenSize);
-// 
-//   // apply user settings
-//   applyRenderObjectSettings(props->primitive(), &ro);
-// 
-//   _renderer->addRenderObject(&ro);
-//   }else if(props->primitive() == ACG::SceneGraph::DrawModes::PRIMITIVE_WIREFRAME){
-//   // Render all edges which are selected via an index buffer
-//   ro.debugName = "polyline.Wireframe.selected";
-//   localMaterial.baseColor(selectionColor);
-//   ro.setMaterial(&localMaterial);
-// 
-//   // Line Width geometry shader
-//   ro.setupLineRendering(_state.line_width(), screenSize);
-// 
-// 
-// 
-//   ro.debugName = "polylinecollection.Wireframe";
-//   localMaterial.baseColor(defaultColor);
-//   ro.setMaterial(&localMaterial);
-//   // The first point is mapped to an additional last point in buffer, so we can
-//   // just Render one point more to get a closed line
-// 
-//   //int offset = 0;
-//   PolyLine* polyline = gcode_->line();
-//   if(polyline && polyline->n_vertices() > 0){
-//   if ( polyline->is_closed() ){
-//   ro.glDrawArrays(GL_LINE_STRIP, offset_.first, offset_.second);
-//   }else{
-//   ro.glDrawArrays(GL_LINE_STRIP, offset_.first, offset_.second-1);
-//   }
-//   }
-// 
-//   // Line Width geometry shader
-//   ro.setupLineRendering(_state.line_width(), screenSize);
-// 
-//   // apply user settings
-//   applyRenderObjectSettings(props->primitive(), &ro);
-// 
-//   _renderer->addRenderObject(&ro);
-//   }
-//   }*/
+
+  // shader templates
+  const char* frag_shader = 0;
+  switch (_mode)
+  {
+  case Color: frag_shader = "GCode/gcode_color_fs_gen.glsl"; break;
+  case Heat: frag_shader = "GCode/gcode_heat_fs_gen.glsl"; break;
+  case Speed: frag_shader = "GCode/gcode_speed_fs_gen.glsl"; break;
+  case Type: frag_shader = "GCode/gcode_type_fs_gen.glsl"; break;
+  default: return;
+  }
+
+  ro.shaderDesc.vertexTemplateFile = "GCode/gcode_instanced_vs_gen.glsl";
+  ro.shaderDesc.fragmentTemplateFile = frag_shader;
+
+  // lighting
+  ro.shaderDesc.shadeMode = ACG::SG_SHADE_PHONG;
+
+  ro.vertexBuffer = 0;
+  ro.addUniformPool(uniforms);
+
+  int numVisibleInstances = visible_instances_[currentSegment] - 1; // current segment is rendered in a different pass -> subtract
+  if (numVisibleInstances > 0)
+  {
+    ro.debugName = "GCodeNode.lines";
+    ro.vertexDecl = &instanced_decl_;
+    ro.indexBuffer = base_cube_ib_.id();
+
+    ro.glDrawElementsInstanced(GL_TRIANGLES, num_base_cube_indices_, GL_UNSIGNED_INT, 0, numVisibleInstances);
+
+    _renderer->addRenderObject(&ro);
+
+    
+    // caps
+
+    // also render start cap of the current segment
+    int numVisibleCaps = std::min(numVisibleInstances + 1, num_cap_instances_);
+
+    if (numVisibleCaps)
+    {
+      ro.debugName = "GCodeNode.caps";
+      ro.vertexDecl = &cap_instanced_decl_;
+      ro.indexBuffer = cap_ib_.id();
+
+      ro.shaderDesc.vertexTemplateFile = "GCode/gcode_instanced_cap_vs_gen.glsl";
+
+      ro.glDrawElementsInstanced(GL_TRIANGLES, num_cap_indices_, GL_UNSIGNED_INT, 0, numVisibleCaps);
+
+      _renderer->addRenderObject(&ro);
+    }
+  }
+
+
+  // render interpolated segment
+  ACG::GLMatrixf transformLerp;
+  ACG::Vec4f params;
+
+  if (compute_lerp_segment(currentSegment, time_, transformLerp, params))
+  {
+    ro.debugName = "GCodeNode.lerp";
+    ro.modelview = _state.modelview() * transformLerp;
+
+    GLSL::UniformPool segmentParams;
+    segmentParams.setUniform("uParams", params);
+    ro.addUniformPool(segmentParams);
+
+    ro.shaderDesc.vertexTemplateFile = "GCode/gcode_cube_lerp_vs_gen.glsl";
+
+    ro.vertexDecl = &base_cube_decl_;
+    ro.indexBuffer = base_cube_ib_.id();
+    ro.vertexBuffer = base_cube_vb_.id();
+
+    ro.glDrawElements(GL_TRIANGLES, num_base_cube_indices_, GL_UNSIGNED_INT, 0);
+
+    _renderer->addRenderObject(&ro);
+
+    ro.indexBuffer = 0;
+    ro.vertexBuffer = 0;
+    ro.modelview = _state.modelview();
+  }
+
+  // render head position
+
+  if (currentSegment >= 0 && currentSegment + 1 < int(gcode_->polyline()->n_vertices()))
+  {
+    // interpolate position on segment
+    const ACG::Vec3d& p0 = gcode_->polyline()->point(currentSegment);
+    const ACG::Vec3d& p1 = gcode_->polyline()->point(currentSegment + 1);
+
+    ACG::Vec3d head_position = p0 * (1.0 - lerpFactor) + p1 * lerpFactor;
+
+    // draw sphere geometry
+    ro.debugName = "GCodeNode.sphere";
+    ro.shaderDesc.vertexTemplateFile.clear();
+    ro.shaderDesc.fragmentTemplateFile.clear();
+
+    ro.diffuse = ACG::Vec3f(1.0f, 0.0f, 0.0f);
+    ro.ambient = ACG::Vec3f(0.2f, 0.0f, 0.0f);
+    sphere_.addToRenderer(_renderer, &ro, 0.5 * gcode_->nozzle_size(), OpenMesh::vector_cast<ACG::Vec3f, ACG::Vec3d>(head_position));
+  }
 }
 
 // Set the gcode to render, updates max_time accordingly

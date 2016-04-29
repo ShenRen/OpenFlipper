@@ -1,7 +1,7 @@
 [submodule "libs_required/OpenMesh"]
 	path = libs_required/OpenMesh
 	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
-	branch = OpenMesh-6.0
+	branch = master
 [submodule "libs_required/OpenVolumeMesh"]
 	path = libs_required/OpenVolumeMesh
 	url = https://www.graphics.rwth-aachen.de:9000/OpenVolumeMesh/OpenVolumeMesh.git

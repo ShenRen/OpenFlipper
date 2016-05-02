@@ -7,6 +7,7 @@
 #                      [CFLAGSADD flag1 flag2 ...]
 #                      [CDEFINITIONSADD definition1 definition2 ...]
 #                      [LIBRARIES lib1 lib2 ...]
+#                      [ADD_CORE_APP_LIBRARIES lib1 lib2 ...]
 #                      [LIBDIRS dir1 dir2 ...]
 #                      [INCDIRS dir1 dir2 ...]
 #                      [ADDSRC file1 file2 ...]
@@ -15,17 +16,18 @@
 #                      [TRANSLATION_ADDFILES file1 file2 ...]
 #                      [LICENSEMANAGER])
 #
-# DIRS            = additional directories with source files
-# DEPS            = required dependencies for find_package macro
-# OPTDEPS         = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
-# LDFLAGSADD      = flags added to the link command
-# CFLAGSADD       = flags added to the compile command
-# CDEFINITIONSADD = definitions added to the compile command
-# LIBRARIES       = libraries added to link command
-# LIBDIRS         = additional link directories
-# INCDIRS         = additional include directories
-# ADDSRC          = additional source files
-# INSTALLDATA     = directories that will be installed into the openflipper data directory
+# DIRS                   = additional directories with source files
+# DEPS                   = required dependencies for find_package macro
+# OPTDEPS                = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
+# LDFLAGSADD             = flags added to the link command
+# CFLAGSADD              = flags added to the compile command
+# CDEFINITIONSADD        = definitions added to the compile command
+# LIBRARIES              = libraries added to link command
+# ADD_CORE_APP_LIBRARIES = libraries added to be linked to the core app
+# LIBDIRS                = additional link directories
+# INCDIRS                = additional include directories
+# ADDSRC                 = additional source files
+# INSTALLDATA            = directories that will be installed into the openflipper data directory
 #
 # TRANSLATION_LANGUAGES = language codes for translation
 # TRANSLATION_ADDFILES  = additional files that should be included into the translation files
@@ -67,7 +69,8 @@ endmacro ()
 # parse plugin macro parameter
 macro (_get_plugin_parameters _prefix)
     set (_current_var _foo)
-    set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
+    set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD
+      LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
     set (_supported_flags LICENSEMANAGER)
     foreach (_val ${_supported_var})
         set (${_prefix}_${_val})
@@ -103,6 +106,7 @@ endmacro ()
 # _prefix    : prefix used ( usually the plugin name )
 # _optional : if we are currently pars
 macro (_check_plugin_deps _prefix _optional )
+
 
     set (${_prefix}_HAS_DEPS TRUE)
 
@@ -400,7 +404,18 @@ function (_build_openflipper_plugin plugin)
   acg_unset (_${_PLUGIN}_MISSING_DEPS)
   set (${_PLUGIN}_HAS_DEPS)
   _check_plugin_deps (${_PLUGIN} FALSE ${${_PLUGIN}_DEPS})
-  
+
+  #============================================================================================
+  # Additional libraries to be linked to the core app
+  #============================================================================================
+
+  get_property( global_core_app_libraries GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES)
+  foreach (_val ${${_PLUGIN}_ADD_CORE_APP_LIBRARIES})
+    list(APPEND global_core_app_libraries ${_val})
+    list(REMOVE_DUPLICATES global_core_app_libraries)
+  endforeach ()
+  set_property( GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES ${global_core_app_libraries} )
+
 
   #============================================================================================
   # Remember Lib dirs for bundle generation

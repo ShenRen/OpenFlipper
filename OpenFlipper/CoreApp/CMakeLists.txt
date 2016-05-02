@@ -162,11 +162,18 @@ endif ()
 # where we need to link the library directly into the core to prevent 
 # linker problems
 # ====================================================================================
+
 # Get the property containing the list of all dependencies of the plugins
 # List is created when the plugins are added
 get_property( global_dependency_list GLOBAL PROPERTY GLOBAL_PLUGIN_DEPENDENCIES_LIST)
 
 set(COREAPP_ADDITIONAL_LINK_LIBRARIES "")
+
+# Get additional libraries from plugins that should be linked into the core
+get_property( global_core_app_libraries GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES)
+foreach (_val ${global_core_app_libraries})
+  list(APPEND COREAPP_ADDITIONAL_LINK_LIBRARIES ${_val})
+endforeach ()
 
 # Special Handling for mpi
 list( FIND global_dependency_list "MPI" found)

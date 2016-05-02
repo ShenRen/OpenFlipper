@@ -81,6 +81,9 @@
 
 class DLLEXPORT SplatCloudObject : public BaseObjectData
 {
+
+  friend class TypeSplatCloudPlugin;
+
 public:
   /// Constructor
   SplatCloudObject();
@@ -127,9 +130,20 @@ protected:
   /// Initialise current Object, including all related Nodes
   virtual void init( const SplatCloud *_splatCloud = 0 );
 
-public:
+//===========================================================================
+/** @name Update handling
+ *
+ *  This is mostly private. Updates have to be triggered via
+ *  emit updatedObject()
+ *
+ * @{ */
+//===========================================================================
+  private:
+
   /// Called by the core if the object has to be updated
   void update( UpdateType _type = UPDATE_ALL );
+
+  /** @} */
 
 //--------------------------------
 /** @name Name and Path handling

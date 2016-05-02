@@ -85,6 +85,8 @@
  */
 class DLLEXPORT BSplineSurfaceObject : public BaseObjectData {
 
+  friend class TypeBSplineSurfacePlugin;
+
   public:
 
     /// Constructor
@@ -130,11 +132,21 @@ class DLLEXPORT BSplineSurfaceObject : public BaseObjectData {
     /// return a pointer to the spline curve
     BSplineSurface* splineSurface();
 
-    /// Update the whole Object (Selection,Topology,...)
-    virtual void update(UpdateType _type = UPDATE_ALL);
-    
   private:
     BSplineSurface* splineSurface_;
+
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+
+  private:
+    /// Update the whole Object (Selection,Topology,...)
+    virtual void update(UpdateType _type = UPDATE_ALL);
 
   /** @} */
 

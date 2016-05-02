@@ -80,6 +80,9 @@
 /** This class provides the functionality for all kind of meshes for the framework
  */
 class DLLEXPORT SkeletonObject : public BaseObjectData {
+
+  friend class TypeSkeletonPlugin;
+
   public:
     /// Constructor
     SkeletonObject();
@@ -168,6 +171,28 @@ class DLLEXPORT SkeletonObject : public BaseObjectData {
 
   void updateMotionPath();
   void updateMotionPath(const AnimationHandle &_hAni);
+
+
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+
+  private:
+    /** \brief  This function is called to update the object
+     *
+     * If the object changes, the core will call this function. This function
+     * triggers an vbo update in the plane node.
+     *
+     * \note Do not call this function yourself to avoid unnecessary overhead(the core will call it when it is required)
+     */
+    void update(UpdateType _type = UPDATE_ALL );
+
+   /** @} */
 };
 
 //=============================================================================

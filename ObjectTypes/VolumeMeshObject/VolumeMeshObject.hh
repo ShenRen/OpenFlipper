@@ -70,6 +70,10 @@
 
 template<class MeshT>
 class DLLEXPORTONLY VolumeMeshObject : public BaseObjectData {
+
+  friend class TypePolyhedralMeshPlugin;
+  friend class TypeHexahedralMeshPlugin;
+
 public:
 
     /** \brief copy constructor
@@ -118,24 +122,6 @@ public:
     /// return a pointer to the mesh
     MeshT* mesh();
 
-    /// Update the whole Object (Selection,Topology,...)
-    virtual void update(UpdateType _type = UPDATE_ALL);
-
-    /// Call this function to update the selection
-    void updateSelection();
-
-    /// Update Geometry of all data structures
-    void updateGeometry();
-
-    /// Update Colors of all data structures
-    void updateColor();
-
-    /// Update Texture of all data structures
-    void updateTexture();
-
-    /// Update Topology of all data structures
-    void updateTopology();
-
     /** return a full copy of this object ( All scenegraph nodes will be created )
      *  but the object will not be a part of the object tree.
      */
@@ -171,6 +157,35 @@ public:
 
   /** @} */
 
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+    private:
+
+    /// Update the whole Object (Selection,Topology,...)
+    virtual void update(UpdateType _type = UPDATE_ALL);
+
+    /// Call this function to update the selection
+    void updateSelection();
+
+    /// Update Geometry of all data structures
+    void updateGeometry();
+
+    /// Update Colors of all data structures
+    void updateColor();
+
+    /// Update Texture of all data structures
+    void updateTexture();
+
+    /// Update Topology of all data structures
+    void updateTopology();
+
+  /** @} */
   //===========================================================================
   /** @name Visualization
    * @{ */

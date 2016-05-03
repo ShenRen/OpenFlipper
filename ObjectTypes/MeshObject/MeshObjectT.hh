@@ -101,6 +101,10 @@ typedef ACG::SceneGraph::TextureNode                      TextureNode;
  */
 template < class MeshT >
 class DLLEXPORTONLY MeshObject : public BaseObjectData {
+
+  friend class TypePolyMeshPlugin;
+  friend class TypeTriangleMeshPlugin;
+
   public:
 
     /** \brief copy constructor
@@ -148,6 +152,23 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     /// return a pointer to the mesh
     MeshT* mesh();
 
+  private:
+    /// pointer to the mesh
+    MeshT* mesh_;
+
+    /** @} */
+
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+
+  private:
+
     /// Update the whole Object (Selection,Topology,...)
     virtual void update(UpdateType _type = UPDATE_ALL);
 
@@ -172,8 +193,6 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     /// Update Texture of all data structures
     void updateTexture();
 
-  private:
-    MeshT*           mesh_;
 
   /** @} */
 

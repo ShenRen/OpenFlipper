@@ -78,6 +78,8 @@
 
 class DLLEXPORT SphereObject : public BaseObjectData {
 
+  friend class TypeSpherePlugin;
+
   public: 
     /// constructor
     SphereObject();
@@ -138,6 +140,8 @@ class DLLEXPORT SphereObject : public BaseObjectData {
   /** @} */  
     
     
+
+
   //===========================================================================
   /** @name Picking
    * @{ */
@@ -154,6 +158,21 @@ class DLLEXPORT SphereObject : public BaseObjectData {
     
   /** @} */  
     
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+  private:
+
+    /// Update the whole Object (Selection,Topology,...)
+    virtual void update(UpdateType _type = UPDATE_ALL);
+
+  /** @} */
+
 };
 
 //=============================================================================

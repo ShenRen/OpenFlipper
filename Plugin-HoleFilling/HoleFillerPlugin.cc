@@ -159,11 +159,10 @@ void HoleFillerPlugin::slotFillSelection(){
         }
 
       //update the object
-      o_it->update();
+      emit updatedObject(o_it->id(),UPDATE_ALL);
     
       holeInfo->getHoles();
     
-      o_it->update();
       update_menu();
       emit createBackup( o_it->id(), "Hole Filling", UPDATE_GEOMETRY | UPDATE_TOPOLOGY | UPDATE_SELECTION);
     }
@@ -215,7 +214,7 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
           holeInfo->selectHole( holes[i] );
 
       //update the object
-      o_it->update();
+      emit updatedObject(o_it->id(),UPDATE_SELECTION);
     }
     // DATATYPE is  POLYMESH
     else if ( o_it->dataType( DATA_POLY_MESH ) ) {
@@ -239,7 +238,7 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
           holeInfo->selectHole( holes[i] );
 
       //update the object
-      o_it->update();
+      emit updatedObject(o_it->id(),UPDATE_SELECTION);
 
     }
   }

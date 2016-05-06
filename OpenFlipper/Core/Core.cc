@@ -1456,6 +1456,21 @@ void Core::viewerSnapshot(){
     coreWidget_->viewerSnapshot();
 }
 
+void Core::viewerSnapshot(QString file_name, bool store_comments,
+        bool comments_visible_only, bool comments_targeted_only,
+        bool store_material_info, bool snapshot_width, bool snapshot_height,
+        bool snapshot_transparent, bool hide_coord_sys,
+        int snapshot_multisampling, bool store_view) {
+
+    if ( OpenFlipper::Options::gui() )
+        coreWidget_->viewerSnapshot(file_name, store_comments,
+                comments_visible_only, comments_targeted_only,
+                store_material_info, snapshot_width, snapshot_height,
+                snapshot_transparent, hide_coord_sys, snapshot_multisampling,
+                store_view);
+}
+
+
 void Core::resizeViewers(int _width, int _height ){
   if ( OpenFlipper::Options::gui() ){
 

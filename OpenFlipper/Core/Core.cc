@@ -1458,7 +1458,7 @@ void Core::viewerSnapshot(){
 
 void Core::viewerSnapshot(QString file_name, bool store_comments,
         bool comments_visible_only, bool comments_targeted_only,
-        bool store_material_info, bool snapshot_width, bool snapshot_height,
+        bool store_material_info, int snapshot_width, int snapshot_height,
         bool snapshot_transparent, bool hide_coord_sys,
         int snapshot_multisampling, bool store_view) {
 

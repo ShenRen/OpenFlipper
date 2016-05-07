@@ -550,7 +550,8 @@ void CoreWidget::viewerSnapshot(QString file_ame, bool store_comments,
     if (snapshot_height < 0) {
         int w = glView_->width();
         int h = glView_->height();
-        snapshot_height = snapshot_width / w * h;
+        snapshot_height = static_cast<int>(std::round(
+                static_cast<double>(snapshot_width) / w * h));
     }
 
     QString comments;
@@ -982,21 +983,50 @@ void CoreWidget::slotSetViewAndWindowGeometry(QString view) {
      * viewport size is matched exactly.
      */
     if (viewportSize.width() > 0 && viewportSize.height() > 0) {
-        const QSize cur_viewport_size = examiner_widgets_[viewerId]->size().toSize();
-        std::cout << "Stored viewport size is " << viewportSize.width()
-                << " x " << viewportSize.height() << ". Actual size is"
-                << cur_viewport_size.width() << " x "
-                << cur_viewport_size.height() << "." <<  std::endl;
+        /*
+         * Try twice: Sometimes sizes of elements get readjusted after resizing
+         * and the viewport will not have the desired size.
+         */
+        for (int i = 0; i < 2; ++i) {
+            const QSize cur_viewport_size = examiner_widgets_[viewerId]->size().toSize();
+            if (cur_viewport_size != viewportSize) {
+                std::cout << "Stored viewport size is " << viewportSize.width()
+                        << " x " << viewportSize.height() << ". Actual size is "
+                        << cur_viewport_size.width() << " x "
+                        << cur_viewport_size.height() << ". Resizing window."
+                        <<  std::endl;
 
-        if (cur_viewport_size != viewportSize) {
-            std::cerr << "Stored viewport size is " << viewportSize.width()
-                    << " x " << viewportSize.height() << ". Actual size is"
-                    << cur_viewport_size.width() << " x "
-                    << cur_viewport_size.height()
-                    << ". Trying to adjust." << std::endl;
+                showNormal();
+                QSize diff = viewportSize - cur_viewport_size;
+                resize(size() + diff);
+                const QSize new_viewport_size =
+                        examiner_widgets_[viewerId]->size().toSize();
+                diff = viewportSize - new_viewport_size;
+                if (diff.width() != 0) {
+                    std::cout << "New viewport size is "
+                            << new_viewport_size.width()
+                            << " x " << new_viewport_size.height() << "."
+                            << " Moving splitter by " << diff.width() << "."
+                            << std::endl;
+                    // Move splitter.
+                    QList<int> splitter_sizes = toolSplitter_->sizes();
+                    if (splitter_sizes.size() < 2) {
+                        std::cerr << "The tool splitter has less than two children. This "
+                                "shouldn't happen." << std::endl;
+                    } else {
+                        const size_t primary_idx = OpenFlipperSettings().value(
+                                "Core/Gui/ToolBoxes/ToolBoxOnTheRight",true).toBool()
+                                ? 0 : 1;
 
-            QSize diff = viewportSize - cur_viewport_size;
-            resize(size() + diff);
+                        splitter_sizes[primary_idx] += diff.width();
+                        splitter_sizes[1-primary_idx] -= diff.width();
+                    }
+                    toolSplitter_->setSizes(splitter_sizes);
+
+                }
+            } else {
+                break;
+            }
         }
     }
 }

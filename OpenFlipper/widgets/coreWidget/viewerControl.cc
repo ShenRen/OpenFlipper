@@ -67,6 +67,7 @@
 #endif
 
 #include <OpenFlipper/widgets/snapshotDialog/SnapshotDialog.hh>
+#include <cmath>
 
 
 //== IMPLEMENTATION ==========================================================
@@ -541,39 +542,33 @@ void CoreWidget::applicationSnapshot() {
   writeImageAsynchronously(pic, suggestSnapshotFilename(snapshotName_));
 }
 
-///Take a snapshot of all viewers
-void CoreWidget::viewerSnapshotDialog() {
-  int w = glView_->width();
-  int h = glView_->height();
-  
-  SnapshotDialog dialog(suggestSnapshotFilename(snapshotName_), true, w, h, 0);
+void CoreWidget::viewerSnapshot(QString file_name, bool store_comments,
+        bool comments_visible_only, bool comments_targeted_only,
+        bool store_material_info, int snapshot_width, int snapshot_height,
+        bool snapshot_transparent, bool hide_coord_sys,
+        int snapshot_multisampling, bool store_view) {
 
-  if (!ACG::SceneGraph::Material::support_json_serialization())
-      dialog.metaData_storeMatInfo_cb->setVisible(false);
+    if (snapshot_height < 0) {
+        int w = glView_->width();
+        int h = glView_->height();
+        snapshot_height = static_cast<int>(round(
+                static_cast<double>(snapshot_width) / w * h));
+    }
 
-  bool ok = dialog.exec();
-
-  if (ok){
-    QString newName = dialog.filename->text();
-
-    OpenFlipperSettings().setValue("Core/CurrentDir", QFileInfo(newName).absolutePath() );
-      
-    snapshotName_ = newName;
-      
     QString comments;
-    if (dialog.metaData_storeComments_cb->isChecked()) {
+    if (store_comments) {
         comments = PluginFunctions::collectObjectComments(
-                dialog.metaData_comments_visibleOnly_cb->isChecked(),
-                dialog.metaData_comments_targetedOnly_cb->isChecked()).join("\n");
+                comments_visible_only,
+                comments_targeted_only).join("\n");
     }
 
     QString materials;
     if (ACG::SceneGraph::Material::support_json_serialization() &&
     //if (ACG::SceneGraph::Material::CP_JSON_SERIALIZABLE &&
-            dialog.metaData_storeMatInfo_cb->isChecked()) {
+            store_material_info) {
         materials = PluginFunctions::collectObjectMaterials(
-                dialog.metaData_comments_visibleOnly_cb->isChecked(),
-                dialog.metaData_comments_targetedOnly_cb->isChecked()).join("\n");
+                comments_visible_only,
+                comments_targeted_only).join("\n");
     }
 
     //now take the snapshot
@@ -584,15 +579,15 @@ void CoreWidget::viewerSnapshotDialog() {
         QImage finalImage;
 
         examiner_widgets_[PluginFunctions::activeExaminer()]->snapshot(finalImage,
-            dialog.snapWidth->value(), dialog.snapHeight->value(),
-            dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked(),
-            dialog.multisampling->isChecked() ? dialog.num_samples->value() : 1);
+            snapshot_width, snapshot_height,
+            snapshot_transparent, hide_coord_sys,
+            snapshot_multisampling);
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
         if (!materials.isEmpty())
             finalImage.setText("Mesh Materials", materials);
-        if (dialog.metaData_storeView_cb->isChecked()) {
+        if (store_view) {
             QSize window_size;
             if (isMaximized())
               window_size = QSize(-width(), -height());
@@ -609,63 +604,75 @@ void CoreWidget::viewerSnapshotDialog() {
             examiner_widgets_[PluginFunctions::activeExaminer()]->encodeView(view, window_size, splitter_size);
             finalImage.setText("View", view);
         }
-        finalImage.save(newName);
+        finalImage.save(file_name);
 
         break;
       }
       case QtMultiViewLayout::DoubleView:
       {
-    	int w = dialog.snapHeight->value();
+        int w = snapshot_height;
 
-    	double relSizeW = static_cast<double>( examiner_widgets_[0]->glWidth() / static_cast<double>( glScene_->width() ) );
+        double relSizeW = static_cast<double>( examiner_widgets_[0]->glWidth() / static_cast<double>( glScene_->width() ) );
 
-    	//Get the images
-    	QImage img[2];
-    	examiner_widgets_[0]->snapshot(img[0], static_cast<int>(relSizeW * w) , dialog.snapWidth->value(),
-    								   dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
-    	examiner_widgets_[1]->snapshot(img[1], static_cast<int>(relSizeW * w) , dialog.snapWidth->value(),
-    	    						   dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
+        //Get the images
+        QImage img[2];
+        examiner_widgets_[0]->snapshot(
+                img[0], static_cast<int>(relSizeW * w),
+                snapshot_width, snapshot_transparent,
+                hide_coord_sys);
+        examiner_widgets_[1]->snapshot(
+                img[1], static_cast<int>(relSizeW * w),
+                snapshot_width, snapshot_transparent,
+                hide_coord_sys);
 
-    	QImage finalImage(img[0].width() + img[1].width() +2, img[0].height(), QImage::Format_ARGB32_Premultiplied);
+        QImage finalImage(img[0].width() + img[1].width() +2, img[0].height(),
+                QImage::Format_ARGB32_Premultiplied);
 
-    	QPainter painter(&finalImage);
+        QPainter painter(&finalImage);
 
-    	painter.fillRect(0,0,finalImage.width(), finalImage.height(), QBrush(Qt::gray));
+        painter.fillRect(0,0,finalImage.width(),
+                finalImage.height(), QBrush(Qt::gray));
 
-    	painter.drawImage(QRectF(           0,             0, img[0].width(), img[0].height()),img[0],
-    	                  QRectF(           0,             0, img[0].width(), img[0].height()) );
-    	painter.drawImage(QRectF(img[0].width()+2,         0, img[1].width(), img[1].height()),img[1],
-    	                  QRectF(           0,             0, img[1].width(), img[1].height()) );
+        painter.drawImage(QRectF(           0,     0, img[0].width(), img[0].height()),img[0],
+                          QRectF(           0,     0, img[0].width(), img[0].height()) );
+        painter.drawImage(QRectF(img[0].width()+2, 0, img[1].width(), img[1].height()),img[1],
+                          QRectF(           0,     0, img[1].width(), img[1].height()) );
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
-    	finalImage.save(newName);
+        finalImage.save(file_name);
 
-    	break;
+        break;
       }
 
       case QtMultiViewLayout::Grid:
       {
-        // Compute size of each viewer
-        int w = dialog.snapWidth->value();
-        int h = dialog.snapHeight->value();
-        
         // Relative size of first viewer (in relation to the other viewers
         double relSizeW = (double)examiner_widgets_[0]->glWidth() / (double)glScene_->width();
         double relSizeH = (double)examiner_widgets_[0]->glHeight() / (double)glScene_->height();
           
         QImage img0,img1,img2,img3;
 
-        examiner_widgets_[0]->snapshot(img0, (int)((double)w * relSizeW),           (int)((double)h * relSizeH),
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
-        examiner_widgets_[1]->snapshot(img1, (int)((double)w * (1.0 - relSizeW)),   (int)((double)h * relSizeH),
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
-        examiner_widgets_[2]->snapshot(img2, (int)((double)w * relSizeW),           (int)((double)h * (1.0 - relSizeH)),
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
-        examiner_widgets_[3]->snapshot(img3, (int)((double)w * (1.0 - relSizeW)),   (int)((double)h * (1.0 - relSizeH)),
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
+        examiner_widgets_[0]->snapshot(img0,
+                (int)((double)snapshot_width * relSizeW),
+                (int)((double)snapshot_height * relSizeH),
+                snapshot_transparent, hide_coord_sys);
+        examiner_widgets_[1]->snapshot(img1,
+                (int)((double)snapshot_width * (1.0 - relSizeW)),
+                (int)((double)snapshot_height * relSizeH),
+                snapshot_transparent, hide_coord_sys);
+        examiner_widgets_[2]->snapshot(img2,
+                (int)((double)snapshot_width * relSizeW),
+                (int)((double)snapshot_height * (1.0 - relSizeH)),
+                snapshot_transparent, hide_coord_sys);
+        examiner_widgets_[3]->snapshot(img3,
+                (int)((double)snapshot_width * (1.0 - relSizeW)),
+                (int)((double)snapshot_height * (1.0 - relSizeH)),
+                snapshot_transparent, hide_coord_sys);
 
-        QImage finalImage(img0.width() + img1.width()+2, img0.height() + img2.height()+2, QImage::Format_ARGB32_Premultiplied);
+        QImage finalImage(img0.width() + img1.width()+2,
+                img0.height() + img2.height()+2,
+                QImage::Format_ARGB32_Premultiplied);
 
         QPainter painter(&finalImage);
 
@@ -682,16 +689,12 @@ void CoreWidget::viewerSnapshotDialog() {
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
-        finalImage.save(newName);
+        finalImage.save(file_name);
 
         break;
       }
       case QtMultiViewLayout::HSplit:
       {
-        // Compute size of each viewer
-        int w = dialog.snapWidth->value();
-        int h = dialog.snapHeight->value();
-        
         // Relative size of first viewer (in relation to the other viewers
         double relSizeW = (double)examiner_widgets_[0]->glWidth() / (double)glScene_->width();
         double relSizeH1 = (double)examiner_widgets_[1]->glHeight() / (double)glScene_->height();
@@ -700,14 +703,21 @@ void CoreWidget::viewerSnapshotDialog() {
           
         QImage img0,img1,img2,img3;
 
-        examiner_widgets_[0]->snapshot(img0, (int)((double)w * relSizeW), h,
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
-        examiner_widgets_[1]->snapshot(img1, (int)((double)w * (1.0 - relSizeW)), relSizeH1 * (double)h,
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
-        examiner_widgets_[2]->snapshot(img2, (int)((double)w * (1.0 - relSizeW)), relSizeH2 * (double)h,
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
-        examiner_widgets_[3]->snapshot(img3, (int)((double)w * (1.0 - relSizeW)), relSizeH3 * (double)h,
-                                       dialog.transparent->isChecked(), dialog.hideCoordsys->isChecked());
+        examiner_widgets_[0]->snapshot(img0,
+                (int)((double)snapshot_width * relSizeW), snapshot_height,
+                snapshot_transparent, hide_coord_sys);
+        examiner_widgets_[1]->snapshot(img1,
+                (int)((double)snapshot_width * (1.0 - relSizeW)),
+                relSizeH1 * (double)snapshot_height,
+                snapshot_transparent, hide_coord_sys);
+        examiner_widgets_[2]->snapshot(img2,
+                (int)((double)snapshot_width * (1.0 - relSizeW)),
+                relSizeH2 * (double)snapshot_height,
+                snapshot_transparent, hide_coord_sys);
+        examiner_widgets_[3]->snapshot(img3,
+                (int)((double)snapshot_width * (1.0 - relSizeW)),
+                relSizeH3 * (double)snapshot_height,
+                snapshot_transparent, hide_coord_sys);
 
         QImage finalImage(img0.width() + img1.width() +2, img0.height(), QImage::Format_ARGB32_Premultiplied);
 
@@ -726,13 +736,54 @@ void CoreWidget::viewerSnapshotDialog() {
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
-        finalImage.save(newName);
+        finalImage.save(file_name);
 
         break;
       }
       default: break;
 
     }
+}
+
+///Take a snapshot of all viewers
+void CoreWidget::viewerSnapshotDialog() {
+  int w = glView_->width();
+  int h = glView_->height();
+
+  SnapshotDialog dialog(suggestSnapshotFilename(snapshotName_), true, w, h, 0);
+
+  if (!ACG::SceneGraph::Material::support_json_serialization())
+      dialog.metaData_storeMatInfo_cb->setVisible(false);
+
+  bool ok = dialog.exec();
+
+  if (ok){
+    QString newName = dialog.filename->text();
+
+    OpenFlipperSettings().setValue("Core/CurrentDir", QFileInfo(newName).absolutePath() );
+
+    snapshotName_ = newName;
+
+    const bool storeComments = dialog.metaData_storeComments_cb->isChecked();
+    const bool comments_visible_only =
+            dialog.metaData_comments_visibleOnly_cb->isChecked();
+    const bool comments_targeted_only =
+            dialog.metaData_comments_targetedOnly_cb->isChecked();
+    const bool store_material_info =
+            dialog.metaData_storeMatInfo_cb->isChecked();
+    const bool snapshot_width = dialog.snapWidth->value();
+    const bool snapshot_height = dialog.snapHeight->value();
+    const bool snapshot_transparent = dialog.transparent->isChecked();
+    const bool hide_coord_sys = dialog.hideCoordsys->isChecked();
+    const int snapshot_multisampling =
+            dialog.multisampling->isChecked() ?
+                    dialog.num_samples->value() : 1;
+    const bool store_view = dialog.metaData_storeView_cb->isChecked();
+
+    viewerSnapshot(newName, storeComments, comments_visible_only,
+            comments_targeted_only, store_material_info, snapshot_width,
+            snapshot_height, snapshot_transparent, hide_coord_sys,
+            snapshot_multisampling, store_view);
   }
   //glView_->resize(w, h);
 }
@@ -933,21 +984,50 @@ void CoreWidget::slotSetViewAndWindowGeometry(QString view) {
      * viewport size is matched exactly.
      */
     if (viewportSize.width() > 0 && viewportSize.height() > 0) {
-        const QSize cur_viewport_size = examiner_widgets_[viewerId]->size().toSize();
-        std::cout << "Stored viewport size is " << viewportSize.width()
-                << " x " << viewportSize.height() << ". Actual size is"
-                << cur_viewport_size.width() << " x "
-                << cur_viewport_size.height() << "." <<  std::endl;
+        /*
+         * Try twice: Sometimes sizes of elements get readjusted after resizing
+         * and the viewport will not have the desired size.
+         */
+        for (int i = 0; i < 2; ++i) {
+            const QSize cur_viewport_size = examiner_widgets_[viewerId]->size().toSize();
+            if (cur_viewport_size != viewportSize) {
+                std::cout << "Stored viewport size is " << viewportSize.width()
+                        << " x " << viewportSize.height() << ". Actual size is "
+                        << cur_viewport_size.width() << " x "
+                        << cur_viewport_size.height() << ". Resizing window."
+                        <<  std::endl;
 
-        if (cur_viewport_size != viewportSize) {
-            std::cerr << "Stored viewport size is " << viewportSize.width()
-                    << " x " << viewportSize.height() << ". Actual size is"
-                    << cur_viewport_size.width() << " x "
-                    << cur_viewport_size.height()
-                    << ". Trying to adjust." << std::endl;
+                showNormal();
+                QSize diff = viewportSize - cur_viewport_size;
+                resize(size() + diff);
+                const QSize new_viewport_size =
+                        examiner_widgets_[viewerId]->size().toSize();
+                diff = viewportSize - new_viewport_size;
+                if (diff.width() != 0) {
+                    std::cout << "New viewport size is "
+                            << new_viewport_size.width()
+                            << " x " << new_viewport_size.height() << "."
+                            << " Moving splitter by " << diff.width() << "."
+                            << std::endl;
+                    // Move splitter.
+                    QList<int> splitter_sizes = toolSplitter_->sizes();
+                    if (splitter_sizes.size() < 2) {
+                        std::cerr << "The tool splitter has less than two children. This "
+                                "shouldn't happen." << std::endl;
+                    } else {
+                        const size_t primary_idx = OpenFlipperSettings().value(
+                                "Core/Gui/ToolBoxes/ToolBoxOnTheRight",true).toBool()
+                                ? 0 : 1;
 
-            QSize diff = viewportSize - cur_viewport_size;
-            resize(size() + diff);
+                        splitter_sizes[primary_idx] += diff.width();
+                        splitter_sizes[1-primary_idx] -= diff.width();
+                    }
+                    toolSplitter_->setSizes(splitter_sizes);
+
+                }
+            } else {
+                break;
+            }
         }
     }
 }

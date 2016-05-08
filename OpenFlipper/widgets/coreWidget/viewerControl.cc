@@ -67,6 +67,7 @@
 #endif
 
 #include <OpenFlipper/widgets/snapshotDialog/SnapshotDialog.hh>
+#include <cmath>
 
 
 //== IMPLEMENTATION ==========================================================
@@ -541,7 +542,7 @@ void CoreWidget::applicationSnapshot() {
   writeImageAsynchronously(pic, suggestSnapshotFilename(snapshotName_));
 }
 
-void CoreWidget::viewerSnapshot(QString file_ame, bool store_comments,
+void CoreWidget::viewerSnapshot(QString file_name, bool store_comments,
         bool comments_visible_only, bool comments_targeted_only,
         bool store_material_info, int snapshot_width, int snapshot_height,
         bool snapshot_transparent, bool hide_coord_sys,
@@ -550,7 +551,7 @@ void CoreWidget::viewerSnapshot(QString file_ame, bool store_comments,
     if (snapshot_height < 0) {
         int w = glView_->width();
         int h = glView_->height();
-        snapshot_height = static_cast<int>(std::round(
+        snapshot_height = static_cast<int>(round(
                 static_cast<double>(snapshot_width) / w * h));
     }
 
@@ -603,7 +604,7 @@ void CoreWidget::viewerSnapshot(QString file_ame, bool store_comments,
             examiner_widgets_[PluginFunctions::activeExaminer()]->encodeView(view, window_size, splitter_size);
             finalImage.setText("View", view);
         }
-        finalImage.save(file_ame);
+        finalImage.save(file_name);
 
         break;
       }
@@ -639,7 +640,7 @@ void CoreWidget::viewerSnapshot(QString file_ame, bool store_comments,
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
-        finalImage.save(file_ame);
+        finalImage.save(file_name);
 
         break;
       }
@@ -688,7 +689,7 @@ void CoreWidget::viewerSnapshot(QString file_ame, bool store_comments,
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
-        finalImage.save(file_ame);
+        finalImage.save(file_name);
 
         break;
       }
@@ -735,7 +736,7 @@ void CoreWidget::viewerSnapshot(QString file_ame, bool store_comments,
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
-        finalImage.save(file_ame);
+        finalImage.save(file_name);
 
         break;
       }

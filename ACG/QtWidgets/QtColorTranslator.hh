@@ -88,8 +88,12 @@ class ACGDLLEXPORT QtColorTranslator
 public:
 
   /// Default constructor.
-  QtColorTranslator()
-    : initialized_(false) {};
+  QtColorTranslator() : initialized_(false),
+                        redBits_(0), greenBits_(0), blueBits_(0),
+                        redMask_(0), greenMask_(0), blueMask_(0),
+                        redShift_(0), greenShift_(0), blueShift_(0),
+                        redRound_(0), greenRound_(0), blueRound_(0)
+  {};
 
   /// construct with QGLcontext
   QtColorTranslator(QGLContext& _context)

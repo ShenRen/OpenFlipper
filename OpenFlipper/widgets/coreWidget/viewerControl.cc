@@ -71,7 +71,7 @@
 #include <cmath>
 
 #ifdef _MSC_VER
-  #include <ACG/Utils/VSTools.hh>
+  #include <ACG/Utils/VSToolsT.hh>
 #endif
 
 

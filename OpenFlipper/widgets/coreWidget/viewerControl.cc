@@ -66,8 +66,13 @@
 #include <QtCore>
 #endif
 
+
 #include <OpenFlipper/widgets/snapshotDialog/SnapshotDialog.hh>
 #include <cmath>
+
+#ifdef _MSC_VER
+  #include <ACG/Utils/VSTools.hh>
+#endif
 
 
 //== IMPLEMENTATION ==========================================================

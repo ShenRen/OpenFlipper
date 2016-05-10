@@ -776,8 +776,8 @@ void CoreWidget::viewerSnapshotDialog() {
             dialog.metaData_comments_targetedOnly_cb->isChecked();
     const bool store_material_info =
             dialog.metaData_storeMatInfo_cb->isChecked();
-    const bool snapshot_width = dialog.snapWidth->value();
-    const bool snapshot_height = dialog.snapHeight->value();
+    const int snapshot_width = dialog.snapWidth->value();
+    const int snapshot_height = dialog.snapHeight->value();
     const bool snapshot_transparent = dialog.transparent->isChecked();
     const bool hide_coord_sys = dialog.hideCoordsys->isChecked();
     const int snapshot_multisampling =

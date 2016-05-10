@@ -279,36 +279,65 @@ macro (acg_qt5)
       endif()    
     endif(Qt5Core_FOUND AND WIN32)
     
-    find_package (Qt5Declarative QUIET)
-    find_package (Qt5Widgets QUIET)    
-    find_package (Qt5Gui QUIET)
-    find_package (Qt5OpenGL QUIET)
-    find_package (Qt5Network QUIET)
-    find_package (Qt5Script QUIET)
-    find_package (Qt5ScriptTools QUIET)
-    find_package (Qt5Sql QUIET)
-    find_package (Qt5Xml QUIET)
-    find_package (Qt5XmlPatterns QUIET)
-    find_package (Qt5Help QUIET)
-    find_package (Qt5WebKit QUIET)
-    find_package (Qt5UiTools QUIET)
-    find_package (Qt5Concurrent QUIET)
-    find_package (Qt5PrintSupport QUIET)
-    find_package (Qt5Svg QUIET)
+    #do noot look for Webkit and qt declarative on qt version 5.6 or newer
+    if(${QT_VERSION_MINOR} GREATER 5)
+        find_package (Qt5Widgets QUIET)    
+        find_package (Qt5Gui QUIET)
+        find_package (Qt5OpenGL QUIET)
+        find_package (Qt5Network QUIET)
+        find_package (Qt5Script QUIET)
+        find_package (Qt5ScriptTools QUIET)
+        find_package (Qt5Sql QUIET)
+        find_package (Qt5Xml QUIET)
+        find_package (Qt5XmlPatterns QUIET)
+        find_package (Qt5Help QUIET)
+        find_package (Qt5UiTools QUIET)
+        find_package (Qt5Concurrent QUIET)
+        find_package (Qt5PrintSupport QUIET)
+        find_package (Qt5Svg QUIET)
+    elseif(${QT_VERSION_MINOR} GREATER 5)
+        find_package (Qt5Declarative QUIET)
+        find_package (Qt5Widgets QUIET)    
+        find_package (Qt5Gui QUIET)
+        find_package (Qt5OpenGL QUIET)
+        find_package (Qt5Network QUIET)
+        find_package (Qt5Script QUIET)
+        find_package (Qt5ScriptTools QUIET)
+        find_package (Qt5Sql QUIET)
+        find_package (Qt5Xml QUIET)
+        find_package (Qt5XmlPatterns QUIET)
+        find_package (Qt5Help QUIET)
+        find_package (Qt5WebKit QUIET)
+        find_package (Qt5UiTools QUIET)
+        find_package (Qt5Concurrent QUIET)
+        find_package (Qt5PrintSupport QUIET)
+        find_package (Qt5Svg QUIET)
+    endif(${QT_VERSION_MINOR} GREATER 5)
     
     if (NOT WIN32 AND NOT APPLE)
     	find_package (Qt5X11Extras QUIET)
     endif ()
     
 
-    if (Qt5Core_FOUND AND Qt5Declarative_FOUND AND Qt5Widgets_FOUND
-      AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
-      AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
-      AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
-      AND Qt5WebKit_FOUND AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
-      AND Qt5PrintSupport_FOUND)
-      set (QT5_FOUND TRUE)
-    endif()
+    if(${QT_VERSION_MINOR} GREATER 5)
+        if (Qt5Core_FOUND AND Qt5Widgets_FOUND
+          AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
+          AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
+          AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
+          AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
+          AND Qt5PrintSupport_FOUND)
+          set (QT5_FOUND TRUE)
+        endif()
+    elseif(${QT_VERSION_MINOR} GREATER 5)
+        if (Qt5Core_FOUND AND Qt5Declarative_FOUND AND Qt5Widgets_FOUND
+          AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
+          AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
+          AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
+          AND Qt5WebKit_FOUND AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
+          AND Qt5PrintSupport_FOUND)
+          set (QT5_FOUND TRUE)
+        endif()
+    endif(${QT_VERSION_MINOR} GREATER 5)
     
     if (QT5_FOUND)   
       acg_unset_qt_shared_variables(5)

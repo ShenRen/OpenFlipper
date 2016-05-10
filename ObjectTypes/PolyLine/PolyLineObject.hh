@@ -147,7 +147,7 @@ class DLLEXPORT PolyLineObject : public BaseObjectData {
    * @{ */
   //===========================================================================
 
-  private:
+  protected:
     /** \brief  This function is called to update the object
      *
      * If the object changes, the core will call this function. Normally this will update

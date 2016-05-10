@@ -96,6 +96,7 @@ class DLLEXPORTONLY BaseObject : public QObject {
   Q_OBJECT 
   
   friend class BaseObjectData;
+  friend class Core;
 
   public :
 
@@ -292,6 +293,20 @@ class DLLEXPORTONLY BaseObject : public QObject {
   //===========================================================================
 
   public:
+
+
+    /// Debugging function, writing the subtree to output
+    void dumpTree();
+
+    /// Returns a full copy of the object
+    virtual BaseObject* copy();
+
+  //===========================================================================
+  /** @name Update handling
+   * @{ */
+  //===========================================================================
+
+  protected:
     /** \brief  This function is called to update the object
      *
      * If the object changes, the core will call this function. Normally this will update
@@ -301,12 +316,6 @@ class DLLEXPORTONLY BaseObject : public QObject {
      * \note Do not call this function yourself to avoid unnecessary overhead(the core will call it when it is required)
      */
     virtual void update(UpdateType _type = UPDATE_ALL);
-
-    /// Debugging function, writing the subtree to output
-    void dumpTree();
-
-    /// Returns a full copy of the object
-    virtual BaseObject* copy();
 
   /** @} */
 

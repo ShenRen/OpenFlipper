@@ -138,7 +138,7 @@ protected:
  *
  * @{ */
 //===========================================================================
-  private:
+  protected:
 
   /// Called by the core if the object has to be updated
   void update( UpdateType _type = UPDATE_ALL );

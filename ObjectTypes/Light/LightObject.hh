@@ -150,7 +150,7 @@ class DLLEXPORT LightObject : public BaseObjectData {
    * @{ */
   //===========================================================================
 
-  private:
+  protected:
     /** \brief Update the Light Object
     *
     *   Updates the rendering of the light object

@@ -126,13 +126,10 @@ MSFilterWeights::MSFilterWeights(int _numSamples) : numSamples_(_numSamples) {
 
 //=============================================================================
 
-#if defined(GL_ARB_texture_buffer_object)
-    
 void MSFilterWeights::asTextureBuffer( TextureBuffer& out ) {
   if (numSamples_)
     out.setBufferData(numSamples_ * 4, &weights_[0], GL_R32F, GL_STATIC_DRAW);
 }
-#endif
 
 //=============================================================================
 

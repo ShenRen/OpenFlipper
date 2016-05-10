@@ -188,7 +188,14 @@ void ScreenQuad::intDraw (GLSL::Program* _prog, int _numInstances)
   if (_numInstances < 1)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   else
+  {
+#ifdef GL_VERSION_3_1
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, _numInstances);
+#else
+    std::cerr << "error: instanced ScreenQuad draw - outdated glew version" << std::endl;
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#endif
+  }
 
   if (_prog)
     decl_->deactivateShaderPipeline(_prog);

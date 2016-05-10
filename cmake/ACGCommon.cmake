@@ -260,13 +260,14 @@ macro (acg_qt5)
   
     
     find_package (Qt5Core QUIET)
-     
-    #find WINDOWS_SDK to avoid qt error. This must be done BEFORE Qt5Widgets is searched
-    if (Qt5Core_FOUND AND WIN32)    
+    if(Qt5Core_FOUND)
       string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" QT_VERSION_MAJOR "${Qt5Core_VERSION_STRING}")
       string(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+.*" "\\1" QT_VERSION_MINOR "${Qt5Core_VERSION_STRING}")
       string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" QT_VERSION_PATCH "${Qt5Core_VERSION_STRING}")
-    
+    endif(Qt5Core_FOUND)
+     
+    #find WINDOWS_SDK to avoid qt error. This must be done BEFORE Qt5Widgets is searched
+    if (Qt5Core_FOUND AND WIN32)    
       if ( (QT_VERSION_MAJOR EQUAL 5) AND (QT_VERSION_MINOR LESS 3 OR ( QT_VERSION_MINOR EQUAL 3 AND QT_VERSION_PATCH EQUAL 0 )) ) # for all Qt version > 5.0.0 and < 5.3.1
         #glu32.lib is needed by qt5 opengl version. it cannot find it by itself so we help qt
         #this block has to be executed, before Qt5Gui is searched, otherwise we will end up with the (not so useful) QT5 error message 

@@ -1,5 +1,13 @@
 cmake_minimum_required (VERSION 2.8.9)
 
+# ACG Environment default settings
+# This is ugly but currently we need to work around the default installed 5.3 on debian
+if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.5.1/5.5/gcc_64/ )
+  # Default to this install path for QT%_INSTALL_DIR
+  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.5.1/5.5/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
+endif()
+
+
 if ( WIN32 )
   # This is the base directory for windows library search used in the finders we shipp.
   set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )

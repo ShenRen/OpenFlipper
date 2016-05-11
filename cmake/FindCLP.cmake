@@ -5,23 +5,28 @@
 #  CLP_LIBRARIES - The libraries needed to use CLP
 
 
-# I8 Search paths for windows libraries
-if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2012/x64/")
-elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
-elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
-elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
+
+# Check if the base path is set
+if ( NOT CMAKE_WINDOWS_LIBS_DIR )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
 endif()
 
-if (CLP_INCLUDE_DIR)
-  # in cache already
-  set(CLP_FOUND TRUE)
-  set(CLP_INCLUDE_DIRS "${CLP_INCLUDE_DIR}" )
-  set(CLP_LIBRARIES "${CLP_LIBRARY}" )
-else (CLP_INCLUDE_DIR)
+if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x32/")
+endif()
+
+if (NOT CLP_FOUND)
 
 find_path(CLP_INCLUDE_DIR 
           NAMES ClpConfig.h
@@ -30,10 +35,23 @@ find_path(CLP_INCLUDE_DIR
                  "/usr/include/coin"
                  "C:\\libs\\clp\\include"
                  "C:\\libs\\cbc\\include"
-				 "${VS_SEARCH_PATH}CBC-2.9.4/Clp/include"
-          )
+                 "${VS_SEARCH_PATH}CBC-2.9.7/Clp/include"
+                 "${VS_SEARCH_PATH}CBC-2.9.4/Clp/include"
+              )
 
-find_library( CLP_LIBRARY 
+find_library( CLP_LIBRARY_DEBUG
+              NAMES Clpd libClpd
+              PATHS "$ENV{CLP_DIR}/lib"
+                    "$ENV{CBC_DIR}/lib" 
+                    "/usr/lib"
+                    "/usr/lib/coin"
+                    "C:\\libs\\clp\\lib"
+                    "C:\\libs\\cbc\\lib"
+                    "${VS_SEARCH_PATH}CBC-2.9.7/lib/${VS_SUBDIR}Debug"
+                    "${VS_SEARCH_PATH}CBC-2.9.4/Clp/lib"
+              )
+              
+find_library( CLP_LIBRARY_RELEASE
               NAMES Clp libClp
               PATHS "$ENV{CLP_DIR}/lib"
                     "$ENV{CBC_DIR}/lib" 
@@ -41,8 +59,12 @@ find_library( CLP_LIBRARY
                     "/usr/lib/coin"
                     "C:\\libs\\clp\\lib"
                     "C:\\libs\\cbc\\lib"
-					"${VS_SEARCH_PATH}CBC-2.9.4/Clp/lib"
-              )
+                    "${VS_SEARCH_PATH}CBC-2.9.7/lib/${VS_SUBDIR}Release"
+                    "${VS_SEARCH_PATH}CBC-2.9.4/Clp/lib"
+              )              
+
+include(SelectLibraryConfigurations)
+select_library_configurations( CLP )
 
 set(CLP_INCLUDE_DIRS "${CLP_INCLUDE_DIR}" )
 set(CLP_LIBRARIES "${CLP_LIBRARY}" )
@@ -56,4 +78,4 @@ find_package_handle_standard_args(CLP  DEFAULT_MSG
 
 mark_as_advanced(CLP_INCLUDE_DIR CLP_LIBRARY)
 
-endif(CLP_INCLUDE_DIR)
+endif( NOT CLP_FOUND)

@@ -7,14 +7,8 @@
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>620</height>
+    <height>800</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Object Information</string>
@@ -34,7 +28,7 @@
         <x>0</x>
         <y>0</y>
         <width>714</width>
-        <height>1048</height>
+        <height>1037</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
@@ -58,6 +52,9 @@
          <layout class="QFormLayout" name="formLayout_4">
           <item row="0" column="0">
            <layout class="QFormLayout" name="formLayout_2">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::ExpandingFieldsGrow</enum>
+            </property>
             <item row="0" column="0">
              <widget class="QLabel" name="label">
               <property name="font">
@@ -1821,6 +1818,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
+      <widget class="QPushButton" name="valenceHistograms_pb">
+       <property name="text">
+        <string>Compute Valence Histograms</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -1837,6 +1841,9 @@
       <widget class="QPushButton" name="pushButton">
        <property name="text">
         <string>&amp;Close</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -1855,8 +1862,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>493</x>
-     <y>627</y>
+     <x>742</x>
+     <y>792</y>
     </hint>
     <hint type="destinationlabel">
      <x>422</x>

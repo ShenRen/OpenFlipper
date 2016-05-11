@@ -23,17 +23,17 @@ file (
            "${CMAKE_BINARY_DIR}/Package-*/libs/CoMISo"
 )
 
+FIND_PATH( COMISO_INCLUDE_DIR CoMISo/Solver/MISolver.hh
+           PATHS ${_libdirs}
+                 "${CMAKE_SOURCE_DIR}"
+                 "${CMAKE_SOURCE_DIR}/../" )
 
 # Find CoMISo config file
 FIND_PATH( COMISO_CONFIG_INCLUDE_DIR CoMISo/Config/config.hh
            PATHS ${_libdirs}
                  "${CMAKE_BINARY_DIR}/../"
-                 "${CMAKE_BINARY_DIR}/../CoMISo/" )
-
-FIND_PATH( COMISO_INCLUDE_DIR CoMISo/Solver/MISolver.hh
-           PATHS ${_libdirs}
-                 "${CMAKE_SOURCE_DIR}"
-                 "${CMAKE_SOURCE_DIR}/../" )
+                 "${CMAKE_BINARY_DIR}/../CoMISo/" 
+                 "${COMISO_INCLUDE_DIR}" )
 
 if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
 
@@ -238,7 +238,7 @@ if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
      message(ERROR "COMISO configured with DCO but DCO not available")
    endif()
                                                                           
-   list (APPEND  COMISO_OPT_DEPS “DCO”)
+   list (APPEND  COMISO_OPT_DEPS "DCO")
                                                                           
   endif()
 
@@ -246,7 +246,12 @@ if ( COMISO_INCLUDE_DIR AND COMISO_CONFIG_INCLUDE_DIR )
 
   include(FindPackageHandleStandardArgs)
   SET(COMISO_FOUND TRUE)
-  SET( COMISO_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_LIBDIR}" )
+
+  FIND_LIBRARY( COMISO_LIBRARY_DIR NAMES CoMISo
+                PATHS ${SEARCH_PATHS}
+                     "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_LIBDIR}"
+                PATH_SUFFIXES lib lib64)
+
   SET( COMISO_LIBRARY "CoMISo")
 #  SET( COMISO_DEPS "GMM;BLAS;SUITESPARSE" )
   SET( COMISO_DEPS "GMM")

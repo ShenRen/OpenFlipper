@@ -547,6 +547,8 @@ void OMPropertyModel<MeshT>::addPropertyVisualizer(OpenMesh::BaseProperty* const
         propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, int>(mesh, propInfo, false));
     else if (propInfo.typeinfo() == proptype_uint)
         propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, unsigned int>(mesh, propInfo, true));
+    else if (propInfo.typeinfo() == proptype_uint8_t)
+        propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, uint8_t>(mesh, propInfo, true));
     else if (propInfo.typeinfo() == proptype_double)
         propertyVisualizers.push_back(new OMPropertyVisualizerDouble<MeshT>(mesh, propInfo));
     else if ((propInfo.typeinfo() == proptype_Vec3d) || (propInfo.typeinfo() == proptype_Vec3f))
@@ -608,6 +610,11 @@ void OMPropertyModel<MeshT>:: addProperty(QString propName, QString friendlyType
             OpenMesh::VPropHandleT< unsigned int > prop;
             mesh->add_property(prop, pname.toStdString());
         }
+        else if ( dtype == tr("uint8_t") )
+        {
+            OpenMesh::VPropHandleT< uint8_t > prop;
+            mesh->add_property(prop, pname.toStdString());
+        }
         else if ( dtype == tr("int") )
         {
             OpenMesh::VPropHandleT< int > prop;
@@ -655,6 +662,11 @@ void OMPropertyModel<MeshT>:: addProperty(QString propName, QString friendlyType
             OpenMesh::EPropHandleT< unsigned int > prop;
             mesh->add_property(prop, pname.toStdString());
         }
+        else if ( dtype == tr("uint8_t") )
+        {
+            OpenMesh::EPropHandleT< uint8_t > prop;
+            mesh->add_property(prop, pname.toStdString());
+        }
         else if ( dtype == tr("int") )
         {
             OpenMesh::EPropHandleT< int > prop;
@@ -693,6 +705,11 @@ void OMPropertyModel<MeshT>:: addProperty(QString propName, QString friendlyType
             OpenMesh::FPropHandleT< unsigned int > prop;
             mesh->add_property(prop, pname.toStdString());
         }
+        else if ( dtype == tr("uint8_t") )
+        {
+            OpenMesh::FPropHandleT< uint8_t > prop;
+            mesh->add_property(prop, pname.toStdString());
+        }
         else if ( dtype == tr("int") )
         {
             OpenMesh::FPropHandleT< int > prop;
@@ -721,6 +738,11 @@ void OMPropertyModel<MeshT>:: addProperty(QString propName, QString friendlyType
             OpenMesh::HPropHandleT< unsigned int > prop;
             mesh->add_property(prop, pname.toStdString());
         }
+        else if ( dtype == tr("uint8_t") )
+        {
+            OpenMesh::HPropHandleT< uint8_t > prop;
+            mesh->add_property(prop, pname.toStdString());
+        }
         else if ( dtype == tr("int") )
         {
             OpenMesh::HPropHandleT< int > prop;
@@ -744,6 +766,7 @@ void OMPropertyModel<MeshT>::initializeSupportedPropertyTypes()
     supportedPropertyTypes.insert(proptype_bool);
     supportedPropertyTypes.insert(proptype_int);
     supportedPropertyTypes.insert(proptype_uint);
+    supportedPropertyTypes.insert(proptype_uint8_t);
     supportedPropertyTypes.insert(proptype_double);
     supportedPropertyTypes.insert(proptype_Vec3d);
     supportedPropertyTypes.insert(proptype_Vec3f);

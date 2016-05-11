@@ -34,19 +34,26 @@ include(CheckFunctionExists)
 
 include(CGAL_GeneratorSpecificSettings)
 
-# I8 Search paths for windows libraries
-if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2012/x64/")
-elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
-elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
-elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
-  SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
+
+# Check if the base path is set
+if ( NOT CMAKE_WINDOWS_LIBS_DIR )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
 endif()
 
-
-
+if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x32/")
+endif()
 
 
 # This macro checks for the existence of the combination of fortran libraries

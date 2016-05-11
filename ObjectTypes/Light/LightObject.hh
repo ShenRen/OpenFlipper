@@ -77,6 +77,9 @@
 
 class DLLEXPORT LightObject : public BaseObjectData {
 
+  friend class TypeLightPlugin;
+  friend class LightWidget;
+
   public: 
     /// constructor
     LightObject();
@@ -122,12 +125,7 @@ class DLLEXPORT LightObject : public BaseObjectData {
     
     LightSource* lightSource();
     
-    /** \brief Update the Light Object
-    *
-    *   Updates the rendering of the light object
-    */
-    virtual void update(UpdateType _type = UPDATE_ALL);
-    
+
     /// Is light default light source?
     bool defaultLight() const { return defaultLightSource_; }
     
@@ -141,6 +139,24 @@ class DLLEXPORT LightObject : public BaseObjectData {
     /// added to a blank scene
     bool defaultLightSource_;
     
+    /** @} */
+
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+
+  protected:
+    /** \brief Update the Light Object
+    *
+    *   Updates the rendering of the light object
+    */
+    virtual void update(UpdateType _type = UPDATE_ALL);
+
   /** @} */      
        
   //===========================================================================
@@ -207,6 +223,7 @@ class DLLEXPORT LightObject : public BaseObjectData {
     /// Hide Light Node
     virtual void hide();
     
+
 };
 
 //=============================================================================

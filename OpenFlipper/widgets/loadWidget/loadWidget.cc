@@ -54,6 +54,8 @@
 
 #include "FileOptionsDialog.hh"
 
+#include <QFileInfo>
+
 LoadWidget::LoadWidget(std::vector<fileTypes>& _supportedTypes , QWidget *parent)
   : QFileDialog(parent),
     loadMode_(true),
@@ -294,8 +296,7 @@ void LoadWidget::saveFile(){
 
   QString filename = files[0];
 
-  //get filename
-  if (!filename.contains(".",Qt::CaseSensitive)){ //check for extension
+  if (QFileInfo(filename).completeSuffix().isEmpty()) {
 
     int s = selectedNameFilter().indexOf("*")+1;
     int e = selectedNameFilter().indexOf(" ", s);
@@ -355,11 +356,13 @@ void LoadWidget::saveFile(){
       return; //abort if users doesn't want to overwrite
   }
 
-  if ( pluginForExtension_.find( fi.suffix() ) != pluginForExtension_.end() ){
+  const std::map< QString, int >::iterator saving_plugin =
+          pluginForExtension_.find( fi.suffix() );
+  if ( saving_plugin != pluginForExtension_.end() ){
     if (ids_.size() == 1)
-      emit save(ids_[0],filename, pluginForExtension_[fi.suffix()] );
+      emit save(ids_[0],filename, saving_plugin->second);
     else
-      emit save(ids_   ,filename, pluginForExtension_[fi.suffix()] );
+      emit save(ids_   ,filename, saving_plugin->second);
   }
 
   OpenFlipperSettings().setValue("Core/CurrentDir", fi.absolutePath() );

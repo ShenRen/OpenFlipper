@@ -19,20 +19,29 @@ if (WIN32)
     SET( DIRSUFFIX "lib" )
   endif()
 
-   if ( CMAKE_GENERATOR MATCHES "^Visual Studio 10.*" )
-     SET(VS_SEARCH_PATH "c:/libs/vs2010/x32/")
-   elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
-     SET(VS_SEARCH_PATH "c:/libs/vs2012/x64/")
-   elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-     SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
-   elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
-     SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
-   elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
-     SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
-   endif()
+  # Check if the base path is set
+  if ( NOT CMAKE_WINDOWS_LIBS_DIR )
+    # This is the base directory for windows library search used in the finders we shipp.
+    set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
+  endif()
+
+  if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
+    SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x64/")
+  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+    SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x32/")
+  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
+    SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x64/")
+  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
+    SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x32/")
+  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*Win64" )
+    SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x64/")
+  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*" )
+    SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x32/")
+  endif()
   
    find_path(IPOPT_INCLUDE_DIR NAMES IpNLP.hpp
      PATHS
+	 "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/include/coin"
 	 "${VS_SEARCH_PATH}Ipopt-3.11.9/Ipopt/MSVisualStudio/v8-ifort/installed/include/coin"
      "C:\\libs\\Ipopt-3.8.2\\include\\coin"
      ${IPOPT_DIR}/include
@@ -42,13 +51,15 @@ if (WIN32)
       find_library( IPOPT_LIBRARY_RELEASE 
                     Ipopt ipopt libipopt IpOpt-vc10
                     PATHS "C:\\libs\\Ipopt-3.8.2\\lib\\win32\\release" 
-					"${VS_SEARCH_PATH}Ipopt-3.11.9/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+			  "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+			  "${VS_SEARCH_PATH}Ipopt-3.11.9/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
 				   )
       find_library( IPOPT_LIBRARY_DEBUG
-                    Ipopt ipopt libipopt IpOpt-vc10
+                    Ipopt ipoptd libipoptd IpOpt-vc10d
                     PATHS "C:\\libs\\Ipopt-3.8.2\\lib\\win32\\debug" 
-					      "${VS_SEARCH_PATH}Ipopt-3.11.9/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
-				   )
+			  "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+			  "${VS_SEARCH_PATH}Ipopt-3.11.9/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+		   )
 
       set ( IPOPT_LIBRARY "optimized;${IPOPT_LIBRARY_RELEASE};debug;${IPOPT_LIBRARY_DEBUG}" CACHE  STRING "IPOPT Libraries" )
 	  

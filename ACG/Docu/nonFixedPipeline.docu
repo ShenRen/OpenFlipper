@@ -74,6 +74,58 @@ and are also combinable with each other allowing a more dynamic shader customiza
 The Depth-Peeling renderer shows how to use these modifiers.
 
 
+\subsection vertexAttributes Adding custom vertex attributes
+
+The complete vertex layout is defined by creating a VertexDeclaration object. 
+Standard attributes are: position, normal, texture coordinate and color.
+These attributes are marked with their corresponding ACG::VERTEX_USAGE qualifier and have a predefined variable name in the vertex shader input:
+Their variable names are predefined as "inPosition", "inNormal", "inTexCoord" and "inColor".
+
+Custom attributes have to be declared with the ACG::VERTEX_USAGE_SHADER_INPUT qualifier as follows:
+
+\code
+vertexDeclaration.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, byte_offset, "inCustomParams");
+\endcode
+
+This vertex declaration is then used with the render object.
+The vertex shader can now make use of the additional attributes by using the same variable name as in the vertex declaration.
+In this case the vertex shader would use the attribute like this:
+
+\code
+in vec4 inCustomParams;
+
+void main()
+{
+  SG_VERTEX_BEGIN;
+  
+  // do something with inCustomParams ..
+  
+  SG_VERTEX_BEGIN;
+}
+\endcode
+
+
+Furthermore, attribute can be passed through to the next shader stage.
+This has to be done manually and it must be guaranteed that the variable names do not clash with the keywords used by the ShaderGenerator:
+
+\code
+in vec4 inCustomParams;
+out vec4 v2f_CustomParams; // make v2f_CustomParams available in fragment shader for example
+
+void main()
+{
+  SG_VERTEX_BEGIN;
+  
+  // do something with inCustomParams ..
+  
+  v2f_CustomParams = inCustomParams;
+  
+  SG_VERTEX_BEGIN;
+}
+\endcode
+
+Note that the vertex shader can be modified to accept the new attributes either with a shader modifier or a shader template file.
+
 \subsection shaderCache The Shader Cache
 The Shader Cache singleton class should be used to manage the used shaders. You can query a shader
 from the cache via a shader description. If it is already available, it will be returned from

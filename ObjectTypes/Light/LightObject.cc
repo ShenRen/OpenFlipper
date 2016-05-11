@@ -343,6 +343,5 @@ void LightObject::update(UpdateType _type) {
   lightNodeVis_->setLightSource(lightSource_);
 }
 
-
 //=============================================================================
 

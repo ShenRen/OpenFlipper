@@ -52,7 +52,7 @@
 
 //=============================================================================
 //
-//  CLASS TriStripNodeT
+//  CLASS TriStripNodeDeprecatedT
 //
 //=============================================================================
 
@@ -64,9 +64,8 @@
 //== INCLUDES =================================================================
 
 
-#include "MeshNodeT.hh"
-
 #include <OpenMesh/Tools/Utils/StripifierT.hh>
+#include "MeshNodeDeprecatedT.hh"
 
 
 //== NAMESPACES ===============================================================
@@ -80,35 +79,35 @@ namespace SceneGraph {
 
 
 
-/** \class TriStripNodeT TriStripNodeT.hh <ACG/Scenegraph/TriStripNodeT.hh>
+/** \class TriStripNodeDeprecatedT TriStripNodeDeprecatedT.hh <ACG/Scenegraph/TriStripNodeDeprecatedT.hh>
 
     This node draws a mesh using triangle strips.
 */
 
 template <class Mesh>
-class TriStripNodeT : public MeshNodeT<Mesh>
+class TriStripNodeDeprecatedT : public MeshNodeDeprecatedT<Mesh>
 {
 public:
 
   typedef OpenMesh::StripifierT<Mesh>  MyStripifier;
-  typedef MeshNodeT<Mesh>              Base;
+  typedef MeshNodeDeprecatedT<Mesh>              Base;
   typedef typename Base::FaceMode      FaceMode;
 
 
   /// Default constructor
-  TriStripNodeT(Mesh&        _mesh,
+  TriStripNodeDeprecatedT(Mesh&        _mesh,
 		BaseNode*    _parent=0,
-		std::string  _name="<TriStripNodeT>" )
+		std::string  _name="<TriStripNodeDeprecatedT>" )
     : Base(_mesh, _parent, _name),
       strips_(_mesh)
   {}
 
 
   /// Destructor
-  ~TriStripNodeT() {}
+  ~TriStripNodeDeprecatedT() {}
 
 
-  ACG_CLASSNAME(TriStripNodeT);
+  ACG_CLASSNAME(TriStripNodeDeprecatedT);
 
 
   /// build triangle strips, delete face indices

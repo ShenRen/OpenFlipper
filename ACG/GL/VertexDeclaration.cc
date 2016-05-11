@@ -486,8 +486,16 @@ void VertexDeclaration::deactivateShaderPipeline( GLSL::Program* _prog ) const
     int loc = _prog->getAttributeLocation(pElem->shaderInputName_);
 
     if (loc != -1)
+    {
       glDisableVertexAttribArray(loc);
 
+      if (supportsInstancedArrays() && pElem->divisor_)
+      {
+#ifdef GL_ARB_instanced_arrays
+        glVertexAttribDivisor(loc, 0);
+#endif
+      }
+    }
   }
 }
 

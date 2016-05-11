@@ -84,7 +84,13 @@ class ACGDLLEXPORT ColorTranslator
 public:
    
   /// Default constructor.
-  ColorTranslator() : initialized_(false) {};
+  ColorTranslator() : initialized_(false),
+                      red_bits_(0), green_bits_(0), blue_bits_(0), alpha_bits_(0),
+                      red_mask_(0), green_mask_(0), blue_mask_(0), alpha_mask_(0),
+                      red_shift_(0), green_shift_(0), blue_shift_(0), alpha_shift_(0),
+                      red_round_(0), green_round_(0), blue_round_(0), alpha_round_(0)
+   {};
+
    /// Destructor.
   ~ColorTranslator() {};
 

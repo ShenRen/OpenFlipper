@@ -7,6 +7,7 @@
 #                      [CFLAGSADD flag1 flag2 ...]
 #                      [CDEFINITIONSADD definition1 definition2 ...]
 #                      [LIBRARIES lib1 lib2 ...]
+#                      [ADD_CORE_APP_LIBRARIES lib1 lib2 ...]
 #                      [LIBDIRS dir1 dir2 ...]
 #                      [INCDIRS dir1 dir2 ...]
 #                      [ADDSRC file1 file2 ...]
@@ -15,18 +16,18 @@
 #                      [TRANSLATION_ADDFILES file1 file2 ...]
 #                      [LICENSEMANAGER])
 #
-# DIRS            = additional directories with source files
-# DEPS            = required dependencies for find_package macro
-# OPTDEPS         = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
-# LDFLAGSADD      = flags added to the link command
-# CFLAGSADD       = flags added to the compile command
-# CDEFINITIONSADD = definitions added to the compile command
-# LIBRARIES       = libraries added to link command
-# LIBDIRS         = additional link directories
-# INCDIRS         = additional include directories
-# ADDSRC          = additional source files
-# INSTALLDATA     = directories that will be installed into the openflipper data directory
-# GLEWDEFINITIONS = Checks glew if it defines the given definitions
+# DIRS                   = additional directories with source files
+# DEPS                   = required dependencies for find_package macro
+# OPTDEPS                = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
+# LDFLAGSADD             = flags added to the link command
+# CFLAGSADD              = flags added to the compile command
+# CDEFINITIONSADD        = definitions added to the compile command
+# LIBRARIES              = libraries added to link command
+# ADD_CORE_APP_LIBRARIES = libraries added to be linked to the core app
+# LIBDIRS                = additional link directories
+# INCDIRS                = additional include directories
+# ADDSRC                 = additional source files
+# INSTALLDATA            = directories that will be installed into the openflipper data directory
 #
 # TRANSLATION_LANGUAGES = language codes for translation
 # TRANSLATION_ADDFILES  = additional files that should be included into the translation files
@@ -68,7 +69,8 @@ endmacro ()
 # parse plugin macro parameter
 macro (_get_plugin_parameters _prefix)
     set (_current_var _foo)
-    set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA GLEWDEFINITIONS TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
+    set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD
+      LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
     set (_supported_flags LICENSEMANAGER)
     foreach (_val ${_supported_var})
         set (${_prefix}_${_val})
@@ -104,6 +106,7 @@ endmacro ()
 # _prefix    : prefix used ( usually the plugin name )
 # _optional : if we are currently pars
 macro (_check_plugin_deps _prefix _optional )
+
 
     set (${_prefix}_HAS_DEPS TRUE)
 
@@ -371,26 +374,6 @@ macro (_plugin_licensemanagement)
   endif()
 endmacro ()
 
-#======================================================
-# check dependencies in GLEW library
-# _prefix    : prefix used ( usually the plugin name )
-#======================================================
-macro (_check_plugin_glew_deps _prefix )
-
- foreach (_extension ${${_prefix}_GLEWDEFINITIONS})
-
-   acg_test_glew_definition( ${_extension} ${_prefix}_GLEW_HAS_DEFINITION_${_extension}  )
-
-   # If the dependency is not found, we disable the plugin
-   if(NOT ${_prefix}_GLEW_HAS_DEFINITION_${_extension} )
-      set (${_prefix}_HAS_DEPS FALSE)
-      acg_set (_${_prefix}_MISSING_DEPS "${_${_prefix}_MISSING_DEPS} GLEW extension ${_extension}")
-   endif()
-
- endforeach()
-
-endmacro ()
-
 
 
 #======================================================
@@ -423,11 +406,16 @@ function (_build_openflipper_plugin plugin)
   _check_plugin_deps (${_PLUGIN} FALSE ${${_PLUGIN}_DEPS})
 
   #============================================================================================
-  # CHECK for GLEW definitions
+  # Additional libraries to be linked to the core app
   #============================================================================================
 
-  _check_plugin_glew_deps (${_PLUGIN})
-  
+  get_property( global_core_app_libraries GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES)
+  foreach (_val ${${_PLUGIN}_ADD_CORE_APP_LIBRARIES})
+    list(APPEND global_core_app_libraries ${_val})
+    list(REMOVE_DUPLICATES global_core_app_libraries)
+  endforeach ()
+  set_property( GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES ${global_core_app_libraries} )
+
 
   #============================================================================================
   # Remember Lib dirs for bundle generation
@@ -472,7 +460,6 @@ function (_build_openflipper_plugin plugin)
       ${${_PLUGIN}_DEPS_INCDIRS}
       ${${_PLUGIN}_INCDIRS}
       ${OPENGL_INCLUDE_DIR}
-      ${GLEW_INCLUDE_DIR}
       ${GLUT_INCLUDE_DIR}
       ${CMAKE_BINARY_DIR}/OpenFlipper/PluginLib
       ${PACKAGE_INCLUDES}

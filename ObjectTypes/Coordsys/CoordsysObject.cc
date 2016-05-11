@@ -225,5 +225,15 @@ bool CoordsysObject::pickingEnabled() {
   return coordsysNode_->pickingEnabled();
 }
 
+// ===============================================================================
+// Update
+// ===============================================================================
+
+
+void CoordsysObject::update(UpdateType _type) {
+  BaseObject::update(_type);
+}
+
+
 //=============================================================================
 

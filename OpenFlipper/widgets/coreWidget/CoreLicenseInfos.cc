@@ -87,11 +87,6 @@ void CoreWidget::addCoreLicenseInfo() {
                ,"SimpleOpt");
 
 
-  addAboutInfo("The OpenFlipper project uses the FreeFont fonts for rendering.<br>"
-               "<br>"
-               "You can get the fonts from https://savannah.gnu.org/projects/freefont/"
-               ,"FreeFont");
-
   addAboutInfo("OpenFlipper uses Stackwalker for windows stack trace creation<br>"
                "StackWalker is licensed under the BSD license ( see below)<br>"
                "<br>"

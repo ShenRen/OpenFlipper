@@ -1,5 +1,18 @@
 cmake_minimum_required (VERSION 2.8.9)
 
+# ACG Environment default settings
+# This is ugly but currently we need to work around the default installed 5.3 on debian
+if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.5.1/5.5/gcc_64/ )
+  # Default to this install path for QT%_INSTALL_DIR
+  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.5.1/5.5/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
+endif()
+
+
+if ( WIN32 )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
+endif()
+
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
@@ -31,22 +44,60 @@ include (ACGCommon)
 acg_get_version (OpenFlipper)
 
 # ========================================================================
-# Branding Flags
+# Branding 
 # ========================================================================
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/branding.cmake )
-	include(${CMAKE_SOURCE_DIR}/branding/branding.cmake)
+
+
+# search all branding dirs in the packages and in toplevel
+file (
+  GLOB _local_branding_in
+  RELATIVE "${CMAKE_SOURCE_DIR}"
+           "${CMAKE_SOURCE_DIR}/branding"
+           "${CMAKE_SOURCE_DIR}/Package-*/branding"
+)
+
+# Get number of found branding dirs
+list(LENGTH _local_branding_in branding_dir_count)
+
+# Check if we found at least one branding directory
+if (  ${branding_dir_count} GREATER 0 )
+
+  list(GET _local_branding_in 0 BRANDING_DIRECTORY_TMP)
+  set( BRANDING_DIRECTORY "${CMAKE_SOURCE_DIR}/${BRANDING_DIRECTORY_TMP}" CACHE PATH "Path to the branding files")
+
+  if ( ${branding_dir_count} GREATER 1 )
+    message(WARNING "Found multiple branding dirs in : ${_local_branding_in}")
+    message(WARNING "Using only first branding directory: ${BRANDING_DIRECTORY}")    
+  endif()
+  
+elseif()
+  set( BRANDING_DIRECTORY "branding" CACHE PATH "Path to the branding files")
+
 endif()
 
+if ( EXISTS ${BRANDING_DIRECTORY}/branding.cmake )
+	include(${BRANDING_DIRECTORY}/branding.cmake)
+endif()
+
+if ( EXISTS ${BRANDING_DIRECTORY}/branding.h )
+  set( BRANDING_HEADER true CACHE String "Indicate there is a branding.h inside the branding folder that should be included.")
+endif()
+
+
+#Initialize with defaults, if not already set via branding cmake file
 set( OPENFLIPPER_PRODUCT_STRING "OpenFlipper" CACHE String "Product string used e.g. to determine the config file path. Should only contain alphanumeric characters (no spaces)." )
 set( OPENFLIPPER_PRODUCT_NAME "OpenFlipper" CACHE String "Product name used in all visible places (e.g. about box)." )
-set( BRANDING_HEADER false CACHE String "Indicate there is a branding.h inside the branding folder.")
-add_definitions(-DPRODUCT_STRING=${OPENFLIPPER_PRODUCT_STRING})
-add_definitions(-DPRODUCT_NAME=${OPENFLIPPER_PRODUCT_NAME})
 
 if (BRANDING_HEADER)
 add_definitions(-DBRANDING_HEADER)
 endif ()
+
+add_definitions(-DPRODUCT_STRING=${OPENFLIPPER_PRODUCT_STRING})
+add_definitions(-DPRODUCT_NAME=${OPENFLIPPER_PRODUCT_NAME})
+
+# ========================================================================
+# ========================================================================
 
 include (package)
 include (ACGOutput)
@@ -79,17 +130,11 @@ else()
 endif()
 
 acg_openmp ()
-#acg_ftgl ()
 
-# check for OpenGL, GLEW and GLUT as our required dependencies
+# check for OpenGL and GLUT as our required dependencies
 find_package (OpenGL)
 if (NOT OPENGL_FOUND)
   message (FATAL_ERROR "OpengGL not found!")
-endif ()
-
-find_package (GLEW)
-if (NOT GLEW_FOUND)
-  message (FATAL_ERROR "GLEW not found!")
 endif ()
 
 find_package (GLUT)

@@ -81,6 +81,8 @@
 
 class DLLEXPORT CameraObject : public BaseObjectData {
 
+  friend class TypeCameraPlugin;
+
   public:
     /// constructor
     CameraObject( );
@@ -174,6 +176,21 @@ class DLLEXPORT CameraObject : public BaseObjectData {
 
     /// Attached examiner id
     int examinerId_;
+
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+  protected:
+
+     /// Update the whole Object (Selection,Topology,...)
+    virtual void update(UpdateType _type = UPDATE_ALL);
+
+  /** @} */
 };
 
 //=============================================================================

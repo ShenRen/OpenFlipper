@@ -10,37 +10,26 @@ if (METIS_INCLUDE_DIR)
   SET(METIS_FIND_QUIETLY TRUE)
 endif (METIS_INCLUDE_DIR)
 
-if ( WIN32 ) 
+# Check if the base path is set
+if ( NOT CMAKE_WINDOWS_LIBS_DIR )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
+endif()
 
- if ( CMAKE_GENERATOR MATCHES ".*Win64" )
-   SET( DIRSUFFIX "lib64" )
- else ()
-   SET( DIRSUFFIX "lib" )
- endif()
+if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2012/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x32/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*Win64" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x64/")
+elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*" )
+  SET(VS_SEARCH_PATH "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x32/")
+endif()
 
-  if ( CMAKE_GENERATOR MATCHES "^Visual Studio 10.*" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2010/x32/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*Win64" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2012/x64/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2012/x32/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*Win64" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2013/x64/")
-  elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
-    SET(VS_SEARCH_PATH "c:/libs/vs2013/x32/")
-  endif()
-
-find_path(METIS_INCLUDE_DIR NAMES metis.h
-     PATHS "$ENV{IPOPT_HOME}/ThirdParty/Metis/metis-4.0/Lib/"        
-	       "${VS_SEARCH_PATH}suitesparse-metis-for-windows-1.2.2-install/include/"
-           
-   )
-   
-find_library( METIS_LIBRARY 
-              metis metis
-              PATHS "${VS_SEARCH_PATH}suitesparse-metis-for-windows-1.2.2-install/${DIRSUFFIX}" )
-					
-else(WIN32)
 
 find_path(METIS_INCLUDE_DIR NAMES metis.h
      PATHS "$ENV{IPOPT_HOME}/ThirdParty/Metis/metis-4.0/Lib/"
@@ -48,17 +37,27 @@ find_path(METIS_INCLUDE_DIR NAMES metis.h
            "/usr/include/metis"
            "/opt/local/include"
            "/opt/local/include/metis"
-           
-           
+           "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/include/metis"
    )
    
-find_library( METIS_LIBRARY 
+find_library( METIS_LIBRARY_RELEASE
               metis coinmetis
               PATHS "$ENV{IPOPT_HOME}/lib/"
                     "/usr/lib"
-                    "/opt/local/lib" )
-					
-endif()					
+                    "/opt/local/lib"
+                    "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+                    )
+                    
+find_library( METIS_LIBRARY_DEBUG
+              metisd coinmetisd
+              PATHS "$ENV{IPOPT_HOME}/lib/"
+                    "/usr/lib"
+                    "/opt/local/lib" 
+                    "${VS_SEARCH_PATH}Ipopt-3.12.4/Ipopt/MSVisualStudio/v8-ifort/installed/lib"
+                    )      
+                    
+include(SelectLibraryConfigurations)
+select_library_configurations( METIS )                   
 
 set(METIS_INCLUDE_DIRS "${METIS_INCLUDE_DIR}" )
 set(METIS_LIBRARIES "${METIS_LIBRARY}" )

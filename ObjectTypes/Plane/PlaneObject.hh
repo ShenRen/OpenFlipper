@@ -78,6 +78,8 @@
 
 class DLLEXPORT PlaneObject : public BaseObjectData {
 
+  friend class TypePlanePlugin;
+
   public: 
     /// constructor
     PlaneObject();
@@ -127,11 +129,15 @@ class DLLEXPORT PlaneObject : public BaseObjectData {
   /** @} */
 
   //===========================================================================
-  /** @name Content
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
    * @{ */
   //===========================================================================
 
-  public:
+  protected:
     /** \brief  This function is called to update the object
      *
      * If the object changes, the core will call this function. This function
@@ -140,6 +146,8 @@ class DLLEXPORT PlaneObject : public BaseObjectData {
      * \note Do not call this function yourself to avoid unnecessary overhead(the core will call it when it is required)
      */
     void update(UpdateType _type = UPDATE_ALL );
+
+   /** @} */
         
   //===========================================================================
   /** @name Visualization

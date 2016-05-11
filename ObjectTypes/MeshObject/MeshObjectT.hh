@@ -101,6 +101,10 @@ typedef ACG::SceneGraph::TextureNode                      TextureNode;
  */
 template < class MeshT >
 class DLLEXPORTONLY MeshObject : public BaseObjectData {
+
+  friend class TypePolyMeshPlugin;
+  friend class TypeTriangleMeshPlugin;
+
   public:
 
     /** \brief copy constructor
@@ -148,6 +152,23 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     /// return a pointer to the mesh
     MeshT* mesh();
 
+  private:
+    /// pointer to the mesh
+    MeshT* mesh_;
+
+    /** @} */
+
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+
+  protected:
+
     /// Update the whole Object (Selection,Topology,...)
     virtual void update(UpdateType _type = UPDATE_ALL);
 
@@ -172,8 +193,6 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     /// Update Texture of all data structures
     void updateTexture();
 
-  private:
-    MeshT*           mesh_;
 
   /** @} */
 
@@ -242,6 +261,23 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     void setHandleColor(const ACG::Vec4f& _color);
     /// get color for handles. returns -1 vector, if handle node does not exists
     ACG::Vec4f handleColor() const;
+
+    /// Returns the status node (visualizing the selection) if available,
+    /// nullptr otherwise.
+    ACG::SceneGraph::SelectionNodeT<MeshT> *
+    statusNode() { return statusNode_; }
+
+    /// Returns the area selection node if available, nullptr otherwise.
+    ACG::SceneGraph::StatusNodeT<MeshT, AreaNodeMod<MeshT> > *
+    areaNode() { return areaNode_; }
+
+    /// Returns the handle selection node if available, nullptr otherwise.
+    ACG::SceneGraph::StatusNodeT<MeshT, HandleNodeMod<MeshT> > *
+    handleNode() { return handleNode_; }
+
+    /// Returns the feature selection node if available, nullptr otherwise.
+    ACG::SceneGraph::StatusNodeT<MeshT, FeatureNodeMod<MeshT> > *
+    featureNode() { return featureNode_; }
 
   private :
     /// Status Node for a mesh, visualizing the selection state of a mesh
@@ -339,6 +375,16 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
      * @return Pointer to bsp or Null if unsupported for this type.
      */
      OMTriangleBSP* resetTriangleBsp();
+
+     /** \brief check if a BSP has been computed and is valid
+     *
+     * This function checks if a bsp has been computed for this mesh object and
+     * if it is still valid (meaning, nothing has been changed on the object after
+     * the BSP has been computed
+     *
+     * @return BSP valid?
+     */
+     bool hasBsp() const;
 
 
   private :

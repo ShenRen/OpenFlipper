@@ -84,7 +84,7 @@ endmacro ()
 
 
 # set directory structures for the different platforms
-if (WIN32)
+if (CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
   set (ACG_PROJECT_DATADIR ".")
   set (ACG_PROJECT_LIBDIR "lib")
   set (ACG_PROJECT_BINDIR ".")
@@ -713,7 +713,7 @@ endmacro ()
 macro (acg_get_files_in_dir ret dir)
   file (GLOB_RECURSE __files RELATIVE "${dir}" "${dir}/*")
   foreach (_file ${__files})
-    if (NOT _file MATCHES ".*svn.*")
+    if ( (NOT _file MATCHES ".*svn.*") AND (NOT _file MATCHES ".DS_Store") )
       list (APPEND ${ret} "${_file}")
     endif ()
   endforeach ()
@@ -965,25 +965,3 @@ function (generate_qhp_file files_loc plugin_name)
     endforeach()
 endfunction()
 
-function(acg_test_glew_definition _def _out)
-  include(CheckCXXSourceRuns)
-  set(CMAKE_REQUIRED_INCLUDES ${GLEW_INCLUDE_DIRS})
-  set(CMAKE_REQUIRED_LIBRARIES ${GLEW_LIBRARIES})
-  set(CMAKE_REQUIRED_DEFINITIONS -DCHECKING=${_def})
-  if(GLEW_FOUND)
-    if(NOT ${_out})
-      unset(${_out} CACHE) #clear cache, if previous test failed and try again
-    endif()
-    CHECK_CXX_SOURCE_RUNS("
-      #include <GL/glew.h>
-      int main()
-      {
-      #ifdef ${_def}
-      return 0;
-      #else
-      return 1;
-      #endif
-      }"
-      ${_out})
-  endif()
-endfunction()

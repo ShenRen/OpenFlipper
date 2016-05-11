@@ -7,7 +7,6 @@ include_directories (
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${OPENGL_INCLUDE_DIR}
-  ${GLEW_INCLUDE_DIR}
   ${GLUT_INCLUDE_DIR}
 )
 
@@ -29,14 +28,8 @@ if( APPLE )
   endforeach ()
 
   link_directories (
-    ${GLEW_LIBRARY_DIR}
     ${ADDITIONAL_PLUGINLIB_LINK_DIRS}
   )
-
-else (APPLE)
-   link_directories (
-      ${GLEW_LIBRARY_DIR}
-   )
 endif(APPLE)
 
 if (WIN32)
@@ -91,12 +84,12 @@ endif()
 
 set(RC_SRC "")
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/branding.qrc )
+if ( EXISTS ${BRANDING_DIRECTORY}/branding.qrc )
         if ( QT5_FOUND )
-            QT5_ADD_RESOURCES(BRANDING_RC_SRC "${CMAKE_SOURCE_DIR}/branding/branding.qrc")
+            QT5_ADD_RESOURCES(BRANDING_RC_SRC "${BRANDING_DIRECTORY}/branding.qrc")
             list(APPEND RC_SRC ${BRANDING_RC_SRC})
         else()
-    	    QT4_ADD_RESOURCES(BRANDING_RC_SRC "${CMAKE_SOURCE_DIR}/branding/branding.qrc")
+    	    QT4_ADD_RESOURCES(BRANDING_RC_SRC "${BRANDING_DIRECTORY}/branding.qrc")
   	    list(APPEND RC_SRC ${BRANDING_RC_SRC})
         endif()
 endif()
@@ -169,11 +162,18 @@ endif ()
 # where we need to link the library directly into the core to prevent 
 # linker problems
 # ====================================================================================
+
 # Get the property containing the list of all dependencies of the plugins
 # List is created when the plugins are added
 get_property( global_dependency_list GLOBAL PROPERTY GLOBAL_PLUGIN_DEPENDENCIES_LIST)
 
 set(COREAPP_ADDITIONAL_LINK_LIBRARIES "")
+
+# Get additional libraries from plugins that should be linked into the core
+get_property( global_core_app_libraries GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES)
+foreach (_val ${global_core_app_libraries})
+  list(APPEND COREAPP_ADDITIONAL_LINK_LIBRARIES ${_val})
+endforeach ()
 
 # Special Handling for mpi
 list( FIND global_dependency_list "MPI" found)
@@ -222,7 +222,6 @@ target_link_libraries (${OPENFLIPPER_PRODUCT_STRING}
   OpenFlipperPluginLib
   ${QT_LIBRARIES}
   ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARY}
   ${GLUT_LIBRARIES}
   ${COREAPP_ADDITIONAL_LINK_LIBRARIES}
   ${OPENFLIPPER_STATIC_PLUGINS}
@@ -230,31 +229,31 @@ target_link_libraries (${OPENFLIPPER_PRODUCT_STRING}
 
 if (APPLE)
 
-   if ( EXISTS ${CMAKE_SOURCE_DIR}/branding )
+   if ( EXISTS ${BRANDING_DIRECTORY} )
 
      # Take bundle icon from branding dir
      IF ( NOT APPLE_BUNDLE_ICON )
         # option to set the used Icon for OpenFlipper
-        set ( APPLE_BUNDLE_ICON "${CMAKE_SOURCE_DIR}\\branding\\mac\\OpenFlipper_Icon.icns" CACHE FILEPATH "Path to the Bundle Icon" )
+        set ( APPLE_BUNDLE_ICON "${BRANDING_DIRECTORY}\\mac\\OpenFlipper_Icon.icns" CACHE FILEPATH "Path to the Bundle Icon" )
      ENDIF(NOT APPLE_BUNDLE_ICON )    
  
      # Take plist from branding
      IF ( NOT APPLE_INFO_PLIST )
-       if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/mac/Info.plist )
+       if ( EXISTS ${BRANDING_DIRECTORY}/mac/Info.plist )
          # option to configure the custom Info.plist
-         set ( APPLE_INFO_PLIST "${CMAKE_SOURCE_DIR}\\branding\\mac\\Info.plist" CACHE FILEPATH "Path to the Info.plist file for Bundle" )
-       else ( EXISTS ${CMAKE_SOURCE_DIR}/branding/mac/Info.plist )
+         set ( APPLE_INFO_PLIST "${BRANDING_DIRECTORY}\\mac\\Info.plist" CACHE FILEPATH "Path to the Info.plist file for Bundle" )
+       else ( EXISTS ${BRANDING_DIRECTORY}/mac/Info.plist )
          # option to configure a custum Info.plist but configure with default one
          set ( APPLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/../installer/mac/Info.plist" CACHE FILEPATH "Path to the Info.plist file for Bundle" )
-       endif( EXISTS ${CMAKE_SOURCE_DIR}/branding/mac/Info.plist )
+       endif( EXISTS ${BRANDING_DIRECTORY}/mac/Info.plist )
      ENDIF(NOT APPLE_INFO_PLIST )
 
   else()
 
     IF ( NOT APPLE_BUNDLE_ICON )
         # option to set the used Icon for OpenFlipper
-        if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/Icons/OpenFlipper_Icon.icns )
-          set ( APPLE_BUNDLE_ICON " ${CMAKE_SOURCE_DIR}/branding/Icons/OpenFlipper_Icon.icns" CACHE FILEPATH "Path to the Bundle Icon" )
+        if ( EXISTS ${BRANDING_DIRECTORY}/Icons/OpenFlipper_Icon.icns )
+          set ( APPLE_BUNDLE_ICON " ${BRANDING_DIRECTORY}/Icons/OpenFlipper_Icon.icns" CACHE FILEPATH "Path to the Bundle Icon" )
         else()
           set ( APPLE_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/../Icons/OpenFlipper_Icon.icns" CACHE FILEPATH "Path to the Bundle Icon" )
         endif()
@@ -304,13 +303,13 @@ acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${CMAKE_CURRENT_SOURCE_DIR}
 acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${CMAKE_CURRENT_SOURCE_DIR}/../Fonts" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Fonts")
 acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${CMAKE_CURRENT_SOURCE_DIR}/../Documentation/QtHelpResources" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Help")
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/branding )
+if ( EXISTS ${BRANDING_DIRECTORY} )
   if ( WIN32 ) 
-    acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${CMAKE_SOURCE_DIR}/branding/win/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
+    acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${BRANDING_DIRECTORY}/win/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
   elseif( APPLE )
-    acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${CMAKE_SOURCE_DIR}/branding/mac/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
+    acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${BRANDING_DIRECTORY}/mac/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
   elseif()
-    acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${CMAKE_SOURCE_DIR}/branding/linux/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
+    acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${BRANDING_DIRECTORY}/linux/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
   endif()
 endif()
 
@@ -385,17 +384,17 @@ if (NOT APPLE)
 	acg_install_dir ("${CMAKE_BINARY_DIR}/Build/QtPlugins/" "${ACG_PROJECT_DATADIR}/QtPlugins")
   endif(WIN32)
   
-  if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/win )
+  if ( EXISTS ${BRANDING_DIRECTORY}/win )
     if ( WIN32 ) 
-      acg_install_dir ( "${CMAKE_SOURCE_DIR}/branding/win" "${ACG_PROJECT_DATADIR}/Icons")
+      acg_install_dir ( "${BRANDING_DIRECTORY}/win" "${ACG_PROJECT_DATADIR}/Icons")
      endif()
   endif()
 
 endif ()
 
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/branding/Icons )
+if ( EXISTS ${BRANDING_DIRECTORY}/Icons )
   # Overwrite generic Icons with branded ones.
-  acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${CMAKE_SOURCE_DIR}/branding/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
-  acg_install_dir ("${CMAKE_SOURCE_DIR}/branding/Icons" "${ACG_PROJECT_DATADIR}/Icons")
+  acg_copy_after_build (${OPENFLIPPER_PRODUCT_STRING} "${BRANDING_DIRECTORY}/Icons" "${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Icons")
+  acg_install_dir ("${BRANDING_DIRECTORY}/Icons" "${ACG_PROJECT_DATADIR}/Icons")
 endif()

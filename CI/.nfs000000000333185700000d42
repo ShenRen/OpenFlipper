@@ -20,7 +20,7 @@ echo "Please Wait ..."
 
 # Run cppcheck and output into file
 cppcheck  --enable=all \
-          -j4 \
+          -j8 \
           --quiet \
           -i libs_required \
           -i build-release \

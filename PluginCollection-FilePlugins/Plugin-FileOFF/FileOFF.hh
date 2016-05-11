@@ -269,7 +269,7 @@ class FileOFFPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     bool forceTriangleMesh_;
     bool forcePolyMesh_;
     bool readColorComp_;
-    OFFImporter::ObjectOptionsE trimeshOptions;
+    OFFImporter::ObjectOptionsE trimeshOptions_;
 };
 
 #if defined(INCLUDE_TEMPLATES) && !defined(FILEOFFPLUGIN_C)

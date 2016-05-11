@@ -94,11 +94,25 @@ public:
       slice_width_(0),
       offset_(0)
   {
+    plane0_[0] = 0.0;
+    plane0_[1] = 0.0;
+    plane0_[2] = 0.0;
+    plane0_[3] = 0.0;
+
+    plane1_[0] = 0.0;
+    plane1_[1] = 0.0;
+    plane1_[2] = 0.0;
+    plane1_[3] = 0.0;
+
     offset_plane0_[0] = 0.0;
     offset_plane0_[1] = 0.0;
     offset_plane0_[2] = 0.0;
     offset_plane0_[3] = 0.0;
 
+    offset_plane1_[0] = 0.0;
+    offset_plane1_[1] = 0.0;
+    offset_plane1_[2] = 0.0;
+    offset_plane1_[3] = 0.0;
   }
 
 

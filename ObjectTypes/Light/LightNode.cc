@@ -607,7 +607,6 @@ void LightNode::setParameters(GLenum _index, LightSource& _light)
   glLightfv(_index, GL_SPECULAR, specular);
 
   Vec3d& sd = _light.realSpotDirection_;
-  GLfloat dir[3] = {(float)sd[0], (float)sd[1], (float)sd[2]};
 
   bool directional = _light.directional();
 
@@ -616,7 +615,11 @@ void LightNode::setParameters(GLenum _index, LightSource& _light)
 
   glLightfv(_index, GL_POSITION,  realPos);
 
-  if(!directional) glLightfv(_index, GL_SPOT_DIRECTION,  dir);
+  if(!directional) {
+    GLfloat dir[3] = {(float)sd[0], (float)sd[1], (float)sd[2]};
+    glLightfv(_index, GL_SPOT_DIRECTION,  dir);
+  }
+
   if(!directional) glLightf(_index, GL_SPOT_EXPONENT,  _light.spotExponent_);
   if(!directional) glLightf(_index, GL_SPOT_CUTOFF,  _light.spotCutoff_);
 

@@ -82,7 +82,6 @@ struct DLLEXPORT PostProcessorInput
   // format of color tex
   GLuint texfmt_;
 
-
   // view and projection matrix
   ACG::GLMatrixf view_;
   ACG::GLMatrixf proj_;

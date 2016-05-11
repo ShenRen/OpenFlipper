@@ -73,7 +73,7 @@ public:
 
 signals:
   // BaseInterface
-  void updatedObject(int, const UpdateType);
+  void updatedObject(int _id, const UpdateType& _type);
 
   // LoggingInterface
   void log(Logtype _type, QString _message);

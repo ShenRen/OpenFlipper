@@ -502,10 +502,10 @@ bool LicenseManager::authenticate() {
   // ===============================================================================================
   // Check License or generate request
   // ===============================================================================================
-  bool alreadyExpired = true;
 
   if (!elements.empty()) //valid file was found
   {
+
     // Check expiry date
     QDate currentDate = QDate::currentDate();
     QDate expiryDate  = QDate::fromString(elements[1],Qt::ISODate);
@@ -522,16 +522,11 @@ bool LicenseManager::authenticate() {
         macFound = true;
     }
 
-    if (timestampOk()) {
-        alreadyExpired = false;
-    }
-
-
     if ( !signatureOk ) {
       authstring_ += tr("License Error: The license file signature for Plugin \"") + name() + tr("\" is invalid!\n\n");
     } else if ( expired ) {
       authstring_ += tr("License Error: The license for plugin \"") + name() + tr("\" has expired on ") + elements[1] + "!\n\n";       
-    } else if ( alreadyExpired ) {
+    } else if ( !timestampOk() ) {
       authstring_ += tr("License Error: System time has been reset. The license for plugin \"") + name() + tr("\" has been expired!\n\n");
     } else if ( elements[2] != pluginFileName() ) {
       authstring_ += tr("License Error: The license file contains plugin name\"") + elements[2] + tr("\" but this is plugin \"") + name() + "\"!\n\n";

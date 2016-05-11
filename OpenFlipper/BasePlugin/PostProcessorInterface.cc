@@ -53,7 +53,8 @@
 
 
 
-PostProcessorInput::PostProcessorInput( GLuint _colTex, GLuint _depthTex, int _width, int _height) : colorTex_(_colTex), depthTex_(_depthTex), width(_width), height(_height), sampleCount_(0)
+PostProcessorInput::PostProcessorInput( GLuint _colTex, GLuint _depthTex, int _width, int _height) :
+  colorTex_(_colTex), depthTex_(_depthTex), width(_width), height(_height), sampleCount_(0), texfmt_(0)
 {
   view_.identity(); 
   proj_.identity();

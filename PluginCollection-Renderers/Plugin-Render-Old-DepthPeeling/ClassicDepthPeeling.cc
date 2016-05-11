@@ -79,6 +79,9 @@ DepthPeelingPlugin::DepthPeelingPlugin() :
   for (unsigned int i = 0; i < 4; ++i)
     blendDualPeelProg_[i] = 0;
 
+  for (unsigned int i = 0; i < 16; ++i)
+    glLightIDs_[i] = 0;
+
 
 }
 
@@ -255,7 +258,7 @@ void DepthPeelingPlugin::generatePeelingShaders(GLSL::StringList* _strVertexShad
     std::string strMaterial = "gl_FrontLightProduct[";
     {
       char szTmp[8];
-      sprintf(szTmp, "%d]", glLightIDs_[i]);
+      sprintf(szTmp, "%u]", glLightIDs_[i]);
 
       strLight += szTmp;
       strMaterial += szTmp;

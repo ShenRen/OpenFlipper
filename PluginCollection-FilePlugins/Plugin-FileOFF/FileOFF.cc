@@ -93,7 +93,9 @@ FileOFFPlugin::FileOFFPlugin()
   userWriteOptions_(0),
   forceTriangleMesh_(false),
   forcePolyMesh_(false),
-  readColorComp_(false) {
+  readColorComp_(false),
+  trimeshOptions_(OFFImporter::NONE)
+{
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -534,9 +536,9 @@ bool FileOFFPlugin::readOFFFile(QString _filename, OFFImporter& _importer) {
             // Create message box
             QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
 
-            if (trimeshOptions == OFFImporter::TRIMESH)
+            if (trimeshOptions_ == OFFImporter::TRIMESH)
                 type = DATA_TRIANGLE_MESH;
-            else if (trimeshOptions == OFFImporter::POLYMESH)
+            else if (trimeshOptions_ == OFFImporter::POLYMESH)
                 type = DATA_POLY_MESH;
             else
                 type = _importer.isTriangleMesh() ? DATA_TRIANGLE_MESH : DATA_POLY_MESH;
@@ -579,9 +581,9 @@ void FileOFFPlugin::handleTrimeshDialog()
 
 
    if (msgBox.clickedButton() == triButton)
-    trimeshOptions =  OFFImporter::TRIMESH ;
+     trimeshOptions_ =  OFFImporter::TRIMESH ;
    else if (msgBox.clickedButton() == polyButton)
-    trimeshOptions = OFFImporter::POLYMESH ;
+     trimeshOptions_ = OFFImporter::POLYMESH ;
 }
 
 //-----------------------------------------------------------------------------------------------------

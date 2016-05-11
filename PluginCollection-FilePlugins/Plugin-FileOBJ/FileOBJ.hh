@@ -253,7 +253,7 @@ class FileOBJPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     QString textureIndexPropertyName_;
     bool    textureIndexPropFetched_;
     std::map<int,QString> texIndexFileMap_;
-    OBJImporter::ObjectOptionsE trimeshOptions;
+    OBJImporter::ObjectOptionsE trimeshOptions_;
 };
 
 

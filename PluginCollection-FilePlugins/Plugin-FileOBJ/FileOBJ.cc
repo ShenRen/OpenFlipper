@@ -114,7 +114,8 @@ FileOBJPlugin::FileOBJPlugin()
   loadDefaultButton_(0),
   forceTriangleMesh_(false),
   forcePolyMesh_(false),
-  textureIndexPropFetched_(false)
+  textureIndexPropFetched_(false),
+  trimeshOptions_(OBJImporter::NONE)
 {
 }
 
@@ -1750,9 +1751,9 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
 
       case TYPEASK: //ask
         QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
-        if (trimeshOptions == OBJImporter::TRIMESH )
+        if (trimeshOptions_ == OBJImporter::TRIMESH )
           _importer.forceMeshType( OBJImporter::TRIMESH );
-        else if (trimeshOptions == OBJImporter::POLYMESH)
+        else if (trimeshOptions_ == OBJImporter::POLYMESH)
           _importer.forceMeshType( OBJImporter::POLYMESH );
 
         break;
@@ -1784,9 +1785,9 @@ void FileOBJPlugin::handleTrimeshDialog()
 
 
    if (msgBox.clickedButton() == triButton)
-    trimeshOptions =  OBJImporter::TRIMESH ;
+    trimeshOptions_ =  OBJImporter::TRIMESH ;
    else if (msgBox.clickedButton() == polyButton)
-    trimeshOptions = OBJImporter::POLYMESH ;
+    trimeshOptions_ = OBJImporter::POLYMESH ;
 }
 
 //-----------------------------------------------------------------------------------------------------

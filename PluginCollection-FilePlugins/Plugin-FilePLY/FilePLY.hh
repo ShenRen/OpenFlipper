@@ -175,7 +175,8 @@ class FilePLYPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     QCheckBox*   loadFaceNormal_;
     QCheckBox*   loadFaceColor_;
     QPushButton* loadDefaultButton_;
-    int trimeshOptions;
+
+    int          trimeshOptions_;
 };
 
 #if defined(INCLUDE_TEMPLATES) && !defined(FILEPLYPLUGIN_C)

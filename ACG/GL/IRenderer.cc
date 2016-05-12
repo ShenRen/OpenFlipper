@@ -316,7 +316,7 @@ void IRenderer::addRenderObject(ACG::RenderObject* _renderObject)
     p->internalFlags_ = 0;
 
     // precompile shader
-#ifdef GL_GEOMETRY_INPUT_TYPE
+#ifdef GL_VERSION_3_2
     GLSL::Program* shaderProg = ACG::ShaderCache::getInstance()->getProgram(&p->shaderDesc);
 #endif
 
@@ -324,7 +324,7 @@ void IRenderer::addRenderObject(ACG::RenderObject* _renderObject)
     // check primitive type and geometry shader
     if (errorDetectionLevel_ > 1 && p->shaderDesc.geometryTemplateFile.length())
     {
-#ifdef GL_GEOMETRY_INPUT_TYPE
+#ifdef GL_VERSION_3_2
       GLint geomInputType = 0;
       glGetProgramiv(shaderProg->getProgramId(), GL_GEOMETRY_INPUT_TYPE, &geomInputType);
 

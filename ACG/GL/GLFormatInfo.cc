@@ -47,7 +47,6 @@
  *                                                                            *
  \*===========================================================================*/
 
-#include <ACG/GL/acg_glew.hh>
 #include <ACG/GL/GLFormatInfo.hh>
 #include <iostream>
 #include <QString>
@@ -82,6 +81,7 @@ GLFormatInfo::GLFormatInfo( GLenum _internalFormat )
     registerFmt(GL_DEPTH_STENCIL, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 24, 8, 0, 0, UnsignedInt, false);
     registerFmt(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, 24, 8, 0, 0, UnsignedInt, false);
 
+#ifdef GL_VERSION_3_0
     // single channel formats
     registerFmt(GL_R8, GL_RED, GL_UNSIGNED_BYTE, 8, 0, 0, 0, UnsignedInt, true);
     registerFmt(GL_R8_SNORM, GL_RED, GL_BYTE, 8, 0, 0, 0, SignedInt, true);
@@ -130,18 +130,19 @@ GLFormatInfo::GLFormatInfo( GLenum _internalFormat )
     registerFmt(GL_RGBA32I, GL_RGBA_INTEGER, GL_INT, 32, 32, 32, 32, SignedInt, false);
     registerFmt(GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT, 32, 32, 32, 32, UnsignedInt, false);
     registerFmt(GL_RGBA32F, GL_RGBA, GL_FLOAT, 32, 32, 32, 32, FloatingPt, false);
+#endif // GL_VERSION_3_0
 
     // depth
     registerFmt(GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 24, 0, 0, 0, UnsignedInt, false);
     registerFmt(GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, 16, 0, 0, 0, UnsignedInt, false);
-#ifdef GL_DEPTH_COMPONENT32F
+#ifdef GL_ARB_depth_buffer_float
     registerFmt(GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT, 32, 0, 0, 0, FloatingPt, false);
     registerFmt(GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, 32, 8, -24, 0, FloatingPt, false);
-#endif
+#endif // GL_ARB_depth_buffer_float
 
-#ifdef GL_STENCIL_INDEX8
+#ifdef GL_ARB_texture_stencil8
     registerFmt(GL_STENCIL_INDEX8, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 8, 0, 0, 0,  UnsignedInt, false);
-#endif
+#endif // GL_ARB_texture_stencil8
   }
 
   std::map<GLenum, GLFormatInfo>::iterator f = formatMap_.find(_internalFormat);

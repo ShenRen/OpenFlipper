@@ -125,6 +125,7 @@ void FBO::del()
 
 void FBO::attachTexture( GLenum _attachment, GLuint _texture, GLuint _level )
 {
+#ifdef GL_VERSION_3_2
   // bind fbo
   bind();
 
@@ -154,6 +155,9 @@ void FBO::attachTexture( GLenum _attachment, GLuint _texture, GLuint _level )
 
   // track texture id
   attachments_[_attachment] = intID;
+#else
+  std::cerr << "error: FBO::attachTexture unsupported - update glew headers and rebuild" << std::endl;
+#endif
 }
 
 //-----------------------------------------------------------------------------

@@ -198,7 +198,7 @@ class DLLEXPORT QtWidgetObject : public BaseObjectData {
    * @{ */
   //===========================================================================
 
-  private:
+  protected:
     /** \brief  This function is called to update the object
      *
      * If the object changes, the core will call this function. This function

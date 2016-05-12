@@ -185,7 +185,7 @@ class DLLEXPORT CameraObject : public BaseObjectData {
    *
    * @{ */
   //===========================================================================
-  private:
+  protected:
 
      /// Update the whole Object (Selection,Topology,...)
     virtual void update(UpdateType _type = UPDATE_ALL);

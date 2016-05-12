@@ -16,7 +16,6 @@
 #                      [TRANSLATION_ADDFILES file1 file2 ...]
 #                      [LICENSEMANAGER])
 #
-
 # DIRS                   = additional directories with source files
 # DEPS                   = required dependencies for find_package macro
 # OPTDEPS                = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
@@ -29,7 +28,6 @@
 # INCDIRS                = additional include directories
 # ADDSRC                 = additional source files
 # INSTALLDATA            = directories that will be installed into the openflipper data directory
-# GLEWDEFINITIONS = Checks glew if it defines the given definitions
 #
 # TRANSLATION_LANGUAGES = language codes for translation
 # TRANSLATION_ADDFILES  = additional files that should be included into the translation files
@@ -72,7 +70,7 @@ endmacro ()
 macro (_get_plugin_parameters _prefix)
     set (_current_var _foo)
     set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD
-      LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA GLEWDEFINITIONS TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
+      LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
     set (_supported_flags LICENSEMANAGER)
     foreach (_val ${_supported_var})
         set (${_prefix}_${_val})
@@ -376,26 +374,6 @@ macro (_plugin_licensemanagement)
   endif()
 endmacro ()
 
-#======================================================
-# check dependencies in GLEW library
-# _prefix    : prefix used ( usually the plugin name )
-#======================================================
-macro (_check_plugin_glew_deps _prefix )
-
- foreach (_extension ${${_prefix}_GLEWDEFINITIONS})
-
-   acg_test_glew_definition( ${_extension} ${_prefix}_GLEW_HAS_DEFINITION_${_extension}  )
-
-   # If the dependency is not found, we disable the plugin
-   if(NOT ${_prefix}_GLEW_HAS_DEFINITION_${_extension} )
-      set (${_prefix}_HAS_DEPS FALSE)
-      acg_set (_${_prefix}_MISSING_DEPS "${_${_prefix}_MISSING_DEPS} GLEW extension ${_extension}")
-   endif()
-
- endforeach()
-
-endmacro ()
-
 
 
 #======================================================
@@ -438,10 +416,6 @@ function (_build_openflipper_plugin plugin)
   endforeach ()
   set_property( GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES ${global_core_app_libraries} )
 
-  # CHECK for GLEW definitions
-  #============================================================================================
-
-  _check_plugin_glew_deps (${_PLUGIN})
 
   #============================================================================================
   # Remember Lib dirs for bundle generation
@@ -486,7 +460,6 @@ function (_build_openflipper_plugin plugin)
       ${${_PLUGIN}_DEPS_INCDIRS}
       ${${_PLUGIN}_INCDIRS}
       ${OPENGL_INCLUDE_DIR}
-      ${GLEW_INCLUDE_DIR}
       ${GLUT_INCLUDE_DIR}
       ${CMAKE_BINARY_DIR}/OpenFlipper/PluginLib
       ${PACKAGE_INCLUDES}

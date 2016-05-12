@@ -60,6 +60,7 @@
 //== INCLUDES =================================================================
 
 #include <common/glew_wrappers.hh>
+
 #include "CoreWidget.hh"
 #include <OpenFlipper/common/FileTypes.hh>
 
@@ -592,11 +593,12 @@ void CoreWidget::showAboutWidget( ) {
   #ifndef __APPLE__
   aboutWidget_->OpenFlipperAbout->append("\n");
   aboutWidget_->OpenFlipperAbout->setCurrentFont(boldFont);
-  aboutWidget_->OpenFlipperAbout->append(tr("GLEW Specific Info:"));
+  aboutWidget_->OpenFlipperAbout->append(tr("OpenGL Specific Info:"));
   aboutWidget_->OpenFlipperAbout->setCurrentFont(standardFont);
   
-  QString glewVersion = QString(getGlewVersion());
-  aboutWidget_->OpenFlipperAbout->append(tr("GLEW Version:\t") + glewVersion);
+  //TODO: rename this we are not using glew anymore
+  QString glewVersion = QString(getOpenGLVersion());
+  aboutWidget_->OpenFlipperAbout->append(tr("OpenGL Version:\t") + glewVersion);
   #endif
   
   // =====================================================================================

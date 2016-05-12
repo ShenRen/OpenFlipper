@@ -11,7 +11,6 @@ OpenFlipper.
 <ul>
 <li> 5.5 >= Qt >= 4.8.6  ( http://www.qt.io/download/ ) Use the OpenGL version for Qt >= 5.0</li>
 <li> GLUT         ( http://www.opengl.org/resources/libraries/glut/ )</li>
-<li> GLEW (>=1.6) ( http://glew.sourceforge.net )</li>
 </ul>
 
 \section optlibs Optional libraries ( Without these libraries some functionality might not be available) 

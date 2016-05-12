@@ -69,11 +69,8 @@
 
 #elif defined(WIN32)
 
+  #include "acg_glew.hh"
   #include <windows.h>
-  // Dont do this anymore! Use dll version. No problems with plugins and dll
-  // but a lot with static linking
-  // #  define GLEW_STATIC 1
-  #include <gl/glew.h>
   #include <gl/glut.h>
 
 #else

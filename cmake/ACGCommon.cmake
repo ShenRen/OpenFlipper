@@ -260,84 +260,55 @@ macro (acg_qt5)
   
     
     find_package (Qt5Core QUIET)
-    if(Qt5Core_FOUND)
-        string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" QT_VERSION_MAJOR "${Qt5Core_VERSION_STRING}")
-        string(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+.*" "\\1" QT_VERSION_MINOR "${Qt5Core_VERSION_STRING}")
-        string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" QT_VERSION_PATCH "${Qt5Core_VERSION_STRING}")
-
-      #find WINDOWS_SDK to avoid qt error. This must be done BEFORE Qt5Widgets is searched
-      if (WIN32)
-        if ( (QT_VERSION_MAJOR EQUAL 5) AND (QT_VERSION_MINOR LESS 3 OR ( QT_VERSION_MINOR EQUAL 3 AND QT_VERSION_PATCH EQUAL 0 )) ) # for all Qt version > 5.0.0 and < 5.3.1
-          #glu32.lib is needed by qt5 opengl version. it cannot find it by itself so we help qt
-          #this block has to be executed, before Qt5Gui is searched, otherwise we will end up with the (not so useful) QT5 error message
-          set(WINDOWS_SDK_LIBS "COULD_NOT_FOUND" CACHE PATH "Path to the latest windows sdk libs which includes glu32.lib. Used by Qt5.")
-          if (EXISTS "${WINDOWS_SDK_LIBS}\\glu32.lib")
-            set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${WINDOWS_SDK_LIBS}")
-          elseif(QT5_INSTALL_PATH_EXISTS) #trying to install qt5. notify about missing sdk before the qt message comes
-            message(FATAL_ERROR "Could not find glu32.lib. This is necessary for QT5 OpenGL version for windows, spleace specify glu32.lib in WINDOWS_SDK_LIB or install Qt version >= 5.3.1")
-          endif()
+     
+    #find WINDOWS_SDK to avoid qt error. This must be done BEFORE Qt5Widgets is searched
+    if (Qt5Core_FOUND AND WIN32)    
+      string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" QT_VERSION_MAJOR "${Qt5Core_VERSION_STRING}")
+      string(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+.*" "\\1" QT_VERSION_MINOR "${Qt5Core_VERSION_STRING}")
+      string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" QT_VERSION_PATCH "${Qt5Core_VERSION_STRING}")
+    
+      if ( (QT_VERSION_MAJOR EQUAL 5) AND (QT_VERSION_MINOR LESS 3 OR ( QT_VERSION_MINOR EQUAL 3 AND QT_VERSION_PATCH EQUAL 0 )) ) # for all Qt version > 5.0.0 and < 5.3.1
+        #glu32.lib is needed by qt5 opengl version. it cannot find it by itself so we help qt
+        #this block has to be executed, before Qt5Gui is searched, otherwise we will end up with the (not so useful) QT5 error message 
+        set(WINDOWS_SDK_LIBS "COULD_NOT_FOUND" CACHE PATH "Path to the latest windows sdk libs which includes glu32.lib. Used by Qt5.")
+        if (EXISTS "${WINDOWS_SDK_LIBS}\\glu32.lib")
+          set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${WINDOWS_SDK_LIBS}")
+        elseif(QT5_INSTALL_PATH_EXISTS) #trying to install qt5. notify about missing sdk before the qt message comes
+          message(FATAL_ERROR "Could not find glu32.lib. This is necessary for QT5 OpenGL version for windows, spleace specify glu32.lib in WINDOWS_SDK_LIB or install Qt version >= 5.3.1")
         endif()
-      endif(WIN32)
+      endif()    
+    endif(Qt5Core_FOUND AND WIN32)
+    
+    find_package (Qt5Declarative QUIET)
+    find_package (Qt5Widgets QUIET)    
+    find_package (Qt5Gui QUIET)
+    find_package (Qt5OpenGL QUIET)
+    find_package (Qt5Network QUIET)
+    find_package (Qt5Script QUIET)
+    find_package (Qt5ScriptTools QUIET)
+    find_package (Qt5Sql QUIET)
+    find_package (Qt5Xml QUIET)
+    find_package (Qt5XmlPatterns QUIET)
+    find_package (Qt5Help QUIET)
+    find_package (Qt5WebKit QUIET)
+    find_package (Qt5UiTools QUIET)
+    find_package (Qt5Concurrent QUIET)
+    find_package (Qt5PrintSupport QUIET)
+    find_package (Qt5Svg QUIET)
+    
+    if (NOT WIN32 AND NOT APPLE)
+    	find_package (Qt5X11Extras QUIET)
+    endif ()
+    
 
-      #do noot look for Webkit and qt declarative on qt version 5.6 or newer
-      if(${QT_VERSION_MINOR} GREATER 5)
-          find_package (Qt5Widgets QUIET)
-          find_package (Qt5Gui QUIET)
-          find_package (Qt5OpenGL QUIET)
-          find_package (Qt5Network QUIET)
-          find_package (Qt5Script QUIET)
-          find_package (Qt5ScriptTools QUIET)
-          find_package (Qt5Sql QUIET)
-          find_package (Qt5Xml QUIET)
-          find_package (Qt5XmlPatterns QUIET)
-          find_package (Qt5Help QUIET)
-          find_package (Qt5UiTools QUIET)
-          find_package (Qt5Concurrent QUIET)
-          find_package (Qt5PrintSupport QUIET)
-          find_package (Qt5Svg QUIET)
-      elseif(${QT_VERSION_MINOR} GREATER 5)
-          find_package (Qt5Declarative QUIET)
-          find_package (Qt5Widgets QUIET)
-          find_package (Qt5Gui QUIET)
-          find_package (Qt5OpenGL QUIET)
-          find_package (Qt5Network QUIET)
-          find_package (Qt5Script QUIET)
-          find_package (Qt5ScriptTools QUIET)
-          find_package (Qt5Sql QUIET)
-          find_package (Qt5Xml QUIET)
-          find_package (Qt5XmlPatterns QUIET)
-          find_package (Qt5Help QUIET)
-          find_package (Qt5WebKit QUIET)
-          find_package (Qt5UiTools QUIET)
-          find_package (Qt5Concurrent QUIET)
-          find_package (Qt5PrintSupport QUIET)
-          find_package (Qt5Svg QUIET)
-      endif(${QT_VERSION_MINOR} GREATER 5)
-
-      if (NOT WIN32 AND NOT APPLE)
-         find_package (Qt5X11Extras QUIET)
-      endif ()
-
-      if(${QT_VERSION_MINOR} GREATER 5)
-          if (Qt5Core_FOUND AND Qt5Widgets_FOUND
-            AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
-            AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
-            AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
-            AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
-            AND Qt5PrintSupport_FOUND)
-            set (QT5_FOUND TRUE)
-          endif()
-      elseif(${QT_VERSION_MINOR} GREATER 5)
-          if (Qt5Core_FOUND AND Qt5Declarative_FOUND AND Qt5Widgets_FOUND
-            AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
-            AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
-            AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
-            AND Qt5WebKit_FOUND AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
-            AND Qt5PrintSupport_FOUND)
-            set (QT5_FOUND TRUE)
-          endif()
-      endif(${QT_VERSION_MINOR} GREATER 5)
-    endif(Qt5Core_FOUND)
+    if (Qt5Core_FOUND AND Qt5Declarative_FOUND AND Qt5Widgets_FOUND
+      AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
+      AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
+      AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
+      AND Qt5WebKit_FOUND AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
+      AND Qt5PrintSupport_FOUND)
+      set (QT5_FOUND TRUE)
+    endif()
     
     if (QT5_FOUND)   
       acg_unset_qt_shared_variables(5)
@@ -994,25 +965,3 @@ function (generate_qhp_file files_loc plugin_name)
     endforeach()
 endfunction()
 
-function(acg_test_glew_definition _def _out)
-  include(CheckCXXSourceRuns)
-  set(CMAKE_REQUIRED_INCLUDES ${GLEW_INCLUDE_DIRS})
-  set(CMAKE_REQUIRED_LIBRARIES ${GLEW_LIBRARIES})
-  set(CMAKE_REQUIRED_DEFINITIONS -DCHECKING=${_def})
-  if(GLEW_FOUND)
-    if(NOT ${_out})
-      unset(${_out} CACHE) #clear cache, if previous test failed and try again
-    endif()
-    CHECK_CXX_SOURCE_RUNS("
-      #include <GL/glew.h>
-      int main()
-      {
-      #ifdef ${_def}
-      return 0;
-      #else
-      return 1;
-      #endif
-      }"
-      ${_out})
-  endif()
-endfunction()

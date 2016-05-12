@@ -1128,7 +1128,8 @@ void QtBaseViewer::initializeGL()
   // we use GLEW to manage extensions
   // initialize it first
   #ifndef __APPLE__
-  glewInit();
+  //glewInit();
+  ogl_LoadFunctions();
   #endif
 
 
@@ -1242,7 +1243,8 @@ void QtBaseViewer::paintGL()
     // we use GLEW to manage extensions
     // initialize it first
     #ifndef __APPLE__
-    glewInit();
+    //glewInit();
+    ogl_LoadFunctions();
     #endif
 
     // lock update

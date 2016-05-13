@@ -276,39 +276,67 @@ macro (acg_qt5)
         elseif(QT5_INSTALL_PATH_EXISTS) #trying to install qt5. notify about missing sdk before the qt message comes
           message(FATAL_ERROR "Could not find glu32.lib. This is necessary for QT5 OpenGL version for windows, spleace specify glu32.lib in WINDOWS_SDK_LIB or install Qt version >= 5.3.1")
         endif()
-      endif()    
-    endif(Qt5Core_FOUND AND WIN32)
-    
-    find_package (Qt5Declarative QUIET)
-    find_package (Qt5Widgets QUIET)    
-    find_package (Qt5Gui QUIET)
-    find_package (Qt5OpenGL QUIET)
-    find_package (Qt5Network QUIET)
-    find_package (Qt5Script QUIET)
-    find_package (Qt5ScriptTools QUIET)
-    find_package (Qt5Sql QUIET)
-    find_package (Qt5Xml QUIET)
-    find_package (Qt5XmlPatterns QUIET)
-    find_package (Qt5Help QUIET)
-    find_package (Qt5WebKit QUIET)
-    find_package (Qt5UiTools QUIET)
-    find_package (Qt5Concurrent QUIET)
-    find_package (Qt5PrintSupport QUIET)
-    find_package (Qt5Svg QUIET)
-    
-    if (NOT WIN32 AND NOT APPLE)
-    	find_package (Qt5X11Extras QUIET)
-    endif ()
-    
+      endif(WIN32)
 
-    if (Qt5Core_FOUND AND Qt5Declarative_FOUND AND Qt5Widgets_FOUND
-      AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
-      AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
-      AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
-      AND Qt5WebKit_FOUND AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
-      AND Qt5PrintSupport_FOUND)
-      set (QT5_FOUND TRUE)
-    endif()
+      #do noot look for Webkit and qt declarative on qt version 5.6 or newer
+      if(${QT_VERSION_MINOR} GREATER 5)
+          find_package (Qt5Widgets QUIET)
+          find_package (Qt5Gui QUIET)
+          find_package (Qt5OpenGL QUIET)
+          find_package (Qt5Network QUIET)
+          find_package (Qt5Script QUIET)
+          find_package (Qt5ScriptTools QUIET)
+          find_package (Qt5Sql QUIET)
+          find_package (Qt5Xml QUIET)
+          find_package (Qt5XmlPatterns QUIET)
+          find_package (Qt5Help QUIET)
+          find_package (Qt5UiTools QUIET)
+          find_package (Qt5Concurrent QUIET)
+          find_package (Qt5PrintSupport QUIET)
+          find_package (Qt5Svg QUIET)
+      else(${QT_VERSION_MINOR} GREATER 5)
+          find_package (Qt5Declarative QUIET)
+          find_package (Qt5Widgets QUIET)
+          find_package (Qt5Gui QUIET)
+          find_package (Qt5OpenGL QUIET)
+          find_package (Qt5Network QUIET)
+          find_package (Qt5Script QUIET)
+          find_package (Qt5ScriptTools QUIET)
+          find_package (Qt5Sql QUIET)
+          find_package (Qt5Xml QUIET)
+          find_package (Qt5XmlPatterns QUIET)
+          find_package (Qt5Help QUIET)
+          find_package (Qt5WebKit QUIET)
+          find_package (Qt5UiTools QUIET)
+          find_package (Qt5Concurrent QUIET)
+          find_package (Qt5PrintSupport QUIET)
+          find_package (Qt5Svg QUIET)
+      endif(${QT_VERSION_MINOR} GREATER 5)
+
+      if (NOT WIN32 AND NOT APPLE)
+         find_package (Qt5X11Extras QUIET)
+      endif ()
+
+      if(${QT_VERSION_MINOR} GREATER 5)
+          if (Qt5Core_FOUND AND Qt5Widgets_FOUND
+            AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
+            AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
+            AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
+            AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
+            AND Qt5PrintSupport_FOUND)
+            set (QT5_FOUND TRUE)
+          endif()
+      else(${QT_VERSION_MINOR} GREATER 5)
+          if (Qt5Core_FOUND AND Qt5Declarative_FOUND AND Qt5Widgets_FOUND
+            AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
+            AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND
+            AND Qt5Xml_FOUND AND Qt5XmlPatterns_FOUND AND Qt5Help_FOUND
+            AND Qt5WebKit_FOUND AND Qt5UiTools_FOUND AND Qt5Concurrent_FOUND
+            AND Qt5PrintSupport_FOUND)
+            set (QT5_FOUND TRUE)
+          endif()
+      endif(${QT_VERSION_MINOR} GREATER 5)
+    endif(Qt5Core_FOUND)
     
     if (QT5_FOUND)   
       acg_unset_qt_shared_variables(5)

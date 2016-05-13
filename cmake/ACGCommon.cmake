@@ -295,7 +295,7 @@ macro (acg_qt5)
           find_package (Qt5Concurrent QUIET)
           find_package (Qt5PrintSupport QUIET)
           find_package (Qt5Svg QUIET)
-      elseif(${QT_VERSION_MINOR} GREATER 5)
+      else(${QT_VERSION_MINOR} GREATER 5)
           find_package (Qt5Declarative QUIET)
           find_package (Qt5Widgets QUIET)
           find_package (Qt5Gui QUIET)
@@ -327,7 +327,7 @@ macro (acg_qt5)
             AND Qt5PrintSupport_FOUND)
             set (QT5_FOUND TRUE)
           endif()
-      elseif(${QT_VERSION_MINOR} GREATER 5)
+      else(${QT_VERSION_MINOR} GREATER 5)
           if (Qt5Core_FOUND AND Qt5Declarative_FOUND AND Qt5Widgets_FOUND
             AND Qt5Gui_FOUND AND Qt5OpenGL_FOUND AND Qt5Network_FOUND
             AND Qt5Script_FOUND AND Qt5ScriptTools_FOUND AND Qt5Sql_FOUND

@@ -1327,7 +1327,7 @@ void GLState::syncFromGL()
   
   GLint getparam;
 
-#ifdef GL_BLEND_SRC_RGB
+#ifdef GL_VERSION_1_4
   glGetIntegerv(GL_BLEND_SRC_RGB, &getparam);
   stateStack_.back().blendFuncState_[0] = getparam;
 
@@ -1611,7 +1611,7 @@ void GLState::blendFuncSeparate(GLenum _srcRGB, GLenum _dstRGB, GLenum _srcAlpha
       stateStack_.back().blendFuncState_[2] != _srcAlpha || stateStack_.back().blendFuncState_[3] != _dstAlpha)
 #endif
     {
-#ifdef GL_BLEND_SRC_RGB
+#ifdef GL_VERSION_1_4
       // check if glew has loaded glBlendFuncSeparate already
       if (glBlendFuncSeparate)
         glBlendFuncSeparate(_srcRGB, _dstRGB, _srcAlpha, _dstAlpha);

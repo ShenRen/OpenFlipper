@@ -446,9 +446,13 @@ int main(int argc, char **argv)
         }
       }
      }
-
+    
     // After setting all Options from command line, build the real gui
-    w->init();   
+    w->init();
+
+    #ifndef __APPLE__
+    initGlew();
+    #endif
  
     for ( int i = 0 ; i < args.FileCount(); ++i )
       w->commandLineOpen(args.File(i), openPolyMeshes);    

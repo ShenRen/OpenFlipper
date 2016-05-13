@@ -47,7 +47,6 @@
  *                                                                            *
  \*===========================================================================*/
 
-
 #include <ACG/GL/acg_glew.hh>
 #include <ACG/GL/globjects.hh>
 #include <ACG/GL/GLFormatInfo.hh>

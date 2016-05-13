@@ -72,7 +72,6 @@
 
 // -------------------- Qt event Includes
 #include <QGLFormat>
-#include "common/glew_wrappers.hh"
 
 #define WIDGET_HEIGHT 800
 #define WIDGET_WIDTH  800
@@ -250,7 +249,6 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
 #endif
 
   glWidget_ = new QGLWidget(format,0);
-  glWidget_->makeCurrent();
   PluginFunctions::shareGLWidget (glWidget_);
 
   glView_ = new QtGLGraphicsView(stackedWidget_);
@@ -318,8 +316,6 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   // ======================================================================
   // Create examiner
   // ======================================================================
-
-  initOpenGLFunctions();
 
   // First we analyze the scenegraph
   unsigned int maxPases = 1;

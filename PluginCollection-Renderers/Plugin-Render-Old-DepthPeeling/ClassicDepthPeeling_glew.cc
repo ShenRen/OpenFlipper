@@ -54,10 +54,6 @@
 #include <OpenFlipper/common/GlobalOptions.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#ifndef GL_TEXTURE_RECTANGLE_EXT
-#define GL_TEXTURE_RECTANGLE_EXT 0x84F5
-#endif
-
 void DepthPeelingPlugin::reloadResources(int _viewerId) {
   // called in constructor and resizeEvent()
 

@@ -227,7 +227,6 @@ void GCodeNode_renderer::render(ACG::GLState& _state, const ACG::GLMatrixd& _pro
     case Color: frag_shader = "GCode/gcode_color_fs.glsl"; break;
     case Heat: frag_shader = "GCode/gcode_heat_fs.glsl"; break;
     case Speed: frag_shader = "GCode/gcode_speed_fs.glsl"; break;
-    case Type: frag_shader = "GCode/gcode_type_fs.glsl"; break;
     default: return;
     }
 
@@ -338,7 +337,6 @@ void GCodeNode_renderer::render(ACG::GLState& _state, const ACG::GLMatrixd& _pro
     case Color: shader = ACG::ShaderCache::getInstance()->getProgram("GCode/gcode_vs.glsl", 0, 0, "GCode/gcode_gs.glsl", "GCode/gcode_color_fs.glsl"); break;
     case Heat: shader = ACG::ShaderCache::getInstance()->getProgram("GCode/gcode_vs.glsl", 0, 0, "GCode/gcode_gs.glsl", "GCode/gcode_heat_fs.glsl"); break;
     case Speed: shader = ACG::ShaderCache::getInstance()->getProgram("GCode/gcode_vs.glsl", 0, 0, "GCode/gcode_gs.glsl", "GCode/gcode_speed_fs.glsl"); break;
-    case Type: shader = ACG::ShaderCache::getInstance()->getProgram("GCode/gcode_vs.glsl", 0, 0, "GCode/gcode_gs.glsl", "GCode/gcode_type_fs.glsl"); break;
     default: shader = 0;
     }
 
@@ -444,7 +442,6 @@ void GCodeNode_renderer::createRenderObjects(ACG::IRenderer* _renderer, ACG::GLS
   case Color: frag_shader = "GCode/gcode_color_fs_gen.glsl"; break;
   case Heat: frag_shader = "GCode/gcode_heat_fs_gen.glsl"; break;
   case Speed: frag_shader = "GCode/gcode_speed_fs_gen.glsl"; break;
-  case Type: frag_shader = "GCode/gcode_type_fs_gen.glsl"; break;
   default: return;
   }
 

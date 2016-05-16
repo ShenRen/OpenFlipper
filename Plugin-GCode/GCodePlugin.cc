@@ -126,11 +126,11 @@ void GCodePlugin::slotGCodePositionBoxChanged()
           tool_->lbl_gcode_extmode->setText(QString("Extruder Mode: Relative"));
         }
 
-        tool_->lbl_gcode_fan->setText(QString("Fan Speed: %1%").arg(100.0*double(state.fan_speed) / 255.0));
+        tool_->lbl_gcode_fan->setText(QString("Fan Speed: %1").arg(100.0*double(state.fan_speed) / 255.0));
         tool_->lbl_gcode_extrude->setText(QString("Extrude: %1 mm").arg(state.pos_extruder*(1.0 - x) + next_state.pos_extruder*x));
 
-        tool_->lbl_gcode_temp_ext->setText(QString("Temp Extruder: %1°").arg(state.temp_extruder));
-        tool_->lbl_gcode_temp_bed->setText(QString("Temp Bed: %1°").arg(state.temp_bed));
+        tool_->lbl_gcode_temp_ext->setText(QString("Temp Extruder: %1 C").arg(state.temp_extruder));
+        tool_->lbl_gcode_temp_bed->setText(QString("Temp Bed: %1 C").arg(state.temp_bed));
 
         emit updateView();
       }

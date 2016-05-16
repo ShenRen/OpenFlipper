@@ -63,7 +63,7 @@ namespace Ultimaker{
 class GCodeNode_renderer
 {
 public:
-  enum DrawMode { Color, Heat, Speed, Type };
+  enum DrawMode { Color, Heat, Speed };
 
   GCodeNode_renderer();
   virtual ~GCodeNode_renderer();

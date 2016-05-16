@@ -172,7 +172,6 @@ private:
   DrawModes::DrawMode MODE_COLOR;
   DrawModes::DrawMode MODE_HEAT;
   DrawModes::DrawMode MODE_SPEED;
-  DrawModes::DrawMode MODE_TYPE;
 };
 
 

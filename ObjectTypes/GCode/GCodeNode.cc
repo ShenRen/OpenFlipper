@@ -94,7 +94,6 @@ GCodeNode::GCodeNode(const GCode::Shared& _gc, BaseNode* _parent, std::string _n
   DrawModes::DrawMode MODE_COLOR;
   DrawModes::DrawMode MODE_HEAT;
   DrawModes::DrawMode MODE_SPEED;
-  DrawModes::DrawMode MODE_TYPE;
 */
 
   MODE_COLOR = DrawModes::DrawMode(ACG::SceneGraph::DrawModes::addDrawMode("Color",
@@ -108,11 +107,6 @@ GCodeNode::GCodeNode(const GCode::Shared& _gc, BaseNode* _parent, std::string _n
                                                                            ACG::SceneGraph::DrawModes::NORMAL_PER_VERTEX)));
 
   MODE_SPEED = DrawModes::DrawMode(ACG::SceneGraph::DrawModes::addDrawMode("Speed",
-                                                                           ACG::SceneGraph::DrawModes::DrawModeProperties(ACG::SceneGraph::DrawModes::PRIMITIVE_POLYGON,
-                                                                           ACG::SceneGraph::DrawModes::LIGHTSTAGE_SMOOTH,
-                                                                           ACG::SceneGraph::DrawModes::NORMAL_PER_VERTEX)));
-
-  MODE_TYPE = DrawModes::DrawMode(ACG::SceneGraph::DrawModes::addDrawMode("Edge Type",
                                                                            ACG::SceneGraph::DrawModes::DrawModeProperties(ACG::SceneGraph::DrawModes::PRIMITIVE_POLYGON,
                                                                            ACG::SceneGraph::DrawModes::LIGHTSTAGE_SMOOTH,
                                                                            ACG::SceneGraph::DrawModes::NORMAL_PER_VERTEX)));
@@ -161,7 +155,7 @@ void GCodeNode::boundingBox(Vec3d& _bbMin, Vec3d& _bbMax)
 
 DrawModes::DrawMode GCodeNode::availableDrawModes() const
 {
-  return (MODE_COLOR | MODE_HEAT | MODE_SPEED | MODE_TYPE);
+    return (MODE_COLOR | MODE_HEAT | MODE_SPEED);
 }
 
 
@@ -185,9 +179,6 @@ void GCodeNode::draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
     }else if (_drawMode & MODE_SPEED)
     {
         drawmode = Ultimaker::GCodeNode_renderer::Speed;
-    }else if (_drawMode & MODE_TYPE)
-    {
-        drawmode = Ultimaker::GCodeNode_renderer::Type;
     }
 
     renderer->render(_state, _state.projection(), _state.modelview(), drawmode, distance_, color);
@@ -323,22 +314,12 @@ void GCodeNode::getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _stat
   ACG::Vec4f color = _state.diffuse_color();
 
   if (_drawMode & MODE_COLOR)
-  {
     drawmode = Ultimaker::GCodeNode_renderer::Color;
-
-  }
   else if (_drawMode & MODE_HEAT)
-  {
     drawmode = Ultimaker::GCodeNode_renderer::Heat;
-  }
   else if (_drawMode & MODE_SPEED)
-  {
     drawmode = Ultimaker::GCodeNode_renderer::Speed;
-  }
-  else if (_drawMode & MODE_TYPE)
-  {
-    drawmode = Ultimaker::GCodeNode_renderer::Type;
-  }
+
 
   renderer->createRenderObjects(_renderer, _state, drawmode, distance_, color);
   // init base render object

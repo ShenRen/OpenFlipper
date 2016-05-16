@@ -7,9 +7,7 @@ in vec4 inWorld2;
 in vec4 inParams; // start_time, end_time, speed, edge_type
 
 
-out float gEdgeType;
-out float gTime;
-out float gSpeed;
+out vec4 v2f_params;
 
 uniform float uTime;
 
@@ -17,9 +15,7 @@ void main()
 {
   SG_VERTEX_BEGIN;
   
-  gEdgeType = inParams.w;
-  gTime = inParams.x;
-  gSpeed = inParams.z;
+  v2f_params = inParams;
   
   // transform position
   vec4 posWS;

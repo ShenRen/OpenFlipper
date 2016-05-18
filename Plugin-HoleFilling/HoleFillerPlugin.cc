@@ -344,7 +344,7 @@ void HoleFillerPlugin::detectButton( )
 }
 
 /// check for holes if an object has changed
-void HoleFillerPlugin::slotObjectUpdated(int _identifier) {
+void HoleFillerPlugin::slotObjectUpdated( int _identifier, const UpdateType& _type ) {
 
   BaseObjectData* object;
 

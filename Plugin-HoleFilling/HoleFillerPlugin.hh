@@ -105,7 +105,7 @@ class HoleFillerPlugin : public QObject, BaseInterface, MouseInterface, PickingI
 
 
   private slots:
-    void slotObjectUpdated(int _identifier);
+    void slotObjectUpdated( int _identifier, const UpdateType& _type );
 
     void slotMouseWheelEvent(QWheelEvent * /*_event*/, const std::string & /*_mode*/){};
 

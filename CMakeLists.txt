@@ -40,6 +40,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
 
 # include our cmake files
 include (ACGCommon)
+include (MSVCMacros)
 
 acg_get_version (OpenFlipper)
 

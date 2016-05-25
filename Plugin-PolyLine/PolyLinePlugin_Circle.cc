@@ -82,7 +82,8 @@ struct Onb {
 bool PolyLinePlugin::createCircle_getPointOnMesh(TriMeshObject* _triMeshObject, ACG::Vec3d _center,
         ACG::Vec3d _pOnPlane, ACG::Vec3d _n, ACG::Vec3d* _pOut) {
     OpenMeshTriangleBSPT<TriMesh>* bsp = _triMeshObject->requestTriangleBsp();
-    OpenMeshTriangleBSPT<TriMesh>::RayCollision rayInt = bsp->raycollision(_pOnPlane, _n);
+    OpenMeshTriangleBSPT<TriMesh>::RayCollision rayInt;
+    rayInt = bsp->raycollision(_pOnPlane, _n);
 
     if (rayInt.empty())
         return false;

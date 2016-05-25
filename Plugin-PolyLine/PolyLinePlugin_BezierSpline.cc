@@ -70,7 +70,8 @@ getPointOnMesh(PolyLineBezierSplineData* _SplineData, ACG::Vec3d _point, ACG::Ve
 	ACG::Vec3d nor = mesh->mesh()->normal(neigh.handle);
 	if(_nor)
 		*_nor = nor;
-	OpenMeshTriangleBSPT<TriMesh>::RayCollision rayInt = bsp->raycollision(_point, nor);
+    OpenMeshTriangleBSPT<TriMesh>::RayCollision rayInt;
+	rayInt = bsp->raycollision(_point, nor);
 	if(rayInt.size())
 		return _point + nor * rayInt[0].second;
 	return _point + nor.normalize() * neigh.dist;

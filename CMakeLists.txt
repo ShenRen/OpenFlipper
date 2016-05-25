@@ -247,6 +247,12 @@ foreach (_localLib ${REMAINING_LOCAL_LIBS})
   endif()
 endforeach ()
 
+# Group the external libraries in a folder libs_required
+GROUP_PROJECT(OpenMeshTools libs_required)
+GROUP_PROJECT(OpenMeshCore libs_required)
+GROUP_PROJECT(OpenVolumeMesh libs_required)
+GROUP_PROJECT(doc-install Documentation)
+
 # ========================================================================
 # Core Library Components (Except the Core application)
 # ========================================================================

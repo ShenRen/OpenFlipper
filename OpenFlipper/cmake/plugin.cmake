@@ -609,6 +609,10 @@ function (_build_openflipper_plugin plugin)
 
 
     add_library (Plugin-${plugin} MODULE ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
+    #group projects by parent folder name on MSVC (used for e.g. plugincollection)
+    get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+    get_filename_component(PARENT_DIR_NAME "${PARENT_DIR}" NAME)
+    GROUP_PROJECT(Plugin-${plugin} ${PARENT_DIR_NAME})
     # add this plugin to build plugin list for dependency tracking
     acg_set (OPENFLIPPER_PLUGINS "${OPENFLIPPER_PLUGINS};Plugin-${plugin}")
     acg_set (OPENFLIPPER_${_PLUGIN}_BUILD "1")

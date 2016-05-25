@@ -77,6 +77,8 @@ function (of_add_plugins)
 	        # dependency of the plugin target.
 	        add_custom_target(RSRC-${_plugin} DEPENDS ${DATA_FILES})
 	        add_dependencies(Plugin-${_plugin} RSRC-${_plugin})
+                # group by folder on msvc
+                GROUP_PROJECT(RSRC-${_plugin} "Ressources")
 	    endif()
     endforeach ()
     

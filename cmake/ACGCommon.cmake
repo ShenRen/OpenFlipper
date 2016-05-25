@@ -1,3 +1,4 @@
+include (MSVCMacros)
 if (EXISTS ${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}.cmake)
   include (${CMAKE_SOURCE_DIR}/${CMAKE_PROJECT_NAME}.cmake)
 endif ()
@@ -38,6 +39,7 @@ endif ()
 if ( NOT TARGET doc )
   ADD_CUSTOM_TARGET( doc )
   SET_TARGET_PROPERTIES( doc PROPERTIES EchoString "Building Documentation"  )
+  GROUP_PROJECT(doc Documentation)
 endif()
 
 # read version from file
@@ -945,6 +947,7 @@ function (acg_add_translations _target _languages _sources)
   # create a target for the translation files ( and object files )
   # Use this target, to update only the translations
   add_custom_target (translations_target_${_target} DEPENDS ${_qm_files})
+  GROUP_PROJECT( translations_target_${_target} "Translations")
 
   # Build translations with the application
   add_dependencies(${_target} translations_target_${_target} )

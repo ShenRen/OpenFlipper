@@ -15,11 +15,11 @@ if(BUILD_TESTING)
                         copy_if_different
                           ${OPENFLIPPER_TEST_BINARIES}/${CMAKE_CFG_INTDIR}/minimalExecTest.exe
                           ${OPENFLIPPER_TEST_BINARIES}/minimalExecTest.exe)
+    GROUP_PROJECT(minimalExecutionTest Tests)
   endif()
 
   ADD_TEST(NAME "Minimal_Execution_Test"
            COMMAND ${OPENFLIPPER_TEST_BINARIES}/minimalExecTest )
-
   set_tests_properties( Minimal_Execution_Test PROPERTIES
     TIMEOUT 10
    )

@@ -119,6 +119,8 @@ file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" ";\n} /* namespace c
 
 list(APPEND RC_SRC "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc")
 
+RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR}/../../ )
+
 if (WIN32)
   # add app icon rc file to windows build
   acg_add_executable (${OPENFLIPPER_PRODUCT_STRING} WIN32 ${CMAKE_CURRENT_SOURCE_DIR}/CoreApp.rc ${uic_targets} ${sources} ${headers} ${moc_targets} ${RC_SRC})

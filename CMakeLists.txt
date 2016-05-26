@@ -40,6 +40,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
 
 # include our cmake files
 include (ACGCommon)
+include (MSVCMacros)
 
 acg_get_version (OpenFlipper)
 
@@ -245,6 +246,12 @@ foreach (_localLib ${REMAINING_LOCAL_LIBS})
     add_subdirectory (${CMAKE_SOURCE_DIR}/${_local_lib_dir})
   endif()
 endforeach ()
+
+# Group the external libraries in a folder libs_required
+GROUP_PROJECT(OpenMeshTools libs_required)
+GROUP_PROJECT(OpenMeshCore libs_required)
+GROUP_PROJECT(OpenVolumeMesh libs_required)
+GROUP_PROJECT(doc-install Documentation)
 
 # ========================================================================
 # Core Library Components (Except the Core application)

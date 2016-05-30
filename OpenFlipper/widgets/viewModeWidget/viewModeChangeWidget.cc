@@ -55,15 +55,12 @@
 
 /// Constructor
 viewModeChangeWidget::viewModeChangeWidget(const QVector< ViewMode* >& _modes, QWidget *_parent)
-  : QDialog(_parent),
+  : QWidget(_parent, Qt::Window | Qt::CustomizeWindowHint),
     modes_(_modes)
 {
   setupUi(this);
 
-
   connect(viewModeList, SIGNAL(clicked (QModelIndex)), this, SLOT(slotModeClicked(QModelIndex)) );
-  
-
 }
 
 // =======================================================================================================
@@ -87,17 +84,24 @@ void viewModeChangeWidget::slotModeClicked(QModelIndex /*_idx*/ ){
     return;
   }
 
-  
   emit changeView(modes_[id]->name,modes_[id]->visibleToolboxes,modes_[id]->visibleToolbars,modes_[id]->visibleContextMenus);
-  close();
+  emit wantClose();
 }
 
+void viewModeChangeWidget::slot_update(){
+    update(OpenFlipper::Options::currentViewMode());
+};
+
+void viewModeChangeWidget::showEvent(QShowEvent *event) {
+    slot_update();
+    QWidget::showEvent(event);
+    //QMenu *parentMenu = qobject_cast<QMenu*>(parent());
+}
 
 /// overloaded show function
-void viewModeChangeWidget::show(QString _lastMode){
-  QDialog::show();
-  
-  //fill viewModeList
+void viewModeChangeWidget::update(QString _lastMode){
+
+    //fill viewModeList
   viewModeList->clear();
   for (int i=0; i < modes_.size(); i++){
     QListWidgetItem *item = new QListWidgetItem(viewModeList);

@@ -68,6 +68,7 @@ SideArea::SideArea (QWidget *_parent) :
   QVBoxLayout *l = new QVBoxLayout;
   l->addLayout (layout_);
   l->addStretch(1);
+  l->setContentsMargins(2, 2, 2, 2);
 
   setLayout (l);
 }

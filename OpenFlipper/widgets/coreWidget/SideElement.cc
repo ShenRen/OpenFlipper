@@ -76,6 +76,7 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   font.setBold (false);
 
   QHBoxLayout *hl = new QHBoxLayout;
+  hl->setContentsMargins(0, 0, 0, 0);
 
   SideElement::TopArea *tra = new SideElement::TopArea (this);
 
@@ -123,7 +124,7 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   mainLayout_->addWidget (tra);
   mainLayout_->addWidget (_w);
   mainLayout_->setSpacing (0);
-  mainLayout_->setContentsMargins (1,1,1,1);
+  mainLayout_->setContentsMargins(0, 0, 0, 0);
   setLayout (mainLayout_);
 
   _w->hide ();

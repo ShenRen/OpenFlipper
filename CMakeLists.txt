@@ -251,7 +251,10 @@ endforeach ()
 GROUP_PROJECT(OpenMeshTools libs_required)
 GROUP_PROJECT(OpenMeshCore libs_required)
 GROUP_PROJECT(OpenVolumeMesh libs_required)
+
+if( DOXYGEN_FOUND )
 GROUP_PROJECT(doc-install Documentation)
+endif()
 
 # ========================================================================
 # Core Library Components (Except the Core application)

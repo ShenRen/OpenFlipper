@@ -951,6 +951,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         _renderer->addRenderObject(&ro);
 
         break;
+
       case ACG::SceneGraph::DrawModes::PRIMITIVE_WIREFRAME:
       case ACG::SceneGraph::DrawModes::PRIMITIVE_EDGE:
 
@@ -1000,6 +1001,84 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         _renderer->addRenderObject(&ro);
 
         break;
+
+
+      case ACG::SceneGraph::DrawModes::PRIMITIVE_POLYGON:
+        {
+          // create sphere object for each vertex
+          // potential optimization: create only one render object and use instancing 
+
+          // use world space radius or screen space point size?
+          bool screenScale = _drawMode & POINTS_SPHERES_SCREEN;
+
+          // clear shaders used by thick line / point drawing
+          ro.shaderDesc.vertexTemplateFile.clear();
+          ro.shaderDesc.geometryTemplateFile.clear();
+          ro.shaderDesc.fragmentTemplateFile.clear();
+
+          // create sphere if not yet done
+          if (!sphere_)
+            sphere_ = new GLSphere(10, 10);
+
+          // precompute desired radius of projected sphere
+          double r = 1.0;
+          if (screenScale)
+          {
+            r = 0.5*_state.point_size() / double(_state.viewport_height())*2.0*_state.near_plane()*tan(0.5*_state.fovy());
+            r /= _state.near_plane();
+          }
+
+          // get eye position and view direction in world space
+          Vec3d eyePos = _state.eye();
+          Vec3d viewDir = _state.viewing_direction();
+
+          // render-objects for the selected points with selection color
+          if (polyline_.vertex_selections_available())
+          {
+            ro.debugName = "polyline.Sphere.selected";
+            localMaterial.baseColor(selectionColor);
+            ro.setMaterial(&localMaterial);
+
+            for (unsigned int i = 0; i < polyline_.n_vertices(); ++i)
+            {
+              if (polyline_.vertex_selected(i))
+              {
+                double radius = polyline_.vertex_radius();
+                if (screenScale)
+                {
+                  // compute radius in 3D
+                  const Vec3d p = (Vec3d)polyline_.point(i) - eyePos;
+                  radius = (p | viewDir) * r;
+                }
+
+                sphere_->addToRenderer(_renderer, &ro, radius, (Vec3f)polyline_.point(i));
+              }
+            }
+          }
+
+          // unselected points with default color
+          ro.debugName = "polyline.Sphere";
+          localMaterial.baseColor(defaultColor);
+          ro.setMaterial(&localMaterial);
+
+          for (unsigned int i = 0; i < polyline_.n_vertices(); ++i)
+          {
+            if (!polyline_.vertex_selections_available() || !polyline_.vertex_selected(i))
+            {
+              double radius = polyline_.vertex_radius();
+              if (screenScale)
+              {
+                // compute radius in 3D
+                const Vec3d p = (Vec3d)polyline_.point(i) - eyePos;
+                radius = (p | viewDir) * r;
+              }
+
+              sphere_->addToRenderer(_renderer, &ro, radius, (Vec3f)polyline_.point(i));
+            }
+          }
+        } break;
+
+
       default:
         break;
     }

@@ -734,7 +734,7 @@ void ViewControlPlugin::slotDrawModeSelected( QAction * _action) {
                 activeDrawModes_ = ACG::SceneGraph::DrawModes::DEFAULT;
                 useGlobalDrawMode = true;
             } else {
-                activeDrawModes_ &= ~mode;
+                activeDrawModes_.filter(mode);
             }
         }
         contextMenuStaysOpen = true;

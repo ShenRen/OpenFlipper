@@ -2,12 +2,29 @@
 <ui version="4.0">
  <class>dctoolbox</class>
  <widget class="QWidget" name="dctoolbox">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>274</width>
+    <height>268</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
-   <property name="margin">
-    <number>2</number>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
    </property>
    <item>
     <widget class="DataControlTreeView" name="treeView">
@@ -31,86 +48,39 @@
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="QPushButton" name="visibleDataBtn">
-     <property name="text">
-      <string>Object Visibility</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="visibleDataWidget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="lightSources">
-        <property name="text">
-         <string>Show Light Sources</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="Line" name="line_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="boundingBoxBtn">
-     <property name="text">
-      <string>Object Bounding Box</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="boundingBoxWidget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QCheckBox" name="notSelected">
-        <property name="text">
-         <string>Show always</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="sourceSelected">
-        <property name="text">
-         <string>Show on source objects</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="targetSelected">
-        <property name="text">
-         <string>Show on target objects</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
   </layout>
+  <action name="lightSources">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show &amp;Light Sources</string>
+   </property>
+  </action>
+  <action name="notSelected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show &amp;All Bounding Boxes</string>
+   </property>
+  </action>
+  <action name="sourceSelected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Bounding Boxes of &amp;Source Objects</string>
+   </property>
+  </action>
+  <action name="targetSelected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Bounding Boxes of &amp;Targeted Objects</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -120,38 +90,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>visibleDataBtn</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>visibleDataWidget</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>161</x>
-     <y>276</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>160</x>
-     <y>302</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>boundingBoxBtn</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>boundingBoxWidget</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>138</x>
-     <y>345</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>133</x>
-     <y>373</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -62,6 +62,7 @@ OptionsWidget::OptionsWidget(std::vector<PluginInfo>& _plugins, std::vector<KeyB
     plugins_(_plugins),
     coreKeys_(_core),
     keys_(_invKeys),
+    progressDialog_(NULL),
     restartRequired_(false),
     exitOnClose_(false)
 {
@@ -134,10 +135,6 @@ OptionsWidget::OptionsWidget(std::vector<PluginInfo>& _plugins, std::vector<KeyB
         this, SLOT(httpRequestFinished(QNetworkReply *)));
   connect(networkMan_,SIGNAL(authenticationRequired(QNetworkReply* , QAuthenticator *)),
         this,SLOT(authentication(QNetworkReply *, QAuthenticator*)));
-
-
-  progressDialog = new QProgressDialog(this);
-  connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
 
   //colordialog
   connect(backgroundButton, SIGNAL(clicked()), this, SLOT(getBackgroundColor()) );

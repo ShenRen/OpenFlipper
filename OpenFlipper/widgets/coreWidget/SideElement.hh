@@ -117,6 +117,9 @@ class SideElement : public QWidget
     /// returns the pointer to the plugin tool widget
     QWidget const * widget();
 
+  signals:
+    void toggleActive(bool);
+
   private:
 
     /// Clickable area inside of the side element.

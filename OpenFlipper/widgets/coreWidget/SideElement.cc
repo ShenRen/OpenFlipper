@@ -98,7 +98,13 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   detachButton_->setAutoRaise(true);
   hl->addWidget (iconHolder_);
   hl->addWidget (label_);
-  hl->addStretch (1);
+  QWidget *stretcher_wdgt = new QWidget(this);
+  stretcher_wdgt->setObjectName("ChildControlArea");
+  connect(this, SIGNAL(toggleActive(bool)), stretcher_wdgt, SLOT(setVisible(bool)));
+  stretcher_wdgt->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+  stretcher_wdgt->setVisible(false);
+  hl->addWidget (stretcher_wdgt);
+  hl->addStretch(1);
   hl->addWidget (detachButton_);
 
 
@@ -161,6 +167,8 @@ void SideElement::labelPress ()
     QFont font;
     font.setBold (active_);
     label_->setFont (font);
+
+    emit toggleActive(active_);
   }
 }
 
@@ -175,6 +183,7 @@ void SideElement::setActive(bool _active)
   }
   else
   {
+    const bool doEmit = (active_ != _active);
     active_ = _active;
     if (active_)
       widget_->show ();
@@ -184,6 +193,8 @@ void SideElement::setActive(bool _active)
     QFont font;
     font.setBold (active_);
     label_->setFont (font);
+
+    if (doEmit) emit toggleActive(active_);
   }
 }
 
@@ -261,7 +272,9 @@ void SideElement::restoreState (QSettings &_settings)
 {
   _settings.beginGroup (name_);
 
-  active_ = _settings.value ("Active", active_).toBool ();
+  bool active = _settings.value ("Active", active_).toBool ();
+  const bool doEmit = (active_ != active);
+  active_ = active;
 
   if (active_)
     widget_->show ();
@@ -271,6 +284,8 @@ void SideElement::restoreState (QSettings &_settings)
   QFont font;
   font.setBold (active_);
   label_->setFont (font);
+
+  if (doEmit) emit toggleActive(active_);
 
   if (_settings.value ("Detached", false).toBool () && !dialog_)
     detachPressed (true);

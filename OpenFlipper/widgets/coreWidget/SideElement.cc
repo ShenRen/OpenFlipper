@@ -64,9 +64,11 @@
 
 //== IMPLEMENTATION ==========================================================
 
-SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* _icon) :
+SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* _icon,
+        QWidget *_headerAreaWidget) :
   parent_ (_parent),
   widget_ (_w),
+  headerAreaWidget_(_headerAreaWidget),
   name_ (_name),
   icon_ (_icon),
   active_ (0),
@@ -98,12 +100,11 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   detachButton_->setAutoRaise(true);
   hl->addWidget (iconHolder_);
   hl->addWidget (label_);
-  QWidget *stretcher_wdgt = new QWidget(this);
-  stretcher_wdgt->setObjectName("ChildControlArea");
-  connect(this, SIGNAL(toggleActive(bool)), stretcher_wdgt, SLOT(setVisible(bool)));
-  stretcher_wdgt->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-  stretcher_wdgt->setVisible(false);
-  hl->addWidget (stretcher_wdgt);
+  if (headerAreaWidget_) {
+      headerAreaWidget_->setVisible(false);
+      connect(this, SIGNAL(toggleActive(bool)), headerAreaWidget_, SLOT(setVisible(bool)));
+      hl->addWidget (headerAreaWidget_);
+  }
   hl->addStretch(1);
   hl->addWidget (detachButton_);
 
@@ -145,6 +146,8 @@ SideElement::~SideElement ()
     dialog_->close ();
   }
   widget_->setParent (0);
+  if (headerAreaWidget_)
+      headerAreaWidget_->setParent(0);
 }
 
 //-----------------------------------------------------------------------------

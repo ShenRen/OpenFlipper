@@ -1022,6 +1022,10 @@ private slots:
     /// Add a Toolbox from a plugin or from scripting (with icon)
      void addToolbox(QString _name ,QWidget* _widget, QIcon* _icon);
 
+     /// Add a Toolbox from a plugin or from scripting (with icon)
+      void addToolbox(QString _name ,QWidget* _widget, QIcon* _icon,
+              QWidget* _headerAreaWidget);
+
      /**
       * Get a toolbox.
       *

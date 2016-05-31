@@ -89,16 +89,11 @@ class SideArea : public QWidget {
       \param _plugin plugin corresponding to the widget
       \param _w Plugin widget
       \param _name Plugin name
-    */
-    void addItem (QObject const * const _plugin, QWidget *_w, QString _name);
-
-    /** Adds a plugin tool widget
-      \param _plugin plugin corresponding to the widget
-      \param _w Plugin widget
-      \param _name Plugin name
       \param _icon an icon
+      \param _headerAreaWidget
     */
-    void addItem (QObject const * const _plugin, QWidget *_w, QString _name, QIcon* _icon);
+    void addItem (QObject const * const _plugin, QWidget *_w, QString _name,
+            QIcon* _icon = 0, QWidget *_headerAreaWidget = 0);
 
     /// clears the whole tool widget area
     void clear ();

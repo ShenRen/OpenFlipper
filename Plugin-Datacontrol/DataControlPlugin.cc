@@ -218,33 +218,27 @@ void DataControlPlugin::initializePlugin()
 
   toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"datacontrol-toolbox.png");
 
-  emit addToolbox("Data Control", tool_, toolIcon_);
+  QWidget *headerAreaWidget = new QWidget();
+  advancedSettingsBtn_ = new QToolButton();
+  advancedSettingsBtn_->setAutoRaise(true);
+  advancedSettingsBtn_->setIcon(QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"preferences.png"));
+  advancedSettingsBtn_->setIconSize(QSize(16, 16));
+  advancedSettingsBtn_->setPopupMode(QToolButton::InstantPopup);
+  advancedSettingsBtn_->setToolTip(tr("Advanced Settings"));
+  QHBoxLayout *hl = new QHBoxLayout;
+  hl->addWidget(advancedSettingsBtn_);
+  hl->addStretch(1);
+  hl->setContentsMargins(8, 0, 0, 0);
+  headerAreaWidget->setLayout(hl);
 
-  QWidget *childControlArea = tool_->parent()->findChild<QWidget*>(
-          "ChildControlArea");
-  if (childControlArea) {
-      std::cout << "Child Control Area found." << std::endl;
-      advancedSettingsBtn_ = new QToolButton();
-      advancedSettingsBtn_->setAutoRaise(true);
-      advancedSettingsBtn_->setIcon(QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"preferences.png"));
-      advancedSettingsBtn_->setIconSize(QSize(16, 16));
-      advancedSettingsBtn_->setPopupMode(QToolButton::InstantPopup);
-      advancedSettingsBtn_->setToolTip(tr("Advanced Settings"));
-      QHBoxLayout *hl = new QHBoxLayout;
-      hl->addWidget(advancedSettingsBtn_);
-      hl->addStretch(1);
-      hl->setContentsMargins(8, 0, 0, 0);
-      childControlArea->setLayout(hl);
+  QMenu *menu = new QMenu();
+  menu->addAction(tool_->lightSources);
+  menu->addAction(tool_->notSelected);
+  menu->addAction(tool_->sourceSelected);
+  menu->addAction(tool_->targetSelected);
+  advancedSettingsBtn_->setMenu(menu);
 
-      QMenu *menu = new QMenu();
-      menu->addAction(tool_->lightSources);
-      menu->addAction(tool_->notSelected);
-      menu->addAction(tool_->sourceSelected);
-      menu->addAction(tool_->targetSelected);
-      advancedSettingsBtn_->setMenu(menu);
-  } else {
-      std::cout << "Child Control Area NOT found." << std::endl;
-  }
+  emit addToolbox("Data Control", tool_, toolIcon_, headerAreaWidget);
 }
 
 
@@ -903,7 +897,8 @@ void DataControlPlugin::saveOnExit(INIFile& _ini){
 }
 
 void DataControlPlugin::showReducedUi(bool reduced) {
-    advancedSettingsBtn_->setVisible(reduced);
+    if (advancedSettingsBtn_)
+        advancedSettingsBtn_->setVisible(reduced);
 }
 
 void DataControlPlugin::slotObjectUpdated( int _identifier, const UpdateType& _type )

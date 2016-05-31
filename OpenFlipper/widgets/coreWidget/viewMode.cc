@@ -378,7 +378,7 @@ void CoreWidget::slotChangeView(QString _mode, QStringList _toolboxWidgets, QStr
 
           // only add items that have not been added yet
           if (!skip) {
-            toolBox_->addItem (plugins_[p].plugin, plugins_[p].toolboxWidgets[j].second, plugins_[p].toolboxWidgets[j].first, plugins_[p].toolboxIcons[j] );
+            toolBox_->addItem (plugins_[p].plugin, plugins_[p].toolboxWidgets[j].second, plugins_[p].toolboxWidgets[j].first, plugins_[p].toolboxIcons[j], plugins_[p].headerAreaWidgets[j].second );
 
             // move item to the correct position
             if (i < toolBox_->lastPos_) {

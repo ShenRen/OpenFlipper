@@ -94,7 +94,8 @@ class SideElement : public QWidget
       @param _icon     An icon that should be shown in the title bar of the side element
 
     */
-    SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* _icon = 0);
+    SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* _icon,
+            QWidget *_headerAreaWidget);
 
     /// Destructor
     ~SideElement ();
@@ -150,7 +151,7 @@ class SideElement : public QWidget
     SideArea *parent_;
 
     // plugin widget
-    QWidget *widget_;
+    QWidget *widget_, *headerAreaWidget_;
 
     // plugin name
     QString name_;

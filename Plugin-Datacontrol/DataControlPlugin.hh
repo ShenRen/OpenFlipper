@@ -110,7 +110,7 @@ class DataControlPlugin : public QObject, BaseInterface, ToolboxInterface, KeyIn
     void copyObject( int _oldId, int& _newId);
     
     // ToolboxInterface
-    void addToolbox( QString _name  , QWidget* _widget, QIcon* _icon );
+    void addToolbox( QString _name  , QWidget* _widget, QIcon* _icon, QWidget *_headerAreaWidget);
 
   private slots :
     // BaseInterface

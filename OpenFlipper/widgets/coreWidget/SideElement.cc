@@ -76,7 +76,7 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   font.setBold (false);
 
   QHBoxLayout *hl = new QHBoxLayout;
-  hl->setContentsMargins(0, 0, 0, 0);
+  hl->setContentsMargins(2, 2, 2, 2);
 
   SideElement::TopArea *tra = new SideElement::TopArea (this);
 

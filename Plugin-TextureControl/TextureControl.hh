@@ -178,7 +178,7 @@ class TextureControlPlugin : public QObject, BaseInterface, BackupInterface, Tex
     bool StringToBool(QString _value);
 
     /// Checks for a correct drawmode and changes if necessary
-    void switchDrawMode( TextureType _type );
+    void switchDrawMode( TextureType _type, int _id );
 
     TextureData globalTextures_;
 

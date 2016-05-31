@@ -1500,7 +1500,7 @@ void TextureControlPlugin::slotTextureMenu(QAction* _action) {
     TextureData* texData = dynamic_cast< TextureData* > ( o_it->objectData(TEXTUREDATA) );
 
     if (texData != 0) {
-      switchDrawMode(texData->texture(_action->text()).type());
+      switchDrawMode(texData->texture(_action->text()).type(), o_it->id());
     }
 
   }
@@ -1688,46 +1688,28 @@ void TextureControlPlugin::doSwitchTexture( QString _textureName , int _id ) {
 
 }
 
-void TextureControlPlugin::switchDrawMode( TextureType _type ) {
+void TextureControlPlugin::switchDrawMode( TextureType _type, int _id ) {
 
-  bool textureMode = false;
-  for ( int j = 0 ; j < PluginFunctions::viewers() ; ++j ) {
-    switch (_type) {
-      case MULTITEXTURE:
-      case HALFEDGEBASED:
-        textureMode |= ( PluginFunctions::drawMode(j) == ACG::SceneGraph::DrawModes::SOLID_2DTEXTURED_FACE );
-        textureMode |= ( PluginFunctions::drawMode(j) == ACG::SceneGraph::DrawModes::SOLID_2DTEXTURED_FACE_SHADED );
-        break;
-      case VERTEXBASED:
-        textureMode |= ( PluginFunctions::drawMode(j) == ACG::SceneGraph::DrawModes::SOLID_TEXTURED );
-        textureMode |= ( PluginFunctions::drawMode(j) == ACG::SceneGraph::DrawModes::SOLID_TEXTURED_SHADED );
-        break;
-      case ENVIRONMENT:
-        textureMode |= ( PluginFunctions::drawMode(j) == ACG::SceneGraph::DrawModes::SOLID_ENV_MAPPED );
-        break;
-      case UNSET:
-        emit log(LOGERR,"doSwitchTexture: Switching drawmode for unknown Texture Type!");
-        break;
-    }
+  // Get the new object
+  BaseObjectData* obj;
+  if (!PluginFunctions::getObject(_id, obj)) {
+    emit log(LOGERR, "doSwitchTexture: Unable to get Object for id " + QString::number(_id));
   }
 
-
-  if ( !textureMode ) {
-    switch (_type) {
-      case MULTITEXTURE:
-      case HALFEDGEBASED:
-        PluginFunctions::setDrawMode( ACG::SceneGraph::DrawModes::SOLID_2DTEXTURED_FACE_SHADED, PluginFunctions::ALL_VIEWERS );
-        break;
-      case VERTEXBASED:
-        PluginFunctions::setDrawMode( ACG::SceneGraph::DrawModes::SOLID_TEXTURED_SHADED , PluginFunctions::ALL_VIEWERS);
-        break;
-      case ENVIRONMENT:
-        PluginFunctions::setDrawMode( ACG::SceneGraph::DrawModes::SOLID_ENV_MAPPED , PluginFunctions::ALL_VIEWERS);
-        break;
-      case UNSET:
-        emit log(LOGERR,"doSwitchTexture: Switching drawmode for unknonw Texture Type!");
-        break;
-    }
+  switch (_type) {
+  case MULTITEXTURE:
+  case HALFEDGEBASED:
+    obj->setObjectDrawMode(ACG::SceneGraph::DrawModes::SOLID_2DTEXTURED_FACE_SHADED, PluginFunctions::ALL_VIEWERS);
+    break;
+  case VERTEXBASED:
+    obj->setObjectDrawMode(ACG::SceneGraph::DrawModes::SOLID_TEXTURED_SHADED, PluginFunctions::ALL_VIEWERS);
+    break;
+  case ENVIRONMENT:
+    obj->setObjectDrawMode(ACG::SceneGraph::DrawModes::SOLID_ENV_MAPPED, PluginFunctions::ALL_VIEWERS);
+    break;
+  case UNSET:
+    emit log(LOGERR, "doSwitchTexture: Switching drawmode for unknonw Texture Type!");
+    break;
   }
 
   emit updateView();
@@ -1855,7 +1837,7 @@ void TextureControlPlugin::slotTextureContextMenu( QAction * _action ) {
       slotSwitchTexture( _action->text() , id );
 
       // Switch to a texture drawMode
-      switchDrawMode(texData->texture( _action->text() ).type());
+      switchDrawMode(texData->texture( _action->text() ).type(), id);
     }
   }
 

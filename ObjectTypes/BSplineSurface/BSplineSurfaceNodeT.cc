@@ -144,6 +144,9 @@ getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMod
     // because normals aren't available in the vertex shader 
     ro.shaderDesc.texGenPerFragment = true;
 
+    if ( props->textured() && arb_texture_idx_)
+      ro.addTexture(ACG::RenderObject::Texture(arb_texture_idx_), 0);
+
     if (props->primitive() == DrawModes::PRIMITIVE_POLYGON || props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)
     {
       updateSurfaceMesh();

@@ -75,6 +75,10 @@
     #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
 
+#ifdef ENABLE_BSPLINESURFACE_SUPPORT
+    #include <ObjectTypes/BSplineSurface/BSplineSurface.hh>
+#endif
+
 #include <OpenFlipper/common/Types.hh>
 #include "textureProperties.hh"
 

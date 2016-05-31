@@ -177,7 +177,7 @@ private:
    QFile *file;
 
    // ProgressDialog for Downloads
-   QProgressDialog *progressDialog;
+   QProgressDialog *progressDialog_;
 
    // What type of download is currently active
    enum DOWNLOAD {

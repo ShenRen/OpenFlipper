@@ -337,24 +337,10 @@ void CoreWidget::slotViewModeDialog(){
   widget->show( OpenFlipper::Options::currentViewMode() );
 }
 
-void CoreWidget::slotViewChangeDialog() {
-  //init widget
-  static viewModeChangeWidget* modeChangeWidget = 0;
-
-  if ( !modeChangeWidget ){
-    modeChangeWidget = new viewModeChangeWidget(viewModes_, this);
-    modeChangeWidget->setWindowIcon( OpenFlipper::Options::OpenFlipperIcon() );
-    connect(modeChangeWidget, SIGNAL(changeView(QString, QStringList, QStringList, QStringList)), this, SLOT(slotChangeView(QString, QStringList, QStringList, QStringList)) );
-  }
-
-  // Make it look like a dialog
-  modeChangeWidget->setWindowFlags(Qt::Popup);
-  modeChangeWidget->show( OpenFlipper::Options::currentViewMode() );
-
-  // Move it to the position of the push button
-  QPoint posButton = vmChangeButton_->mapToGlobal(vmChangeButton_->pos());
-  modeChangeWidget->move( posButton);
-
+void CoreWidget::closeChangeViewModePopup() {
+    QWidget *parent = qobject_cast<QWidget*>(modeChangeWidget->parent());
+    if (parent)
+        parent->close();
 }
 
 /// Slot for Changing visible toolWidgets

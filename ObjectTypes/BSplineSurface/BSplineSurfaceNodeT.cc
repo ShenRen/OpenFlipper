@@ -417,8 +417,8 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
   if ((_drawMode & DrawModes::SOLID_TEXTURED) || (_drawMode & DrawModes::SOLID_ENV_MAPPED)) {
     ACG::GLState::enable(GL_AUTO_NORMAL);
     ACG::GLState::enable(GL_NORMALIZE);
-    ACG::GLState::enable (GL_BLEND); 
-    ACG::GLState::blendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//     ACG::GLState::enable (GL_BLEND); 
+//     ACG::GLState::blendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     ACG::GLState::enable(GL_LIGHTING);
     ACG::GLState::shadeModel(GL_SMOOTH);
     ACG::GLState::depthRange(0.01, 1.0);
@@ -428,7 +428,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
     arb_texture_used_ = false;
 
     ACG::GLState::depthRange(0.0, 1.0);
-    ACG::GLState::disable(GL_BLEND);
+//    ACG::GLState::disable(GL_BLEND);
   }
 
   glPopAttrib();
@@ -493,8 +493,8 @@ BSplineSurfaceNodeT<BSplineSurfaceType>::
 drawTexturedSurface(GLState& _state, GLuint _texture_idx)
 {
   glPushAttrib(GL_ALL_ATTRIB_BITS);
-  ACG::GLState::enable( GL_COLOR_MATERIAL );
-  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+//  ACG::GLState::enable( GL_COLOR_MATERIAL );
+//  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     
   ACG::GLState::enable(GL_TEXTURE_2D);
   
@@ -521,7 +521,7 @@ drawTexturedSurface(GLState& _state, GLuint _texture_idx)
 
   ACG::GLState::bindTexture( GL_TEXTURE_2D, 0);
   ACG::GLState::disable(GL_TEXTURE_2D);
-  ACG::GLState::disable( GL_COLOR_MATERIAL );
+//  ACG::GLState::disable( GL_COLOR_MATERIAL );
   glPopAttrib( );
 }
 

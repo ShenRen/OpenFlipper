@@ -555,7 +555,7 @@ void TextureNode::leavePick(GLState& /*_state*/, PickTarget /*_target*/, const D
 
 GLuint TextureNode::activeTexture()
 {
-  if (0 <= activeTexture_  && activeTexture_ < textures_.size())
+  if (0 <= activeTexture_  && activeTexture_ < int(textures_.size()))
     return textures_[activeTexture_].tex->id();
 
   return 0;

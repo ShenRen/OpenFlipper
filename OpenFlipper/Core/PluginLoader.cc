@@ -1069,7 +1069,11 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
     if ( checkSignal(plugin, "addToolbox(QString,QWidget*,QIcon*)"))
       connect(plugin, SIGNAL( addToolbox(QString,QWidget*,QIcon*) ),
               this, SLOT( addToolbox(QString,QWidget*,QIcon*) ),Qt::DirectConnection );
-  }
+
+    if ( checkSignal(plugin, "addToolbox(QString,QWidget*,QIcon*,QWidget*)"))
+      connect(plugin, SIGNAL( addToolbox(QString,QWidget*,QIcon*,QWidget*) ),
+              this, SLOT( addToolbox(QString,QWidget*,QIcon*,QWidget*) ),Qt::DirectConnection );
+}
   
   //Check if the plugin supports ViewMode-Interface
   ViewModeInterface* viewModePlugin = qobject_cast< ViewModeInterface * >(plugin);

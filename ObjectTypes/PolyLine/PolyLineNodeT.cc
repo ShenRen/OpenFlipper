@@ -312,14 +312,14 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
         else
           _state.set_color( color );
 
-        sphere_->draw(_state, polyline_.vertex_radius(), (Vec3f)polyline_.point(i));
+        sphere_->draw(_state, _state.point_size(), (Vec3f)polyline_.point(i));
       }
     }
     else
     {
       _state.set_color( color );
       for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
-        sphere_->draw(_state, polyline_.vertex_radius(), (Vec3f)polyline_.point(i));
+        sphere_->draw(_state, _state.point_size(), (Vec3f)polyline_.point(i));
     }
   }
   // draw vertices as spheres with constant size on screen
@@ -1043,7 +1043,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
             {
               if (polyline_.vertex_selected(i))
               {
-                double radius = polyline_.vertex_radius();
+                double radius = _state.point_size();
                 if (screenScale)
                 {
                   // compute radius in 3D
@@ -1065,7 +1065,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
           {
             if (!polyline_.vertex_selections_available() || !polyline_.vertex_selected(i))
             {
-              double radius = polyline_.vertex_radius();
+              double radius = _state.point_size();
               if (screenScale)
               {
                 // compute radius in 3D

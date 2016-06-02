@@ -460,10 +460,14 @@ pick_vertices( GLState& _state )
 
   if (pickShader && pickShader->isLinked())
   {
+    // Update the vbo only if required.
+    if (updateVBO_)
+      updateVBO();
+
     // Bind the vertex array
     ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
 
-    unsigned int pickOffsetIndex = _state.pick_current_index();
+    int pickOffsetIndex = int(_state.pick_current_index());
 
     vertexDecl_.activateShaderPipeline(pickShader);
 
@@ -568,6 +572,10 @@ pick_edges( GLState& _state, unsigned int _offset)
 
   if (pickShader && pickShader->isLinked())
   {
+    // Update the vbo only if required.
+    if (updateVBO_)
+      updateVBO();
+
     // Bind the vertex array
     ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
 

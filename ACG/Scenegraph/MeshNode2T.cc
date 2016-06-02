@@ -706,12 +706,6 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
     // 1. setup drawMesh based on property source
 
 
-    if (props->flatShaded())
-      drawMesh_->setFlatShading();
-    else
-      drawMesh_->setSmoothShading();
-
-
     ro.shaderDesc.vertexColors = true;
 
     switch (props->colorSource())
@@ -725,12 +719,22 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
       } break;
     }
 
-    switch (props->normalSource())
+    // only the polygon primitives can set the normal source
+    if (props->primitive() == DrawModes::PRIMITIVE_POLYGON)
     {
-    case DrawModes::NORMAL_PER_VERTEX: drawMesh_->usePerVertexNormals(); break;
-    case DrawModes::NORMAL_PER_HALFEDGE: drawMesh_->usePerHalfedgeNormals(); break;
-    default: break;
+      switch (props->normalSource())
+      {
+      case DrawModes::NORMAL_PER_VERTEX: drawMesh_->usePerVertexNormals(); break;
+      case DrawModes::NORMAL_PER_HALFEDGE: drawMesh_->usePerHalfedgeNormals(); break;
+      default: break;
+      }
+
+      if (props->flatShaded())
+        drawMesh_->setFlatShading();
+      else
+        drawMesh_->setSmoothShading();
     }
+
 
     ro.shaderDesc.addTextureType(GL_TEXTURE_2D,false,0);
 
@@ -772,6 +776,8 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
 
     if (props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)
     {
+      ro.debugName = "MeshNode.Wireframe";
+
       ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
       drawMesh_->disableColors();
 
@@ -812,6 +818,8 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
 
         // disable color write
         ro.glColorMask(0,0,0,0);
+
+        ro.debugName = "MeshNode.HiddenLine.faces";
         add_face_RenderObjects(_renderer, &ro);
       }
 
@@ -825,6 +833,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
 
       applyRenderObjectSettings(DrawModes::PRIMITIVE_HIDDENLINE, &ro);
 
+      ro.debugName = "MeshNode.HiddenLine.lines";
       add_line_RenderObjects(_renderer, &ro);
     }
 
@@ -845,6 +854,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
       ro.setupLineRendering(_state.line_width(), Vec2f((float)_state.viewport_width(), (float)_state.viewport_height()));
 
       applyRenderObjectSettings(props->primitive(), &ro);
+      ro.debugName = "MeshNode.Edges";
       _renderer->addRenderObject(&ro);
 
        // skip other edge primitives for this drawmode layer
@@ -872,6 +882,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
       ro.setupLineRendering(_state.line_width(), Vec2f((float)_state.viewport_width(), (float)_state.viewport_height()));
 
       applyRenderObjectSettings(props->primitive(), &ro);
+      ro.debugName = "MeshNode.HalfEdges";
       _renderer->addRenderObject(&ro);
     }  
 
@@ -898,6 +909,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
         ro.setupPointRendering(_mat->pointSize(), Vec2f((float)_state.viewport_width(), (float)_state.viewport_height()));
 
         applyRenderObjectSettings(props->primitive(), &ro);
+        ro.debugName = "MeshNode.Points";
         add_point_RenderObjects(_renderer, &ro);
       } break;
     case DrawModes::PRIMITIVE_EDGE:
@@ -909,6 +921,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
         ro.setupLineRendering(_state.line_width(), Vec2f((float)_state.viewport_width(), (float)_state.viewport_height()));
 
         applyRenderObjectSettings(props->primitive(), &ro);
+        ro.debugName = "MeshNode.Edges";
         add_line_RenderObjects(_renderer, &ro);
       } break;
     case DrawModes::PRIMITIVE_POLYGON: 
@@ -922,6 +935,7 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
         if (!useNonIndexed && props->colorSource() == DrawModes::COLOR_PER_FACE)
           ro.shaderDesc.vertexColorsInterpolator = "flat";
 
+        ro.debugName = "MeshNode.Faces";
         add_face_RenderObjects(_renderer, &ro, useNonIndexed);
 
         ro.shaderDesc.vertexColorsInterpolator.clear();

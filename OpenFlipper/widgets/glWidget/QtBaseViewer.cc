@@ -2290,7 +2290,6 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
 
       for (int i = 0; i < (_supersampling ? supersampling->numSubpixels() : 1); ++i)
       {
-        QFramebufferObject fb(w, h, format);
         ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, fb.handle());
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
@@ -2346,15 +2345,19 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
       if (_supersampling)
       {
         supersampling->end();
-        _image = QImage(w, h, QImage::Format_ARGB32);
 
-        for (int y = 0; y < h; ++y)
+        int w_hi = w * _supersamplingResolutionIncrease;
+        int h_hi = h * _supersamplingResolutionIncrease;
+
+        _image = QImage(w_hi, h_hi, QImage::Format_ARGB32);
+
+        for (int y = 0; y < h_hi; ++y)
         {
-          for (int x = 0; x < w; ++x)
+          for (int x = 0; x < w_hi; ++x)
           {
             for (int c = 0; c < 4; ++c)
             {
-              int idx = (y * w + x) * 4 + c;
+              int idx = (y * w_hi + x) * 4 + c;
               int val = int(supersampling->compositeImage()[idx] *255.0f);
               _image.bits()[idx] = uchar(std::max(std::min(val, 255), 0));
             }

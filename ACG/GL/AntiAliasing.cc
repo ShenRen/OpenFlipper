@@ -337,24 +337,27 @@ SubpixelSupersampling::~SubpixelSupersampling() {
 Vec2f SubpixelSupersampling::subpixelOffset(int i) const {
   // compute viewport offset for the subpixel
   Vec2f sample = kernel_->samples()[i];
-  return sample * subpixelAreaWidth_ + Vec2f(0.5f, 0.5f);
+  return sample * subpixelAreaWidth_;
 }
 
 //=============================================================================
 
 ACG::Vec2i SubpixelSupersampling::subpixelGroup(int i) const {
   
-  Vec2f offset = subpixelOffset(i);
+  Vec2f offset = subpixelOffset(i) + Vec2f(0.5f, 0.5f);
 
   Vec2i group;
 
   for (int k = 0; k < 2; ++k) {
+    // this gives the mirrored group id
     group[k] = int(offset[k] * float(resolutionIncrease_));
 
     // clamp to pixel area. 
     // if subpixelAreaWidth_ > 0 some samples are taken from the neighbors but are weighted in this group
     group[k] = std::max(group[k], 0);
     group[k] = std::min(group[k], resolutionIncrease_ - 1);
+
+    group[k] = resolutionIncrease_ - 1 - group[k];
   }
 
   return group;
@@ -397,21 +400,11 @@ void SubpixelSupersampling::endSubpixel(int i) {
   // composite
   Vec2f offset = subpixelOffset(i);
 
+  // find group of subpixel in the increased resolution
+  Vec2i group = subpixelGroup(i);
+
   for (int y = 0; y < height_; ++y) {
     for (int x = 0; x < width_; ++x) {
-
-      // find group of subpixel in the increased resolution
-      Vec2i group;
-
-      for (int k = 0; k < 2; ++k) {
-        group[k] = int(offset[k] * float(resolutionIncrease_));
-
-        // clamp to pixel area. 
-        // if subpixelAreaWidth_ > 0 some samples are taken from the neighbors but are weighted in this group
-        group[k] = std::max(group[k], 0);
-        group[k] = std::min(group[k], resolutionIncrease_ - 1);
-      }
-
 
       // find pixel in high resolution image the subpixel lies in
       // without neighbor sample clamping:
@@ -422,8 +415,9 @@ void SubpixelSupersampling::endSubpixel(int i) {
       int x_hi = x * resolutionIncrease_ + group[0];
       int y_hi = y * resolutionIncrease_ + group[1];
 
+     int pixel_hi = y_hi * widthHi_ + x_hi;
 
-      int pixel_hi = y_hi * widthHi_ + x_hi;
+
 
 
       // add pixel to group composite

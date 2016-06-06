@@ -65,6 +65,7 @@
 // GL
 #include <ACG/GL/globjects.hh>
 #include <ACG/GL/gl.hh>
+#include <ACG/GL/FilterKernels.hh>
 
 // C++
 #include <vector>
@@ -189,6 +190,85 @@ private:
 };
 
 #endif // GL_ARB_texture_multisample
+
+
+//== CLASS DEFINITION =========================================================
+
+
+// Render high quality screenshots with multiple subpixel aligned viewports
+
+class ACGDLLEXPORT SubpixelSupersampling
+{
+public:
+
+  SubpixelSupersampling(int _width, int _height,
+    int _resolutionIncrease,
+    int _channels,
+    float _sampleDistance,
+    float _subpixelAreaWidth = 1.0f);
+
+  ~SubpixelSupersampling();
+
+
+  int numSubpixels() const { return subpixels_; }
+
+
+  Vec2f subpixelOffset(int i) const;
+
+  void begin();
+
+  // begin scene rendering for subpixel i
+  void beginSubpixel(int i);
+
+  // end scene rendering for subpixel i
+  void endSubpixel(int i);
+
+  void end();
+
+  const std::vector<float>& compositeImage() const { return composite_; }
+
+  Vec2i subpixelGroup(int i) const;
+
+  void clearBuffer();
+
+private:
+
+
+
+private:
+
+  // screen dimension of the original image
+  int width_, height_;
+
+  // rate of the resolution increase
+  int resolutionIncrease_;
+
+  // resolution after increase factor
+  int widthHi_, heightHi_;
+
+  // # image channels
+  int channels_;
+
+  // # subpixels
+  int subpixels_;
+
+  // # subpixels in a group in the composite image
+  std::vector<int> subpixelsPerGroup_;
+
+  // composite image
+  std::vector<float> composite_;
+
+
+  float prevViewport[4];
+
+  // sample kernel for anti aliasing
+  PoissonBlurFilter* kernel_;
+
+  float sampleDistance_;
+  float subpixelAreaWidth_;
+};
+
+
 
 
 

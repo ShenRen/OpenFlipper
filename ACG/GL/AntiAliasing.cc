@@ -289,5 +289,190 @@ void MSTextureSampler::filterMSAATexture_Linear( GLuint _texture, int _samples, 
 #endif // GL_ARB_texture_multisample
 
 
+//=============================================================================
+
+
+
+
+//=============================================================================
+
+
+
+SubpixelSupersampling::SubpixelSupersampling(int _width, int _height, int _resolutionIncrease, int _channels, float _sampleDistance, float _subpixelAreaWidth)
+: width_(_width), height_(_height), 
+resolutionIncrease_(_resolutionIncrease),
+widthHi_(_width * resolutionIncrease_), heightHi_(_height * resolutionIncrease_),
+channels_(_channels),
+subpixels_(-1),
+kernel_(0),
+sampleDistance_(_sampleDistance),
+subpixelAreaWidth_(_subpixelAreaWidth) {
+
+  kernel_ = new PoissonBlurFilter(0.5f, _sampleDistance, 30, false);
+  subpixels_ = kernel_->numSamples();
+
+  composite_.resize(widthHi_ * heightHi_ * channels_, 0.0f);
+
+
+  // compute number of subpixels in a group
+  subpixelsPerGroup_.resize(resolutionIncrease_ * resolutionIncrease_, 0);
+
+  for (int i = 0; i < subpixels_; ++i) {
+  
+    Vec2i group = subpixelGroup(i);
+    int groupID = group[1] * resolutionIncrease_ + group[0];
+
+    ++subpixelsPerGroup_[groupID];
+  }
+}
+
+//=============================================================================
+
+SubpixelSupersampling::~SubpixelSupersampling() {
+  delete kernel_;
+}
+
+//=============================================================================
+
+Vec2f SubpixelSupersampling::subpixelOffset(int i) const {
+  // compute viewport offset for the subpixel
+  Vec2f sample = kernel_->samples()[i];
+  return sample * subpixelAreaWidth_ + Vec2f(0.5f, 0.5f);
+}
+
+//=============================================================================
+
+ACG::Vec2i SubpixelSupersampling::subpixelGroup(int i) const {
+  
+  Vec2f offset = subpixelOffset(i);
+
+  Vec2i group;
+
+  for (int k = 0; k < 2; ++k) {
+    group[k] = int(offset[k] * float(resolutionIncrease_));
+
+    // clamp to pixel area. 
+    // if subpixelAreaWidth_ > 0 some samples are taken from the neighbors but are weighted in this group
+    group[k] = std::max(group[k], 0);
+    group[k] = std::min(group[k], resolutionIncrease_ - 1);
+  }
+
+  return group;
+}
+
+//=============================================================================
+
+void SubpixelSupersampling::begin() {
+  clearBuffer();
+}
+
+//=============================================================================
+
+void SubpixelSupersampling::beginSubpixel(int i) {
+
+  Vec2f offset = subpixelOffset(i);
+
+  // use glViewportIndexedf because glViewport doesn't accept fractional offsets
+
+  // save current viewport
+  glGetFloatv(GL_VIEWPORT, prevViewport);
+
+  // set viewport with subpixel offset
+  glViewportIndexedf(0, offset[0], offset[1], width_, height_);
+}
+
+//=============================================================================
+
+void SubpixelSupersampling::endSubpixel(int i) {
+
+  // read framebuffer data
+  std::vector<unsigned char> pixels(channels_ * width_ * height_);
+
+  GLenum fmts[5] = { GL_NONE, GL_RED, GL_RG, GL_RGB, GL_RGBA };
+  GLenum texformat = (channels_ < 0 || channels_ > 4) ? GL_NONE : fmts[channels_];
+
+  glReadPixels(0, 0, width_, height_, texformat, GL_UNSIGNED_BYTE, &pixels[0]);
+  
+
+  // composite
+  Vec2f offset = subpixelOffset(i);
+
+  for (int y = 0; y < height_; ++y) {
+    for (int x = 0; x < width_; ++x) {
+
+      // find group of subpixel in the increased resolution
+      Vec2i group;
+
+      for (int k = 0; k < 2; ++k) {
+        group[k] = int(offset[k] * float(resolutionIncrease_));
+
+        // clamp to pixel area. 
+        // if subpixelAreaWidth_ > 0 some samples are taken from the neighbors but are weighted in this group
+        group[k] = std::max(group[k], 0);
+        group[k] = std::min(group[k], resolutionIncrease_ - 1);
+      }
+
+
+      // find pixel in high resolution image the subpixel lies in
+      // without neighbor sample clamping:
+//       int x_hi = int(float(x * resolutionIncrease_) + offset[0]);
+//       int y_hi = int(float(y * resolutionIncrease_) + offset[1]);
+
+      // with neighbor sample clamping:
+      int x_hi = x * resolutionIncrease_ + group[0];
+      int y_hi = y * resolutionIncrease_ + group[1];
+
+
+      int pixel_hi = y_hi * widthHi_ + x_hi;
+
+
+      // add pixel to group composite
+      for (int c = 0; c < channels_; ++c)
+        composite_[pixel_hi * channels_ + c] += float(pixels[(y * width_ + x) * channels_ + c]) / 255.0f;
+
+      // track number of pixels per group
+    }
+  }
+  
+  // reset to previous viewport
+  glViewportIndexedf(0, prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+}
+
+//=============================================================================
+
+void SubpixelSupersampling::end() {
+
+  // divide pixel value by number of samples
+  for (int y = 0; y < height_; ++y) {
+    for (int x = 0; x < width_; ++x) {
+
+      for (int y_g = 0; y_g < resolutionIncrease_; ++y_g) {
+        for (int x_g = 0; x_g < resolutionIncrease_; ++x_g) {
+
+          int x_hi = x * resolutionIncrease_ + x_g;
+          int y_hi = y * resolutionIncrease_ + y_g;
+          int pixel_hi = y_hi * widthHi_ + x_hi;
+
+
+          int groupID = y_g * resolutionIncrease_ + x_g;
+
+          for (int c = 0; c < channels_; ++c)
+            composite_[pixel_hi * channels_ + c] /= float(subpixelsPerGroup_[groupID]);
+        }
+      }
+
+    }
+  }
+
+}
+
+//=============================================================================
+
+void SubpixelSupersampling::clearBuffer() {
+  memset(&composite_[0], 0, composite_.size() * sizeof(float));
+}
+
+//=============================================================================
+
 } // namespace ACG
 //=============================================================================

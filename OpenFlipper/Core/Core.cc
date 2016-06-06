@@ -1466,14 +1466,18 @@ void Core::viewerSnapshot(QString file_name, bool store_comments,
         bool comments_visible_only, bool comments_targeted_only,
         bool store_material_info, int snapshot_width, int snapshot_height,
         bool snapshot_transparent, bool hide_coord_sys,
-        int snapshot_multisampling, bool store_view) {
+        int snapshot_multisampling, bool store_view,
+        bool snapshot_supersampling, float snapshot_sample_dist,
+        float snapshot_subpixel_area, int snapshot_res_incr) {
 
     if ( OpenFlipper::Options::gui() )
         coreWidget_->viewerSnapshot(file_name, store_comments,
                 comments_visible_only, comments_targeted_only,
                 store_material_info, snapshot_width, snapshot_height,
                 snapshot_transparent, hide_coord_sys, snapshot_multisampling,
-                store_view);
+                store_view, 
+                snapshot_supersampling, snapshot_sample_dist,
+                snapshot_subpixel_area, snapshot_res_incr);
 }
 
 

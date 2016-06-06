@@ -329,7 +329,7 @@ draw(GLState&  _state  , const DrawModes::DrawMode& /*_drawMode*/)
 
   if ( mode_ == SCREENPOS ) {
 
-    int left, bottom, width, height;
+    float left, bottom, width, height;
     double aspect = _state.aspect();
 
     _state.get_viewport(left, bottom, width, height);

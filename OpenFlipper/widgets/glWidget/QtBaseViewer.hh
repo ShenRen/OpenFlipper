@@ -768,10 +768,10 @@ private:
         Save snapshot to file determined by snapshotBaseFileName() and
         the current snapshot counter. The \a back buffer will be saved.
     */
-    virtual void snapshot(int _width = 0, int _height = 0, bool _alpha = false, bool _hideCoordsys = false, int samples = 1);
+  virtual void snapshot(int _width = 0, int _height = 0, bool _alpha = false, bool _hideCoordsys = false, int samples = 1, bool _supersampling = false, float _sampleDist = 0.15f, float _subpixelAreaScale = 1.0f, int _supersamplingResolutionIncrease = 1);
 
     /// Take a snapshot and store it in the given image
-    virtual void snapshot(QImage& _image, int _width = 0, int _height = 0, bool _alpha = false, bool _hideCoordsys = false, int samples = 1);
+    virtual void snapshot(QImage& _image, int _width = 0, int _height = 0, bool _alpha = false, bool _hideCoordsys = false, int samples = 1, bool _supersampling = false, float _sampleDist = 0.15f, float _subpixelAreaScale = 1.0f, int _supersamplingResolutionIncrease = 1);
 
   /** @} */
 

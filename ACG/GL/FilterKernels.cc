@@ -464,7 +464,7 @@ void RadialBlurFilter::setKernel( int _numSamples )
 // ----------------------------------------------------------------------------
 
 
-PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int _numTris /*= 30*/ )
+PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int _numTris, bool _disk )
   : radius_(_radius), sampleDistance_(_sampleDistance), numTries_(_numTris)
 {
   // "Fast Poisson Disk Sampling in Arbitrary Dimensions"
@@ -562,7 +562,10 @@ PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int 
         continue;
 
       // disk check
-      if ( (x_s - ACG::Vec2f(_radius, _radius)).sqrnorm() > _radius*_radius)
+      if (_disk && (x_s - ACG::Vec2f(_radius, _radius)).sqrnorm() > _radius*_radius)
+        continue;
+      // box check
+      else if (!_disk && (x_s[0] > _radius * 2.0f || x_s[1] > _radius * 2.0f)) 
         continue;
 
       // neighborhood check

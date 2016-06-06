@@ -257,7 +257,14 @@ void GLState::setState ()
   }
 
   // viewport
+#ifdef GL_ARB_viewport_array
+  if (glViewportIndexedf)
+    glViewportIndexedf(0, left_, bottom_, width_, height_);
+  else
+    glViewport(left_, bottom_, width_, height_);
+#else
   glViewport(left_, bottom_, width_, height_);
+#endif
 }
 
 
@@ -465,8 +472,8 @@ void GLState::perspective( double _fovY, double _aspect,
 //-----------------------------------------------------------------------------
 
 
-void GLState::viewport( int _left, int _bottom,
-			int _width, int _height,
+void GLState::viewport( float _left, float _bottom,
+			float _width, float _height,
 			int _glwidth, int _glheight)
 {
   left_   = _left;
@@ -502,7 +509,15 @@ void GLState::viewport( int _left, int _bottom,
   if (updateGL_)
   {
     makeCurrent();
+
+#ifdef GL_ARB_viewport_array
+    if (glViewportIndexedf)
+      glViewportIndexedf(0, _left, _bottom, _width, _height);
+    else
+      glViewport(_left, _bottom, _width, _height);
+#else
     glViewport(_left, _bottom, _width, _height);
+#endif
   }
 }
 

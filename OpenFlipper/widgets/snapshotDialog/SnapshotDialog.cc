@@ -47,6 +47,10 @@
 *                                                                            *
 \*===========================================================================*/
 
+#include <ACG/GL/acg_glew.hh>
+#include <ACG/GL/globjects.hh>
+#include <ACG/GL/FilterKernels.hh>
+
 #include "SnapshotDialog.hh"
 #include <OpenFlipper/common/GlobalOptions.hh>
 
@@ -54,7 +58,9 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
  : QDialog(parent),
    captureViewers_(_captureViewers),
    aspect_((double)_w / (double)_h),
-   blockSpinBox_(false)
+   blockSpinBox_(false),
+   poissonImage_(128, 128, QImage::Format_RGB888),
+   poissonFilter_(0)
 {
   setupUi(this);
 
@@ -68,7 +74,9 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
   transparent->setDisabled(!captureViewers_);
   hideCoordsys->setDisabled(!captureViewers_);
   multisampling->setDisabled(!captureViewers_);
+  supersampling->setDisabled(!captureViewers_);
   num_samples->setDisabled(!captureViewers_);
+  supersampling_dist->setDisabled(!captureViewers_);
   
   snapWidth->setValue(_w);
   snapHeight->setValue(_h);
@@ -85,14 +93,24 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
   connect(snapWidth,  SIGNAL(valueChanged(int)), this, SLOT(snapWidthChanged(int)) );
   connect(snapHeight, SIGNAL(valueChanged(int)), this, SLOT(snapHeightChanged(int)) );
   connect(keepAspect, SIGNAL(stateChanged(int)), this, SLOT(keepAspectChanged()) );
-  connect(multisampling, SIGNAL(stateChanged(int)), this, SLOT(multisampleChanged()) );
+  connect(multisampling, SIGNAL(stateChanged(int)), this, SLOT(multisampleChanged()));
+  connect(supersampling, SIGNAL(stateChanged(int)), this, SLOT(supersampleChanged()));
 
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()) );
   connect(findButton, SIGNAL(clicked()), this, SLOT(findFile()) );
   connect(changeRes_pb,  SIGNAL(clicked()), this, SLOT(slotChangeResolution()) );
   connect(okButton,  SIGNAL(clicked()), this, SLOT(slotOk()) );
 
+  connect(supersampling_dist, SIGNAL(valueChanged(double)), this, SLOT(updatePoisson()));
+
   connect(filename, SIGNAL(textChanged(const QString &)), this, SLOT(filenameChanged(const QString &)));
+
+
+  updatePoisson();
+}
+
+SnapshotDialog::~SnapshotDialog() {
+  delete poissonFilter_;
 }
 
 void SnapshotDialog::saveStates() {
@@ -151,6 +169,12 @@ void SnapshotDialog::keepAspectChanged() {
 void SnapshotDialog::multisampleChanged() {
     num_samples->setDisabled (!multisampling->isChecked());
 }
+
+
+void SnapshotDialog::supersampleChanged() {
+  supersampling_dist->setDisabled(!supersampling->isChecked());
+}
+
 void SnapshotDialog::slotChangeResolution()
 {
   if ( !captureViewers_ )
@@ -214,4 +238,16 @@ void SnapshotDialog::filenameChanged(const QString &new_filename) {
         filename->setStyleSheet(style);
         warning_lb->setText("");
     }
+}
+
+void SnapshotDialog::updatePoisson() {
+
+  float d = supersampling_dist->value();
+
+  delete poissonFilter_;
+  poissonFilter_ = new ACG::PoissonBlurFilter(0.5f, d, 30, false);
+
+  poissonFilter_->plotSamples(&poissonImage_);
+  poissonPixmap_ = QPixmap::fromImage(poissonImage_);
+  poisson_samples->setPixmap(poissonPixmap_);
 }

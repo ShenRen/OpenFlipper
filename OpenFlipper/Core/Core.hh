@@ -724,7 +724,9 @@ public slots:
             bool comments_visible_only, bool comments_targeted_only,
             bool store_material_info, int snapshot_width, int snapshot_height,
             bool snapshot_transparent, bool hide_coord_sys,
-            int snapshot_multisampling, bool store_view);
+            int snapshot_multisampling, bool store_view,
+            bool snapshot_supersampling, float snapshot_sample_dist,
+            float snapshot_subpixel_area, int snapshot_res_incr);
 
     /// resize the examinerViewer
     void resizeViewers(int _width, int _height );

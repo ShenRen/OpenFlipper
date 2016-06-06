@@ -712,7 +712,7 @@ public:
 		    double _near_plane, double _far_plane );
 
   /// set viewport (lower left corner, width, height, glcontext width, height)
-  void viewport( int _left, int _bottom, int _width, int _height,
+  void viewport( float _left, float _bottom, float _width, float _height,
 	         int _glwidth = 0, int _glheight = 0);
 
 
@@ -821,6 +821,12 @@ public:
     _left = left_; _bottom = bottom_; _width = width_; _height = height_;
   }
 
+  /// get viewport
+  void get_viewport(float& _left, float& _bottom,
+    float& _width, float& _height) const {
+    _left = left_; _bottom = bottom_; _width = width_; _height = height_;
+  }
+
   /// get viewport width
   int viewport_width() const { return width_; }
   /// get viewport height
@@ -849,7 +855,7 @@ public:
 
   /// get viewing ray
   Vec3d viewing_direction() const {
-    return viewing_direction(width_>>1, height_>>1);
+    return viewing_direction(width_ * 0.5f, height_ * 0.5f);
   }
 
   /// get viewing ray through pixel (_x,_y)
@@ -1163,7 +1169,7 @@ private: //--------------------------------------------------------------------
              inverse_window2viewport_;
 
   // viewport
-  int left_, bottom_, width_, height_;
+  float left_, bottom_, width_, height_;
 
   // gl context
   int glwidth_, glheight_;

@@ -363,8 +363,9 @@ public:
    * @param _radius radius of poisson disk
    * @param _sampleDistance min distance between two samples
    * @param _numTries number of tries per sample to find the next sample
+   * @param _disk should samples lie inside a disk of radius r or inside square [-r/2, -r/2] x [r/2, r/2]
   */
-  PoissonBlurFilter(float _radius, float _sampleDistance, int _numTries = 30);
+  PoissonBlurFilter(float _radius, float _sampleDistance, int _numTries = 30, bool _disk = true);
 
   /// Class destructor
   virtual ~PoissonBlurFilter();

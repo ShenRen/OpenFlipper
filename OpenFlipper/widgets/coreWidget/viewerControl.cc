@@ -551,7 +551,9 @@ void CoreWidget::viewerSnapshot(QString file_name, bool store_comments,
         bool comments_visible_only, bool comments_targeted_only,
         bool store_material_info, int snapshot_width, int snapshot_height,
         bool snapshot_transparent, bool hide_coord_sys,
-        int snapshot_multisampling, bool store_view) {
+        int snapshot_multisampling, bool store_view,
+        bool snapshot_supersampling, float snapshot_sample_dist,
+        float snapshot_subpixel_area, int snapshot_res_incr) {
 
     if (snapshot_height < 0) {
         int w = glView_->width();
@@ -586,7 +588,9 @@ void CoreWidget::viewerSnapshot(QString file_name, bool store_comments,
         examiner_widgets_[PluginFunctions::activeExaminer()]->snapshot(finalImage,
             snapshot_width, snapshot_height,
             snapshot_transparent, hide_coord_sys,
-            snapshot_multisampling);
+            snapshot_multisampling, 
+            snapshot_supersampling, snapshot_sample_dist,
+            snapshot_subpixel_area, snapshot_res_incr);
 
         if (!comments.isEmpty())
             finalImage.setText("Mesh Comments", comments);
@@ -785,10 +789,17 @@ void CoreWidget::viewerSnapshotDialog() {
                     dialog.num_samples->value() : 1;
     const bool store_view = dialog.metaData_storeView_cb->isChecked();
 
+    const bool snapshot_supersampling = dialog.supersampling->isChecked();
+    const float snapshot_sample_dist = dialog.supersampling_dist->value();
+    const float snapshot_sample_area = dialog.supersampling_area->value();
+    const int snapshot_supersample_res_incr = dialog.supersampling_res_incr->value();
+
     viewerSnapshot(newName, storeComments, comments_visible_only,
             comments_targeted_only, store_material_info, snapshot_width,
             snapshot_height, snapshot_transparent, hide_coord_sys,
-            snapshot_multisampling, store_view);
+            snapshot_multisampling, store_view,
+            snapshot_supersampling, snapshot_sample_dist,
+            snapshot_sample_area, snapshot_supersample_res_incr);
   }
   //glView_->resize(w, h);
 }

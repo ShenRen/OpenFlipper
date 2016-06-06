@@ -70,6 +70,7 @@
 #include <ACG/Scenegraph/SceneGraphAnalysis.hh>
 #include <ACG/GL/GLError.hh>
 #include <ACG/GL/IRenderer.hh>
+#include <ACG/GL/AntiAliasing.hh>
 
 #include <QGraphicsWidget>
 #include <QString>
@@ -722,6 +723,7 @@ void glViewer::drawScene()
 
   // =================================================================================
 
+  glBindFramebuffer(GL_FRAMEBUFFER, backbufferFbo);
   glDrawBuffer(backbufferTarget);
 
   // unbind vbo for qt log window
@@ -2196,7 +2198,8 @@ void glViewer::slotPropertiesUpdated() {
   updateGL();
 }
 
-void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bool _hideCoordsys, int samples) {
+void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bool _hideCoordsys, int samples,
+  bool _supersampling, float _sampleDist, float _subpixelAreaScale, int _supersamplingResolutionIncrease) {
     
     int w = 0, h = 0, bak_w = 0, bak_h = 0, left = 0, bottom = 0;
     
@@ -2243,8 +2246,12 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
     if ( fb.isValid() ){
 
       const GLuint prevFbo = ACG::GLState::getFramebufferDraw();
+      GLenum prevDrawBuf;
+      glGetIntegerv(GL_DRAW_BUFFER, (GLint*)&prevDrawBuf);
+
 
       ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, fb.handle());
+      ACG::GLState::drawBuffer(GL_COLOR_ATTACHMENT0);
       
       // Turn alpha on if demanded
       ACG::Vec4f backColorBak;
@@ -2269,45 +2276,103 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
       newBack = ACG::Vec4f(backColorBak[0], backColorBak[1], backColorBak[2], (_alpha ? 0.0f : 1.0f));
       properties()->backgroundColor(newBack);
 
-      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-      glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      // adjust blend function for alpha channel
-      ACG::GLState::blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_ONE);
-      ACG::GLState::lockBlendFuncSeparate(false, true);
+      ACG::SubpixelSupersampling* supersampling = 0;
+      
 
-      glEnable(GL_MULTISAMPLE);
-      paintGL();
-      glFinish();
-
-      ACG::GLState::unlockBlendFuncSeparate();
-
-      glDisable(GL_MULTISAMPLE);
-
-      //Qt FrameBuffer "toImage" function returns QImage::Format_ARGB32_Premultiplied. not desired
-      QFramebufferObjectFormat tempFormat;
-      tempFormat.setInternalTextureFormat(GL_RGBA);
-      tempFormat.setTextureTarget(GL_TEXTURE_2D);
-      QFramebufferObject temp(w,h, tempFormat);
-      if (format.samples() != 0)
+      if (_supersampling)
       {
-        //cannot directly read from a multisampled framebuffer.
-        //create new one without sampling and read from it
-        QRect rect(QPoint(0, 0), QSize(w,h));
-
-        QFramebufferObject::blitFramebuffer(&temp, rect, &fb, rect);
-        ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, temp.handle());
+        supersampling = new ACG::SubpixelSupersampling(w, h, _supersamplingResolutionIncrease, 4, _sampleDist, _subpixelAreaScale);
+        supersampling->begin();
       }
 
-      //get the framebuffer data
-      _image = QImage(w,h,QImage::Format_ARGB32);
-      glReadPixels(0,0,w,h,GL_BGRA,GL_UNSIGNED_INT_8_8_8_8_REV,reinterpret_cast<void*>(_image.bits()));
-      _image = _image.mirrored(false,true);//convert from opengl to qt coordinates
+
+      for (int i = 0; i < (_supersampling ? supersampling->numSubpixels() : 1); ++i)
+      {
+        QFramebufferObject fb(w, h, format);
+        ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, fb.handle());
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // adjust blend function for alpha channel
+        ACG::GLState::blendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_ONE);
+        ACG::GLState::lockBlendFuncSeparate(false, true);
+
+        if (_supersampling)
+        {
+          supersampling->beginSubpixel(i);
+
+          ACG::Vec2f offset = supersampling->subpixelOffset(i);
+
+          glstate_->viewport(offset[0], offset[1], w, h);
+        }
+
+        glEnable(GL_MULTISAMPLE);
+        paintGL();
+        glFinish();
+
+
+        ACG::GLState::unlockBlendFuncSeparate();
+
+        glDisable(GL_MULTISAMPLE);
+
+        //Qt FrameBuffer "toImage" function returns QImage::Format_ARGB32_Premultiplied. not desired
+        QFramebufferObjectFormat tempFormat;
+        tempFormat.setInternalTextureFormat(GL_RGBA);
+        tempFormat.setTextureTarget(GL_TEXTURE_2D);
+        QFramebufferObject temp(w, h, tempFormat);
+        if (format.samples() != 0)
+        {
+          //cannot directly read from a multisampled framebuffer.
+          //create new one without sampling and read from it
+          QRect rect(QPoint(0, 0), QSize(w, h));
+
+          QFramebufferObject::blitFramebuffer(&temp, rect, &fb, rect);
+          ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, temp.handle());
+        }
+
+        if (_supersampling)
+          supersampling->endSubpixel(i);
+        else
+        {
+          // get the framebuffer data
+          _image = QImage(w, h, QImage::Format_ARGB32);
+          glReadPixels(0, 0, w, h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, reinterpret_cast<void*>(_image.bits()));
+        }
+      }
+
+      if (_supersampling)
+      {
+        supersampling->end();
+        _image = QImage(w, h, QImage::Format_ARGB32);
+
+        for (int y = 0; y < h; ++y)
+        {
+          for (int x = 0; x < w; ++x)
+          {
+            for (int c = 0; c < 4; ++c)
+            {
+              int idx = (y * w + x) * 4 + c;
+              int val = int(supersampling->compositeImage()[idx] *255.0f);
+              _image.bits()[idx] = uchar(std::max(std::min(val, 255), 0));
+            }
+          }
+        }
+      }
+     
+       
+      _image = _image.mirrored(false, true); //convert from opengl to qt coordinates
 
 
       //cleanup
       ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, prevFbo);
+      ACG::GLState::drawBuffer(prevDrawBuf);
+
+      delete supersampling;
+      supersampling = 0;
+
 
       // Reset alpha settings
       if(_alpha)
@@ -2335,12 +2400,14 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
 }
 
 
-void glViewer::snapshot( int _width, int _height, bool _alpha, bool _hideCoordsys, int samples)
+void glViewer::snapshot( int _width, int _height, bool _alpha, bool _hideCoordsys, int samples,
+  bool _supersampling, float _sampleDist, float _subpixelAreaScale, int _supersamplingResolutionIncrease)
 {
    QImage image;
    
    // Capture image
-   snapshot(image, _width, _height, _alpha, _hideCoordsys, samples);
+   snapshot(image, _width, _height, _alpha, _hideCoordsys, samples,
+     _supersampling, _sampleDist, _subpixelAreaScale, _supersamplingResolutionIncrease);
 
    /*
     * Meta data

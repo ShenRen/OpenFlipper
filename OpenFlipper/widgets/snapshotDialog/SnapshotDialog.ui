@@ -5,6 +5,14 @@
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>694</width>
+    <height>627</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Take Snapshot</string>
   </property>
@@ -148,7 +156,16 @@
       <item>
        <widget class="QWidget" name="changeRes_wdgt" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <property name="margin">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
           <number>0</number>
          </property>
          <item>
@@ -262,6 +279,72 @@ Allowed values: any number between 2 and 16.</string>
          </spacer>
         </item>
        </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QCheckBox" name="supersampling">
+          <property name="toolTip">
+           <string>Render the scene multiple times with subpixel offsets.</string>
+          </property>
+          <property name="text">
+           <string>Supersampling: </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="supersampling_dist">
+          <property name="toolTip">
+           <string>Minimum distance between subpixel samples. Sample positions are taken from the Poisson distribution.</string>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.050000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.150000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="supersampling_area">
+          <property name="minimum">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="supersampling_res_incr">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="poisson_samples">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>128</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>128</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Poisson</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

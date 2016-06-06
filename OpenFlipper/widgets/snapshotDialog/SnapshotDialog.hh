@@ -55,12 +55,23 @@
   #include <QtGui>
 #endif
 
+#include <QPixmap>
+#include <QImage>
+
+namespace ACG
+{
+  class PoissonBlurFilter;
+}
+
 class SnapshotDialog : public QDialog, public Ui::SnapshotDialog
 {
   Q_OBJECT
 
   public:
     SnapshotDialog(QString _suggest, bool _captureViewers, int _w, int _h, QWidget *parent = 0);
+
+
+    virtual ~SnapshotDialog();
 
   private:
     bool captureViewers_;
@@ -77,13 +88,27 @@ class SnapshotDialog : public QDialog, public Ui::SnapshotDialog
     void snapHeightChanged(int _h);
     void keepAspectChanged();
     void multisampleChanged();
+    void supersampleChanged();
     
     void saveStates();
     void loadStates();
 
     void filenameChanged(const QString &new_filename);
 
+
+    void updatePoisson();
+
   signals:
     void resizeApplication(int _width, int _height);
+
+
+private:
+
+  // sample visualization
+  QImage poissonImage_;
+  QPixmap poissonPixmap_;
+
+  // poisson samples
+  ACG::PoissonBlurFilter* poissonFilter_;
 };
 

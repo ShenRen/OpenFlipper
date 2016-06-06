@@ -406,18 +406,11 @@ void SubpixelSupersampling::endSubpixel(int i) {
   for (int y = 0; y < height_; ++y) {
     for (int x = 0; x < width_; ++x) {
 
-      // find pixel in high resolution image the subpixel lies in
-      // without neighbor sample clamping:
-//       int x_hi = int(float(x * resolutionIncrease_) + offset[0]);
-//       int y_hi = int(float(y * resolutionIncrease_) + offset[1]);
-
-      // with neighbor sample clamping:
+      // subpixel id in high resolution image
       int x_hi = x * resolutionIncrease_ + group[0];
       int y_hi = y * resolutionIncrease_ + group[1];
 
      int pixel_hi = y_hi * widthHi_ + x_hi;
-
-
 
 
       // add pixel to group composite

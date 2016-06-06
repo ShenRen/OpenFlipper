@@ -2208,6 +2208,8 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
     
     // Get viewport data
     glstate_->get_viewport(left, bottom, w, h);
+
+    bool mipMappingAllowed = glstate_->mipmapping_allowed();
     
     // Test if size is given:
     if(_width != 0 || _height != 0) {
@@ -2285,6 +2287,9 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
       {
         supersampling = new ACG::SubpixelSupersampling(w, h, _supersamplingResolutionIncrease, 4, _sampleDist, _subpixelAreaScale);
         supersampling->begin();
+
+        if (_supersamplingResolutionIncrease > 1)
+          glstate_->allow_mipmapping(false);
       }
 
 
@@ -2349,7 +2354,7 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
         int w_hi = w * _supersamplingResolutionIncrease;
         int h_hi = h * _supersamplingResolutionIncrease;
 
-        _image = QImage(w_hi, h_hi, QImage::Format_ARGB32);
+        _image = QImage(w_hi, h_hi, QImage::Format_RGBA8888);
 
         for (int y = 0; y < h_hi; ++y)
         {
@@ -2372,6 +2377,8 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
       //cleanup
       ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, prevFbo);
       ACG::GLState::drawBuffer(prevDrawBuf);
+
+      glstate_->allow_mipmapping(mipMappingAllowed);
 
       delete supersampling;
       supersampling = 0;

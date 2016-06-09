@@ -16,6 +16,10 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/HexahedralMesh)
     list( APPEND CURRENT_PLUGIN_DEPS OpenVolumeMesh )
 endif()
 
+if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/BSplineSurface)
+    add_definitions (-DENABLE_BSPLINESURFACE_SUPPORT)
+endif()
+
 list(REMOVE_DUPLICATES CURRENT_PLUGIN_DEPS )
 
 # use Qwt6 for QT5

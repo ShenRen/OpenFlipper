@@ -203,8 +203,9 @@ void SingleObjectPropertyModel::objectUpdated()
 QString SingleObjectPropertyModel::getLoadFilename()
 {
   QString filter = getLoadFilenameFilter();
+  QString selected_filter = tr("All Files (*)");
 
-  QString fileName = QFileDialog::getOpenFileName(0, tr("Load Property"), QString(), filter);
+  QString fileName = QFileDialog::getOpenFileName(0, tr("Load Property"), QString(), filter, &selected_filter);
 
   return fileName;
 }

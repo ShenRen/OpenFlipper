@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PrincipalAxisDialogBase</class>
- <widget class="QDialog" name="PrincipalAxisDialogBase">
+ <class>QtPrincipalAxisDialogBaseUi</class>
+ <widget class="QDialog" name="QtPrincipalAxisDialogBaseUi">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>340</width>
+    <height>375</height>
+   </rect>
+  </property>
   <property name="minimumSize">
    <size>
     <width>340</width>
@@ -77,7 +85,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../resources.qrc">
+         <iconset>
           <normaloff>:/PhySim/Icons/PrincipalAxis_CS1.png</normaloff>:/PhySim/Icons/PrincipalAxis_CS1.png</iconset>
         </property>
         <property name="iconSize">
@@ -94,7 +102,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../resources.qrc">
+         <iconset>
           <normaloff>:/PhySim/Icons/PrincipalAxis_CS2.png</normaloff>:/PhySim/Icons/PrincipalAxis_CS2.png</iconset>
         </property>
         <property name="iconSize">
@@ -111,7 +119,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../resources.qrc">
+         <iconset>
           <normaloff>:/PhySim/Icons/PrincipalAxis_CS3.png</normaloff>:/PhySim/Icons/PrincipalAxis_CS3.png</iconset>
         </property>
         <property name="iconSize">

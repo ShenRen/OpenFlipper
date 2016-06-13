@@ -54,10 +54,10 @@
 
 
 // qmake users have to include
-#include "ui_PrincipalAxisDialogBase.hh"
+#include "ui_QtPrincipalAxisDialogBaseUi.hh"
 
 // ACGMake users have to include
-// #include "PrincipalAxisDialogBase.hh"
+// #include "QtPrincipalAxisDialogBaseUi.hh"
 
 
 #include <ACG/Scenegraph/PrincipalAxisNode.hh>
@@ -85,7 +85,7 @@ namespace ACG
     A more elaborate description follows.
 */
 class QtPrincipalAxisDialog
-         : public QDialog, Ui::PrincipalAxisDialogBase
+         : public QDialog, Ui::QtPrincipalAxisDialogBaseUi
 {
    Q_OBJECT
 public:
@@ -96,7 +96,7 @@ public:
    QtPrincipalAxisDialog( SceneGraph::PrincipalAxisNode& _pnode,
                         QWidget*    _parent = 0 ):
          QDialog( _parent ),
-         Ui::PrincipalAxisDialogBase(),
+         Ui::QtPrincipalAxisDialogBaseUi(),
          pnode_( _pnode )
    {
       setupUi( this );

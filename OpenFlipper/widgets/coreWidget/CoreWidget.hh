@@ -96,6 +96,8 @@
 
 #include <QDockWidget>
 
+#include <OpenFlipper/common/OFGLWidget.hh>
+
 #include <OpenFlipper/widgets/aboutWidget/aboutWidget.hh>
 #include <OpenFlipper/widgets/loggerWidget/loggerWidget.hh>
 #include <OpenFlipper/widgets/optionsWidget/optionsWidget.hh>
@@ -278,6 +280,8 @@ class PickMode
     */
     QToolBar *   toolbar_;
 };
+
+
 
 /** Core Widget of the Application
  */
@@ -696,7 +700,7 @@ public:
     QAction* AC_ShowViewModeControls_;
     
     /// gl widget used as drawing area to paint the graphics scene
-    QGLWidget* glWidget_;
+    OFGLWidget* glWidget_;
 
     /// graphics scene used to paint gl context and widgets
     QtGLGraphicsScene* glScene_;

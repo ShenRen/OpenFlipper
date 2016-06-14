@@ -60,6 +60,7 @@
 #include "QtGLGraphicsScene.hh"
 #include <QGraphicsSceneMouseEvent>
 #include <QApplication>
+#include <QPaintEngine>
 
 //== NAMESPACES ===============================================================
 

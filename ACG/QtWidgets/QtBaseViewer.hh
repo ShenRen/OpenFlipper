@@ -65,7 +65,8 @@
 #include "../Scenegraph/SceneGraph.hh"
 #include "../Scenegraph/DrawModes.hh"
 
-#include <QGLFormat>
+#include <OpenFlipper/common/OFGLWidget.hh>
+
 #include <QBoxLayout>
 #include <QtNetwork/QUdpSocket>
 #include <QWheelEvent>
@@ -200,7 +201,7 @@ public:
   QtBaseViewer( QWidget* _parent=0,
 		const char* _name=0,
 		QStatusBar *_statusBar=0,
-		const QGLFormat* _format=0,
+		const OFGLFormat* _format=0,
 		const QtBaseViewer* _share=0,
 		Options _options=DefaultOptions );
 
@@ -753,7 +754,7 @@ private:
   QtBaseViewer& operator=(const QtBaseViewer&);
 
   // create widgets
-  void createWidgets(const QGLFormat* _format,QStatusBar* _sb,
+  void createWidgets(const OFGLFormat* _format,QStatusBar* _sb,
 		     const QtBaseViewer* _share);
 
   /* Recursively draws each node in the scene graph.
@@ -852,7 +853,7 @@ private:
   // options
   Options options_;
   // gl widget used as drawing area to paint the graphics scene
-  QGLWidget* glWidget_;
+  OFGLWidget* glWidget_;
   // graphics scene used to paint gl context and widgets
   QtGLGraphicsScene* glScene_;
   // graphics view that holds the gl scene

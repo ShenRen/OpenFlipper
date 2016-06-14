@@ -67,6 +67,8 @@
 
 #include "simpleViewer.hh"
 
+#include <QOpenGLWidget>
+
 //== NAMESPACES ===============================================================
 
 
@@ -78,9 +80,9 @@ SimpleViewer::SimpleViewer(QWidget* _parent, bool useDefaultSceneGraph) :
   props_(-1),
   actionMode_ (Viewer::ExamineMode)
 {
-  QGLWidget *share = PluginFunctions::shareGLWidget (); 
+  OFGLWidget *share = PluginFunctions::shareGLWidget (); 
   if (!share)
-    initialize (QGLFormat::defaultFormat (), 0, useDefaultSceneGraph);
+    initialize (OFGLFormat::defaultFormat (), 0, useDefaultSceneGraph);
   else
     initialize (share->format(), share, useDefaultSceneGraph);
 }
@@ -103,7 +105,7 @@ void SimpleViewer::resizeEvent(QResizeEvent *_event) {
 //=============================================================================
 //=============================================================================
 
-void SimpleViewer::initialize (const QGLFormat & _format, QGLWidget *_shareWidget, bool useDefaultSceneGraph)
+void SimpleViewer::initialize(const OFGLFormat & _format, OFGLWidget *_shareWidget, bool useDefaultSceneGraph)
 {
 
   connect (&props_, SIGNAL( getPickMode(std::string&) ),
@@ -113,7 +115,12 @@ void SimpleViewer::initialize (const QGLFormat & _format, QGLWidget *_shareWidge
   connect (&props_, SIGNAL( setActionMode(const Viewer::ActionMode) ),
            this, SLOT( setActionMode(const Viewer::ActionMode)), Qt::DirectConnection );
 
-  glWidget_ = new QGLWidget (_format, 0, _shareWidget);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+  glWidget_ = new OFGLWidget();
+  glWidget_->setFormat(_format);
+#else
+  glWidget_ = new OFGLWidget(_format, 0, _shareWidget);
+#endif
 
   setFocusPolicy (Qt::StrongFocus);
   setAcceptDrops (true);

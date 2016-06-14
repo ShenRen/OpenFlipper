@@ -58,7 +58,14 @@
 
 #include <OpenFlipper/common/ViewObjectMarker.hh>
 
-#include <QGLFormat>
+
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QOpenGLContext>
+#else
+#include <QGLContext>
+#endif
+
 
 using namespace ACG;
 
@@ -201,12 +208,15 @@ void Renderer::render(ACG::GLState* _glState, Viewer::ViewerProperties& _propert
 QString Renderer::checkOpenGL()
 {
   // Get version and check
-  if ( QGLContext::currentContext()->format().profile() != QGLFormat::CompatibilityProfile )
-      return QString("This plugin requires an OpenGL compatibility context to work.");
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+  if (QOpenGLContext::currentContext()->format().profile() != QSurfaceFormat::CompatibilityProfile)
+#else
+  if (QGLContext::currentContext()->format().profile() != QGLFormat::CompatibilityProfile)
+#endif
+    return QString("This plugin requires an OpenGL compatibility context to work.");
 
   // This renderer plugin should run on almost any old style hardware
   return QString("");
-
 }
 
 

@@ -64,6 +64,8 @@
 #include <OpenFlipper/common/Types.hh>
 #include <OpenFlipper/common/ViewerProperties.hh>
 
+#include <OpenFlipper/common/OFGLWidget.hh>
+
 #include <ACG/GL/GLState.hh>
 #include <ACG/GL/FBO.hh>
 #include <ACG/Scenegraph/SceneGraph.hh>
@@ -90,7 +92,6 @@ class QSplitter;
 class QImage;
 class QSocketNotifier;
 class QPropertyAnimation;
-class QGLWidget;
 struct PostProcessorInput;
 
 
@@ -145,7 +146,7 @@ public:
    *
   */
   glViewer( QGraphicsScene*           _scene,
-            QGLWidget*                _glWidget,
+            OFGLWidget*                _glWidget,
             Viewer::ViewerProperties& _properties,
             QGraphicsWidget*          _parent = 0 );
 
@@ -596,7 +597,7 @@ private:
   QGraphicsScene* glScene_;
 
   // gl widget used as drawing area to paint the graphics scene
-  QGLWidget* glWidget_;
+  OFGLWidget* glWidget_;
 
   // Base graphics widget layout
   QtGLViewerLayout* glBaseLayout_;

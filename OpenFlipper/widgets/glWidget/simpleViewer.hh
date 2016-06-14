@@ -59,10 +59,12 @@
 
 //== INCLUDES =================================================================
 
+#include <OpenFlipper/common/Types.hh>
 #include <OpenFlipper/common/ViewerProperties.hh>
 #include <OpenFlipper/common/GlobalDefines.hh>
 #include <QGraphicsView>
-#include <QGLFormat>
+#include <OpenFlipper/common/OFGLWidget.hh>
+
 
 
 
@@ -107,7 +109,7 @@ class DLLEXPORT SimpleViewer : public QGraphicsView
 
   private:
     // initalisation
-    void initialize (const QGLFormat &_format, QGLWidget *_shareWidget = NULL, bool useDefaultSceneGraph = true);
+    void initialize(const OFGLFormat &_format, OFGLWidget *_shareWidget = NULL, bool useDefaultSceneGraph = true);
 
   private slots:
 
@@ -119,7 +121,7 @@ class DLLEXPORT SimpleViewer : public QGraphicsView
     void getPickMode(std::string& _name);
 
   private:
-    QGLWidget *glWidget_;
+    OFGLWidget *glWidget_;
 
     Viewer::ViewerProperties props_;
 

@@ -105,7 +105,7 @@ public:
   QtExaminerViewer( QWidget* _parent=0, 
 		    const char* _name=0, 
 		    QStatusBar *_statusBar=0, 
-		    const OFGLFormat* _format=0,
+		    const QGLFormat* _format=0,
 		    const QtBaseViewer* _share=0,
 		    Options _options=DefaultOptions );
  

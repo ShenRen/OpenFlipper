@@ -136,7 +136,7 @@ static const char          VIEW_MAGIC[] =
 QtBaseViewer::QtBaseViewer( QWidget* _parent,
 			    const char* /* _name */ ,
 			    QStatusBar *_statusBar,
-			    const OFGLFormat* _format,
+			    const QGLFormat* _format,
 			    const QtBaseViewer* _share,
 			    Options _options ) :
   QWidget(_parent),
@@ -160,7 +160,7 @@ QtBaseViewer::QtBaseViewer( QWidget* _parent,
 
 {
   // check for OpenGL support
-  if ( !ACG::openGLVersion(1, 0) )
+  if ( !QGLFormat::hasOpenGL() )
   {
     std::cerr << "This system has no OpenGL support.\n";
     exit(1);
@@ -379,11 +379,7 @@ void QtBaseViewer::makeCurrent() {
 }
 
 void QtBaseViewer::swapBuffers() {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-  glWidget_->context()->swapBuffers(glWidget_->context()->surface());
-#else
   glWidget_->swapBuffers();
-#endif
 }
 
 
@@ -794,11 +790,7 @@ QtBaseViewer::copyToImage( QImage& _image,
 			   GLenum /* _buffer */ )
 {
   makeCurrent();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-  _image = glWidget_->grabFramebuffer();
-#else
   _image = glWidget_->grabFrameBuffer(true);
-#endif
 }
 
 
@@ -1613,7 +1605,7 @@ void QtBaseViewer::actionTwoSidedLighting(bool _enable)
 //-----------------------------------------------------------------------------
 
 void
-QtBaseViewer::createWidgets(const OFGLFormat* _format,
+QtBaseViewer::createWidgets(const QGLFormat* _format,
                             QStatusBar* _sb,
                             const QtBaseViewer* _share)
 {
@@ -1645,23 +1637,14 @@ QtBaseViewer::createWidgets(const OFGLFormat* _format,
 
 
   // Construct GL context & widget
-  OFGLWidget* share = 0;
+  QGLWidget* share = 0;
   if (_share)  share = _share->glWidget_;
 
-  OFGLFormat format;
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-  format.setAlphaBufferSize(8);
-#else
+  QGLFormat format;
   format.setAlpha(true);
-#endif
   if (_format!=0) format = *_format;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-  glWidget_ = new OFGLWidget();
-  glWidget_->setFormat(format);
-#else
-  glWidget_ = new OFGLWidget(format, 0, share);
-#endif
+  glWidget_ = new QGLWidget(format, 0, share);
   glView_ = new QtGLGraphicsView(this, work);
   glScene_ = new QtGLGraphicsScene (this);
 

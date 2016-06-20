@@ -46,19 +46,29 @@ if (UNIX)
   set ( ADDITIONAL_CXX_DEBUG_FLAGS )
   set ( ADDITIONAL_CXX_RELEASE_FLAGS )
   set ( ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS )
-  
+ 
   set ( ADDITIONAL_C_DEBUG_FLAGS )
   set ( ADDITIONAL_C_RELEASE_FLAGS )
   set ( ADDITIONAL_C_RELWITHDEBINFO_FLAGS )
+
+  if (${Qt5Core_VERSION_STRING} STRGREATER "5.6")
+    message(WARNING "Detected QT Version which requires C++11 support!\n" "C++ automatically activated.")
+    if (NOT WIN32 AND NOT APPLE)
+       set(ADDITIONAL_CXX_DEBUG_FLAGS          "${ADDITIONAL_CXX_DEBUG_FLAGS} -std=c++11" )
+       set(ADDITIONAL_CXX_RELEASE_FLAGS        "${ADDITIONAL_CXX_RELEASE_FLAGS} -std=c++11" )
+       set(ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} -std=c++11" )
+    endif()
+  endif()
+
 
   ################################################################################
   # Defaults
   ################################################################################
 
   # add our standard flags for Template inclusion
-  list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          "-DINCLUDE_TEMPLATES" )
-  list(APPEND ADDITIONAL_CXX_RELEASE_FLAGS        "-DINCLUDE_TEMPLATES" )
-  list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "-DINCLUDE_TEMPLATES" )
+  set( ADDITIONAL_CXX_DEBUG_FLAGS          "${ADDITIONAL_CXX_DEBUG_FLAGS} -DINCLUDE_TEMPLATES" )
+  set( ADDITIONAL_CXX_RELEASE_FLAGS        "${ADDITIONAL_CXX_RELEASE_FLAGS} -DINCLUDE_TEMPLATES" )
+  set( ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} -DINCLUDE_TEMPLATES" )
 
   # add our standard flags for Template inclusion
   list(APPEND ADDITIONAL_C_DEBUG_FLAGS            "-DINCLUDE_TEMPLATES" )
@@ -86,9 +96,9 @@ if (UNIX)
   # Build/Release Defines
   ################################################################################
   IF( NOT CMAKE_SYSTEM MATCHES "SunOS*")
-    list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          "-DDEBUG" )
-    list(APPEND ADDITIONAL_CXX_RELEASE_FLAGS        "-DNDEBUG" )
-    list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "-DDEBUG" )    
+    set( ADDITIONAL_CXX_DEBUG_FLAGS          "${ADDITIONAL_CXX_DEBUG_FLAGS} -DDEBUG" )
+    set( ADDITIONAL_CXX_RELEASE_FLAGS        "${ADDITIONAL_CXX_RELEASE_FLAGS} -DNDEBUG" )
+    set( ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS  "${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} -DDEBUG" )    
     
     list(APPEND ADDITIONAL_C_DEBUG_FLAGS            "-DDEBUG" )
     list(APPEND ADDITIONAL_C_RELEASE_FLAGS          "-DNDEBUG" )
@@ -104,20 +114,20 @@ if (UNIX)
    
     IF ( APPLE  )
       # Skip unused parameters as it has to be used for the documentation via doxygen and the interfaces
-      set ( COMPILER_WARNINGS "-W" "-Wall" "-Wno-unused" "-Wextra" "-Wno-non-virtual-dtor" "-Wno-unused-parameter" "-Wno-variadic-macros" CACHE STRINGLIST "This list contains the warning flags used during compilation " )
+      set ( COMPILER_WARNINGS "-W -Wall -Wno-unused -Wextra -Wno-non-virtual-dtor -Wno-unused-parameter -Wno-variadic-macros" CACHE STRING "This list contains the warning flags used during compilation " )
     elseif ("${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}" MATCHES ".*clang")
-      set ( COMPILER_WARNINGS "-W" "-Wall" "-Wextra" "-Wno-non-virtual-dtor" "-Wno-unused-parameter" "-Wno-variadic-macros" CACHE STRINGLIST "This list contains the warning flags used during compilation " )
+      set ( COMPILER_WARNINGS "-W -Wall -Wextra -Wno-non-virtual-dtor -Wno-unused-parameter -Wno-variadic-macros" CACHE STRING "This list contains the warning flags used during compilation " )
     ELSEIF ( CMAKE_SYSTEM MATCHES "SunOS*" )
       set ( COMPILER_WARNINGS "" CACHE STRINGLIST "This list contains the warning flags used during compilation " )
     ELSE ()
-      set ( COMPILER_WARNINGS "-W" "-Wall" "-Wno-unused" "-Wextra" "-Wno-variadic-macros" CACHE STRINGLIST "This list contains the warning flags used during compilation " )
+      set ( COMPILER_WARNINGS "-W -Wall -Wno-unused -Wextra -Wno-variadic-macros" CACHE STRING "This list contains the warning flags used during compilation " )
     ENDIF()
 
   endif ( NOT COMPILER_WARNINGS )
 
-  list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          ${COMPILER_WARNINGS} )
-  list(APPEND ADDITIONAL_CXX_RELEASE_FLAGS        ${COMPILER_WARNINGS} )
-  list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS ${COMPILER_WARNINGS} )    
+  set( ADDITIONAL_CXX_DEBUG_FLAGS          "${ADDITIONAL_CXX_DEBUG_FLAGS} ${COMPILER_WARNINGS}" )
+  set( ADDITIONAL_CXX_RELEASE_FLAGS        "${ADDITIONAL_CXX_RELEASE_FLAGS} ${COMPILER_WARNINGS}" )
+  set( ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} ${COMPILER_WARNINGS}" )    
     
   list(APPEND ADDITIONAL_C_DEBUG_FLAGS            ${COMPILER_WARNINGS} )
   list(APPEND ADDITIONAL_C_RELEASE_FLAGS          ${COMPILER_WARNINGS} )
@@ -134,10 +144,10 @@ if (UNIX)
   
   # Add a flag to check stl vectors in debugging mode
   if ( STL_VECTOR_CHECKS AND NOT CMAKE_SYSTEM MATCHES "SunOS*"  )
-    list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          "-D_GLIBCXX_DEBUG" )
-    list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          "-D_GLIBCXX_DEBUG_PEDANTIC")
-    list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "-D_GLIBCXX_DEBUG" )
-    list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "-D_GLIBCXX_DEBUG_PEDANTIC")
+    set(ADDITIONAL_CXX_DEBUG_FLAGS          "${ADDITIONAL_CXX_DEBUG_FLAGS} -D_GLIBCXX_DEBUG" )
+    set(ADDITIONAL_CXX_DEBUG_FLAGS          "${ADDITIONAL_CXX_DEBUG_FLAGS} -D_GLIBCXX_DEBUG_PEDANTIC")
+    set(ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} -D_GLIBCXX_DEBUG" )
+    set(ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} -D_GLIBCXX_DEBUG_PEDANTIC")
     
     list(APPEND ADDITIONAL_C_DEBUG_FLAGS            "-D_GLIBCXX_DEBUG" )
     list(APPEND ADDITIONAL_C_DEBUG_FLAGS            "-D_GLIBCXX_DEBUG_PEDANTIC")
@@ -150,43 +160,31 @@ if (UNIX)
   ################################################################################
 
   # Add the debug flags
-  foreach( flag ${ADDITIONAL_CXX_DEBUG_FLAGS} )
-    if( NOT CMAKE_CXX_FLAGS_DEBUG MATCHES "${flag}" )
-      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${flag} ")
-    endif()
-  endforeach()
+  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${ADDITIONAL_CXX_DEBUG_FLAGS} ")
 
   # Add the release flags
-  foreach( flag ${ADDITIONAL_CXX_RELEASE_FLAGS} )
-    if( NOT CMAKE_CXX_FLAGS_RELEASE MATCHES "${flag}" )
-      set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${flag} ")
-    endif()
-  endforeach()
-
+  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${ADDITIONAL_CXX_RELEASE_FLAGS} ")
+   
   # Add the release with debug info flags
-  foreach( flag ${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} )
-    if( NOT CMAKE_CXX_FLAGS_RELWITHDEBINFO MATCHES "${flag}" )
-      set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${flag} ")
-    endif()
-  endforeach()
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS} ")
 
   # Add the debug flags
   foreach( flag ${ADDITIONAL_C_DEBUG_FLAGS} )
-    if( NOT CMAKE_C_FLAGS_DEBUG MATCHES "${flag}" )
+    if( NOT CMAKE_C_FLAGS_DEBUG STREQUAL "${flag}" )
       set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${flag} ")
     endif()
   endforeach()
 
   # Add the release flags
   foreach( flag ${ADDITIONAL_C_RELEASE_FLAGS} )
-    if( NOT CMAKE_C_FLAGS_RELEASE MATCHES "${flag}" )
+    if( NOT CMAKE_C_FLAGS_RELEASE STREQUAL "${flag}" )
       set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${flag} ")
     endif()
   endforeach()
 
   # Add the release with debug info flags
   foreach( flag ${ADDITIONAL_C_RELWITHDEBINFO_FLAGS} )
-    if( NOT CMAKE_C_FLAGS_RELWITHDEBINFO MATCHES "${flag}" )
+    if( NOT CMAKE_C_FLAGS_RELWITHDEBINFO STREQUAL "${flag}" )
       set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${flag} ")
     endif()
   endforeach()

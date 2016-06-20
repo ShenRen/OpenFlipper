@@ -2,9 +2,9 @@ cmake_minimum_required (VERSION 2.8.9)
 
 # ACG Environment default settings
 # This is ugly but currently we need to work around the default installed 5.3 on debian
-if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ )
+if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.7.0/5.7/gcc_64/ )
   # Default to this install path for QT%_INSTALL_DIR
-  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
+  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.7.0/5.7/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
 endif()
 
 
@@ -38,6 +38,42 @@ file (
 )
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
 
+# ========================================================================
+# QT Setup 
+# ========================================================================
+
+# Qt setup
+include(ACGQt)
+
+# try to use QT5 if possible otherwise stick to QT4
+set (FORCE_QT4 OFF CACHE BOOL "Use Qt4 even if Qt5 was found")
+
+if (NOT FORCE_QT4)
+  acg_qt5 ()
+else()
+  set (QT5_FOUND false)
+endif()
+
+if (NOT QT5_FOUND)
+  message(STATUS "Could not find QT5, searching for QT4")
+  acg_qt4 (4.7.0)
+endif()
+
+if (QT4_FOUND)
+        message(STATUS "Using QT4 for OpenFlipper")
+elseif(QT5_FOUND)
+    message(STATUS "Using QT5 for OpenFlipper")
+    set (OF_MAX_QT_VERSION "5.6.0")
+    if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
+           message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n" "OpenFlipper has not been tested with this QT Version.")
+    endif()
+else()
+        message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5 or specify the QT_QMAKE_EXECUTABLE to build with QT4")
+endif()
+
+# ========================================================================
+# ========================================================================
+
 # include our cmake files
 include (ACGCommon)
 include (MSVCMacros)
@@ -47,8 +83,6 @@ acg_get_version (OpenFlipper)
 # ========================================================================
 # Branding 
 # ========================================================================
-
-
 
 # search all branding dirs in the packages and in toplevel
 file (
@@ -102,33 +136,6 @@ add_definitions(-DPRODUCT_NAME=${OPENFLIPPER_PRODUCT_NAME})
 
 include (package)
 include (ACGOutput)
-
-# try to use QT5 if possible otherwise stick to QT4
-set (FORCE_QT4 OFF CACHE BOOL "Use Qt4 even if Qt5 was found")
-
-if (NOT FORCE_QT4)
-  acg_qt5 ()
-else()
-  set (QT5_FOUND false)
-endif()
-
-if (NOT QT5_FOUND)
-  message(STATUS "Could not find QT5, searching for QT4")
-  acg_qt4 (4.7.0)
-endif()
-
-if (QT4_FOUND)
-	message(STATUS "Using QT4 for OpenFlipper")
-elseif(QT5_FOUND)
-	message(STATUS "Using QT5 for OpenFlipper")
-	set (OF_MAX_QT_VERSION "5.5.1")
-    if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
-      message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n"
-        "OpenFlipper has not been tested with this QT Version on Windows.")
-    endif()
-else()
-	message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5 or specify the QT_QMAKE_EXECUTABLE to build with QT4")
-endif()
 
 acg_openmp ()
 

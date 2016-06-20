@@ -385,6 +385,32 @@ int main(int argc, char **argv)
     QApplication::setColorSpec( QApplication::CustomColor );
     QApplication app(argc,argv);
 
+#if QT_VERSION >= 0x050500
+
+  QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+
+  format.setVersion(4, 3);
+
+  format.setProfile(QSurfaceFormat::CoreProfile);
+
+  QSurfaceFormat::setDefaultFormat(format);
+
+  QScreen *screen = app.primaryScreen();
+
+  QOffscreenSurface *surface = new QOffscreenSurface();
+
+  surface->create();
+
+  QOpenGLContext context;
+
+  context.setScreen(screen);
+
+  context.create();
+
+  context.makeCurrent(surface);
+
+#endif
+
 #ifdef __APPLE__
     // Set organization and application names
     QCoreApplication::setOrganizationName("rwth-aachen.de");

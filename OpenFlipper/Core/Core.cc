@@ -298,6 +298,8 @@ Core::init() {
       coreWidget_->setWindowTitle( OpenFlipper::Options::windowTitle() );
     #endif
 
+
+
     // Sanity check for OpenGL capabilities!
     checkOpenGLCapabilities();
 
@@ -1963,6 +1965,7 @@ bool Core::checkOpenGLCapabilities()  {
 
 
 #else
+
   QOpenGLContext* context = QOpenGLContext::currentContext();
   if ( context ) {
 
@@ -1984,7 +1987,8 @@ bool Core::checkOpenGLCapabilities()  {
 
     }
 
-  } else {
+  }
+  else {
     ok = false;
     missing += tr("No OpenGL support found!\n");
   }

@@ -51,8 +51,7 @@ if (UNIX)
   set ( ADDITIONAL_C_RELEASE_FLAGS )
   set ( ADDITIONAL_C_RELWITHDEBINFO_FLAGS )
 
-  if (${Qt5Core_VERSION_STRING} STRGREATER "5.6")
-    message(WARNING "Detected QT Version which requires C++11 support!\n" "C++ automatically activated.")
+  if (${Qt5Core_VERSION_STRING} STRGREATER "5.6")    
     if (NOT WIN32 AND NOT APPLE)
        set(ADDITIONAL_CXX_DEBUG_FLAGS          "${ADDITIONAL_CXX_DEBUG_FLAGS} -std=c++11" )
        set(ADDITIONAL_CXX_RELEASE_FLAGS        "${ADDITIONAL_CXX_RELEASE_FLAGS} -std=c++11" )
@@ -75,14 +74,6 @@ if (UNIX)
   list(APPEND ADDITIONAL_C_RELEASE_FLAGS          "-DINCLUDE_TEMPLATES" )
   list(APPEND ADDITIONAL_C_RELWITHDEBINFO_FLAGS   "-DINCLUDE_TEMPLATES" )
  
-#  Deprecated setting. Remove in future release, as the default template depth 
-#  should be enough with state of the art compilers
-#  # Increase the template depth as this might be exceeded from time to time
-#  IF( NOT CMAKE_SYSTEM MATCHES "SunOS*")
-#    list(APPEND ADDITIONAL_CXX_DEBUG_FLAGS          "-ftemplate-depth-100" )
-#    list(APPEND ADDITIONAL_CXX_RELEASE_FLAGS        "-ftemplate-depth-100" )
-#    list(APPEND ADDITIONAL_CXX_RELWITHDEBINFO_FLAGS "-ftemplate-depth-100" )  
-#  ENDIF()
   
   ################################################################################
   # OS Defines

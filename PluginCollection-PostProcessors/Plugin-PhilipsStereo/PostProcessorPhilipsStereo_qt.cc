@@ -57,11 +57,6 @@
 #include "widgets/philipsStereoSettingsWidget.hh"
 #include <OpenFlipper/common/GlobalOptions.hh>
 
-
-#if QT_VERSION >= 0x050000
-#else
- #include <QGLFormat>
-#endif
 void  PostProcessorPhilipsStereoPlugin::slotShowOptionsMenu() {
 
   // Create widget if it does not exist

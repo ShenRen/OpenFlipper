@@ -330,8 +330,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
       sphere_ = new GLSphere(10,10);
 
     // precompute desired radius of projected sphere
-    double r = 0.5*_state.point_size()/double(_state.viewport_height())*2.0*_state.near_plane()*tan(0.5*_state.fovy());
-    r /= _state.near_plane();
+    double r = 0.5*_state.point_size() / double(_state.viewport_height()) * 2.0 * tan(0.5*_state.fovy());
 
     if( polyline_.vertex_selections_available())
     {
@@ -461,10 +460,14 @@ pick_vertices( GLState& _state )
 
   if (pickShader && pickShader->isLinked())
   {
+    // Update the vbo only if required.
+    if (updateVBO_)
+      updateVBO();
+
     // Bind the vertex array
     ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
 
-    unsigned int pickOffsetIndex = _state.pick_current_index();
+    int pickOffsetIndex = int(_state.pick_current_index());
 
     vertexDecl_.activateShaderPipeline(pickShader);
 
@@ -517,7 +520,7 @@ pick_spheres( GLState& _state )
   for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
   {
     _state.pick_set_name (i);
-    sphere_->draw(_state, polyline_.vertex_radius(), (Vec3f)polyline_.point(i));
+    sphere_->draw(_state, _state.point_size(), (Vec3f)polyline_.point(i));
   }
 }
 
@@ -535,8 +538,7 @@ pick_spheres_screen( GLState& _state )
   _state.pick_set_name(0);
 
   // precompute desired radius of projected sphere
-  double r = 0.5*_state.point_size()/double(_state.viewport_height())*2.0*_state.near_plane()*tan(0.5*_state.fovy());
-  r /= _state.near_plane();
+  double r = 0.5*_state.point_size()/double(_state.viewport_height())*2.0*tan(0.5*_state.fovy());
 
   for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
   {
@@ -570,6 +572,10 @@ pick_edges( GLState& _state, unsigned int _offset)
 
   if (pickShader && pickShader->isLinked())
   {
+    // Update the vbo only if required.
+    if (updateVBO_)
+      updateVBO();
+
     // Bind the vertex array
     ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
 
@@ -1023,10 +1029,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
           // precompute desired radius of projected sphere
           double r = 1.0;
           if (screenScale)
-          {
-            r = 0.5*_state.point_size() / double(_state.viewport_height())*2.0*_state.near_plane()*tan(0.5*_state.fovy());
-            r /= _state.near_plane();
-          }
+            r = 0.5*_state.point_size() / double(_state.viewport_height())*2.0*tan(0.5*_state.fovy());
 
           // get eye position and view direction in world space
           Vec3d eyePos = _state.eye();

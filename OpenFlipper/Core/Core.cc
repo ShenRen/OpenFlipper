@@ -662,6 +662,11 @@ Core::init() {
       coreWidget_->toolBox_->restoreState (windowStates);
       windowStates.endGroup ();
 
+
+      // Restore if window was maximized or not
+      if ( windowStates.value("Core/Window/WindowState",false).toBool() )
+        coreWidget_->setWindowState( coreWidget_->windowState() | Qt::WindowMaximized  );
+
     } else {
 
       coreWidget_->show();
@@ -1132,6 +1137,7 @@ Core::writeOnExit() {
 
     windowStates.setValue("Core/Window/State", coreWidget_->saveState ());
     windowStates.setValue("Core/Window/Geometry", coreWidget_->saveGeometry ());
+    windowStates.setValue("Core/Window/WindowState", coreWidget_->isMaximized() );
 
     windowStates.setValue ("Core/ToolSplitter", coreWidget_->toolSplitter_->saveState ());
     windowStates.setValue ("Core/LogSplitter", coreWidget_->splitter_->saveState ());

@@ -70,6 +70,8 @@
 #include <QPair>
 #include <QFileDialog>
 
+#include <OpenFlipper/common/OFGLWidget.hh>
+
 #include <ACG/Scenegraph/SceneGraph.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctionsViewControls.hh>
 
@@ -374,11 +376,11 @@ Viewer::ActionMode actionMode();
 
 /// Sets the main QGLWidget for gl data sharing.
 DLLEXPORT
-void shareGLWidget (QGLWidget* _widget);
+void shareGLWidget(OFGLWidget* _widget);
 
 /// Returns the main QGLWidget for gl data sharing.
 DLLEXPORT
-QGLWidget* shareGLWidget ();
+OFGLWidget* shareGLWidget();
 
 /** Lock scene rotation via mouse
  *

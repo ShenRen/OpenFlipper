@@ -379,6 +379,9 @@ int main(int argc, char **argv)
   if ( !OpenFlipper::Options::nogui() ) {
 
     // OpenGL check
+#if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
     QApplication::setColorSpec( QApplication::CustomColor );
     QApplication app(argc,argv);
 

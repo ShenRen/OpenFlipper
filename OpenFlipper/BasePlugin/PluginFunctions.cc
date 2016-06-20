@@ -130,7 +130,7 @@ static ViewObjectMarker* defaultMarker_ = 0;
  *
  * This pointer is used internally
  */
-static QGLWidget* shareGLWidget_ = 0;
+static OFGLWidget* shareGLWidget_ = 0;
 
 /** This is a unique id for the running OpenFlipper instance. Use it to identify yourself on the network
 */
@@ -596,12 +596,12 @@ void actionMode ( Viewer::ActionMode _mode) {
   viewerProperties().actionMode(_mode);
 }
 
-void shareGLWidget (QGLWidget *_widget)
+void shareGLWidget(OFGLWidget *_widget)
 {
   shareGLWidget_ = _widget;
 }
 
-QGLWidget *shareGLWidget ()
+OFGLWidget *shareGLWidget()
 {
   return shareGLWidget_;
 }

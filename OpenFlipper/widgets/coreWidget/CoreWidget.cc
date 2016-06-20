@@ -207,17 +207,23 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   splitter_ = new QSplitter(Qt::Vertical,toolSplitter_);
   stackedWidget_ = new QStackedWidget(splitter_);
 
-  QGLFormat format = QGLFormat::defaultFormat();
-
-  #ifdef ARCH_DARWIN
+  OFGLFormat format = OFGLFormat::defaultFormat();
+#ifdef ARCH_DARWIN
   format.setStereo(false);
-  #else
-  format.setStereo( OpenFlipper::Options::stereo() );
-  #endif
+#else
+  format.setStereo(OpenFlipper::Options::stereo());
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+  format.setAlphaBufferSize(8);
+  format.setStencilBufferSize(8);
+  format.setSamples(4); // todo: get sample count from settings
+#else
   format.setAlpha(true);
   format.setStencil(true);
   format.setSampleBuffers(true);
-  QGLFormat::setDefaultFormat(format);
+#endif
+  OFGLFormat::setDefaultFormat(format);
 
   // Construct GL context & widget
   baseLayout_ = new QtMultiViewLayout;
@@ -228,11 +234,17 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   // If we get stereo buffers, we use them .. which might disable multisampling
   // If we don't have stereo, we disable it to not interfere with multisampling
   // ===============================================================================
-  QGLWidget* test = new QGLWidget(format);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+  OFGLWidget* test = new OFGLWidget();
+  test->setFormat(format);
+#else
+  OFGLWidget* test = new OFGLWidget(format);
+#endif
+
   if ( ! test->format().stereo() ) {
     //     std::cerr << "No stereo ... disabling stereo for real context!" << std::endl;
     format.setStereo(false);
-    QGLFormat::setDefaultFormat(format);
+    OFGLFormat::setDefaultFormat(format);
   }/* else {
     std::cerr << "Stereo found ok" << std::endl;
   }*/
@@ -241,7 +253,7 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
 
   // force the compatibility profile since OpenFlipper does not work with the
   // Core profile
-  format.setProfile(QGLFormat::CompatibilityProfile);
+  format.setProfile(OFGLFormat::CompatibilityProfile);
 
 #if QT_VERSION >= 0x050000
   // request the highest OpenGL version
@@ -249,7 +261,12 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   format.setVersion(4,3);
 #endif
 
-  glWidget_ = new QGLWidget(format,0);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+  glWidget_ = new OFGLWidget();
+  glWidget_->setFormat(format);
+#else
+  glWidget_ = new OFGLWidget(format, 0);
+#endif
   PluginFunctions::shareGLWidget (glWidget_);
 
   glView_ = new QtGLGraphicsView(stackedWidget_);

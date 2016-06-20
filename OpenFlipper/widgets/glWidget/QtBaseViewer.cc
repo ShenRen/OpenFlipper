@@ -73,7 +73,6 @@
 
 #include <QGraphicsWidget>
 #include <QString>
-#include <QGLFormat>
 #include <QBoxLayout>
 #include <QtNetwork/QUdpSocket>
 #include <QToolBar>
@@ -126,7 +125,7 @@ static const char          COPY_PASTE_VIEW_START_STRING[] =
 
 
 glViewer::glViewer( QGraphicsScene* _scene,
-                    QGLWidget* _glWidget,
+                    OFGLWidget* _glWidget,
                     Viewer::ViewerProperties& _properties,
                     QGraphicsWidget* _parent) :
   QGraphicsWidget(_parent),
@@ -231,7 +230,11 @@ void glViewer::makeCurrent() {
 }
 
 void glViewer::swapBuffers() {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+  glWidget_->context()->swapBuffers(glWidget_->context()->surface());
+#else
   glWidget_->swapBuffers();
+#endif
 }
 
 
@@ -519,7 +522,12 @@ glViewer::copyToImage( QImage& _image,
 
 //    makeCurrent();
 
-  _image = glWidget_->grabFrameBuffer(true).copy (_l, _t, _w, _h).convertToFormat (QImage::Format_RGB32);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+  _image = glWidget_->grabFramebuffer()
+#else
+  _image = glWidget_->grabFrameBuffer(true)
+#endif
+    .copy(_l, _t, _w, _h).convertToFormat(QImage::Format_RGB32);
 }
 
 

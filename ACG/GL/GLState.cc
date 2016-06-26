@@ -117,6 +117,10 @@ GLStateContext::GLStateContext() :
 {
   framebuffers_[0] = framebuffers_[1] = 0;
   memset(drawBufferState_, GL_BACK, sizeof(drawBufferState_));
+  blendFuncState_[0] = GL_SRC_ALPHA;
+  blendFuncState_[1] = GL_ONE_MINUS_SRC_ALPHA;
+  blendFuncState_[2] = GL_SRC_ALPHA;
+  blendFuncState_[3] = GL_ONE_MINUS_SRC_ALPHA;
 }
 
 GLState::GLState(bool _updateGL, bool _compatibilityProfile)

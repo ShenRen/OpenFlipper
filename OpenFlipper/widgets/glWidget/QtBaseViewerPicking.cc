@@ -239,7 +239,7 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
   }
 
   // read from framebuffer
-  glReadPixels (x, y, pW, pH, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  glReadPixels (x, y, pW, pH, GL_RGBA, GL_UNSIGNED_BYTE, pixels); // glReadPixels not available in core profile
   glReadPixels (x, y, pW, pH, GL_DEPTH_COMPONENT, GL_FLOAT, depths);
 
   // unbind pick cache

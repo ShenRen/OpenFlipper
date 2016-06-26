@@ -242,50 +242,60 @@ void MaterialNode::enter(GLState& _state, const DrawModes::DrawMode&  _drawmode 
     _state.set_line_width(material_.lineWidth_);
   }
 
-  if (applyProperties_ & RoundPoints)
-  {
-    materialBackup_.roundPoints_ = glIsEnabled(GL_POINT_SMOOTH) &&
-                           glIsEnabled(GL_ALPHA_TEST);
+  if (_state.compatibilityProfile())
+  { 
+    // deprecated opengl caps
 
-    if( material_.roundPoints_ ) {
-      glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-      ACG::GLState::enable(GL_POINT_SMOOTH);
-    } else
-      ACG::GLState::disable(GL_POINT_SMOOTH);
+    if (applyProperties_ & RoundPoints)
+    {
+      materialBackup_.roundPoints_ = glIsEnabled(GL_POINT_SMOOTH) &&
+        glIsEnabled(GL_ALPHA_TEST);
+
+      if (material_.roundPoints_) {
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+        ACG::GLState::enable(GL_POINT_SMOOTH);
+      }
+      else
+        ACG::GLState::disable(GL_POINT_SMOOTH);
+    }
+
+    if (applyProperties_ & LineSmooth)
+    {
+      materialBackup_.linesSmooth_ = glIsEnabled(GL_LINE_SMOOTH) &&
+        glIsEnabled(GL_ALPHA_TEST);
+
+      if (material_.linesSmooth_) {
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        ACG::GLState::enable(GL_LINE_SMOOTH);
+      }
+      else
+        ACG::GLState::disable(GL_LINE_SMOOTH);
+    }
+
+    if (applyProperties_ & AlphaTest)
+    {
+      materialBackup_.alphaTest_ = glIsEnabled(GL_ALPHA_TEST);
+      glGetFloatv(GL_ALPHA_TEST_REF, &materialBackup_.alphaClip_);
+
+      if (material_.alphaTest_)
+      {
+        ACG::GLState::alphaFunc(GL_GREATER, material_.alphaClip_);
+        ACG::GLState::enable(GL_ALPHA_TEST);
+      }
+      else
+      {
+        ACG::GLState::disable(GL_ALPHA_TEST);
+      }
+    }
+
   }
+  
 
-  if (applyProperties_ & LineSmooth)
-  {
-    materialBackup_.linesSmooth_ = glIsEnabled(GL_LINE_SMOOTH) &&
-                           glIsEnabled(GL_ALPHA_TEST);
-
-    if( material_.linesSmooth_ ) {
-      glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
-      ACG::GLState::enable(GL_LINE_SMOOTH);
-    } else
-      ACG::GLState::disable(GL_LINE_SMOOTH);
-  }
 
   if (applyProperties_ & MultiSampling)
   {
     materialBackup_.multiSampling_ = _state.multisampling();
     _state.set_multisampling( material_.multiSampling_ );
-  }
-
-  if (applyProperties_ & AlphaTest)
-  {
-    materialBackup_.alphaTest_ = glIsEnabled(GL_ALPHA_TEST);
-    glGetFloatv(GL_ALPHA_TEST_REF, &materialBackup_.alphaClip_);
-
-    if(material_.alphaTest_)
-    {
-      ACG::GLState::alphaFunc(GL_GREATER, material_.alphaClip_ );
-      ACG::GLState::enable(GL_ALPHA_TEST);
-    }
-    else
-    {
-      ACG::GLState::disable(GL_ALPHA_TEST);
-    }
   }
 
 
@@ -401,7 +411,7 @@ void MaterialNode::leave(GLState& _state, const DrawModes::DrawMode& _drawmode )
   }
 
 
-  if (applyProperties_ & RoundPoints)
+  if ((applyProperties_ & RoundPoints) && _state.compatibilityProfile())
   {
     if( materialBackup_.roundPoints_)
       ACG::GLState::enable(GL_POINT_SMOOTH);
@@ -409,7 +419,7 @@ void MaterialNode::leave(GLState& _state, const DrawModes::DrawMode& _drawmode )
       ACG::GLState::disable(GL_POINT_SMOOTH);
   }
 
-  if (applyProperties_ & LineSmooth)
+  if ((applyProperties_ & LineSmooth) && _state.compatibilityProfile())
   {
     if( materialBackup_.linesSmooth_)
       ACG::GLState::enable(GL_LINE_SMOOTH);
@@ -420,7 +430,7 @@ void MaterialNode::leave(GLState& _state, const DrawModes::DrawMode& _drawmode )
   if (applyProperties_ & MultiSampling)
     _state.set_multisampling( materialBackup_.multiSampling_ );
 
-  if (applyProperties_ & AlphaTest)
+  if ((applyProperties_ & AlphaTest) && _state.compatibilityProfile())
   {
     if (materialBackup_.alphaTest_)
     {

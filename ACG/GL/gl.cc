@@ -45,6 +45,7 @@
 #include <sstream>
 #include <iostream>
 
+#include <QOpenGLFunctions>
 
 
 //=============================================================================
@@ -58,16 +59,38 @@ namespace {
  * if glGetString() returned a null pointer.
  */
 inline const char *_getExtensionString() {
-    const char *supported_cstr = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-    if (supported_cstr == 0) {
-        std::cerr << "\x1b[1;31mACG::checkExtensionsSupported: "
-                "glGetString(GL_EXTENSIONS) call failed.\x1b[0m\n";
-        return "";
-    }
-    return supported_cstr;
-}
-}
 
+  // glGetString(GL_EXTENSIONS) is deprecated and not available in core profile
+
+  // enumerate extensions with glGetStringi(GL_EXTENSIONS, id) instead
+  if (!glGetStringi)
+    glewInit();
+
+  static std::string supported_str;
+
+  if (supported_str.empty()) {
+    GLint extensions = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extensions);
+
+    for (int i = 0; i < extensions; ++i) {
+
+      const char *supported_cstr = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
+    
+      if (supported_cstr == 0) {
+        std::cerr << "\x1b[1;31mACG::checkExtensionsSupported: "
+          "glGetStringi(GL_EXTENSIONS, "<<i<<") call failed.\x1b[0m\n";
+        return "";
+      }
+
+      supported_str += supported_cstr;
+      if (i + 1 < extensions)
+        supported_str += " ";
+    }
+  }
+
+  return supported_str.c_str();
+}
+}
 /** Check if the extension given by a std::string is supported by the current OpenGL extension
 */
 bool checkExtensionSupported( const std::string& _extension )  {

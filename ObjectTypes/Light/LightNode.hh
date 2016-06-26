@@ -306,10 +306,10 @@ public:
 private:
 
   /// set _light Options in OpenGL for GL_LIGHT#_index
-  void setParameters(GLenum _index, LightSource& _light);
+  void setParameters(GLState&  _state, GLenum _index, LightSource& _light);
 
   /// get _light Options in OpenGL for GL_LIGHT#_index
-  void getParameters(GLenum _index, LightSource& _light);
+  void getParameters(GLState&  _state, GLenum _index, LightSource& _light);
 
 private:
 

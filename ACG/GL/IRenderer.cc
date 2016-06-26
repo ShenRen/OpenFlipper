@@ -548,12 +548,14 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
   // ---------------------------
   // gl cleanup
 
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_COLOR_ARRAY);
-  glDisableClientState(GL_NORMAL_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisableClientState(GL_INDEX_ARRAY);
-
+  if (_glState->compatibilityProfile())
+  {
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_INDEX_ARRAY);
+  }
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
@@ -653,8 +655,8 @@ void IRenderer::finishRenderingPipeline(bool _drawOverlay)
 
   glUseProgram(0);
 
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-  glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   // Renderer check:
   // Print a warning if the currently active fbo / viewport is not the same as the saved fbo.
@@ -767,8 +769,8 @@ void IRenderer::bindObjectVBO(ACG::RenderObject* _obj,
     // NOTE:
     //  always bind buffers before glVertexAttribPointer calls!!
     //  freeze in glDrawElements guaranteed (with no error message whatsoever)
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, _obj->vertexBuffer);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _obj->indexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, _obj->vertexBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _obj->indexBuffer);
 
 
     // activate vertex declaration

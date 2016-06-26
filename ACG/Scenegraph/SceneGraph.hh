@@ -372,7 +372,7 @@ public:
   BoundingBoxAction() :
     bbMin_( FLT_MAX,  FLT_MAX,  FLT_MAX),
     bbMax_(-FLT_MAX, -FLT_MAX, -FLT_MAX),
-    state_(false)
+    state_(false, false)
   { }
 
   bool operator()(BaseNode* _node)

@@ -524,7 +524,7 @@ void LightNode::enter(GLState& _state, const DrawModes::DrawMode& /* _drawmode *
     if(lightId_ == GL_INVALID_ENUM) return;
 
     /// transfer GL-preferences to lightSave_
-    getParameters(lightId_, lightSave_);
+    getParameters(_state, lightId_, lightSave_);
 
     // save old light
     lightSave_.enabled_ = glIsEnabled(lightId_);
@@ -546,9 +546,12 @@ void LightNode::enter(GLState& _state, const DrawModes::DrawMode& /* _drawmode *
         transformedLight_.position_ = _state.modelview() * light_.realPosition_;
         transformedLight_.spotDirection_ = _state.modelview().transform_vector(light_.realSpotDirection_);
 
-        ACG::GLState::enable(lightId_);
-        setParameters(lightId_, light_);
+        if (_state.compatibilityProfile()) {
+          ACG::GLState::enable(lightId_);
+          setParameters(_state, lightId_, light_);
+        }
     } else {
+      if (_state.compatibilityProfile())
         ACG::GLState::disable(lightId_);
     }
 }
@@ -557,20 +560,22 @@ void LightNode::enter(GLState& _state, const DrawModes::DrawMode& /* _drawmode *
 //----------------------------------------------------------------------------
 
 
-void LightNode::leave(GLState& /* _state */ , const DrawModes::DrawMode& /* _drawmode*/ )
+void LightNode::leave(GLState&  _state , const DrawModes::DrawMode& /* _drawmode*/ )
 {
     if(visualize_) return;
 
     // Return if we don't have a valid light source
     if(lightId_ == GL_INVALID_ENUM) return;
 
-    // restore old enabled light
-    if(lightSave_.enabled_) {
+    if (_state.compatibilityProfile()) {
+      // restore old enabled light
+      if (lightSave_.enabled_) {
         ACG::GLState::enable(lightId_);
-        setParameters(lightId_, lightSave_);
-    }
-    else {
+        setParameters(_state, lightId_, lightSave_);
+      }
+      else {
         ACG::GLState::disable(lightId_);
+      }
     }
 
     // Free light id
@@ -579,71 +584,75 @@ void LightNode::leave(GLState& /* _state */ , const DrawModes::DrawMode& /* _dra
 
 //----------------------------------------------------------------------------
 
-void LightNode::setParameters(GLenum _index, LightSource& _light)
+void LightNode::setParameters(GLState&  _state, GLenum _index, LightSource& _light)
 {
+  if (_state.compatibilityProfile()) {
 
-  // Multiply colors by brightness
-  Vec4f& a = _light.ambientColor_;
-  GLfloat ambient[4] = {a[0]*_light.brightness_,
-                        a[1]*_light.brightness_,
-                        a[2]*_light.brightness_,
-                        a[3]*_light.brightness_};
+    // Multiply colors by brightness
+    Vec4f& a = _light.ambientColor_;
+    GLfloat ambient[4] = { a[0] * _light.brightness_,
+      a[1] * _light.brightness_,
+      a[2] * _light.brightness_,
+      a[3] * _light.brightness_ };
 
-  Vec4f& d = _light.diffuseColor_;
-  GLfloat diffuse[4] = {d[0]*_light.brightness_,
-                        d[1]*_light.brightness_,
-                        d[2]*_light.brightness_,
-                        d[3]*_light.brightness_};
+    Vec4f& d = _light.diffuseColor_;
+    GLfloat diffuse[4] = { d[0] * _light.brightness_,
+      d[1] * _light.brightness_,
+      d[2] * _light.brightness_,
+      d[3] * _light.brightness_ };
 
-  Vec4f& s = _light.specularColor_;
-  GLfloat specular[4] = {s[0]*_light.brightness_,
-                         s[1]*_light.brightness_,
-                         s[2]*_light.brightness_,
-                         s[3]*_light.brightness_};
+    Vec4f& s = _light.specularColor_;
+    GLfloat specular[4] = { s[0] * _light.brightness_,
+      s[1] * _light.brightness_,
+      s[2] * _light.brightness_,
+      s[3] * _light.brightness_ };
 
-  // set preferences of _light for GL_LIGHT#_index
-  glLightfv(_index, GL_AMBIENT,  ambient);
-  glLightfv(_index, GL_DIFFUSE,  diffuse);
-  glLightfv(_index, GL_SPECULAR, specular);
+    Vec3d& sd = _light.realSpotDirection_;
 
-  Vec3d& sd = _light.realSpotDirection_;
+    bool directional = _light.directional();
 
-  bool directional = _light.directional();
+    Vec4f& p = _light.realPosition_;
+    GLfloat realPos[4] = { (float)p[0], (float)p[1], (float)p[2], (directional ? 0.0f : 1.0f) };
 
-  Vec4f& p = _light.realPosition_;
-  GLfloat realPos[4] = {(float)p[0], (float)p[1], (float)p[2], (directional ? 0.0f : 1.0f)};
+    // set preferences of _light for GL_LIGHT#_index
+    glLightfv(_index, GL_AMBIENT, ambient);
+    glLightfv(_index, GL_DIFFUSE, diffuse);
+    glLightfv(_index, GL_SPECULAR, specular);
 
-  glLightfv(_index, GL_POSITION,  realPos);
+    glLightfv(_index, GL_POSITION, realPos);
 
-  if(!directional) {
-    GLfloat dir[3] = {(float)sd[0], (float)sd[1], (float)sd[2]};
-    glLightfv(_index, GL_SPOT_DIRECTION,  dir);
+    if (!directional) {
+      GLfloat dir[3] = { (float)sd[0], (float)sd[1], (float)sd[2] };
+      glLightfv(_index, GL_SPOT_DIRECTION, dir);
+    }
+
+    if (!directional) glLightf(_index, GL_SPOT_EXPONENT, _light.spotExponent_);
+    if (!directional) glLightf(_index, GL_SPOT_CUTOFF, _light.spotCutoff_);
+
+    glLightf(_index, GL_CONSTANT_ATTENUATION, _light.constantAttenuation_);
+    glLightf(_index, GL_LINEAR_ATTENUATION, _light.linearAttenuation_);
+    glLightf(_index, GL_QUADRATIC_ATTENUATION, _light.quadraticAttenuation_);
   }
-
-  if(!directional) glLightf(_index, GL_SPOT_EXPONENT,  _light.spotExponent_);
-  if(!directional) glLightf(_index, GL_SPOT_CUTOFF,  _light.spotCutoff_);
-
-  glLightf(_index, GL_CONSTANT_ATTENUATION,  _light.constantAttenuation_);
-  glLightf(_index, GL_LINEAR_ATTENUATION,  _light.linearAttenuation_);
-  glLightf(_index, GL_QUADRATIC_ATTENUATION,  _light.quadraticAttenuation_);
 }
 
 //----------------------------------------------------------------------------
 
-void LightNode::getParameters(GLenum _index, LightSource& _light)
+void LightNode::getParameters(GLState&  _state, GLenum _index, LightSource& _light)
 {
-  // get preferences of GL_LIGHT#_index and store them in _light
-  glGetLightfv(_index, GL_AMBIENT,  (GLfloat *)_light.ambientColor_.data());
-  glGetLightfv(_index, GL_DIFFUSE,  (GLfloat *)_light.diffuseColor_.data());
-  glGetLightfv(_index, GL_SPECULAR,  (GLfloat *)_light.specularColor_.data());
-  glGetLightfv(_index, GL_POSITION,  (GLfloat *)_light.position_.data());
-  glGetLightfv(_index, GL_SPOT_DIRECTION,  (GLfloat *)_light.spotDirection_.data());
+  if (_state.compatibilityProfile()) {
+    // get preferences of GL_LIGHT#_index and store them in _light
+    glGetLightfv(_index, GL_AMBIENT, (GLfloat *)_light.ambientColor_.data());
+    glGetLightfv(_index, GL_DIFFUSE, (GLfloat *)_light.diffuseColor_.data());
+    glGetLightfv(_index, GL_SPECULAR, (GLfloat *)_light.specularColor_.data());
+    glGetLightfv(_index, GL_POSITION, (GLfloat *)_light.position_.data());
+    glGetLightfv(_index, GL_SPOT_DIRECTION, (GLfloat *)_light.spotDirection_.data());
 
-  glGetLightfv(_index, GL_SPOT_EXPONENT,  &_light.spotExponent_);
-  glGetLightfv(_index, GL_SPOT_CUTOFF,  &_light.spotCutoff_);
-  glGetLightfv(_index, GL_CONSTANT_ATTENUATION,  &_light.constantAttenuation_);
-  glGetLightfv(_index, GL_LINEAR_ATTENUATION,  &_light.linearAttenuation_);
-  glGetLightfv(_index, GL_QUADRATIC_ATTENUATION,  &_light.quadraticAttenuation_);
+    glGetLightfv(_index, GL_SPOT_EXPONENT, &_light.spotExponent_);
+    glGetLightfv(_index, GL_SPOT_CUTOFF, &_light.spotCutoff_);
+    glGetLightfv(_index, GL_CONSTANT_ATTENUATION, &_light.constantAttenuation_);
+    glGetLightfv(_index, GL_LINEAR_ATTENUATION, &_light.linearAttenuation_);
+    glGetLightfv(_index, GL_QUADRATIC_ATTENUATION, &_light.quadraticAttenuation_);
+  }
 }
 
 

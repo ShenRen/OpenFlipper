@@ -64,14 +64,12 @@ void MemInfoPlugin::initializePlugin()
 
 void MemInfoPlugin::pluginsInitialized() {
 
-  // Check extension for NVIDIA memory information
-  QString glExtensions = QString((const char*)glGetString(GL_EXTENSIONS));
 
   updateTimer_ = new QTimer();
   updateTimer_->setSingleShot(false);
 
-  // NVIDIA cards
-  if ( glExtensions.contains("GL_NVX_gpu_memory_info") ) {
+  // Check extension for NVIDIA memory information
+  if (ACG::checkExtensionSupported("GL_NVX_gpu_memory_info")) {
 
 //    emit log(LOGINFO,"NVIDIA card Memory info supported, installing gpu memory monitor into status bar");
 

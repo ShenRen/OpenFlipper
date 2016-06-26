@@ -153,7 +153,8 @@ glViewer::glViewer( QGraphicsScene* _scene,
   createWidgets();
 
   // bind GL context to GL state class
-  glstate_ = new ACG::GLState();
+  glstate_ = new ACG::GLState(true, _glWidget->format().profile() == OFGLFormat::CompatibilityProfile);
+
   properties_.setglState( glstate_ );
 
   // state
@@ -493,10 +494,12 @@ void glViewer::lookAt(const ACG::Vec3d& _eye, const ACG::Vec3d& _center, const A
 
 void glViewer::normalsMode(NormalsMode _mode)
 {
-  makeCurrent();
-
-  switch(normalsMode_ = _mode)
+  if (glstate_->compatibilityProfile())
   {
+    makeCurrent();
+
+    switch (normalsMode_ = _mode)
+    {
     case DONT_TOUCH_NORMALS:
       ACG::GLState::disable(GL_NORMALIZE);
       break;
@@ -504,9 +507,10 @@ void glViewer::normalsMode(NormalsMode _mode)
     case NORMALIZE_NORMALS:
       ACG::GLState::enable(GL_NORMALIZE);
       break;
-  }
+    }
 
-  updateGL();
+    updateGL();
+  }
 }
 
 
@@ -730,6 +734,7 @@ void glViewer::drawScene()
 
   // =================================================================================
 
+  glBindFramebuffer(GL_FRAMEBUFFER, backbufferFbo);
   glDrawBuffer(backbufferTarget);
 
   // unbind vbo for qt log window
@@ -818,7 +823,10 @@ void glViewer::drawScene_mono()
 
       ACG::GLState::enable(GL_BLEND);
       ACG::GLState::disable(GL_DEPTH_TEST);
-      ACG::GLState::disable(GL_LIGHTING);
+
+      if (glstate_->compatibilityProfile())
+        ACG::GLState::disable(GL_LIGHTING);
+
       ACG::GLState::disable(GL_DITHER);
 
       int vp_l, vp_b, vp_w, vp_h;
@@ -989,7 +997,10 @@ void glViewer::initializeGL()
 
   // OpenGL state
   ACG::GLState::enable(GL_DEPTH_TEST);
-  ACG::GLState::enable(GL_LIGHTING);
+
+  if (glstate_->compatibilityProfile())
+    ACG::GLState::enable(GL_LIGHTING);
+
   ACG::GLState::disable(GL_DITHER);
   ACG::GLState::shadeModel( GL_FLAT );
 
@@ -1046,27 +1057,34 @@ void glViewer::paintGL()
   {
     properties_.lockUpdate();
 
-    glPushAttrib (GL_ALL_ATTRIB_BITS);
 
     ACG::GLState::enable(GL_DEPTH_TEST);
-    ACG::GLState::enable(GL_LIGHTING);
+
+    if (glstate_->compatibilityProfile())
+    {
+      glPushAttrib(GL_ALL_ATTRIB_BITS);
+      ACG::GLState::enable(GL_LIGHTING);
+
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+
+
+      normalsMode(normalsMode_);
+    }
+
     ACG::GLState::disable(GL_DITHER);
-    ACG::GLState::shadeModel( GL_FLAT );
+    ACG::GLState::shadeModel(GL_FLAT);
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-
-
-    normalsMode(      normalsMode_      );
 
     applyProperties();
 
     glstate_->setState();
 
-    glColor4f(1.0,0.0,0.0,1.0);
+    if (glstate_->compatibilityProfile())
+      glColor4f(1.0,0.0,0.0,1.0);
 
     glstate_->clearBuffers ();
 
@@ -1075,12 +1093,15 @@ void glViewer::paintGL()
     // draw scene
     drawScene();
 
-    glPopMatrix();
+    if (glstate_->compatibilityProfile())
+    {
+      glPopMatrix();
 
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
 
-    glPopAttrib ();
+      glPopAttrib();
+    }
   }
 
 }

@@ -27,7 +27,7 @@ find_path( GMM_INCLUDE_DIR
 		 "c:\\libs\\gmm-4.2\\include"
 		 "c:\\libs\\gmm-4.1\\include"
                  "c:\\libs\\gmm-3.0\\include"
-                 "${CMAKE_WINDOWS_LIBS_DIR}/general/gmm-4.2"
+                 "${CMAKE_WINDOWS_LIBS_DIR}/general/gmm-4.2/include"
 		 ${PROJECT_SOURCE_DIR}/MacOS/Libs/gmm-3.1/include
                  ../../External/include
                  /ACG/acgdev/gcc-4.3-i686/gmm-4.1/include/

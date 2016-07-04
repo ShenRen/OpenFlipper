@@ -71,6 +71,8 @@
 #include "../Scenegraph/ShaderNode.hh"
 #include "../Scenegraph/CoordFrameNode.hh"
 
+#include <cstdint>
+
 
 //== FORWARDDECLARATIONS ======================================================
 
@@ -611,7 +613,10 @@ QtSceneGraphWidget::Item::Item( Item * _parent,
 void
 QtSceneGraphWidget::Item::update()
 {
-  setText( 0, node_->name().c_str());
+  QString name = tr("%1 @ 0x%2")
+          .arg(node_->name().c_str())
+          .arg(reinterpret_cast<uintptr_t>(node_), 0, 16);
+  setText( 0, name.toStdString().c_str());
   setText( 1, node_->className().c_str());
 
   switch (node_->status())

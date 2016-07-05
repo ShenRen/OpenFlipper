@@ -75,7 +75,7 @@ void PostProcessorInput::bindDepthTex( int _texSlot /*= 0*/ ) const
 }
 
 
-PostProcessorOutput::PostProcessorOutput( GLuint _fbo /*= 0*/, GLuint _drawBuffer /*= 0*/, int _width /*= 0*/, int _height /*= 0*/, const GLint* _viewport /*= 0*/ ) : fbo_(_fbo), drawBuffer_(_drawBuffer), width(_width), height(_height)
+PostProcessorOutput::PostProcessorOutput( GLuint _fbo /*= 0*/, GLuint _drawBuffer /*= 0*/, int _width /*= 0*/, int _height /*= 0*/, const GLfloat* _viewport /*= 0*/ ) : fbo_(_fbo), drawBuffer_(_drawBuffer), width(_width), height(_height)
 {
   if (_viewport)
   {
@@ -96,5 +96,14 @@ void PostProcessorOutput::bind() const
 {
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
   glDrawBuffer(drawBuffer_);
+
+
+#ifdef GL_ARB_viewport_array
+  if (glViewportIndexedf)
+    glViewportIndexedf(0, viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
+  else
+    glViewport(viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
+#else
   glViewport(viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
+#endif
 }

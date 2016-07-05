@@ -2288,8 +2288,8 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
         supersampling = new ACG::SubpixelSupersampling(w, h, _supersamplingResolutionIncrease, 4, _sampleDist, _subpixelAreaScale);
         supersampling->begin();
 
-        if (_supersamplingResolutionIncrease > 1)
-          glstate_->allow_mipmapping(false);
+//         if (_supersamplingResolutionIncrease > 1)
+//           glstate_->allow_mipmapping(false);
       }
 
 

@@ -102,7 +102,7 @@ struct DLLEXPORT PostProcessorOutput
     GLuint _drawBuffer = 0,
     int _width = 0,
     int _height = 0,
-    const GLint* _viewport = 0);
+    const GLfloat* _viewport = 0);
 
   // opengl fbo id
   GLuint fbo_;
@@ -111,7 +111,7 @@ struct DLLEXPORT PostProcessorOutput
   GLuint drawBuffer_;
 
   // target viewport
-  GLint viewport_[4];
+  GLfloat viewport_[4];
 
   int width, height;
 

@@ -367,6 +367,8 @@ ACG::Vec2i SubpixelSupersampling::subpixelGroup(int i) const {
 
 void SubpixelSupersampling::begin() {
   clearBuffer();
+
+  glTexEnvi(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, 1 - resolutionIncrease_);
 }
 
 //=============================================================================
@@ -451,6 +453,8 @@ void SubpixelSupersampling::end() {
     }
   }
 
+
+  glTexEnvi(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, 0);
 }
 
 //=============================================================================

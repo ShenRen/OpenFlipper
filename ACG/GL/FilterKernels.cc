@@ -108,8 +108,8 @@ bool BaseSeparableFilterKernel::execute( GLuint _srcTexture, ACG::FBO* _dstFBO, 
       return false;
   }
 
-  GLint vp[4];
-  glGetIntegerv(GL_VIEWPORT, vp);
+  GLfloat vp[4];
+  glGetFloatv(GL_VIEWPORT, vp);
   glViewport(0, 0, texWidth_, texHeight_);
 
   // temp target
@@ -165,7 +165,15 @@ bool BaseSeparableFilterKernel::execute( GLuint _srcTexture, ACG::FBO* _dstFBO, 
   // restore input fbo
   if (passFBO)
     passFBO->unbind();
+
+#ifdef GL_ARB_viewport_array
+  if (glViewportIndexedf)
+    glViewportIndexedf(0, vp[0], vp[1], vp[2], vp[3]);
+  else
+    glViewport(vp[0], vp[1], vp[2], vp[3]);
+#else
   glViewport(vp[0], vp[1], vp[2], vp[3]);
+#endif
 
   return success;
 }

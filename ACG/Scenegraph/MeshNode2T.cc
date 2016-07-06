@@ -1632,6 +1632,9 @@ MeshNodeT<Mesh>::
 update_textures() {
   drawMesh_->updateTextures();
 
+  updateVertexPicking_ = true;
+  updateFacePicking_ = true;
+  updateAnyPicking_ = true;
 }
 
 

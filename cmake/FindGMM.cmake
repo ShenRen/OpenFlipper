@@ -10,6 +10,13 @@ if (GMM_INCLUDE_DIR)
   set(GMM_INCLUDE_DIRS "${GMM_INCLUDE_DIR}" )
 else (GMM_INCLUDE_DIR)
 
+# Check if the base path is set
+if ( NOT CMAKE_WINDOWS_LIBS_DIR )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
+endif()
+
+
 find_path( GMM_INCLUDE_DIR 
            NAMES gmm/gmm.h 
            PATHS $ENV{GMM_DIR}
@@ -20,6 +27,7 @@ find_path( GMM_INCLUDE_DIR
 		 "c:\\libs\\gmm-4.2\\include"
 		 "c:\\libs\\gmm-4.1\\include"
                  "c:\\libs\\gmm-3.0\\include"
+                 "${CMAKE_WINDOWS_LIBS_DIR}/general/gmm-4.2/include"
 		 ${PROJECT_SOURCE_DIR}/MacOS/Libs/gmm-3.1/include
                  ../../External/include
                  /ACG/acgdev/gcc-4.3-i686/gmm-4.1/include/

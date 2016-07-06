@@ -47,3 +47,6 @@ cppcheck:
   tags:
     - Linux
     - MultiThreads
+  artifacts:
+    paths:
+      - cppcheck.log

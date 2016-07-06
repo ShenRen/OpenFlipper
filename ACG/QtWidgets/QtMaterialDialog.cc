@@ -126,8 +126,8 @@ QtMaterialDialog::QtMaterialDialog( QWidget                  * _parent,
 
   ui_.shininessSlider->setValue((int)shine_);
   ui_.shininessBox->setValue((int)shine_);
-  ui_.pointSizeSpinBox->setValue((int)point_size_);
-  ui_.lineWidthSpinBox->setValue((int)line_width_);
+  ui_.pointSizeSpinBox->setValue(point_size_);
+  ui_.lineWidthSpinBox->setValue(line_width_);
   ui_.roundPointsCheckBox->setChecked(round_points_);
   ui_.lineSmoothCheckBox->setChecked(line_smooth_);
   ui_.backfaceCulling->setChecked( backfaceCulling_ );
@@ -166,8 +166,8 @@ QtMaterialDialog::QtMaterialDialog( QWidget                  * _parent,
   connect( ui_.overlayColorButton,  SIGNAL( clicked() ), this, SLOT( enableProperty() ) );
   connect( ui_.shininessSlider,     SIGNAL( sliderPressed() ), this, SLOT( enableProperty() ) );
   connect( ui_.shininessBox,        SIGNAL( valueChanged(int) ), this, SLOT( enableProperty(int) ) );
-  connect( ui_.pointSizeSpinBox,    SIGNAL( valueChanged(int) ), this, SLOT( enableProperty(int) ) );
-  connect( ui_.lineWidthSpinBox,    SIGNAL( valueChanged(int) ), this, SLOT( enableProperty(int) ) );
+  connect( ui_.pointSizeSpinBox,    SIGNAL( valueChanged(double) ), this, SLOT( enableProperty(double) ) );
+  connect( ui_.lineWidthSpinBox,    SIGNAL( valueChanged(double) ), this, SLOT( enableProperty(double) ) );
   connect( ui_.roundPointsCheckBox, SIGNAL( pressed() ), this, SLOT( enableProperty() ) );
   connect( ui_.lineSmoothCheckBox,  SIGNAL( pressed() ), this, SLOT( enableProperty() ) );
   connect( ui_.backfaceCulling,     SIGNAL( pressed() ), this, SLOT( enableProperty() ) );
@@ -189,10 +189,10 @@ QtMaterialDialog::QtMaterialDialog( QWidget                  * _parent,
   connect( ui_.shininessSlider, SIGNAL( valueChanged(int) ),
 	   this, SLOT( changeShine(int) ) );
 
-  connect( ui_.pointSizeSpinBox, SIGNAL( valueChanged(int) ),
-	   this, SLOT( changePointSize(int) ) );
-  connect( ui_.lineWidthSpinBox, SIGNAL( valueChanged(int) ),
-	   this, SLOT( changeLineWidth(int) ) );
+  connect( ui_.pointSizeSpinBox, SIGNAL( valueChanged(double) ),
+	   this, SLOT( changePointSize(double) ) );
+  connect( ui_.lineWidthSpinBox, SIGNAL( valueChanged(double) ),
+	   this, SLOT( changeLineWidth(double) ) );
   connect( ui_.roundPointsCheckBox, SIGNAL( toggled(bool) ),
 	   this, SLOT( changeRoundPoints(bool) ) );
   connect( ui_.lineSmoothCheckBox, SIGNAL( toggled(bool) ),
@@ -531,9 +531,9 @@ QtMaterialDialog::changeShine(int _new)
 
 
 void
-QtMaterialDialog::changePointSize(int _new)
+QtMaterialDialog::changePointSize(double _new)
 {
-  point_size_ = _new;
+  point_size_ = float(_new);
   applyChanges();
 }
 
@@ -542,9 +542,9 @@ QtMaterialDialog::changePointSize(int _new)
 
 
 void
-QtMaterialDialog::changeLineWidth(int _new)
+QtMaterialDialog::changeLineWidth(double _new)
 {
-  line_width_ = _new;
+  line_width_ = float(_new);
   applyChanges();
 }
 
@@ -747,6 +747,32 @@ QtMaterialDialog::enableProperty(int /*i*/)
   else if (sender() == ui_.blending)            ui_.blendingActive->setChecked( true );
   else if (sender() == ui_.colorMaterial)       ui_.colorMaterialActive->setChecked( true );
   else if (sender() == ui_.multiSampling)       ui_.multiSamplingActive->setChecked( true );
+}
+
+
+//-----------------------------------------------------------------------------
+
+void
+QtMaterialDialog::enableProperty(double d)
+{
+
+  if (sender() == ui_.baseColorButton)     ui_.baseColorActive->setChecked(true);
+  else if (sender() == ui_.ambientColorButton)  ui_.materialActive->setChecked(true);
+  else if (sender() == ui_.diffuseColorButton)  ui_.materialActive->setChecked(true);
+  else if (sender() == ui_.specularColorButton) ui_.materialActive->setChecked(true);
+  else if (sender() == ui_.overlayColorButton)  ui_.materialActive->setChecked(true);
+  else if (sender() == ui_.shininessSlider)     ui_.materialActive->setChecked(true);
+  else if (sender() == ui_.shininessBox)        ui_.materialActive->setChecked(true);
+  else if (sender() == ui_.pointSizeSpinBox)    ui_.pointSizeActive->setChecked(true);
+  else if (sender() == ui_.lineWidthSpinBox)    ui_.lineWidthActive->setChecked(true);
+  else if (sender() == ui_.roundPointsCheckBox) ui_.roundPointsActive->setChecked(true);
+  else if (sender() == ui_.lineSmoothCheckBox)  ui_.lineSmoothActive->setChecked(true);
+  else if (sender() == ui_.backfaceCulling)     ui_.backfaceCullingActive->setChecked(true);
+  else if (sender() == ui_.alphaTest)           ui_.alphaTestActive->setChecked(true);
+  else if (sender() == ui_.blending)            ui_.blendingActive->setChecked(true);
+  else if (sender() == ui_.colorMaterial)       ui_.colorMaterialActive->setChecked(true);
+  else if (sender() == ui_.multiSampling)       ui_.multiSamplingActive->setChecked(true);
+
 }
 
 //-----------------------------------------------------------------------------

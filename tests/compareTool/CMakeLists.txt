@@ -12,6 +12,8 @@ ENDIF()
 
   add_executable (compareTool compareTool.cc )
 
+  GROUP_PROJECT(compareTool Tests)
+
   target_link_libraries (compareTool
     ${QT_LIBRARIES}
   )

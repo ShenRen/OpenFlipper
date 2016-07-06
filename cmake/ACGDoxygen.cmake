@@ -103,6 +103,8 @@ IF (DOXYGEN_FOUND)
     ENDIF(EXISTS "${DOC_DIRECTORY}/doxy.config.in")
     
     ADD_CUSTOM_TARGET(${target} ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG})
+    # Group by folders on MSVC
+    GROUP_PROJECT( ${target} "Documentation")
 
     add_dependencies( ${DOC_DEPENDENCY} ${target} )
 

@@ -114,10 +114,10 @@ void SimpleGLGraphicsScene::drawBackground(QPainter *_painter, const QRectF &_re
 
   if (!initialized_)
   {
-    // we use glLoadGen to manage extensions
+    // we use GLEW to manage extensions
     // initialize it first
     #ifndef __APPLE__
-    ogl_LoadFunctions();
+    glewInit();
     #endif
     view_->initializeGL();
     cursorPainter_->initializeGL ();

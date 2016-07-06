@@ -62,13 +62,20 @@
 #include <cstdlib>
 #include <sstream>
 
-#ifndef __APPLE__
-    #include "gl_compat_4_4.hh"
-#else
-    #include <qgl>
+
+#if defined(ARCH_DARWIN)
+
+  #include <gl/glew.h>
+
+#elif defined(WIN32)
+
+  #include <gl/glew.h>
+
+#else // Unix
+
+    #include <GL/glew.h>
+
 #endif
-
-
 
 
 //=============================================================================

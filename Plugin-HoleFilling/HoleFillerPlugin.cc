@@ -344,7 +344,7 @@ void HoleFillerPlugin::detectButton( )
 }
 
 /// check for holes if an object has changed
-void HoleFillerPlugin::slotObjectUpdated(int _identifier) {
+void HoleFillerPlugin::slotObjectUpdated( int _identifier, const UpdateType& _type ) {
 
   BaseObjectData* object;
 
@@ -354,25 +354,28 @@ void HoleFillerPlugin::slotObjectUpdated(int _identifier) {
 
   bool updated = false;
   
-  // get holes for TRIMESH
-  if ( object->dataType( DATA_TRIANGLE_MESH ) ) {
+  if ( _type.contains(UPDATE_TOPOLOGY) ) {
 
-    HoleInfo< TriMesh >* holeInfo = dynamic_cast< HoleInfo< TriMesh >* > ( object->objectData(HOLEINFO) );
-  
-    if ( holeInfo ) {
-      holeInfo->getHoles();
-      updated = true;
+    // get holes for TRIMESH
+    if ( object->dataType( DATA_TRIANGLE_MESH ) ) {
+
+      HoleInfo< TriMesh >* holeInfo = dynamic_cast< HoleInfo< TriMesh >* > ( object->objectData(HOLEINFO) );
+
+      if ( holeInfo ) {
+        holeInfo->getHoles();
+        updated = true;
+      }
     }
-  }
 
-  // get holes for POLYMESH
-  else if ( object->dataType( DATA_POLY_MESH ) ) {
+    // get holes for POLYMESH
+    else if ( object->dataType( DATA_POLY_MESH ) ) {
 
-    HoleInfo< PolyMesh >* holeInfo = dynamic_cast< HoleInfo< PolyMesh >* > ( object->objectData(HOLEINFO) );
-  
-    if ( holeInfo ) {
-      holeInfo->getHoles();
-      updated = true;
+      HoleInfo< PolyMesh >* holeInfo = dynamic_cast< HoleInfo< PolyMesh >* > ( object->objectData(HOLEINFO) );
+
+      if ( holeInfo ) {
+        holeInfo->getHoles();
+        updated = true;
+      }
     }
   }
 

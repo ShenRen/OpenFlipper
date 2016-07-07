@@ -71,7 +71,7 @@
 #include "../Scenegraph/ShaderNode.hh"
 #include "../Scenegraph/CoordFrameNode.hh"
 
-#include <cstdint>
+#include <stdint.h>
 
 
 //== FORWARDDECLARATIONS ======================================================

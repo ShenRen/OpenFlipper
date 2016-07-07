@@ -521,6 +521,53 @@ class DLLEXPORT ObjectIterator {
 
 };
 
+/** \brief Range adapter for ObjectIterator
+ *
+ * An iterator range suitable for iterating over objects using a C++11
+ * range-based for loop.
+ *
+ * \note Use the PluginFunction::objects factory function as a shorthand for
+ * creating object ranges.
+ **/
+class DLLEXPORT ObjectRange {
+public:
+    explicit ObjectRange(IteratorRestriction _restriction = ALL_OBJECTS , DataType _dataType = DATA_ALL) :
+        restriction_(_restriction),
+        dataType_(_dataType)
+    {
+    }
+
+    ObjectIterator begin() const {
+        return ObjectIterator(restriction_, dataType_);
+    }
+
+    ObjectIterator end() const {
+        return ObjectIterator(0);
+    }
+
+private:
+    IteratorRestriction restriction_;
+    DataType dataType_;
+};
+
+
+/** \brief Iterable object range
+ *
+ * Creates an iterator range suitable for iterating over objects using a C++11
+ * range-based for loop.
+ *
+ * \note Iterated elements are *pointers* to objects, not object references.
+ * Hence, the loop header should be declared as
+ * \code
+ * for (auto* object : PluginFunctions::objects(..., ...) {
+ *     ...
+ * }
+ * \endcode
+ **/
+DLLEXPORT
+ObjectRange objects(IteratorRestriction _restriction = ALL_OBJECTS , DataType _dataType = DATA_ALL);
+
+
 /** \brief Core Data Iterator used to iterate over all objects (Including groups)
  *
  * This iterator is a more low level one not only returning really visible objects but also

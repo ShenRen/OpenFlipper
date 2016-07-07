@@ -528,12 +528,12 @@ class DLLEXPORT ObjectIterator {
 class DLLEXPORT ObjectReferenceIterator : public std::iterator<std::forward_iterator_tag, BaseObjectData>
 {
 public:
-    ObjectReferenceIterator(IteratorRestriction _restriction = ALL_OBJECTS, DataType _dataType = DATA_ALL) :
+    explicit ObjectReferenceIterator(IteratorRestriction _restriction = ALL_OBJECTS, DataType _dataType = DATA_ALL) :
         it_(_restriction, _dataType)
     {
     }
 
-    explicit ObjectReferenceIterator(BaseObjectData* _pos = NULL, IteratorRestriction _restriction = ALL_OBJECTS, DataType _dataType = DATA_ALL) :
+    explicit ObjectReferenceIterator(BaseObjectData* _pos, IteratorRestriction _restriction = ALL_OBJECTS, DataType _dataType = DATA_ALL) :
         it_(_pos, _restriction, _dataType)
     {
     }

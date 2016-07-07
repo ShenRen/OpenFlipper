@@ -525,7 +525,7 @@ class DLLEXPORT ObjectIterator {
  * \brief Helper class that wraps an ObjectIterator to return a reference
  * instead of a pointer
  */
-class DLLEXPORT ObjectReferenceIterator : std::iterator<std::forward_iterator_tag, BaseObjectData>
+class DLLEXPORT ObjectReferenceIterator : public std::iterator<std::forward_iterator_tag, BaseObjectData>
 {
 public:
     ObjectReferenceIterator(IteratorRestriction _restriction = ALL_OBJECTS, DataType _dataType = DATA_ALL) :

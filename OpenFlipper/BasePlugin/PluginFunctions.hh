@@ -518,8 +518,70 @@ class DLLEXPORT ObjectIterator {
         *  It stops at the root node.
         */
       inline void proceedToNextBaseObjectData(BaseObject*& _object);
-
 };
+
+
+/**
+ * \brief Helper class that wraps an ObjectIterator to return a reference
+ * instead of a pointer
+ */
+class DLLEXPORT ObjectReferenceIterator : public std::iterator<std::forward_iterator_tag, BaseObjectData>
+{
+public:
+    ObjectReferenceIterator(IteratorRestriction _restriction = ALL_OBJECTS, DataType _dataType = DATA_ALL) :
+        it_(_restriction, _dataType)
+    {
+    }
+
+    explicit ObjectReferenceIterator(BaseObjectData* _pos = NULL, IteratorRestriction _restriction = ALL_OBJECTS, DataType _dataType = DATA_ALL) :
+        it_(_pos, _restriction, _dataType)
+    {
+    }
+
+    ObjectReferenceIterator(const ObjectReferenceIterator& _rhs) :
+        it_(_rhs.it_)
+    {
+    }
+
+    ObjectReferenceIterator& operator=(const ObjectReferenceIterator& _rhs)
+    {
+        if (this != &_rhs) {
+            it_ = _rhs.it_;
+        }
+        return *this;
+    }
+
+    ObjectReferenceIterator& operator++() {
+        ++it_;
+        return *this;
+    }
+
+    ObjectReferenceIterator operator++(int) {
+        ObjectReferenceIterator copy(*this);
+        operator++();
+        return copy;
+    }
+
+    bool operator==(const ObjectReferenceIterator& _rhs) const {
+        return it_ == _rhs.it_;
+    }
+
+    bool operator!=(const ObjectReferenceIterator& _rhs) const {
+        return it_ != _rhs.it_;
+    }
+
+    BaseObjectData& operator*() {
+        return **it_;
+    }
+
+    BaseObjectData* operator->() {
+        return *it_;
+    }
+
+private:
+    ObjectIterator it_;
+};
+
 
 /** \brief Range adapter for ObjectIterator
  *
@@ -549,6 +611,52 @@ private:
     IteratorRestriction restriction_;
     DataType dataType_;
 };
+
+
+/** \brief Range adapter for ObjectIterator
+ *
+ * An iterator range suitable for iterating over objects using a C++11
+ * range-based for loop.
+ *
+ * \note Use the PluginFunction::objectReferences factory function as a shorthand for
+ * creating object ranges.
+ **/
+class DLLEXPORT ObjectReferenceRange {
+public:
+    explicit ObjectReferenceRange(IteratorRestriction _restriction = ALL_OBJECTS , DataType _dataType = DATA_ALL) :
+        restriction_(_restriction),
+        dataType_(_dataType)
+    {
+    }
+
+    ObjectReferenceIterator begin() const {
+        return ObjectReferenceIterator(restriction_, dataType_);
+    }
+
+    ObjectReferenceIterator end() const {
+        return ObjectReferenceIterator(0);
+    }
+
+private:
+    IteratorRestriction restriction_;
+    DataType dataType_;
+};
+
+
+/** \brief Iterable object range
+ *
+ * Creates an iterator range suitable for iterating over objects using a C++11
+ * range-based for loop.
+ *
+ * \note Usage:
+ * \code
+ * for (auto& object : PluginFunctions::objectReferences(..., ...) {
+ *     ...
+ * }
+ * \endcode
+ **/
+DLLEXPORT
+ObjectReferenceRange objectReferences(IteratorRestriction _restriction = ALL_OBJECTS , DataType _dataType = DATA_ALL);
 
 
 /** \brief Iterable object range

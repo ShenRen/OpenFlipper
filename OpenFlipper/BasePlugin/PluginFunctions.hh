@@ -650,7 +650,7 @@ private:
  *
  * \note Usage:
  * \code
- * for (auto& object : PluginFunctions::objectReferences(..., ...) {
+ * for (auto& object : PluginFunctions::objectReferences(..., ...)) {
  *     ...
  * }
  * \endcode
@@ -667,7 +667,7 @@ ObjectReferenceRange objectReferences(IteratorRestriction _restriction = ALL_OBJ
  * \note Iterated elements are *pointers* to objects, not object references.
  * Hence, the loop header should be declared as
  * \code
- * for (auto* object : PluginFunctions::objects(..., ...) {
+ * for (auto* object : PluginFunctions::objects(..., ...)) {
  *     ...
  * }
  * \endcode

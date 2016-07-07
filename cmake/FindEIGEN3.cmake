@@ -37,6 +37,7 @@ find_path( EIGEN3_INCLUDE_DIR
                  /usr/local/include
                  /usr/local/include/eigen3/
                  /opt/local/include/eigen3/
+                 "${CMAKE_WINDOWS_LIBS_DIR}/general/Eigen-3.2.8"
                  "${CMAKE_WINDOWS_LIBS_DIR}/general/Eigen-3.2.6"
                  "${CMAKE_WINDOWS_LIBS_DIR}/Eigen-3.2.6"
 		 "${CMAKE_WINDOWS_LIBS_DIR}/Eigen-3.2.6/include"                 

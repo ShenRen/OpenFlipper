@@ -67,12 +67,8 @@ int TypePolyLinePlugin::addEmpty(){
   // new object data struct
   PolyLineObject * object = new PolyLineObject();
   
-  if ( PluginFunctions::objectCount() == 1 )
-    object->target(true);
+  object->target(true);
 
-  if (PluginFunctions::targetCount() == 0 )
-    object->target(true);
-  
   QString name = tr("New PolyLine %1.pol").arg( object->id() );
 
   // call the local function to update names

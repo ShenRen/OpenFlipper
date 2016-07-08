@@ -272,11 +272,7 @@ addEmpty()
   // new object data struct
   BSplineSurfaceObject * object = new BSplineSurfaceObject();
 
-  if ( PluginFunctions::objectCount() == 1 )
-    object->target(true);
-
-  if (PluginFunctions::targetCount() == 0 )
-    object->target(true);
+  object->target(true);
 
   QString name = "BSplineSurface_" + QString::number( object->id() ) + ".bss";
 

@@ -193,11 +193,7 @@ int TypeSkeletonPlugin::addEmpty(){
   // new object data struct
   SkeletonObject * object = new SkeletonObject();
 
-  if ( PluginFunctions::objectCount() == 1 )
-    object->target(true);
-
-  if (PluginFunctions::targetCount() == 0 )
-    object->target(true);
+  object->target(true);
 
   QString name = QString(tr("New Skeleton %1.skl").arg( object->id() ));
 

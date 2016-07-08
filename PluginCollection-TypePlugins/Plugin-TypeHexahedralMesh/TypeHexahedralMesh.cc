@@ -103,11 +103,7 @@ int TypeHexahedralMeshPlugin::addEmpty() {
     // New object data struct
     HexahedralMeshObject* object = new HexahedralMeshObject(DATA_HEXAHEDRAL_MESH);
 
-    if (PluginFunctions::objectCount() == 1)
-        object->target(true);
-
-    if (PluginFunctions::targetCount() == 0)
-        object->target(true);
+    object->target(true);
 
     QString name = QString(tr("New Hexahedral Mesh %1.ovm").arg( object->id() ));
 

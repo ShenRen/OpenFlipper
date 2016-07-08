@@ -116,10 +116,7 @@ int TypeCameraPlugin::addEmpty() {
     // new object data struct
     CameraObject* object = new CameraObject ();
 
-    if ( PluginFunctions::objectCount() == 1 ||
-         PluginFunctions::targetCount() == 0) {
-        object->target ( true );
-    }
+    object->target ( true );
     
     QString name = QString(tr("New Camera %1.cam").arg( object->id() ));
 

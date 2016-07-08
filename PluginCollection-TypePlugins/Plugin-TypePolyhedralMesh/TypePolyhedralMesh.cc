@@ -111,11 +111,7 @@ int TypePolyhedralMeshPlugin::addEmpty() {
     // new object data struct
     PolyhedralMeshObject* object = new PolyhedralMeshObject(DATA_POLYHEDRAL_MESH);
 
-    if (PluginFunctions::objectCount() == 1)
-        object->target(true);
-
-    if (PluginFunctions::targetCount() == 0)
-        object->target(true);
+    object->target(true);
 
     QString name = QString(tr("New PolyHedral Mesh %1.ovm").arg( object->id() ));
 

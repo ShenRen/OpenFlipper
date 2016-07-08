@@ -65,11 +65,7 @@ int TypeCoordsysPlugin::addEmpty(){
   // new object data struct
   CoordsysObject * object = new CoordsysObject();
 
-  if ( PluginFunctions::objectCount() == 1 )
-    object->target(true);
-
-  if (PluginFunctions::targetCount() == 0 )
-    object->target(true);
+  object->target(true);
 
   QString name = QString(tr("New Coordinate System %1.cos").arg( object->id() ));
 

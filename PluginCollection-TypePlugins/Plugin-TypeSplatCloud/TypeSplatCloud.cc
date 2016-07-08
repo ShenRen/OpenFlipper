@@ -296,11 +296,7 @@ int TypeSplatCloudPlugin::addEmpty()
   if( object == 0 )
     return -1;
 
-  if( PluginFunctions::objectCount() == 1 )
-    object->target( true );
-
-  if( PluginFunctions::targetCount() == 0 )
-    object->target( true );
+  object->target( true );
 
   QString name = QString(tr("New Splat Cloud %1.spl").arg( object->id() ));
 

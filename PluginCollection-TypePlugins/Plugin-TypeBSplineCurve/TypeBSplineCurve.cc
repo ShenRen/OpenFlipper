@@ -274,11 +274,7 @@ addEmpty()
   // new object data struct
   BSplineCurveObject * object = new BSplineCurveObject();
 
-  if ( PluginFunctions::objectCount() == 1 )
-    object->target(true);
-
-  if (PluginFunctions::targetCount() == 0 )
-    object->target(true);
+  object->target(true);
 
   QString name = "BSplineCurve_" + QString::number( object->id() ) + ".bsc";
 

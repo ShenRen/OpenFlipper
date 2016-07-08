@@ -74,11 +74,7 @@ int TypeTriangleMeshPlugin::addEmpty(){
   // new object data struct
   TriMeshObject * object = new TriMeshObject( typeId("TriangleMesh") );
 
-  if ( PluginFunctions::objectCount() == 1 )
-    object->target(true);
-
-  if (PluginFunctions::targetCount() == 0 )
-    object->target(true);
+  object->target(true);
 
   QString name = QString(tr("TriangleMesh new %1.off").arg( object->id() ));
 

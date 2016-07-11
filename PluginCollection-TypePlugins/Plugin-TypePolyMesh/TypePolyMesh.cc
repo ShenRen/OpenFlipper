@@ -52,6 +52,7 @@
 
 #include <OpenFlipper/common/BackupData.hh>
 #include "PolyMeshBackup.hh"
+#include <OpenFlipper/common/GlobalOptions.hh>
 
 //-----------------------------------------------------------------------------
 
@@ -75,7 +76,18 @@ int TypePolyMeshPlugin::addEmpty(){
   // new object data struct
   PolyMeshObject * object = new PolyMeshObject( typeId("PolyMesh") );
 
-  object->target(true);
+  if ( OpenFlipperSettings().value("Core/File/AllTarget",false).toBool() )
+    object->target(true);
+  else {
+
+    // Only the first object in the scene will be target
+    if ( PluginFunctions::objectCount() == 1 )
+       object->target(true);
+
+    // If no target is available, we set the new object as target
+    if (PluginFunctions::targetCount() == 0 )
+       object->target(true);
+  }
 
   QString name = QString(tr("New PolyMesh %1.off").arg( object->id() ));
 

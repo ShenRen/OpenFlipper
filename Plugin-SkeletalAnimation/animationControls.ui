@@ -300,22 +300,6 @@
  <connections>
   <connection>
    <sender>hsFrame</sender>
-   <signal>sliderMoved(int)</signal>
-   <receiver>lbFrameNumber</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>168</x>
-     <y>173</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>268</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hsFrame</sender>
    <signal>valueChanged(int)</signal>
    <receiver>lbFrameNumber</receiver>
    <slot>setNum(int)</slot>

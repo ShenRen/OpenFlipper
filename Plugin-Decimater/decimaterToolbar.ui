@@ -734,7 +734,7 @@ p, li { white-space: pre-wrap; }
   </connection>
   <connection>
    <sender>verticesCountSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>verticesCount</receiver>
    <slot>setValue(int)</slot>
    <hints>
@@ -766,7 +766,7 @@ p, li { white-space: pre-wrap; }
   </connection>
   <connection>
    <sender>trianglesCountSlider</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>trianglesCount</receiver>
    <slot>setValue(int)</slot>
    <hints>

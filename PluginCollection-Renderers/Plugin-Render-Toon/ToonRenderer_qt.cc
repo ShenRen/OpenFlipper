@@ -88,7 +88,7 @@ void ToonRenderer::actionDialog( bool )
   optionsDlg->setLayout(layout);
 
 
-  connect(paletteSizeSlider, SIGNAL(sliderMoved(int)), this, SLOT(paletteSizeChanged(int)));
+  connect(paletteSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(paletteSizeChanged(int)));
   connect(outlineColorBtn, SIGNAL(colorChanged(QColor)), this, SLOT(outlineColorChanged(QColor)));
 
 

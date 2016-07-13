@@ -1,5 +1,11 @@
 /*! \page changelog Changelog
 
+- <b>OpenFlipper 3.1 ( ?/?/? )</b>
+     - <b>Plugins</b>
+         - HoleFiller
+             - Fly to selected holes
+
+
 - <b>OpenFlipper 3.0 ( 2016/07/13 )</b>
      - <b>LICENSE<b>
         - Switched to BSD-3 License

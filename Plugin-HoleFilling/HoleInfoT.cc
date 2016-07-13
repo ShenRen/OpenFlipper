@@ -236,6 +236,30 @@ void HoleInfo< MeshT >::selectHole(int _index)
 
 }
 
+/// select a hole with given index
+template< class MeshT >
+void HoleInfo< MeshT >::getHoleInfo(const int _index, typename MeshT::Normal& _holeNormal, typename MeshT::Point& _holeCenter) const
+{
+
+  _holeCenter = typename MeshT::Point(0.0,0.0,0.0);
+  _holeNormal = typename MeshT::Normal(0.0,0.0,0.0);
+
+  // Center of gravity of hole and an average normal at the hole boundary
+  for ( size_t i = 0 ; i <  holes_[_index].size() ; ++i ) {
+    const typename MeshT::HalfedgeHandle he = mesh_->halfedge_handle(holes_[_index][i],0);
+    const typename MeshT::VertexHandle vh_to = mesh_->to_vertex_handle(he);
+
+    _holeCenter += mesh_->point(vh_to);
+    _holeNormal += mesh_->normal(vh_to);
+  }
+
+  _holeCenter /= typename MeshT::Scalar(holes_[_index].size());
+  _holeNormal /= typename MeshT::Scalar(holes_[_index].size());
+  _holeNormal.normalize();
+
+}
+
+
 /// get the holes vector
 template< class MeshT >
 std::vector< std::vector< typename MeshT::EdgeHandle > >* HoleInfo< MeshT >::holes()

@@ -195,6 +195,7 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
     // TYPE is TRIMESH
     if ( o_it->dataType( DATA_TRIANGLE_MESH ) ) {
 
+      TriMeshObject* object = PluginFunctions::triMeshObject(*o_it);
       TriMesh* mesh = PluginFunctions::triMesh(o_it);
 
       //get perObjectData
@@ -212,6 +213,22 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
       for (uint i = 0; i < objects.size(); i++)
         if ( objects[i] == o_it->id() )
           holeInfo->selectHole( holes[i] );
+
+      // We only fly if we have exacly one object and one hole
+      if (  ( objects[0] == o_it->id() ) && (objects.size() == 1) && (holes.size() == 1) ){
+
+        TriMesh::Point center;
+        TriMesh::Normal normal;
+        holeInfo->getHoleInfo(holes[0], normal, center);
+
+        // Get bounding box to get a scaling for the movement
+        TriMesh::Point _bbMin;
+        TriMesh::Point _bbMax;
+
+        object->boundingBox(_bbMin, _bbMax);
+
+        PluginFunctions::flyTo(center + normal * (_bbMax-_bbMin).length() , center, 10.0);
+      }
 
       //update the object
       emit updatedObject(o_it->id(),UPDATE_SELECTION);

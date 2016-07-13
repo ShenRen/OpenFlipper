@@ -96,6 +96,9 @@ class HoleInfo : public PerObjectData
     //select a hole with given index
     void selectHole(int _index);
 
+    //Collect information to fly to a hole
+    void getHoleInfo(const int _index, typename MeshT::Normal& _holeNormal, typename MeshT::Point& _holeCenter) const;
+
     std::vector< std::vector< typename MeshT::EdgeHandle > >* holes();
 };
 

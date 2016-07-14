@@ -75,29 +75,40 @@ class HoleInfo : public PerObjectData
  
   public :
 
-    //Konstruktor
+    /// Konstruktor
     HoleInfo(MeshT* _mesh);
   
-    //Destruktor
+    /// Destruktor
     ~HoleInfo();
 
-    // find all holes in the mesh
+    /** Find all holes in the mesh
+     *  and store them in the internal list of holes.
+     */
     void getHoles();
 
-    //fill hole with given index
+    /// fill hole with given index
     void fillHole(int _index, int _stages = 3 );
 
-    //fill hole with given boundary edgeHandle
+    /// fill hole with given boundary edgeHandle
     void fillHole(typename MeshT::EdgeHandle _eh, int _stages = 3 );
 
-    //fill all holes
+    /// fill all holes
     void fillAllHoles( int _stages = 3 );
 
-    //select a hole with given index
+    /// select a hole with given index
     void selectHole(int _index);
 
-    //Collect information to fly to a hole
-    void getHoleInfo(const int _index, typename MeshT::Normal& _holeNormal, typename MeshT::Point& _holeCenter) const;
+    /// Collect information to fly to a hole
+    void getHolePostitionInfo(const int _index, typename MeshT::Normal& _holeNormal, typename MeshT::Point& _holeCenter) const;
+
+    /** Collect bounding box size and boundary length of holes
+     *
+     * @param _index            Index of the hole
+     * @param _edges            Count of boundary edges
+     * @param _diagonal         Length of the hole bounding box diagonal
+     * @param _boundary_Length  Boundary length of the hole
+     */
+    void getHoleInfo(const unsigned int _index, size_t& _edges, typename MeshT::Scalar& _diagonal, typename MeshT::Scalar& _boundaryLength) const;
 
     std::vector< std::vector< typename MeshT::EdgeHandle > >* holes();
 };

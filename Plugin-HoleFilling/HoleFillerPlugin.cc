@@ -219,7 +219,7 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
 
         TriMesh::Point center;
         TriMesh::Normal normal;
-        holeInfo->getHoleInfo(holes[0], normal, center);
+        holeInfo->getHolePostitionInfo(holes[0], normal, center);
 
         // Get bounding box to get a scaling for the movement
         TriMesh::Point _bbMin;
@@ -260,7 +260,7 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
 
         PolyMesh::Point center;
         PolyMesh::Normal normal;
-        holeInfo->getHoleInfo(holes[0], normal, center);
+        holeInfo->getHolePostitionInfo(holes[0], normal, center);
 
         // Get bounding box to get a scaling for the movement
         PolyMesh::Point _bbMin;
@@ -447,41 +447,24 @@ void HoleFillerPlugin::update_menu() {
           name->setFlags( 0 );
           name->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,0,name);
-    
+
+          size_t egde_count = 0;
+          double boundaryLength = 0.0;
+          TriMesh::Scalar bbDiagonal = 0.0;
+
+          holeInfo->getHoleInfo(i, egde_count, boundaryLength, bbDiagonal);
+
           // Set Number of the edges
-          QTableWidgetItem* size = new QTableWidgetItem( QString::number( (*holeInfo->holes())[i].size() ) );
+          QTableWidgetItem* size = new QTableWidgetItem( QString::number( egde_count ) );
           size->setFlags( 0 );
           size->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,1,size);
     
           // Set boundary Length
-          std::vector< TriMesh::EdgeHandle >::iterator endIter = (*holeInfo->holes())[i].end();
-          double boundaryLength = 0.0;
-          TriMesh* mesh = 0;
-          PluginFunctions::getMesh(o_it->id(),mesh);
-          for (std::vector< TriMesh::EdgeHandle >::iterator edgeIter = (*holeInfo->holes())[i].begin(); edgeIter != endIter; ++edgeIter)
-            boundaryLength += mesh->calc_edge_length(*edgeIter);
           QTableWidgetItem* boundaryLengthWidget = new QTableWidgetItem( QString::number(boundaryLength) );
           boundaryLengthWidget->setFlags( 0 );
           boundaryLengthWidget->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,2,boundaryLengthWidget);
-
-          //compute bounding box
-          TriMesh::Point minCoord = TriMesh::Point(std::numeric_limits<TriMesh::Scalar>::max(),std::numeric_limits<TriMesh::Scalar>::max(),std::numeric_limits<TriMesh::Scalar>::max());
-          TriMesh::Point maxCoord = TriMesh::Point(-std::numeric_limits<TriMesh::Scalar>::max(),-std::numeric_limits<TriMesh::Scalar>::max(),-std::numeric_limits<TriMesh::Scalar>::max());
-          for (std::vector< TriMesh::EdgeHandle >::iterator edgeIter = (*holeInfo->holes())[i].begin(); edgeIter != endIter; ++edgeIter)
-          {
-            TriMesh::Point pos = mesh->point(mesh->from_vertex_handle(mesh->halfedge_handle(*edgeIter,0)));
-            minCoord[0] = std::min(minCoord[0],pos[0]);
-            minCoord[1] = std::min(minCoord[1],pos[1]);
-            minCoord[2] = std::min(minCoord[2],pos[2]);
-
-            maxCoord[0] = std::max(maxCoord[0],pos[0]);
-            maxCoord[1] = std::max(maxCoord[1],pos[1]);
-            maxCoord[2] = std::max(maxCoord[2],pos[2]);
-          }
-
-          TriMesh::Scalar bbDiagonal = (minCoord-maxCoord).length();
 
           QTableWidgetItem* bbDiagonalWidget = new QTableWidgetItem( QString::number(bbDiagonal) );
           bbDiagonalWidget->setFlags( 0 );
@@ -513,43 +496,25 @@ void HoleFillerPlugin::update_menu() {
           name->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,0,name);
 
+          size_t egde_count = 0;
+          double boundaryLength = 0.0;
+          TriMesh::Scalar bbDiagonal = 0.0;
+
+          holeInfo->getHoleInfo(i, egde_count, boundaryLength, bbDiagonal);
+
           // Set Number of the edges
-          QTableWidgetItem* size = new QTableWidgetItem( QString::number( (*holeInfo->holes())[i].size() ) );
+          QTableWidgetItem* size = new QTableWidgetItem( QString::number( egde_count ) );
           size->setFlags( 0 );
           size->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,1,size);
     
-          // Set boundary Length
-          std::vector< PolyMesh::EdgeHandle >::iterator endIter = (*holeInfo->holes())[i].end();
-          double boundaryLength = 0.0;
-          PolyMesh* mesh = 0;
-          PluginFunctions::getMesh(o_it->id(),mesh);
-          for (std::vector< PolyMesh::EdgeHandle >::iterator edgeIter = (*holeInfo->holes())[i].begin(); edgeIter != endIter; ++edgeIter)
-            boundaryLength += mesh->calc_edge_length(*edgeIter);
-
-          // Set radius
+          // Set Bounding box diagonal
           QTableWidgetItem* radius = new QTableWidgetItem( QString::number(boundaryLength) );
           radius->setFlags( 0 );
           radius->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,2,radius);
 
-          //compute bounding box
-          PolyMesh::Point minCoord = PolyMesh::Point(std::numeric_limits<PolyMesh::Scalar>::max(),std::numeric_limits<PolyMesh::Scalar>::max(),std::numeric_limits<PolyMesh::Scalar>::max());
-          PolyMesh::Point maxCoord = PolyMesh::Point(-std::numeric_limits<PolyMesh::Scalar>::max(),-std::numeric_limits<PolyMesh::Scalar>::max(),-std::numeric_limits<PolyMesh::Scalar>::max());
-          for (std::vector< PolyMesh::EdgeHandle >::iterator edgeIter = (*holeInfo->holes())[i].begin(); edgeIter != endIter; ++edgeIter)
-          {
-            PolyMesh::Point pos = mesh->point(mesh->from_vertex_handle(mesh->halfedge_handle(*edgeIter,0)));
-            minCoord[0] = std::min(minCoord[0],pos[0]);
-            minCoord[1] = std::min(minCoord[1],pos[1]);
-            minCoord[2] = std::min(minCoord[2],pos[2]);
-
-            maxCoord[0] = std::max(maxCoord[0],pos[0]);
-            maxCoord[1] = std::max(maxCoord[1],pos[1]);
-            maxCoord[2] = std::max(maxCoord[2],pos[2]);
-          }
-
-          PolyMesh::Scalar bbDiagonal = (minCoord-maxCoord).length();
-
+          // Set Bounding box diagonal
           QTableWidgetItem* bbDiagonalWidget = new QTableWidgetItem( QString::number(bbDiagonal) );
           bbDiagonalWidget->setFlags( 0 );
           bbDiagonalWidget->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);

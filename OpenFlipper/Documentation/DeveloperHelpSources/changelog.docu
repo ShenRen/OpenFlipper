@@ -4,6 +4,7 @@
      - <b>Plugins</b>
          - HoleFiller
              - Fly to selected holes
+             - Compute boundary information on poly meshes
 
 
 - <b>OpenFlipper 3.0 ( 2016/07/13 )</b>

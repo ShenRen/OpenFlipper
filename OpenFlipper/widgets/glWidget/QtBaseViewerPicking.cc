@@ -125,6 +125,9 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
   // traversing order (center, top, bottom, ...)
   unsigned char order[9] = { 4, 7, 1, 3, 5, 0, 2, 6, 8 };
 
+  // prepare GL state
+  makeCurrent();
+
   if (pickCacheSupported_)
   {
     // delete pick cache if the size changed
@@ -166,8 +169,6 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
   ACG::Vec4f clear_color = properties_.glState().clear_color();
   properties_.glState().set_clear_color (ACG::Vec4f (0.0, 0.0, 0.0, 0.0));
 
-  // prepare GL state
-  makeCurrent();
 
   glViewport (l, b, w, h);
   glMatrixMode(GL_PROJECTION);
@@ -431,6 +432,11 @@ bool glViewer::pick_region( ACG::SceneGraph::PickTarget                _pickTarg
   GLubyte* buffer = 0;
   GLfloat* depths = 0;
 
+  
+  // prepare GL state
+  makeCurrent();
+  
+  
   if (pickCacheSupported_)
   {
     // delete pick cache if the size changed
@@ -472,8 +478,6 @@ bool glViewer::pick_region( ACG::SceneGraph::PickTarget                _pickTarg
   ACG::Vec4f clear_color = properties_.glState().clear_color();
   properties_.glState().set_clear_color (ACG::Vec4f (0.0, 0.0, 0.0, 0.0));
 
-  // prepare GL state
-  makeCurrent();
 
   glViewport (l, b, w, h);
   glMatrixMode(GL_PROJECTION);

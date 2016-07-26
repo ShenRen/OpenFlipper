@@ -58,7 +58,6 @@
 
 #include <ObjectTypes/Light/LightWidget.hh>
 
-
 //******************************************************************************
 
 /** \brief Slot for Remove action in ContextMenu
@@ -167,8 +166,11 @@ void DataControlPlugin::slotGroup() {
   for (int i = 0; i < indexList.size(); ++i)
     ids.push_back( model_->itemId(indexList[i]) );
 
+
   //group all objects
   groupObjects(ids);
+  emit objectsGrouped(ids);
+
 }
 
 
@@ -413,7 +415,7 @@ void DataControlPlugin::slotHeaderCustomContextMenuRequested ( const QPoint & _p
 //******************************************************************************
 
 /** \brief show a rename dialog for object names
- * 
+ *
  */
 void DataControlPlugin::slotRename(){
   QItemSelectionModel* selection = view_->selectionModel();

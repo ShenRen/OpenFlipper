@@ -97,8 +97,8 @@ void SlicePlugin::initializePlugin(){
   connect(tool_->radioX, SIGNAL( released() ), this, SLOT( updateSlice() ) );
   connect(tool_->radioY, SIGNAL( released() ), this, SLOT( updateSlice() ) );
   connect(tool_->radioZ, SIGNAL( released() ), this, SLOT( updateSlice() ) );
-  connect(tool_->posSlider, SIGNAL( sliderMoved(int) ), this, SLOT( updateSlice(int) ) );
-  connect(tool_->sizeSlider, SIGNAL( sliderMoved(int) ), this, SLOT( updateSlice(int) ) );
+  connect(tool_->posSlider, SIGNAL( valueChanged(int) ), this, SLOT( updateSlice(int) ) );
+  connect(tool_->sizeSlider, SIGNAL( valueChanged(int) ), this, SLOT( updateSlice(int) ) );
 
   toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"slice.png");
   emit addToolbox( tr("Slice") , tool_, toolIcon_);

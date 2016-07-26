@@ -83,7 +83,7 @@ QtClippingDialog( QWidget                  * _parent,
 
   connect( ui_.setButton, SIGNAL( clicked() ),
 	   this, SLOT( set_plane() ) );
-  connect( ui_.sweepRangeSlider, SIGNAL( sliderMoved(int) ),
+  connect( ui_.sweepRangeSlider, SIGNAL( valueChanged(int) ),
 	   this, SLOT( sweep_plane(int) ) );
 
   update_values();

@@ -117,6 +117,18 @@
 #endif
 
 #ifdef WIN32
+
+  void attachExistingConsole()
+  {
+	  //try to attach the console of the parent process
+	  if (AttachConsole(-1))
+	  {
+		  //if the console was attached change stdinput and output
+		  freopen("CONIN$", "r", stdin);
+		  freopen("CONOUT$", "w", stdout);
+		  freopen("CONOUT$", "w", stderr);
+	  }
+  }
 #ifdef WIN_GET_DEBUG_CONSOLE
     void getConsole() {
       //Create a console for this application
@@ -371,6 +383,7 @@ int main(int argc, char **argv)
   OpenFlipper::Options::windowTitle(TOSTRING(PRODUCT_STRING)" v" + OpenFlipper::Options::coreVersion());
 
 #ifdef WIN32
+  attachExistingConsole();
 #ifdef WIN_GET_DEBUG_CONSOLE
   getConsole();
 #endif

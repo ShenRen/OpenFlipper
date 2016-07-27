@@ -72,7 +72,7 @@
 #include <bitset>
 #include <deque>
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable:4251)
 #endif
@@ -1434,7 +1434,7 @@ fixed colors. Otherwise the correspondence to the objects/components gets lost a
 
 */
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	#pragma warning(push)
 #endif
 

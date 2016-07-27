@@ -7,6 +7,7 @@
 #                      [CFLAGSADD flag1 flag2 ...]
 #                      [CDEFINITIONSADD definition1 definition2 ...]
 #                      [LIBRARIES lib1 lib2 ...]
+#                      [ADD_CORE_APP_LIBRARIES lib1 lib2 ...]
 #                      [LIBDIRS dir1 dir2 ...]
 #                      [INCDIRS dir1 dir2 ...]
 #                      [ADDSRC file1 file2 ...]
@@ -15,17 +16,19 @@
 #                      [TRANSLATION_ADDFILES file1 file2 ...]
 #                      [LICENSEMANAGER])
 #
-# DIRS            = additional directories with source files
-# DEPS            = required dependencies for find_package macro
-# OPTDEPS         = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
-# LDFLAGSADD      = flags added to the link command
-# CFLAGSADD       = flags added to the compile command
-# CDEFINITIONSADD = definitions added to the compile command
-# LIBRARIES       = libraries added to link command
-# LIBDIRS         = additional link directories
-# INCDIRS         = additional include directories
-# ADDSRC          = additional source files
-# INSTALLDATA     = directories that will be installed into the openflipper data directory
+
+# DIRS                   = additional directories with source files
+# DEPS                   = required dependencies for find_package macro
+# OPTDEPS                = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
+# LDFLAGSADD             = flags added to the link command
+# CFLAGSADD              = flags added to the compile command
+# CDEFINITIONSADD        = definitions added to the compile command
+# LIBRARIES              = libraries added to link command
+# ADD_CORE_APP_LIBRARIES = libraries added to be linked to the core app
+# LIBDIRS                = additional link directories
+# INCDIRS                = additional include directories
+# ADDSRC                 = additional source files
+# INSTALLDATA            = directories that will be installed into the openflipper data directory
 # GLEWDEFINITIONS = Checks glew if it defines the given definitions
 #
 # TRANSLATION_LANGUAGES = language codes for translation
@@ -58,6 +61,7 @@ endif(OPENFLIPPER_PLUGIN_INCLUDED)
 set(OPENFLIPPER_PLUGIN_INCLUDED TRUE PARENT_SCOPE)
 
 include (ACGCommon)
+include (MSVCMacros)
 
 # get plugin name from directory name
 macro (_get_plugin_name var)
@@ -68,7 +72,8 @@ endmacro ()
 # parse plugin macro parameter
 macro (_get_plugin_parameters _prefix)
     set (_current_var _foo)
-    set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA GLEWDEFINITIONS TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
+    set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD
+      LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA GLEWDEFINITIONS TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
     set (_supported_flags LICENSEMANAGER)
     foreach (_val ${_supported_var})
         set (${_prefix}_${_val})
@@ -104,6 +109,7 @@ endmacro ()
 # _prefix    : prefix used ( usually the plugin name )
 # _optional : if we are currently pars
 macro (_check_plugin_deps _prefix _optional )
+
 
     set (${_prefix}_HAS_DEPS TRUE)
 
@@ -397,7 +403,6 @@ endmacro ()
 # main function
 #======================================================
 function (_build_openflipper_plugin plugin)
-
   acg_set (OPENFLIPPER_${_PLUGIN}_BUILD "0")
 
   # get upper plugin name
@@ -423,11 +428,20 @@ function (_build_openflipper_plugin plugin)
   _check_plugin_deps (${_PLUGIN} FALSE ${${_PLUGIN}_DEPS})
 
   #============================================================================================
+  # Additional libraries to be linked to the core app
+  #============================================================================================
+
+  get_property( global_core_app_libraries GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES)
+  foreach (_val ${${_PLUGIN}_ADD_CORE_APP_LIBRARIES})
+    list(APPEND global_core_app_libraries ${_val})
+    list(REMOVE_DUPLICATES global_core_app_libraries)
+  endforeach ()
+  set_property( GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES ${global_core_app_libraries} )
+
   # CHECK for GLEW definitions
   #============================================================================================
 
   _check_plugin_glew_deps (${_PLUGIN})
-  
 
   #============================================================================================
   # Remember Lib dirs for bundle generation
@@ -595,6 +609,10 @@ function (_build_openflipper_plugin plugin)
 
 
     add_library (Plugin-${plugin} MODULE ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
+    #group projects by parent folder name on MSVC (used for e.g. plugincollection)
+    get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+    get_filename_component(PARENT_DIR_NAME "${PARENT_DIR}" NAME)
+    GROUP_PROJECT(Plugin-${plugin} ${PARENT_DIR_NAME})
     # add this plugin to build plugin list for dependency tracking
     acg_set (OPENFLIPPER_PLUGINS "${OPENFLIPPER_PLUGINS};Plugin-${plugin}")
     acg_set (OPENFLIPPER_${_PLUGIN}_BUILD "1")
@@ -770,7 +788,6 @@ endfunction ()
 
 macro (openflipper_plugin)
   _get_plugin_name (_plugin)
-  
   string (TOUPPER ${_plugin} _PLUGIN)
 
   # add option to disable plugin build
@@ -789,6 +806,8 @@ macro (openflipper_plugin)
   )
 
   if (NOT DISABLE_PLUGIN_${_PLUGIN})
+    #group the files in msvc
+    RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR} )
     _build_openflipper_plugin (${_plugin} ${ARGN})
     set(LOADED_PACKAGES ${LOADED_PACKAGES} PARENT_SCOPE)
     set(INSTALLDATA_DIRS ${INSTALLDATA_DIRS} PARENT_SCOPE)

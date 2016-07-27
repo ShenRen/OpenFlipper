@@ -908,7 +908,7 @@ void SkeletonNodeT<SkeletonType>::getRenderObjects(IRenderer* _renderer,
 
             ro.vertexDecl = &pointInstanceDecl_;
             ro.vertexBuffer = sphere_->getVBO();
-            ro.glDrawArraysInstanced(GL_TRIANGLES, 0, sphere_->getNumTriangles() * 3, numJoints);
+            ro.glDrawInstancedArrays(GL_TRIANGLES, 0, sphere_->getNumTriangles() * 3, numJoints);
 
             _renderer->addRenderObject(&ro);
 
@@ -1051,7 +1051,7 @@ void SkeletonNodeT<SkeletonType>::getRenderObjects(IRenderer* _renderer,
 
             ro.vertexDecl = &boneInstanceDecl_;
             ro.vertexBuffer = cone_->getVBO();
-            ro.glDrawArraysInstanced(GL_TRIANGLES, 0, cone_->getNumTriangles() * 3, numBones);
+            ro.glDrawInstancedArrays(GL_TRIANGLES, 0, cone_->getNumTriangles() * 3, numBones);
 
             ro.shaderDesc.vertexTemplateFile = "Skeleton/instanced_wvit_vs.glsl";
 

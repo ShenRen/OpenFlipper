@@ -119,6 +119,8 @@ file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc" ";\n} /* namespace c
 
 list(APPEND RC_SRC "${CMAKE_CURRENT_BINARY_DIR}/static_plugins.cc")
 
+RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR}/../../ )
+
 if (WIN32)
   # add app icon rc file to windows build
   acg_add_executable (${OPENFLIPPER_PRODUCT_STRING} WIN32 ${CMAKE_CURRENT_SOURCE_DIR}/CoreApp.rc ${uic_targets} ${sources} ${headers} ${moc_targets} ${RC_SRC})
@@ -169,11 +171,18 @@ endif ()
 # where we need to link the library directly into the core to prevent 
 # linker problems
 # ====================================================================================
+
 # Get the property containing the list of all dependencies of the plugins
 # List is created when the plugins are added
 get_property( global_dependency_list GLOBAL PROPERTY GLOBAL_PLUGIN_DEPENDENCIES_LIST)
 
 set(COREAPP_ADDITIONAL_LINK_LIBRARIES "")
+
+# Get additional libraries from plugins that should be linked into the core
+get_property( global_core_app_libraries GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES)
+foreach (_val ${global_core_app_libraries})
+  list(APPEND COREAPP_ADDITIONAL_LINK_LIBRARIES ${_val})
+endforeach ()
 
 # Special Handling for mpi
 list( FIND global_dependency_list "MPI" found)

@@ -80,6 +80,9 @@
 /** This class provides the functionality for all kind of meshes for the framework
  */
 class DLLEXPORT PolyLineObject : public BaseObjectData {
+
+  friend class TypePolyLinePlugin;
+
   public: 
 
     typedef PolyLine PolyLineType;
@@ -129,6 +132,22 @@ class DLLEXPORT PolyLineObject : public BaseObjectData {
     /// return a pointer to the line
     PolyLine* line(); 
 
+  private:
+    /// Pointer to the polyline
+    PolyLine*           line_;
+
+  /** @} */
+
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+
+  protected:
     /** \brief  This function is called to update the object
      *
      * If the object changes, the core will call this function. Normally this will update
@@ -138,9 +157,6 @@ class DLLEXPORT PolyLineObject : public BaseObjectData {
      * \note Do not call this function yourself to avoid unnecessary overhead(the core will call it when it is required)
      */
     virtual void update(UpdateType _type = UPDATE_ALL );
-
-  private:
-    PolyLine*           line_;
     
   /** @} */ 
     

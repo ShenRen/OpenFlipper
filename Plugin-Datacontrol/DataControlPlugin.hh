@@ -110,7 +110,7 @@ class DataControlPlugin : public QObject, BaseInterface, ToolboxInterface, KeyIn
     void copyObject( int _oldId, int& _newId);
     
     // ToolboxInterface
-    void addToolbox( QString _name  , QWidget* _widget, QIcon* _icon );
+    void addToolbox( QString _name  , QWidget* _widget, QIcon* _icon, QWidget *_headerAreaWidget);
 
   private slots :
     // BaseInterface
@@ -255,7 +255,7 @@ class DataControlPlugin : public QObject, BaseInterface, ToolboxInterface, KeyIn
         void slotNodeChanged( ACG::SceneGraph::BaseNode* _node );
         
         /// Hide/Show all light sources if checkbox has been checked
-        void slotShowLightSources( int _state );
+        void slotShowLightSources( bool _state );
         void slotShowLightSources();
 
       private :
@@ -299,6 +299,8 @@ class DataControlPlugin : public QObject, BaseInterface, ToolboxInterface, KeyIn
         QAction* targetAction_;
         QAction* sourceAction_;
         QAction* removeAction_;
+
+        QToolButton *advancedSettingsBtn_;
 
 /** @} */
 

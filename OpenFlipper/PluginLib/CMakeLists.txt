@@ -157,6 +157,7 @@ endif ()
 #=======================================================
 # Create library
 #=======================================================
+RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR}/../../ )
 
 if (QT5_FOUND)
   acg_add_library (OpenFlipperPluginLib SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
@@ -164,12 +165,14 @@ elseif (QT4_FOUND)
   acg_add_library (OpenFlipperPluginLib SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
 endif ()
 
+
 if( ADDITIONAL_PLUGINLIB_COMPILER_FLAGS )
   set_target_properties (
     OpenFlipperPluginLib PROPERTIES
     COMPILE_FLAGS ${ADDITIONAL_PLUGINLIB_COMPILER_FLAGS}
   )
 endif()
+
 
 target_link_libraries (OpenFlipperPluginLib
   ${OPENMESH_LIBRARIES}

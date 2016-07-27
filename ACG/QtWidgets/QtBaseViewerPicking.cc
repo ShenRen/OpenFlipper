@@ -149,14 +149,13 @@ bool QtBaseViewer::pick( SceneGraph::PickTarget _pickTarget,
     if ( hits > 0 )
     {
       GLuint *ptr = &selectionBuffer[0],
-      num_names,
       z,
       min_z=~(0u),
       max_z=0;
 
       for (int i=0; i<hits; ++i)
       {
-        num_names = *ptr++;
+        const GLuint num_names = *ptr++;
         if ( num_names != NAME_STACK_SIZE )
         {
           std::cerr << "QtBaseViewer::pick() : namestack error\n\n";

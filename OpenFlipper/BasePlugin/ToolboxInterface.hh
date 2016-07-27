@@ -111,6 +111,18 @@ class ToolboxInterface {
        * @param _icon   Icon for the toolbox
        */
       virtual void addToolbox( QString  _name  , QWidget* _widget, QIcon* _icon) {};
+
+      /** \brief Add a toolbox widget to the gui with the given name, icon and header area widget.
+       *
+       * This signal adds a toolbox widget to the toolbox area on the right. And sets an icon for it
+       *
+       * @param _name   Visible name of the toolbox
+       * @param _widget Pointer to the toolbox widget
+       * @param _icon   Icon for the toolbox
+       * @param _headerAreaWidget Widget displayed in the toolbox header between
+       *   the title and the detach button.
+       */
+      virtual void addToolbox( QString  _name  , QWidget* _widget, QIcon* _icon, QWidget* _headerAreaWidget) {};
 };
 
 

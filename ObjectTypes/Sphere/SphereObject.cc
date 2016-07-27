@@ -234,5 +234,13 @@ bool SphereObject::pickingEnabled() {
   return sphereNode_->pickingEnabled();
 }
 
+// ===============================================================================
+// Update
+// ===============================================================================
+/// Update the whole Object (Selection,Topology,...)
+void SphereObject::update(UpdateType _type) {
+  BaseObject::update(_type);
+}
+
 //=============================================================================
 

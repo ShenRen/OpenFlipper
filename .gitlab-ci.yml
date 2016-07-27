@@ -41,3 +41,12 @@ clang-c++98-Qt5:
   tags: 
     - Linux
     - MultiThreads
+
+cppcheck:
+  script: "CI/ci-cppcheck.sh"
+  tags:
+    - Linux
+    - MultiThreads
+  artifacts:
+    paths:
+      - cppcheck.log

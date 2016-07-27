@@ -156,6 +156,8 @@ endif ()
 # display results
 acg_print_configure_header (ACG "ACG")
 
+RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR} )
+
 target_link_libraries ( ACG  ${OPENMESH_LIBRARIES}
                              ${QT_LIBRARIES}
                              ${OPENGL_LIBRARIES}

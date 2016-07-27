@@ -1,5 +1,18 @@
 cmake_minimum_required (VERSION 2.8.9)
 
+# ACG Environment default settings
+# This is ugly but currently we need to work around the default installed 5.3 on debian
+if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ )
+  # Default to this install path for QT%_INSTALL_DIR
+  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
+endif()
+
+
+if ( WIN32 )
+  # This is the base directory for windows library search used in the finders we shipp.
+  set(CMAKE_WINDOWS_LIBS_DIR "c:/libs" CACHE STRING "Default Library search dir on windows." )
+endif()
+
 if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
@@ -27,6 +40,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
 
 # include our cmake files
 include (ACGCommon)
+include (MSVCMacros)
 
 acg_get_version (OpenFlipper)
 
@@ -232,6 +246,15 @@ foreach (_localLib ${REMAINING_LOCAL_LIBS})
     add_subdirectory (${CMAKE_SOURCE_DIR}/${_local_lib_dir})
   endif()
 endforeach ()
+
+# Group the external libraries in a folder libs_required
+GROUP_PROJECT(OpenMeshTools libs_required)
+GROUP_PROJECT(OpenMeshCore libs_required)
+GROUP_PROJECT(OpenVolumeMesh libs_required)
+
+if( DOXYGEN_FOUND )
+GROUP_PROJECT(doc-install Documentation)
+endif()
 
 # ========================================================================
 # Core Library Components (Except the Core application)

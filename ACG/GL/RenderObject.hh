@@ -371,10 +371,10 @@ public:
 
   inline void glDrawArrays(GLenum mode, GLint first, GLsizei count)
   {
-    this->glDrawArraysInstanced(mode, first, count, 0);
+    this->glDrawInstancedArrays(mode, first, count, 0);
   }
 
-  inline void glDrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei primcount)
+  inline void glDrawInstancedArrays(GLenum mode, GLint first, GLsizei count, GLsizei primcount)
   {
     indexBuffer = 0;
     sysmemIndexBuffer = 0;

@@ -78,6 +78,8 @@
 
 class DLLEXPORT CoordsysObject : public BaseObjectData {
 
+  friend class TypeCoordsysPlugin;
+
   public: 
     /// constructor
     CoordsysObject();
@@ -154,6 +156,22 @@ class DLLEXPORT CoordsysObject : public BaseObjectData {
     
   /** @} */  
     
+  //===========================================================================
+  /** @name Update handling
+   *
+   *  This is mostly private. Updates have to be triggered via
+   *  emit updatedObject()
+   *
+   * @{ */
+  //===========================================================================
+
+  protected:
+
+    /// Update the whole Object (Selection,Topology,...)
+    virtual void update(UpdateType _type = UPDATE_ALL);
+
+  /** @} */
+
 };
 
 //=============================================================================

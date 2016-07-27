@@ -115,6 +115,8 @@
 #include <OpenFlipper/INIFile/INIFile.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
+#include "../viewModeWidget/viewModeChangeWidget.hh"
+
 /** \brief ViewMode struct
 * This struct contains a ViewMode and its status information such as used widgets,toolbars or context menus
 *
@@ -635,8 +637,8 @@ public:
       /// Show a dialog in which the viewMode can be edited
       void slotViewModeDialog();
 
-      /// Show a dialog in which the viewMode can be changed
-      void slotViewChangeDialog();
+      /// Closes the change view mode popup.
+      void closeChangeViewModePopup();
 
       /// update the content of the specified examiner
       void slotUpdateExaminer(unsigned _id);
@@ -670,7 +672,7 @@ public:
     QSplitter* splitter_;
 
     /// Group box containing Task Switcher Controls
-    QGroupBox *viewModeControlBox_;
+    QWidget *viewModeControlBox_;
     
     /// Textedit at the bottom for log messages
     LoggerWidget* logWidget_;
@@ -714,8 +716,8 @@ public:
     /// Widget for toolBox
     QWidget* toolBoxArea_;
 
-    /// Button to change viewModes
-    QPushButton* vmChangeButton_;
+    /// view mode gear icon at the upper left of the tool box
+    QToolButton *viewModePopupBtn_;
 
     /// Spliter between toplevel objects and toolbox
     QSplitter* toolSplitter_;
@@ -742,6 +744,10 @@ public:
 
     // widget showing the scenegraph
     ACG::QtWidgets::QtSceneGraphDialog* sceneGraphDialog_;
+
+    QWidgetAction *viewModeChangePopupAction_;
+
+    viewModeChangeWidget* modeChangeWidget;
 
   /** @} */
 
@@ -1021,6 +1027,12 @@ public:
     /// Set the snapshot name
     void applicationSnapshotName(QString _name);
 
+    /// Scriptable snapshot method offering full control
+    void viewerSnapshot(QString file_name, bool store_comments,
+            bool comments_visible_only, bool comments_targeted_only,
+            bool store_material_info, int snapshot_width, int snapshot_height,
+            bool snapshot_transparent, bool hide_coord_sys,
+            int snapshot_multisampling, bool store_view);
 
   /** @} */
 

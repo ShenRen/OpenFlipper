@@ -85,7 +85,8 @@ FileOMPlugin::FileOMPlugin() :
         loadVertexColor_(0),
         loadFaceColor_(0),
         loadFaceNormal_(0),
-        loadDefaultButton_(0)
+        loadDefaultButton_(0),
+        trimeshOptions_(0)
 
 {
 }
@@ -189,8 +190,8 @@ int FileOMPlugin::loadObject(QString _filename) {
         // Note: If in non-gui mode, we will never enter this case branch
 
         QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
-        if ((trimeshOptions == TYPEPOLY) ||
-            (trimeshOptions == TYPEASK && !triMesh)) {
+        if ((trimeshOptions_ == TYPEPOLY) ||
+            (trimeshOptions_ == TYPEASK && !triMesh)) {
             
             PolyMeshObject* object(0);
             if(PluginFunctions::getObject( objectId, object )) {
@@ -256,11 +257,11 @@ void FileOMPlugin::handleTrimeshDialog()
 
 
    if (msgBox.clickedButton() == triButton)
-    trimeshOptions =  TYPETRIANGLE ;
+    trimeshOptions_ =  TYPETRIANGLE ;
    else if (msgBox.clickedButton() == polyButton)
-    trimeshOptions = TYPEPOLY ;
+    trimeshOptions_ = TYPEPOLY ;
    else
-     trimeshOptions = TYPEASK;
+     trimeshOptions_ = TYPEASK;
 }
 
 //-----------------------------------------------------------------------------------------------------

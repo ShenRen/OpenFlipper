@@ -719,6 +719,13 @@ public slots:
     /// Take a snapshot from all viewers
     void viewerSnapshot();
 
+    /// Scriptable snapshot method offering full control
+    void viewerSnapshot(QString file_name, bool store_comments,
+            bool comments_visible_only, bool comments_targeted_only,
+            bool store_material_info, int snapshot_width, int snapshot_height,
+            bool snapshot_transparent, bool hide_coord_sys,
+            int snapshot_multisampling, bool store_view);
+
     /// resize the examinerViewer
     void resizeViewers(int _width, int _height );
 
@@ -1014,6 +1021,10 @@ private slots:
 
     /// Add a Toolbox from a plugin or from scripting (with icon)
      void addToolbox(QString _name ,QWidget* _widget, QIcon* _icon);
+
+     /// Add a Toolbox from a plugin or from scripting (with icon)
+      void addToolbox(QString _name ,QWidget* _widget, QIcon* _icon,
+              QWidget* _headerAreaWidget);
 
      /**
       * Get a toolbox.

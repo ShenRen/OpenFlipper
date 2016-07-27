@@ -72,7 +72,7 @@
 namespace ACG {
 namespace SceneGraph {
 
-//== IMPLEMENTATION ========================================================== 
+//== IMPLEMENTATION ==========================================================
 
 static LightSourceHandle* lightSourceHandle = 0;
 
@@ -86,51 +86,51 @@ LightSource::LightSource()
   ambientColor_         = Vec4f(0.1f,0.1f,0.1f,1.f);
   diffuseColor_         = Vec4f(1.f,1.f,1.f,1.f);
   specularColor_        = Vec4f(1.f,1.f,1.f,1.f);
-  
+
   position_             = Vec4f(0.f,0.f,1.f,0.f);
   realPosition_         = Vec4f(0.f,0.f,1.f,0.f);
-  
+
   spotDirection_        = Vec3d(0.0,0.0,-1.0);
   realSpotDirection_    = Vec3d(0.0,0.0,-1.0);
-  
+
   // Holds initial light source position
   // converted to camera coordinates
   initialPosition_      = Vec4f(0.f, 0.f, 0.f, 0.f);
   initialSpotDirection_ = Vec3d(0.0, 0.0, -1.0);
   initialPositionInit_  = false;
-  
+
   spotExponent_         = 0;
   spotCutoff_           = 180;
 
   constantAttenuation_  = 1;
   linearAttenuation_    = 0;
   quadraticAttenuation_ = 0;
-  
+
   brightness_           = 1.0f;
-  
+
   radius_               = 0.1f;
 }
 
-void LightSource::position( Vec3d _pos){ 
+void LightSource::position( Vec3d _pos){
   // Set homogeneous coordinte to 1.0 to get a positional light source
-  position_ = Vec4d( _pos[0],_pos[1],_pos[2],1.0); 
+  position_ = Vec4d( _pos[0],_pos[1],_pos[2],1.0);
 }
 
-Vec3d LightSource::position() {
+Vec3d LightSource::position() const {
   return Vec3d( position_[0], position_[1], position_[2]);
 }
 
-void LightSource::direction( Vec3d _pos) { 
+void LightSource::direction( Vec3d _pos) {
   // Set homogeneous coordinate of position to 0.0 to tell OpenGL
   // that this is a directional light source
-  position_ = Vec4d( _pos[0],_pos[1],_pos[2],0.0); 
+  position_ = Vec4d( _pos[0],_pos[1],_pos[2],0.0);
 }
 
-Vec3d LightSource::direction() {
+Vec3d LightSource::direction() const {
     return Vec3d(position_[0], position_[1], position_[2]);
 }
 
-bool LightSource::directional() {
+bool LightSource::directional() const {
   return ( position_[3] == 0.0  );
 }
 
@@ -140,33 +140,33 @@ void LightSource::enable()
 void LightSource::disable()
 { enabled_ = false; }
 
-bool LightSource::enabled() {
+bool LightSource::enabled() const {
   return enabled_;
 }
 
 void LightSource::spotDirection( Vec3d _pos)
 { spotDirection_ = _pos; }
 
-Vec3d LightSource::spotDirection( ) { 
-  return Vec3d(spotDirection_[0],spotDirection_[1],spotDirection_[2]); 
-}  
+Vec3d LightSource::spotDirection( ) const {
+  return Vec3d(spotDirection_[0],spotDirection_[1],spotDirection_[2]);
+}
 
 void LightSource::ambientColor(  Vec4f _color)
 { ambientColor_ = _color; }
 
-Vec4f LightSource::ambientColor()
+Vec4f LightSource::ambientColor() const
 { return ambientColor_; }
 
 void LightSource::diffuseColor(  Vec4f _color)
 { diffuseColor_ = _color; }
 
-Vec4f LightSource::diffuseColor()
+Vec4f LightSource::diffuseColor() const
 { return diffuseColor_; }
 
 void LightSource::specularColor(  Vec4f _color)
 { specularColor_ = _color; }
 
-Vec4f LightSource::specularColor()
+Vec4f LightSource::specularColor() const
 { return specularColor_; }
 
 void LightSource::setColor(const Vec4f& _ambient, const Vec4f& _diffuse, const Vec4f& _specular) {
@@ -178,15 +178,15 @@ void LightSource::setColor(const Vec4f& _ambient, const Vec4f& _diffuse, const V
 void LightSource::fixedPosition( bool _state)
 { fixedPosition_ = _state; }
 
-bool LightSource::fixedPosition() {
-  return fixedPosition_;   
+bool LightSource::fixedPosition() const {
+  return fixedPosition_;
 }
 
 void LightSource::spotExponent(float _exponent) {
     spotExponent_ = _exponent;
 }
 
-float LightSource::spotExponent() {
+float LightSource::spotExponent() const {
     return spotExponent_;
 }
 
@@ -194,7 +194,7 @@ void LightSource::spotCutoff(float _cutoff) {
     spotCutoff_ = _cutoff;
 }
 
-float LightSource::spotCutoff() {
+float LightSource::spotCutoff() const {
     return spotCutoff_;
 }
 
@@ -202,7 +202,7 @@ void LightSource::constantAttenuation(float _constantAttenuation) {
     constantAttenuation_ = _constantAttenuation;
 }
 
-float LightSource::constantAttenuation() {
+float LightSource::constantAttenuation() const {
     return constantAttenuation_;
 }
 
@@ -210,7 +210,7 @@ void LightSource::linearAttenuation(float _linearAttenuation) {
     linearAttenuation_ = _linearAttenuation;
 }
 
-float LightSource::linearAttenuation() {
+float LightSource::linearAttenuation() const {
     return linearAttenuation_;
 }
 
@@ -218,7 +218,7 @@ void LightSource::quadraticAttenuation(float _quadraticAttenuation) {
     quadraticAttenuation_ = _quadraticAttenuation;
 }
 
-float LightSource::quadraticAttenuation() {
+float LightSource::quadraticAttenuation() const {
     return quadraticAttenuation_;
 }
 
@@ -230,12 +230,12 @@ float LightSource::brightness() const {
     return brightness_;
 }
 
-LightNode::LightNode( BaseNode* _parent, 
-    const std::string&   _name) 
+LightNode::LightNode( BaseNode* _parent,
+    const std::string&   _name)
   : BaseNode(_parent, _name),
     visualize_(false),
     lightId_(GL_INVALID_ENUM) {
-  
+
     if(lightSourceHandle == 0) {
         lightSourceHandle = new LightSourceHandle();
     }
@@ -253,7 +253,7 @@ LightNode::~LightNode() {
   if (cone_)
     delete cone_;
 }
-    
+
 //----------------------------------------------------------------------------
 
 void LightNode::getLightSource(LightSource* _light) const
@@ -271,7 +271,7 @@ void LightNode::getLightSourceViewSpace( LightSource* _light ) const
 //----------------------------------------------------------------------------
 
 void LightNode::boundingBox(ACG::Vec3d& _bbMin, ACG::Vec3d& _bbMax) {
-    
+
     if( visualize_ && !light_.directional() ) {
         ACG::Vec3d r;
         if(light_.fixedPosition())
@@ -288,10 +288,10 @@ void LightNode::boundingBox(ACG::Vec3d& _bbMin, ACG::Vec3d& _bbMax) {
 //----------------------------------------------------------------------------
 
 void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) {
-    
+
     // Visualize light node
     if(visualize_ && !light_.directional()) {
-        
+
         // Get initial camera coords of light if in fixed
         // mode and if they haven't been computed yet
         if(light_.fixedPosition_ && !light_.initialPositionInit_) {
@@ -299,7 +299,7 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
             light_.initialSpotDirection_ = _state.modelview().transform_vector(light_.spotDirection());
             light_.initialPositionInit_ = true;
         }
-        
+
         if(light_.fixedPosition_) {
              light_.realPosition_ = _state.inverse_modelview() * light_.initialPosition_;
              light_.realSpotDirection_ = _state.inverse_modelview().transform_vector(light_.initialSpotDirection_);
@@ -307,16 +307,16 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
              light_.realPosition_ = light_.position_;
              light_.realSpotDirection_ = light_.spotDirection_;
          }
-         
+
          ACG::Vec3f p = ACG::Vec3f(light_.realPosition_[0],
                                    light_.realPosition_[1],
                                    light_.realPosition_[2]);
-         ACG::Vec3d spotDir = light_.realSpotDirection_;          
-         
+         ACG::Vec3d spotDir = light_.realSpotDirection_;
+
          ACG::Vec4f ac = light_.ambientColor();
          ACG::Vec4f dc = light_.diffuseColor();
          ACG::Vec4f sc = light_.specularColor();
-         
+
          // Make light sources appear as bright as possible
          float max = 0;
          for(int i = 0; i < 3; ++i) {
@@ -333,38 +333,38 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
              if(sc[i] > max) max = sc[i];
          }
          sc += ACG::Vec4f(1.0f - max);
-      
+
          // Backup variables
          GLboolean lighting_backup;
- 
+
          // Origin
          _state.push_modelview_matrix();
          // Transform to light origin and direction
          _state.translate(p[0], p[1], p[2]);
-             
+
          // Set lighting
          glGetBooleanv(GL_LIGHTING, &lighting_backup);
          ACG::GLState::enable(GL_LIGHTING);
- 
+
          // Make light directional just for the drawing
          // of itself
          bool backup_directional = light_.directional();
          ACG::Vec3d backup_position = light_.position();
-         
+
          // Get light id
          lightId_ = lightSourceHandle->getLight(this);
-    
+
          // Return if we don't have a valid light source
          if(lightId_ == GL_INVALID_ENUM) {
-             
+
              // Reset all stored attributes before returning
              if(!lighting_backup) ACG::GLState::disable(GL_LIGHTING);
- 
+
              _state.pop_modelview_matrix();
-             
+
              return;
          }
-         
+
          glLightf(lightId_, GL_SPOT_EXPONENT, 0.0f);
          float pos[4];
          pos [0] = backup_position[0];
@@ -373,7 +373,7 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
          pos [3] = 0.0f;
 
          glLightfv(lightId_, GL_POSITION, pos);
-         
+
          // Set colors
          float gl_ac[] = {ac[0], ac[1], ac[2], ac[3]};
          glLightfv(lightId_, GL_AMBIENT, gl_ac);
@@ -381,16 +381,16 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
          glLightfv(lightId_, GL_DIFFUSE, gl_dc);
          float gl_sc[] = {sc[0], sc[1], sc[2], sc[3]};
          glLightfv(lightId_, GL_SPECULAR, gl_sc);
-         
+
          ACG::GLState::enable(lightId_);
-         
+
          sphere_->draw(_state, light_.radius());
- 
+
          // Visualize spot cone (or direction)
          if(light_.spotCutoff() < 180.0f) {
              // Note: if the cutoff angle is 180, the light source
              // is a point light emitting light into all directions equally
-             
+
              // Rotate into light direction
              ACG::Vec3d z = ACG::Vec3d(0.0f, 0.0f, 1.0f);
              ACG::Vec3d spot = spotDir;
@@ -398,7 +398,7 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
              angle = angle*360/(2*M_PI);
              ACG::Vec3d rA = z % spot;
              _state.rotate(angle, rA[0], rA[1], rA[2]);
- 
+
              // Inverse normal orientation
              cone_->setNormalOrientation(ACG::GLPrimitive::INSIDE);
              cone_->setBottomRadius(light_.radius()/6.0f);
@@ -410,19 +410,19 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
              cone_->setTopRadius(0.0f);
              cone_->draw(_state, light_.radius());
          }
-         
+
          // Free light id
          lightSourceHandle->removeLight(this);
- 
+
          // Undo state changes
-         
+
          if(!backup_directional) {
              light_.position(backup_position);
          }
- 
+
          // Lighting
          if(!lighting_backup) ACG::GLState::disable(GL_LIGHTING);
- 
+
          _state.pop_modelview_matrix();
      }
 
@@ -431,13 +431,13 @@ void LightNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/) 
 void LightNode::pick(GLState& _state, PickTarget _target) {
 
     GLenum prev_depth = _state.depthFunc();
-    
+
     if (_target == PICK_FACE ||
        _target == PICK_ANYTHING) {
-        
+
         // Visualize light node
         if(visualize_ && !light_.directional()) {
-            
+
             // Get initial camera coords of light if in fixed
             // mode and if they haven't been computed yet
             if(light_.fixedPosition_ && !light_.initialPositionInit_) {
@@ -445,7 +445,7 @@ void LightNode::pick(GLState& _state, PickTarget _target) {
                 light_.initialSpotDirection_ = _state.modelview().transform_vector(light_.spotDirection());
                 light_.initialPositionInit_ = true;
             }
-            
+
             if(light_.fixedPosition_) {
                  light_.realPosition_ = _state.inverse_modelview() * light_.initialPosition_;
                  light_.realSpotDirection_ = _state.inverse_modelview().transform_vector(light_.initialSpotDirection_);
@@ -453,32 +453,32 @@ void LightNode::pick(GLState& _state, PickTarget _target) {
                  light_.realPosition_ = light_.position_;
                  light_.realSpotDirection_ = light_.spotDirection_;
              }
-             
+
              // Enable depth test but store original status
              glPushAttrib(GL_DEPTH_BUFFER_BIT);
              ACG::GLState::enable(GL_DEPTH_TEST);
              ACG::GLState::depthFunc(GL_LEQUAL);
-             
+
              _state.pick_set_maximum(1);
              _state.pick_set_name(0);
-             
+
              ACG::Vec3f p = ACG::Vec3f(light_.realPosition_[0],
                                        light_.realPosition_[1],
                                        light_.realPosition_[2]);
-             ACG::Vec3d spotDir = light_.realSpotDirection_;          
-          
+             ACG::Vec3d spotDir = light_.realSpotDirection_;
+
              // Origin
              _state.push_modelview_matrix();
              // Transform to light origin and direction
              _state.translate(p[0], p[1], p[2]);
-                 
+
              sphere_->draw(_state, light_.radius());
 
              // Visualize spot cone (or direction)
              if(light_.spotCutoff() < 180.0f) {
                  // Note: if the cutoff angle is 180, the light source
                  // is a point light emitting light into all directions equally
-                 
+
                  // Rotate into light direction
                  ACG::Vec3d z = ACG::Vec3d(0.0f, 0.0f, 1.0f);
                  ACG::Vec3d spot = spotDir;
@@ -499,16 +499,16 @@ void LightNode::pick(GLState& _state, PickTarget _target) {
              }
 
              _state.pop_modelview_matrix();
-             
+
              ACG::GLState::depthFunc(prev_depth);
-         }  
+         }
     }
 }
 
-void LightNode::enter(GLState& _state, const DrawModes::DrawMode& /* _drawmode */ ) 
+void LightNode::enter(GLState& _state, const DrawModes::DrawMode& /* _drawmode */ )
 {
     if(visualize_) return;
-    
+
     // Get initial camera coords of light if in fixed
     // mode and if they haven't been computed yet
     if(light_.fixedPosition_ && !light_.initialPositionInit_) {
@@ -516,16 +516,16 @@ void LightNode::enter(GLState& _state, const DrawModes::DrawMode& /* _drawmode *
         light_.initialSpotDirection_ = _state.modelview().transform_vector(light_.spotDirection());
         light_.initialPositionInit_ = true;
     }
-    
+
     // Get light id
     lightId_ = lightSourceHandle->getLight(this);
-    
+
     // Return if we don't have a valid light source
     if(lightId_ == GL_INVALID_ENUM) return;
-    
+
     /// transfer GL-preferences to lightSave_
     getParameters(lightId_, lightSave_);
-  
+
     // save old light
     lightSave_.enabled_ = glIsEnabled(lightId_);
 
@@ -560,10 +560,10 @@ void LightNode::enter(GLState& _state, const DrawModes::DrawMode& /* _drawmode *
 void LightNode::leave(GLState& /* _state */ , const DrawModes::DrawMode& /* _drawmode*/ )
 {
     if(visualize_) return;
-    
+
     // Return if we don't have a valid light source
     if(lightId_ == GL_INVALID_ENUM) return;
-      
+
     // restore old enabled light
     if(lightSave_.enabled_) {
         ACG::GLState::enable(lightId_);
@@ -572,7 +572,7 @@ void LightNode::leave(GLState& /* _state */ , const DrawModes::DrawMode& /* _dra
     else {
         ACG::GLState::disable(lightId_);
     }
-    
+
     // Free light id
     lightSourceHandle->removeLight(this);
 }
@@ -584,7 +584,7 @@ void LightNode::setParameters(GLenum _index, LightSource& _light)
 
   // Multiply colors by brightness
   Vec4f& a = _light.ambientColor_;
-  GLfloat ambient[4] = {a[0]*_light.brightness_, 
+  GLfloat ambient[4] = {a[0]*_light.brightness_,
                         a[1]*_light.brightness_,
                         a[2]*_light.brightness_,
                         a[3]*_light.brightness_};
@@ -594,32 +594,35 @@ void LightNode::setParameters(GLenum _index, LightSource& _light)
                         d[1]*_light.brightness_,
                         d[2]*_light.brightness_,
                         d[3]*_light.brightness_};
-                        
+
   Vec4f& s = _light.specularColor_;
   GLfloat specular[4] = {s[0]*_light.brightness_,
                          s[1]*_light.brightness_,
                          s[2]*_light.brightness_,
                          s[3]*_light.brightness_};
-  
+
   // set preferences of _light for GL_LIGHT#_index
   glLightfv(_index, GL_AMBIENT,  ambient);
   glLightfv(_index, GL_DIFFUSE,  diffuse);
   glLightfv(_index, GL_SPECULAR, specular);
 
   Vec3d& sd = _light.realSpotDirection_;
-  GLfloat dir[3] = {(float)sd[0], (float)sd[1], (float)sd[2]};
-  
+
   bool directional = _light.directional();
-  
+
   Vec4f& p = _light.realPosition_;
   GLfloat realPos[4] = {(float)p[0], (float)p[1], (float)p[2], (directional ? 0.0f : 1.0f)};
-  
+
   glLightfv(_index, GL_POSITION,  realPos);
-  
-  if(!directional) glLightfv(_index, GL_SPOT_DIRECTION,  dir);
+
+  if(!directional) {
+    GLfloat dir[3] = {(float)sd[0], (float)sd[1], (float)sd[2]};
+    glLightfv(_index, GL_SPOT_DIRECTION,  dir);
+  }
+
   if(!directional) glLightf(_index, GL_SPOT_EXPONENT,  _light.spotExponent_);
   if(!directional) glLightf(_index, GL_SPOT_CUTOFF,  _light.spotCutoff_);
-  
+
   glLightf(_index, GL_CONSTANT_ATTENUATION,  _light.constantAttenuation_);
   glLightf(_index, GL_LINEAR_ATTENUATION,  _light.linearAttenuation_);
   glLightf(_index, GL_QUADRATIC_ATTENUATION,  _light.quadraticAttenuation_);
@@ -662,7 +665,7 @@ void LightNode::getRenderObjects( IRenderer* _renderer, GLState& _state , const 
   light.diffuse = V4toV3(transformedLight_.diffuseColor());
   light.ambient = V4toV3(transformedLight_.ambientColor());
   light.specular = V4toV3(transformedLight_.specularColor());
-  
+
   light.pos = V4toV3(transformedLight_.position());
   light.dir = V4toV3(transformedLight_.direction());
 

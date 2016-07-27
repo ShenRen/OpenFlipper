@@ -56,10 +56,11 @@
 #include "ui_viewModeChange.hh"
 #include <QStringList>
 #include <QVector>
+#include <QWidgetAction>
 
 struct ViewMode;
 
-class viewModeChangeWidget : public QDialog, public Ui::ViewModeChangeDialog
+class viewModeChangeWidget : public QWidget, public Ui::ViewModeChangeDialog
 {
   Q_OBJECT
   private:
@@ -68,8 +69,17 @@ class viewModeChangeWidget : public QDialog, public Ui::ViewModeChangeDialog
   public:
     viewModeChangeWidget(const QVector< ViewMode* >& _modes, QWidget *parent = 0 );
     
-    void show(QString _lastMode);
+    void update(QString _lastMode);
+
+  public slots:
+    void slot_update();
     
+  signals:
+    void wantClose();
+
+  protected:
+    void showEvent(QShowEvent *event);
+
   private slots:
 
     void slotModeClicked(QModelIndex _id);

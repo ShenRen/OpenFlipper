@@ -169,7 +169,7 @@ class FileOMPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInter
     QCheckBox*   loadFaceColor_;
     QCheckBox*   loadFaceNormal_;
     QPushButton* loadDefaultButton_;
-    int trimeshOptions;
+    int trimeshOptions_;
 };
 
 #endif //FILEOMPLUGIN_HH

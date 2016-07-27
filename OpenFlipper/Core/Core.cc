@@ -662,6 +662,11 @@ Core::init() {
       coreWidget_->toolBox_->restoreState (windowStates);
       windowStates.endGroup ();
 
+
+      // Restore if window was maximized or not
+      if ( windowStates.value("Core/Window/WindowState",false).toBool() )
+        coreWidget_->setWindowState( coreWidget_->windowState() | Qt::WindowMaximized  );
+
     } else {
 
       coreWidget_->show();
@@ -1132,6 +1137,7 @@ Core::writeOnExit() {
 
     windowStates.setValue("Core/Window/State", coreWidget_->saveState ());
     windowStates.setValue("Core/Window/Geometry", coreWidget_->saveGeometry ());
+    windowStates.setValue("Core/Window/WindowState", coreWidget_->isMaximized() );
 
     windowStates.setValue ("Core/ToolSplitter", coreWidget_->toolSplitter_->saveState ());
     windowStates.setValue ("Core/LogSplitter", coreWidget_->splitter_->saveState ());
@@ -1455,6 +1461,21 @@ void Core::viewerSnapshot(){
   if ( OpenFlipper::Options::gui() )
     coreWidget_->viewerSnapshot();
 }
+
+void Core::viewerSnapshot(QString file_name, bool store_comments,
+        bool comments_visible_only, bool comments_targeted_only,
+        bool store_material_info, int snapshot_width, int snapshot_height,
+        bool snapshot_transparent, bool hide_coord_sys,
+        int snapshot_multisampling, bool store_view) {
+
+    if ( OpenFlipper::Options::gui() )
+        coreWidget_->viewerSnapshot(file_name, store_comments,
+                comments_visible_only, comments_targeted_only,
+                store_material_info, snapshot_width, snapshot_height,
+                snapshot_transparent, hide_coord_sys, snapshot_multisampling,
+                store_view);
+}
+
 
 void Core::resizeViewers(int _width, int _height ){
   if ( OpenFlipper::Options::gui() ){

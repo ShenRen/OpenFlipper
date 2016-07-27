@@ -104,6 +104,9 @@ typedef ACG::SceneGraph::StencilRefNode                   StencilRefNode;
  */
 class DLLEXPORT BaseObjectData : public BaseObject
 {
+
+  friend class Core;
+
   Q_OBJECT
   
   public:
@@ -282,18 +285,18 @@ class DLLEXPORT BaseObjectData : public BaseObject
   /** @} */
 
   //===========================================================================
-  /** @name Content
+  /** @name Update handling
    * @{ */
   //===========================================================================
 
-  public:
+  protected:
     /** \brief  This function is called to update the object
     *
     * If the object changes, the core will call this function. Normally this will update
     * the corresponding scenegraph nodes or trigger other data handling which has to be done
     * when the object changes.
     *
-    * \note Do not call this function yourself to avoid unnecessary overhead(the core will call it when it is required)
+    * \note Do not call this function yourself to avoid unnecessary overhead(the core will call it via the type plugins when it is required)
     */
     virtual void update(UpdateType _type = UPDATE_ALL );
 

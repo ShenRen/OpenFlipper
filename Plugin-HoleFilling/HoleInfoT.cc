@@ -53,6 +53,8 @@
 
 #include <MeshTools/MeshSelectionT.hh>
 
+#include <algorithm>
+
 /// Constructor
 template< class MeshT >
 HoleInfo< MeshT >::HoleInfo(MeshT * _mesh)
@@ -235,6 +237,61 @@ void HoleInfo< MeshT >::selectHole(int _index)
   }
 
 }
+
+template< class MeshT >
+void HoleInfo< MeshT >::getHolePostitionInfo(const int _index, typename MeshT::Normal& _holeNormal, typename MeshT::Point& _holeCenter) const
+{
+
+  _holeCenter = typename MeshT::Point(0.0,0.0,0.0);
+  _holeNormal = typename MeshT::Normal(0.0,0.0,0.0);
+
+  // Center of gravity of hole and an average normal at the hole boundary
+  for ( size_t i = 0 ; i <  holes_[_index].size() ; ++i ) {
+    const typename MeshT::HalfedgeHandle he = mesh_->halfedge_handle(holes_[_index][i],0);
+    const typename MeshT::VertexHandle vh_to = mesh_->to_vertex_handle(he);
+
+    _holeCenter += mesh_->point(vh_to);
+    _holeNormal += mesh_->normal(vh_to);
+  }
+
+  _holeCenter /= typename MeshT::Scalar(holes_[_index].size());
+  _holeNormal /= typename MeshT::Scalar(holes_[_index].size());
+  _holeNormal.normalize();
+
+}
+
+template< class MeshT >
+void HoleInfo< MeshT >::getHoleInfo(const unsigned int _index, size_t& _edges, typename MeshT::Scalar& _diagonal, typename MeshT::Scalar& _boundaryLength) const
+{
+
+  if ( _index >= holes_.size() ) {
+    std::cerr << "Invalid hole index " << _index << std::endl;
+    return;
+  }
+
+  _boundaryLength = 0.0;
+
+  typename MeshT::Point minCoord = typename MeshT::Point(std::numeric_limits<typename MeshT::Scalar>::max(),std::numeric_limits<typename MeshT::Scalar>::max(),std::numeric_limits<typename MeshT::Scalar>::max());
+  typename MeshT::Point maxCoord = typename MeshT::Point(-std::numeric_limits<typename MeshT::Scalar>::max(),-std::numeric_limits<typename MeshT::Scalar>::max(),-std::numeric_limits<typename MeshT::Scalar>::max());
+
+  for (size_t i = 0 ; i < holes_[_index].size() ; ++i) {
+    _boundaryLength += mesh_->calc_edge_length(holes_[_index][i]);
+
+    typename MeshT::Point pos = mesh_->point(mesh_->from_vertex_handle(mesh_->halfedge_handle(holes_[_index][i],0)));
+    minCoord[0] = std::min(minCoord[0],pos[0]);
+    minCoord[1] = std::min(minCoord[1],pos[1]);
+    minCoord[2] = std::min(minCoord[2],pos[2]);
+
+    maxCoord[0] = std::max(maxCoord[0],pos[0]);
+    maxCoord[1] = std::max(maxCoord[1],pos[1]);
+    maxCoord[2] = std::max(maxCoord[2],pos[2]);
+  }
+
+  _edges = holes_[_index].size();
+  _diagonal = (maxCoord - minCoord).length();
+
+}
+
 
 /// get the holes vector
 template< class MeshT >

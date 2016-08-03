@@ -118,7 +118,7 @@
 
 #ifdef WIN32
 
-  void attachExistingConsole()
+  void attachConsole()
   {
 	  //try to attach the console of the parent process
 	  if (AttachConsole(-1))
@@ -429,7 +429,7 @@ int main(int argc, char **argv)
     }
 #ifdef WIN32
 #ifndef WIN_GET_DEBUG_CONSOLE //only attach to parent console if no separate debug console is requested
-	attachExistingConsole();
+	attachConsole();
 #endif
 #endif
 

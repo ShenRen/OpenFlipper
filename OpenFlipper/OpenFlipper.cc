@@ -128,6 +128,17 @@
 		  freopen("CONOUT$", "w", stdout);
 		  freopen("CONOUT$", "w", stderr);
 	  }
+	  else
+	  {
+		  //create and attach a new console if needed
+		  if (OpenFlipper::Options::logToConsole())
+		  {
+			  AllocConsole();
+			  freopen("CONIN$", "r", stdin);
+			  freopen("CONOUT$", "w", stdout);
+			  freopen("CONOUT$", "w", stderr);
+		  }
+	  }
   }
 #ifdef WIN_GET_DEBUG_CONSOLE
     void getConsole() {
@@ -383,7 +394,6 @@ int main(int argc, char **argv)
   OpenFlipper::Options::windowTitle(TOSTRING(PRODUCT_STRING)" v" + OpenFlipper::Options::coreVersion());
 
 #ifdef WIN32
-  attachExistingConsole();
 #ifdef WIN_GET_DEBUG_CONSOLE
   getConsole();
 #endif
@@ -417,6 +427,11 @@ int main(int argc, char **argv)
       delete w;
       return 1;
     }
+#ifdef WIN32
+#ifndef WIN_GET_DEBUG_CONSOLE //only attach to parent console if no separate debug console is requested
+	attachExistingConsole();
+#endif
+#endif
 
     QString tLang = OpenFlipperSettings().value("Core/Language/Translation","en_US").toString();
 

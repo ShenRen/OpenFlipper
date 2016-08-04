@@ -171,15 +171,21 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
 
 
   glViewport (l, b, w, h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
 
-  glMultMatrixd(projection.get_raw_data());
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixd(modelview.get_raw_data());
-  ACG::GLState::disable(GL_LIGHTING);
+  if (properties_.glState().compatibilityProfile())
+  {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glMultMatrixd(projection.get_raw_data());
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixd(modelview.get_raw_data());
+    ACG::GLState::disable(GL_LIGHTING);
+  }
+
   ACG::GLState::disable(GL_BLEND);
   ACG::GLState::enable(GL_DEPTH_TEST);
+  glClearColor(0, 0, 0, 0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   properties_.glState().pick_init (true);
 
@@ -188,11 +194,14 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
   ACG::SceneGraph::traverse_multipass(sceneGraphRoot_, action,properties_.glState() );
 
   // restore GL state
-  glMatrixMode( GL_PROJECTION );
-  glLoadMatrixd(projection.get_raw_data());
-  glMatrixMode( GL_MODELVIEW );
-  glLoadMatrixd(modelview.get_raw_data());
-  ACG::GLState::enable(GL_LIGHTING);
+  if (properties_.glState().compatibilityProfile())
+  {
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixd(projection.get_raw_data());
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixd(modelview.get_raw_data());
+    ACG::GLState::enable(GL_LIGHTING);
+  }
 
   properties_.glState().set_clear_color (clear_color);
 
@@ -240,7 +249,7 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
   }
 
   // read from framebuffer
-  glReadPixels (x, y, pW, pH, GL_RGBA, GL_UNSIGNED_BYTE, pixels); // glReadPixels not available in core profile
+  glReadPixels (x, y, pW, pH, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
   glReadPixels (x, y, pW, pH, GL_DEPTH_COMPONENT, GL_FLOAT, depths);
 
   // unbind pick cache

@@ -415,6 +415,14 @@ QString helpDirStr();
   DLLEXPORT
   bool gui( );
 
+  /// Store opengl core profile setting
+  DLLEXPORT
+  void coreProfile(bool _enableCoreProfile);
+
+  /// get opengl core profile setting
+  DLLEXPORT
+  bool coreProfile( );
+
   /// Store stereo support setting
   DLLEXPORT
   void stereo( bool _stereo );

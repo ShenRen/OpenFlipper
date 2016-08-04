@@ -136,6 +136,9 @@ static bool nogui_ = false;
 /// Store the stereo support
 static bool stereo_ = true;
 
+/// Use opengl core profile mode?
+static bool coreProfile_ = false;
+
 /// Store the opengl stereo support
 static bool glStereo_ = true;
 
@@ -372,6 +375,16 @@ void stereo( bool _stereo ) {
 /// get current stereo setting
 bool stereo( ) {
   return stereo_;
+}
+
+/// Store opengl core profile setting
+void coreProfile( bool _enableCoreProfile ) {
+  coreProfile_ = _enableCoreProfile;
+}
+
+/// get opengl core profile setting
+bool coreProfile( ) {
+  return coreProfile_;
 }
 
 /// Store opengl stereo mode setting

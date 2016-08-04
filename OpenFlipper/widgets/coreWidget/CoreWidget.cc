@@ -254,19 +254,21 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   // force the compatibility profile since OpenFlipper does not work with the
   // Core profile
 
-
+  if (OpenFlipper::Options::coreProfile()) {
 #if QT_VERSION >= 0x050000
-  // request the highest OpenGL version
-  // QT 5 should gracefully provide the next highest available version
-  format.setVersion(4,0);
-  format.setProfile(OFGLFormat::CoreProfile);
-  bool useCompatibilityProfile = true;
+    // request the highest OpenGL version
+    // QT 5 should gracefully provide the next highest available version
+    format.setVersion(4, 0);
+    format.setProfile(OFGLFormat::CoreProfile);
 #else
-  format.setProfile(OFGLFormat::CompatibilityProfile);
-  bool useCompatibilityProfile = false;
+    format.setProfile(OFGLFormat::CompatibilityProfile);
 #endif
+  }
+  else 
+    format.setProfile(OFGLFormat::CompatibilityProfile);
+  
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 4))
   glWidget_ = new OFGLWidget();
   glWidget_->setFormat(format);
   glWidget_->makeCurrent();

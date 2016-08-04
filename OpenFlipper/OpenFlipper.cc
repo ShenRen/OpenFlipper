@@ -213,7 +213,7 @@ void segfaultHandling (int) {
 
 enum {OPT_HELP , OPT_STEREO, OPT_BATCH ,OPT_CONSOLE_LOG , OPT_DEBUGGING, OPT_FULLSCREEN,
       OPT_HIDDDEN_LOGGER , OPT_NOSPLASH ,OPT_HIDDDEN_TOOLBOX , OPT_LOAD_POLYMESHES,
-      OPT_REMOTE, OPT_REMOTE_PORT};
+      OPT_REMOTE, OPT_REMOTE_PORT, OPT_CORE_PROFILE};
 
 CSimpleOpt::SOption g_rgOptions[] = {
     { OPT_DEBUGGING        , (char*) "--debug"          , SO_NONE    },
@@ -231,6 +231,7 @@ CSimpleOpt::SOption g_rgOptions[] = {
     { OPT_LOAD_POLYMESHES  , (char*) "-p"               , SO_NONE    },
     { OPT_REMOTE           , (char*) "--remote-control" , SO_NONE    },
     { OPT_REMOTE_PORT      , (char*) "--remote-port"    , SO_REQ_SEP },
+    { OPT_CORE_PROFILE     , (char*) "--core-profile"   , SO_NONE },
     SO_END_OF_OPTIONS                       // END
 };
 
@@ -250,6 +251,7 @@ void showHelp() {
   std::cerr << " --no-splash \t: Disable splash screen" << std::endl;
 
   std::cerr << " --disable-stereo \t: Disable Stereo Mode" << std::endl;
+  std::cerr << " --core-profile \t: OpenGL Core Profile Mode" << std::endl;
   std::cerr << std::endl;
 
   std::cerr << "Log options:" << std::endl;
@@ -319,6 +321,9 @@ bool parseCommandLineOptions(CSimpleOpt& args){
           std::cerr << "Got option : " << port.toStdString() << std::endl;
           OpenFlipper::Options::remoteControl(port.toInt());
           break;
+        case OPT_CORE_PROFILE:
+          OpenFlipper::Options::coreProfile(true);
+          break;
         case OPT_HELP:
           showHelp();
           return 0;
@@ -386,28 +391,26 @@ int main(int argc, char **argv)
     QApplication app(argc,argv);
 
 #if QT_VERSION >= 0x050500
+    
+    QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+    format.setVersion(4, 4);
+    QSurfaceFormat::OpenGLContextProfile profile = OpenFlipper::Options::coreProfile() ? QSurfaceFormat::CoreProfile : QSurfaceFormat::CompatibilityProfile;
+    format.setProfile(profile);
 
-  QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+    if (OpenFlipper::Options::debug())
+      format.setOption(QSurfaceFormat::DebugContext);
 
-  format.setVersion(4, 3);
+    QSurfaceFormat::setDefaultFormat(format);
 
-  format.setProfile(QSurfaceFormat::CoreProfile);
+    QScreen *screen = app.primaryScreen();
 
-  QSurfaceFormat::setDefaultFormat(format);
+    QOffscreenSurface *surface = new QOffscreenSurface();
+    surface->create();
 
-  QScreen *screen = app.primaryScreen();
-
-  QOffscreenSurface *surface = new QOffscreenSurface();
-
-  surface->create();
-
-  QOpenGLContext context;
-
-  context.setScreen(screen);
-
-  context.create();
-
-  context.makeCurrent(surface);
+    QOpenGLContext context;
+    context.setScreen(screen);
+    context.create();
+    context.makeCurrent(surface);
 
 #endif
 

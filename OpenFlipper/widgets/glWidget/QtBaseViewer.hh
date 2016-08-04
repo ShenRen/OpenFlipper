@@ -83,6 +83,10 @@
 #include <QMouseEvent>
 #include <QTime>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+#include <QOpenGLDebugLogger>
+#endif
+
 //== FORWARDDECLARATIONS ======================================================
 
 
@@ -533,6 +537,11 @@ protected slots:
   virtual void cleanupEventFilter()
   { removeEventFilter( sender());}
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+  /// process opengl debug messages
+  void processGLDebugMessage(const QOpenGLDebugMessage& msg);
+#endif
+
 //----------------------------------------------------------- private functions
 private:
 
@@ -607,6 +616,12 @@ private:
 
   // Used to calculate the time passed between redraws
   QTime redrawTime_;
+
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+  // Get additional debug info from OpenGL
+  QOpenGLDebugLogger* glDebugLogger_;
+#endif
 
   //===========================================================================
   /** @name Wheels

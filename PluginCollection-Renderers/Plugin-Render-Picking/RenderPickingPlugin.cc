@@ -158,18 +158,27 @@ void RenderPickingPlugin::supportedDrawModes(ACG::SceneGraph::DrawModes::DrawMod
 
 void RenderPickingPlugin::render(ACG::GLState* _glState, Viewer::ViewerProperties& _properties) {
 
-  ACG::GLState::disable(GL_LIGHTING);
+
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glDepthMask(GL_TRUE);
+
+  if (_glState->compatibilityProfile())
+    ACG::GLState::disable(GL_LIGHTING);
+
   ACG::GLState::disable(GL_BLEND);
-  glClear(GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // do the picking
   _glState->pick_init (true);
   ACG::SceneGraph::PickAction action(*_glState, pickRendererMode_, _properties.drawMode());
   ACG::SceneGraph::traverse_multipass( PluginFunctions::getSceneGraphRootNode() , action,*_glState);
 
-  ACG::GLState::enable(GL_LIGHTING);
-  ACG::GLState::enable(GL_BLEND);
+  if (_glState->compatibilityProfile())
+    ACG::GLState::enable(GL_LIGHTING);
 
+  ACG::GLState::enable(GL_BLEND);
 }
 
 QString RenderPickingPlugin::checkOpenGL() {

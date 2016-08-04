@@ -394,11 +394,17 @@ int main(int argc, char **argv)
     
     QSurfaceFormat format = QSurfaceFormat::defaultFormat();
     format.setVersion(4, 4);
-    QSurfaceFormat::OpenGLContextProfile profile = OpenFlipper::Options::coreProfile() ? QSurfaceFormat::CoreProfile : QSurfaceFormat::CompatibilityProfile;
-    format.setProfile(profile);
+
+    if (OpenFlipper::Options::coreProfile())
+      format.setProfile(QSurfaceFormat::CoreProfile);
+    else {
+      format.setProfile(QSurfaceFormat::CompatibilityProfile);
+      format.setOption(QSurfaceFormat::DeprecatedFunctions);
+    }
 
     if (OpenFlipper::Options::debug())
-      format.setOption(QSurfaceFormat::DebugContext);
+      format.setOption(format.options() | QSurfaceFormat::DebugContext);
+
 
     QSurfaceFormat::setDefaultFormat(format);
 

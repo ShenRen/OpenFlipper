@@ -251,9 +251,6 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
 
   delete test;
 
-  // force the compatibility profile since OpenFlipper does not work with the
-  // Core profile
-
   if (OpenFlipper::Options::coreProfile()) {
 #if QT_VERSION >= 0x050000
     // request the highest OpenGL version
@@ -262,10 +259,16 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
     format.setProfile(OFGLFormat::CoreProfile);
 #else
     format.setProfile(OFGLFormat::CompatibilityProfile);
+    format.setOption(QSurfaceFormat::DeprecatedFunctions);
 #endif
   }
-  else 
-    format.setProfile(OFGLFormat::CompatibilityProfile);
+  else {
+    format.setProfile(QSurfaceFormat::CompatibilityProfile);
+    format.setOption(QSurfaceFormat::DeprecatedFunctions);
+  }
+
+  if (OpenFlipper::Options::debug())
+    format.setOption(format.options() | QSurfaceFormat::DebugContext);
   
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 4))

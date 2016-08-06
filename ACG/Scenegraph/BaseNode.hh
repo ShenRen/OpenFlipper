@@ -193,28 +193,39 @@ public:
    */
   virtual void draw(GLState& /* _state */, const DrawModes::DrawMode& /* _drawMode */)  {}
 
-  /** \brief Deferred draw call with shader based renderer.
-   *
-   * The renderer calls this function to collect the geometry that should be rendered from the nodes.
-   *
-   * Add any renderable geometry to the renderer via _renderer->addRenderObject()
-   *
-   * The material is fetched from the last active material node and may be used to setup Renderobjects,
-   * but may as well be ignored.
-   *
-   * \note You should not draw anything yourself in this function.
-   *
-   * @param _renderer The renderer which will be used. Add your geometry into this class
-   * @param _state    The current GL State when this object is called
-   * @param _drawMode The active draw mode
-   * @param _mat      Current material
-   */
-  virtual void getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawMode&  _drawMode , const Material* _mat)  {}
-
   /** The leave function is used to restore GL states the have been changed.
       This function must restore the status before enter() ! 
   */
   virtual void leave(GLState& /* _state */, const DrawModes::DrawMode& /* _drawMode */) {}
+
+  /** This function is called when traversing the scene graph and
+  arriving at this node in render objects mode. It can be used to 
+  attach modifiers to a renderer that can modify any render object parameters.
+  */
+  virtual void attachRenderObjectModifiers(IRenderer* _renderer, GLState& /*_state */, const DrawModes::DrawMode& /*_drawMode*/) {}
+
+  /** \brief Deferred draw call with shader based renderer.
+  *
+  * The renderer calls this function to collect the geometry that should be rendered from the nodes.
+  *
+  * Add any renderable geometry to the renderer via _renderer->addRenderObject()
+  *
+  * The material is fetched from the last active material node and may be used to setup Renderobjects,
+  * but may as well be ignored.
+  *
+  * \note You should not draw anything yourself in this function.
+  *
+  * @param _renderer The renderer which will be used. Add your geometry into this class
+  * @param _state    The current GL State when this object is called
+  * @param _drawMode The active draw mode
+  * @param _mat      Current material
+  */
+  virtual void getRenderObjects(IRenderer* _renderer, GLState&  _state, const DrawModes::DrawMode&  _drawMode, const Material* _mat)  {}
+
+  /** The detachRenderObjectModifiers function is used to detach modifiers from the renderer.
+  This function must restore the status before enter() !
+  */
+  virtual void detachRenderObjectModifiers(IRenderer* _renderer, GLState& /* _state */, const DrawModes::DrawMode& /* _drawMode */) {}
 
   /** This function is called when traversing the scene graph during picking
       and arriving at this node. It can be used to store GL states that

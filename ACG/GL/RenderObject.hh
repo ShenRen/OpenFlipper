@@ -255,6 +255,12 @@ struct ACGDLLEXPORT RenderObject
 
   Vec2f depthRange; //!< glDepthRange: (znear, zmax)
 
+
+  // enable/disable clip planes
+  //  bit i decides whether the vertex shader output gl_ClipDistance[i] is enabled or disabled
+  //  default: all zero (disabled)
+  GLuint clipDistanceMask;
+
   // ---------------------------
   // default tessellation lod, if only a tess-eval, but no tess-control shader is specified
   // this is ignored otherwise
@@ -533,7 +539,7 @@ private:
 class ACGDLLEXPORT RenderObjectModifier
 {
 public:
-  RenderObjectModifier() {}
+  RenderObjectModifier(const std::string& _name = "") : name_(_name) {}
   virtual ~RenderObjectModifier() {}
 
   /** \brief apply the modifier
@@ -543,6 +549,11 @@ public:
    */
   virtual void apply(RenderObject* _obj) = 0;
 
+  /// Get name of the modifier
+  const std::string& name() const { return name_; }
+
+private:
+  std::string name_;
 };
 
 

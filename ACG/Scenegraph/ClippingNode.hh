@@ -64,6 +64,8 @@
 //== INCLUDES =================================================================
 
 #include "BaseNode.hh"
+
+#include <ACG/GL/RenderObject.hh>
 #include <string>
 #include <fstream>
 
@@ -92,7 +94,8 @@ public:
 		const std::string&  _name = "<ClippingNode>" )
     : BaseNode(_parent, _name),
       slice_width_(0),
-      offset_(0)
+      offset_(0),
+      mod_(this)
   {
     plane0_[0] = 0.0;
     plane0_[1] = 0.0;
@@ -128,6 +131,12 @@ public:
   /// restores original texture (or no-texture)
   void leave(GLState& _state, const DrawModes::DrawMode& _drawmode);
 
+  /// add clipping modifier
+  void attachRenderObjectModifiers(IRenderer* _renderer, GLState&, const DrawModes::DrawMode&);
+
+  /// remove clipping modifier
+  void detachRenderObjectModifiers(IRenderer* _renderer, GLState&, const DrawModes::DrawMode&);
+
   /// set position and normal of plane
   void set_plane(const Vec3f& _position, const Vec3f& _normal, float _eps=0.0);
 
@@ -143,12 +152,61 @@ public:
   /// sweep plane along normal by _dist
   void set_offset(float _dist);
 
+  /// get first plane equation 
+  Vec4d plane0() const { return Vec4d(offset_plane0_[0], offset_plane0_[1], offset_plane0_[2], offset_plane0_[3]); }
+
+  /// get second plane equation 
+  Vec4d plane1() const { return Vec4d(offset_plane1_[0], offset_plane1_[1], offset_plane1_[2], offset_plane1_[3]); }
   
 private:
 
   Vec3f     position_, normal_;
   GLdouble  plane0_[4], plane1_[4], offset_plane0_[4], offset_plane1_[4];
   float     slice_width_, offset_;
+
+  // modifiers for RenderObject based rendering
+
+  class ClippingShaderModifier : public ShaderModifier
+  {
+  public:
+    // this modifier computes the vertex distance to the clip planes and writes them to the gl_ClipDistancei outputs
+    // it adds new uniforms:
+    //  vec4 g_SlicePlane0;
+    //  vec4 g_SlicePlane1;
+    //   ..
+
+    ClippingShaderModifier(int _numClipPlanes);
+    virtual ~ClippingShaderModifier() {}
+
+    void modifyVertexIO(ShaderGenerator* _shader);
+
+    void modifyVertexBeginCode(QStringList* _code);
+
+  private:
+
+    int numClipPlanes_;
+  };
+
+  class ClippingObjectModifier : public RenderObjectModifier
+  {
+  public:
+    ClippingObjectModifier(const ClippingNode* _node);
+    virtual ~ClippingObjectModifier() {}
+
+    void apply(RenderObject* _obj);
+
+  private:
+    const ClippingNode* node_;
+  };
+
+
+  ClippingObjectModifier mod_;
+
+  // shader mod for 1 clipping plane
+  static ClippingShaderModifier shaderMod1_;
+
+  // shader mod for 2 clipping planes
+  static ClippingShaderModifier shaderMod2_;
 };
 
 

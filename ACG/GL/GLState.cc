@@ -59,6 +59,7 @@
 #include <ACG/GL/acg_glew.hh>
 #include "GLState.hh"
 
+#include <OpenMesh/Core/Utils/vector_cast.hh>
 #include <cstring>
 
 
@@ -1070,6 +1071,19 @@ Vec4uc GLState::pick_get_name_color (unsigned int _idx)
   if (colorPicking_)
     return colorStack_.getIndexColor (_idx);
   return Vec4uc (0, 0, 0, 0);
+}
+
+//-----------------------------------------------------------------------------
+
+Vec4f GLState::pick_get_name_color_norm (unsigned int _idx)
+{
+  Vec4f rv(0.0f, 0.0f, 0.0f, 0.0f);
+  if (colorPicking_)
+  {
+    Vec4uc color_abs = colorStack_.getIndexColor(_idx);
+    rv = OpenMesh::vector_cast<Vec4f, Vec4uc>(color_abs) / 255.0f;
+  }
+  return rv;
 }
 
 //-----------------------------------------------------------------------------

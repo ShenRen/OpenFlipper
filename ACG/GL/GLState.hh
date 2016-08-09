@@ -1114,6 +1114,10 @@ public:
   /// for each primitive
   Vec4uc pick_get_name_color (unsigned int _idx);
 
+  /// same as pick_get_name_color, but the resulting color channels are normalized in [0.0, 1.0] range
+  Vec4f pick_get_name_color_norm (unsigned int _idx);
+
+
   /// creates a new name the stack (like glPushName())
   void pick_push_name (unsigned int _idx);
 

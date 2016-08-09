@@ -66,6 +66,7 @@
 #include "BaseNode.hh"
 #include "DrawModes.hh"
 #include <ACG/GL/GLPrimitives.hh>
+#include <ACG/ShaderUtils/GLSLShader.hh>
 #include <vector>
 
 //== NAMESPACES ===============================================================
@@ -153,8 +154,8 @@ public:
 
     void drawCoordsys(GLState&  _state);
     void drawCoordsys(IRenderer* _renderer, RenderObject* _baseRO);
-    void drawCoordsysPick(GLState&  _state);
-    void clearPickArea(GLState&  _state, bool _draw, GLfloat _depth);
+    void drawCoordsysPick(GLState&  _state, GLSL::Program* _pickShader = 0);
+    void clearPickArea(GLState&  _state, bool _draw, GLfloat _depth, GLSL::Program* _pickShader = 0);
     void boundingCircle(std::vector<Vec2f> &_in, Vec2f &_center, float &_radius);
 
     CoordsysMode mode_;

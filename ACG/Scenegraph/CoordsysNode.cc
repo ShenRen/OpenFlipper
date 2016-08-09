@@ -60,7 +60,7 @@
 
 #include "CoordsysNode.hh"
 #include <ACG/GL/IRenderer.hh>
-
+#include <ACG/GL/ShaderCache.hh>
 
 //== NAMESPACES ===============================================================
 
@@ -253,45 +253,114 @@ void CoordsysNode::drawCoordsys(IRenderer* _renderer, RenderObject* _baseRO)
 //============================================================================
 
 void
-CoordsysNode::drawCoordsysPick( GLState&  _state) {
+CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
 
   const double arrowLength  = 0.03;
   const double bodyLength   = 0.06;
   const double sphereRadius = 0.01;
 
   // Origin
-  _state.pick_set_name (1);
-  sphere_->draw(_state,sphereRadius);
+  if (_pickShader)
+  {
+    _pickShader->setUniform("color", _state.pick_get_name_color_norm(1));
+
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    mWVP.scale(sphereRadius, sphereRadius, sphereRadius);
+    _pickShader->setUniform("mWVP", mWVP);
+    sphere_->draw_primitive();
+  }
+  else
+  {
+    _state.pick_set_name (1);
+    sphere_->draw(_state,sphereRadius);
+  }
 
   // X-Axis
-  _state.pick_set_name (2);
+  if (_pickShader)
+    _pickShader->setUniform("color", _state.pick_get_name_color_norm(2));
+  else
+    _state.pick_set_name(2);
   _state.push_modelview_matrix ();
   _state.rotate (-90, 0, 1, 0);
   _state.translate ( 0, 0, -bodyLength );
-  cylinder_->draw(_state,bodyLength);
+  _state.push_modelview_matrix();
+  _state.scale(1.0, 1.0, bodyLength);
+  if (_pickShader)
+  {
+    // set transform matrix
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    _pickShader->setUniform("mWVP", mWVP);
+  }
+  cylinder_->draw_primitive();
+  _state.pop_modelview_matrix();
   _state.translate ( 0, 0, -arrowLength );
-  cone_->draw(_state,arrowLength);
+  _state.scale(1.0, 1.0, arrowLength);
+  if (_pickShader)
+  {
+    // set transform matrix
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    _pickShader->setUniform("mWVP", mWVP);
+  }
+  cone_->draw_primitive();
   _state.pop_modelview_matrix ();
 
 
   // Y-Axis
-  _state.pick_set_name (3);
+  if (_pickShader)
+    _pickShader->setUniform("color", _state.pick_get_name_color_norm(3));
+  else
+    _state.pick_set_name(3);
   _state.push_modelview_matrix ();
   _state.rotate (90, 1, 0, 0);
   _state.translate ( 0, 0, -bodyLength );
-  cylinder_->draw(_state,bodyLength);
-  _state.translate ( 0, 0, -arrowLength );
-  cone_->draw(_state,arrowLength);
+  _state.push_modelview_matrix();
+  _state.scale(1.0, 1.0, bodyLength);
+  if (_pickShader)
+  {
+    // set transform matrix
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    _pickShader->setUniform("mWVP", mWVP);
+  }
+  cylinder_->draw_primitive();
+  _state.pop_modelview_matrix();
+  _state.translate(0, 0, -arrowLength);
+  _state.scale(1.0, 1.0, arrowLength);
+  if (_pickShader)
+  {
+    // set transform matrix
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    _pickShader->setUniform("mWVP", mWVP);
+  }
+  cone_->draw_primitive();
   _state.pop_modelview_matrix ();
 
   // Z-Axis
-  _state.pick_set_name (4);
+  if (_pickShader)
+    _pickShader->setUniform("color", _state.pick_get_name_color_norm(4));
+  else
+    _state.pick_set_name(4);
   _state.push_modelview_matrix ();
   _state.rotate (180, 0, 1, 0);
   _state.translate ( 0, 0, -bodyLength );
-  cylinder_->draw(_state,bodyLength);
-  _state.translate ( 0, 0, -arrowLength );
-  cone_->draw(_state,arrowLength);
+  _state.push_modelview_matrix();
+  _state.scale(1.0, 1.0, bodyLength);
+  if (_pickShader)
+  {
+    // set transform matrix
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    _pickShader->setUniform("mWVP", mWVP);
+  }
+  cylinder_->draw_primitive();
+  _state.pop_modelview_matrix();
+  _state.translate(0, 0, -arrowLength);
+  _state.scale(1.0, 1.0, arrowLength);
+  if (_pickShader)
+  {
+    // set transform matrix
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    _pickShader->setUniform("mWVP", mWVP);
+  }
+  cone_->draw_primitive();
   _state.pop_modelview_matrix ();
 
 }
@@ -609,8 +678,22 @@ getProjectionMode() const
 void
 CoordsysNode::pick(GLState& _state, PickTarget _target)
 {
-  GLenum prev_depth = _state.depthFunc();  
+  // use fixed function or shaders to draw pick geometry
+  const bool fixedFunctionGL = _state.compatibilityProfile();
+
+  // load picking shader from cache
+  GLSL::Program* pickShader = 0; 
+  if (!fixedFunctionGL)
+  {
+    pickShader = ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/single_color_fs.glsl");
+    if (!pickShader)
+      return;
+
+    pickShader->use();
+  }
     
+  GLenum prev_depth = _state.depthFunc();
+
   if (_target == PICK_ANYTHING) {
 
     GLdouble mat[16];
@@ -618,7 +701,6 @@ CoordsysNode::pick(GLState& _state, PickTarget _target)
     // Push Modelview-Matrix
     _state.push_modelview_matrix();
     _state.pick_set_maximum (5);
-    _state.pick_set_name (0);
 
     // Init state - changes when mode_ != POSITION
     Vec3d pos3D(0.0,0.0,0.0);
@@ -667,13 +749,13 @@ CoordsysNode::pick(GLState& _state, PickTarget _target)
       if (_state.color_picking ())
       {
         // clear depth buffer behind coordsys node
-        clearPickArea(_state, true, 1.0);
+        clearPickArea(_state, true, 1.0, pickShader);
 
         // Koordinatensystem zeichnen
-        drawCoordsysPick(_state);
+        drawCoordsysPick(_state, pickShader);
 
         // set depth buffer to 0.0 so that nothing can paint above
-        clearPickArea(_state, false, 0.0);
+        clearPickArea(_state, false, 0.0, pickShader);
       }
       else
       {
@@ -713,37 +795,46 @@ CoordsysNode::pick(GLState& _state, PickTarget _target)
       // The selection buffer picking method might have set a 
       // pick matrix that has been multiplied with the projection matrix.
       // This is the only way to get the gl pick matrix again
-      glMatrixMode(GL_PROJECTION);
 
-      glPushMatrix ();
-      glMultMatrixd( _state.inverse_projection().get_raw_data());
+      if (_state.compatibilityProfile())
+      {
+        // todo: check if the pick matrix is really needed here
+        glMatrixMode(GL_PROJECTION);
 
-      glGetDoublev(GL_PROJECTION_MATRIX, mat);
+        glPushMatrix();
+        glMultMatrixd(_state.inverse_projection().get_raw_data());
 
-      glPopMatrix ();
+        glGetDoublev(GL_PROJECTION_MATRIX, mat);
 
-      GLMatrixd pickMat (mat);
+        glPopMatrix();
 
-      glMatrixMode(GL_MODELVIEW);
+        GLMatrixd pickMat(mat);
 
-      GLMatrixd modelview = _state.modelview();
+        glMatrixMode(GL_MODELVIEW);
 
-      modelview(0,3) = 0.0;
-      modelview(1,3) = 0.0;
-      modelview(2,3) = 0.0;
+        GLMatrixd modelview = _state.modelview();
+
+        modelview(0,3) = 0.0;
+        modelview(1,3) = 0.0;
+        modelview(2,3) = 0.0;
+
+        // glMatrix functions are not available in core profile
+        // so maybe remove this if-branch altogether?
+      }
+
 
       // We don't have access to the pick matrix used during selection buffer picking
       // so we can't draw our pick area circle in this case
       if (_state.color_picking ())
       {
         // clear depth buffer behind coordsys node
-        clearPickArea(_state, true, 1.0);
+        clearPickArea(_state, true, 1.0, pickShader);
 
         // Koordinatensystem zeichnen
-        drawCoordsysPick(_state);
+        drawCoordsysPick(_state, pickShader);
 
         // set depth buffer to 0.0 so that nothing can paint above
-        clearPickArea(_state, false, 0.0);
+        clearPickArea(_state, false, 0.0, pickShader);
       }
       else
       {
@@ -779,11 +870,14 @@ CoordsysNode::pick(GLState& _state, PickTarget _target)
     _state.pop_modelview_matrix();
 
   }
+
+  if (pickShader)
+    pickShader->disable();
 }
 
 //----------------------------------------------------------------------------
 
-void CoordsysNode::clearPickArea(GLState&  _state, bool _draw, GLfloat _depth)
+void CoordsysNode::clearPickArea(GLState&  _state, bool _draw, GLfloat _depth, GLSL::Program* _pickShader)
 {
   GLenum prev_depth = _state.depthFunc();
     
@@ -826,14 +920,31 @@ void CoordsysNode::clearPickArea(GLState&  _state, bool _draw, GLfloat _depth)
   _state.translate (center[0], center[1], -0.5);
 
   if (_draw)
-    _state.pick_set_name (0);
+  {
+    if (_pickShader)
+    {
+      Vec4uc uc = _state.pick_get_name_color(0);
+      Vec4f fc = OpenMesh::vector_cast<Vec4f, Vec4uc>(uc);
+      _pickShader->setUniform("color", fc);
+    }
+    else
+    _state.pick_set_name(0);
+  }
   else
     glColorMask(false, false, false, false);
+
+
+  if (_pickShader)
+  {
+    // set transform matrix
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
+    _pickShader->setUniform("mWVP", mWVP);
+  }
 
   // 10% more to ensure everything is in
   disk_->setInnerRadius(0.0f);
   disk_->setOuterRadius(radius * 1.1f);
-  disk_->draw(_state);
+  disk_->draw_primitive();
 
   ACG::GLState::depthFunc (prev_depth);
   _state.pop_modelview_matrix();

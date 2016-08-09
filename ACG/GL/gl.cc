@@ -39,13 +39,12 @@
  *                                                                           *
 \*===========================================================================*/
 
+#include <ACG/GL/acg_glew.hh>
 #include "gl.hh"
 
 #include <cstdlib>
 #include <sstream>
 #include <iostream>
-
-#include <QOpenGLFunctions>
 
 
 //=============================================================================

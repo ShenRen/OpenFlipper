@@ -1,7 +1,13 @@
 /*! \page changelog Changelog
 
 - <b>OpenFlipper 3.1 ( ?/?/? )</b>
+     - <b>General</b>
+         - Fix missleading indentation warnings on gcc 6.x
+     - <b>Core</b>
+         - Windows: Attach console to allow output directly to command line
      - <b>Plugins</b>
+         - DataControl
+             - Fixed grouping (Not visualized correctly)
          - HoleFiller
              - Fly to selected holes
              - Compute boundary information on poly meshes

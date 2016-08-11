@@ -3,6 +3,8 @@
 - <b>OpenFlipper 3.1 ( ?/?/? )</b>
      - <b>General</b>
          - Fix missleading indentation warnings on gcc 6.x
+     - <b>ACG</b>
+        - Use std::vector in BaseNode instead of std::list for performance reasons (closes #61)
      - <b>Core</b>
          - Windows: Attach console to allow output directly to command line
      - <b>Plugins</b>

@@ -72,7 +72,7 @@
 #include <QMouseEvent>
 
 // stdc++
-#include <list>
+#include <vector>
 #include <string>
 #include <algorithm>
 #include <iostream>
@@ -257,14 +257,14 @@ public:
   // --- iterators ---
 
   /// allows to iterate over children
-  typedef std::list<BaseNode*>::const_iterator ConstChildIter;
+  typedef std::vector<BaseNode*>::const_iterator ConstChildIter;
   /// allows to iterate over children
-  typedef std::list<BaseNode*>::iterator ChildIter;
+  typedef std::vector<BaseNode*>::iterator ChildIter;
 
   /// allows to reverse iterate over children
-  typedef std::list<BaseNode*>::const_reverse_iterator ConstChildRIter;
+  typedef std::vector<BaseNode*>::const_reverse_iterator ConstChildRIter;
   /// allows to reverse iterate over children
-  typedef std::list<BaseNode*>::reverse_iterator ChildRIter;
+  typedef std::vector<BaseNode*>::reverse_iterator ChildRIter;
 
   /// Returns: begin-iterator of children
   ChildIter childrenBegin() { return children_.begin(); }
@@ -692,7 +692,7 @@ private:
   StatusMode status_;
   
   /// list of children
-  std::list<BaseNode*> children_; 
+  std::vector<BaseNode*> children_;
 
   /// used to provide unique IDs to nodes
   static unsigned int last_id_used__;

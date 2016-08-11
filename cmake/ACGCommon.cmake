@@ -20,7 +20,7 @@ if ( BLOCK_IN_SOURCE_BUILD )
 endif()
 
 # allow only Debug and Release builds
-set (CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo" CACHE STRING "" FORCE)
+set (CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo" CACHE STRING "")
 mark_as_advanced (CMAKE_CONFIGURATION_TYPES)
 
 # set Debus as default build target

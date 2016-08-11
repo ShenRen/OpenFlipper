@@ -47,7 +47,7 @@ find_path(QWT6_INCLUDE_DIR qwt.h
                /opt/local/include/qwt
                /usr/include
                /usr/include/qwt
-               "${VS_SEARCH_PATH}/qwt-6.1.0"
+               "${VS_SEARCH_PATH}/qwt-6.1.0/include"
                c:\\libs\\${SEARCHPATH}\\x32\\Qwt-6.1.0
                c:\\libs\\${SEARCHPATH}\\x32\\Qwt-6.0.2
                c:\\libs\\${SEARCHPATH}\\x32\\Qwt-6.0.1

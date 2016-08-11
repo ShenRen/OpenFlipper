@@ -50,8 +50,7 @@
 
 #include "TypePlane.hh"
 
-#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
-
+#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 TypePlanePlugin::TypePlanePlugin() {
@@ -69,11 +68,18 @@ int TypePlanePlugin::addEmpty(){
   // new object data struct
   PlaneObject * object = new PlaneObject();
 
-  if ( PluginFunctions::objectCount() == 1 )
+  if ( OpenFlipperSettings().value("Core/File/AllTarget",false).toBool() )
     object->target(true);
+  else {
 
-  if (PluginFunctions::targetCount() == 0 )
-    object->target(true);
+    // Only the first object in the scene will be target
+    if ( PluginFunctions::objectCount() == 1 )
+       object->target(true);
+
+    // If no target is available, we set the new object as target
+    if (PluginFunctions::targetCount() == 0 )
+       object->target(true);
+  }
 
   QString name = QString(tr("New Plane %1.pla").arg( object->id() ));
 

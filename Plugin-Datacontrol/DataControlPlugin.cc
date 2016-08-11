@@ -208,6 +208,7 @@ void DataControlPlugin::initializePlugin()
   connect( tool_->targetSelected, SIGNAL(toggled ( bool ) ),
       this, SLOT (slotBoundingBoxChange ( ) ));
 
+  connect( this, SIGNAL(objectsGrouped(IdList)), this, SLOT(slotObjectsGrouped(IdList)),Qt::QueuedConnection);
 
   viewHeader_ = tool_->treeView->header();
   viewHeader_->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -241,6 +242,26 @@ void DataControlPlugin::initializePlugin()
   emit addToolbox("Data Control", tool_, toolIcon_, headerAreaWidget);
 }
 
+//******************************************************************************
+
+/** \brief update objects when they have been grouped
+ *
+ */
+void DataControlPlugin::slotObjectsGrouped(IdList _lst)
+{
+  // Get all selected rows
+  int selectedRows = _lst.size();
+
+  //update each item
+  for(int i = 0 ; i < selectedRows ; ++i)
+  {
+    int id = _lst[i];
+    BaseObject* item = 0;
+
+    if ( id != -1 && PluginFunctions::getObject(id,item) )
+      emit updatedObject(item->id(),UPDATE_ALL);
+  }
+}
 
 //******************************************************************************
 

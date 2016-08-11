@@ -112,6 +112,8 @@ class DataControlPlugin : public QObject, BaseInterface, ToolboxInterface, KeyIn
     // ToolboxInterface
     void addToolbox( QString _name  , QWidget* _widget, QIcon* _icon, QWidget *_headerAreaWidget);
 
+    void objectsGrouped(IdList);
+
   private slots :
     // BaseInterface
     void initializePlugin();
@@ -136,6 +138,8 @@ class DataControlPlugin : public QObject, BaseInterface, ToolboxInterface, KeyIn
 
     // Tell system that this plugin runs without ui
     void noguiSupported( ) {} ;
+
+    void slotObjectsGrouped(IdList _lst);
 
   public :
 

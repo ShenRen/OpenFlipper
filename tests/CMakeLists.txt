@@ -50,6 +50,10 @@ SET (CTEST_DROP_SITE_CDASH FALSE)
     #enable the OpenMesh unit tests
     set (OPENMESH_BUILD_UNIT_TESTS true CACHE BOOL "Enable or disable unit test builds in OpenMesh.")
 
+    #enable the ACG unit tests
+    set (ACG_BUILD_UNIT_TESTS true CACHE BOOL "Enable or disable unit test builds in ACG.")
+
+
     find_package(GoogleTest)
 
     if(GTEST_FOUND)

@@ -922,11 +922,7 @@ void CoordsysNode::clearPickArea(GLState&  _state, bool _draw, GLfloat _depth, G
   if (_draw)
   {
     if (_pickShader)
-    {
-      Vec4uc uc = _state.pick_get_name_color(0);
-      Vec4f fc = OpenMesh::vector_cast<Vec4f, Vec4uc>(uc);
-      _pickShader->setUniform("color", fc);
-    }
+      _pickShader->setUniform("color", _state.pick_get_name_color_norm(0));
     else
     _state.pick_set_name(0);
   }

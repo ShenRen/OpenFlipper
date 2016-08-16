@@ -135,7 +135,9 @@ glViewer::glViewer( QGraphicsScene* _scene,
   projectionUpdateLocked_(false),
   glScene_(_scene),
   glWidget_(_glWidget),
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
   glDebugLogger_(0),
+#endif
   pickCache_(0),
   updatePickCache_(true),
   pickCacheSupported_(true),

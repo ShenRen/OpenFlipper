@@ -13,7 +13,8 @@
          - HoleFiller
              - Fly to selected holes
              - Compute boundary information on poly meshes
-
+     - <b>Build System</b>
+         - Added cmake flag to disable ACG unit tests
 
 - <b>OpenFlipper 3.0 ( 2016/07/13 )</b>
      - <b>LICENSE<b>

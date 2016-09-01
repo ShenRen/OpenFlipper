@@ -27,10 +27,15 @@ endif ()
 
 acg_openmp ()
 
-# check for OpenGL and GLUT as our required dependencies
+# check for OpenGL, GLEW and GLUT as our required dependencies
 find_package (OpenGL)
 if (NOT OPENGL_FOUND)
   message (FATAL_ERROR "OpengGL not found!")
+endif ()
+
+find_package (GLEW)
+if (NOT GLEW_FOUND)
+  message (FATAL_ERROR "GLEW not found!")
 endif ()
 
 find_package (GLUT)
@@ -48,6 +53,7 @@ set(INCLUDE_DIRS ${OPENMESH_INCLUDE_DIRS}
                  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderUtils
                  ${CMAKE_CURRENT_BINARY_DIR}
                  ${OPENGL_INCLUDE_DIR}
+                 ${GLEW_INCLUDE_DIR}
                  ${GLUT_INCLUDE_DIR} )
 
 set(ADDITIONAL_LINK_LIBRARIES "" )
@@ -84,6 +90,7 @@ include_directories (
 )
 
 link_directories (
+  ${GLEW_LIBRARY_DIR}
   ${GLUT_LIBRARY_DIR}
 )
 
@@ -149,9 +156,12 @@ endif ()
 # display results
 acg_print_configure_header (ACG "ACG")
 
+RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR} )
+
 target_link_libraries ( ACG  ${OPENMESH_LIBRARIES}
                              ${QT_LIBRARIES}
                              ${OPENGL_LIBRARIES}
+                             ${GLEW_LIBRARY}
                              ${GLUT_LIBRARIES}
                              ${ADDITIONAL_LINK_LIBRARIES} )
 
@@ -160,36 +170,48 @@ target_link_libraries ( ACG  ${OPENMESH_LIBRARIES}
 #===================================================================
 find_package(GoogleTest)
 if (GTEST_FOUND)
-  enable_testing()
-  file(GLOB_RECURSE TEST_SOURCES tests/*.cc)
-  set(TESTED_SOURCES
-        Algorithm/DBSCANT.cc
-     )
-  include_directories(${GTEST_INCLUDE_DIRS} ${OPENMESH_INCLUDE_DIR})
-  link_directories ( ${GTEST_LIBRARY_DIR})
 
-  if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-     add_definitions( /D _VARIADIC_MAX=10 )
+
+  if ( NOT DEFINED ACG_BUILD_UNIT_TESTS )
+    set( ACG_BUILD_UNIT_TESTS false CACHE BOOL "Enable or disable unit tests on ACG library." )
   endif()
+
+  if ( ACG_BUILD_UNIT_TESTS )
+
+    enable_testing()
+
+    file(GLOB_RECURSE TEST_SOURCES tests/*.cc)
+    set(TESTED_SOURCES
+          Algorithm/DBSCANT.cc
+       )
+    include_directories(${GTEST_INCLUDE_DIRS} ${OPENMESH_INCLUDE_DIR})
+    link_directories ( ${GTEST_LIBRARY_DIR})
+
+    if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+       add_definitions( /D _VARIADIC_MAX=10 )
+    endif()
  
-  add_executable (ACG_tests ${TEST_SOURCES})
+    add_executable (ACG_tests ${TEST_SOURCES})
 
-  set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-  # run tests in build directory of OF
-  if ( ${PROJECT_NAME} MATCHES "OpenFlipper" AND WIN32)
-    set(OUT_DIR  ${CMAKE_BINARY_DIR}/Build)
-  endif()
+    set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    # run tests in build directory of OF
+    if ( ${PROJECT_NAME} MATCHES "OpenFlipper" AND WIN32)
+      set(OUT_DIR  ${CMAKE_BINARY_DIR}/Build)
+    endif()
 
-  set_target_properties(ACG_tests PROPERTIES
-    COMPILE_FLAGS "-UNDEBUG"
-    RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUT_DIR}
-  )
+    set_target_properties(ACG_tests PROPERTIES
+      COMPILE_FLAGS "-UNDEBUG"
+      RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUT_DIR}
+    )
   
-  target_link_libraries(ACG_tests
-        ${GTEST_LIBRARIES} ${OPENMESH_LIBRARIES} ACG
-  )
+    target_link_libraries(ACG_tests
+          ${GTEST_LIBRARIES} ${OPENMESH_LIBRARIES} ACG
+    )
   
-  add_test(NAME AllTestsIn_ACG_tests COMMAND ${OUT_DIR}/ACG_tests)
+    add_test(NAME AllTestsIn_ACG_tests COMMAND ${OUT_DIR}/ACG_tests)
+
+  endif( ACG_BUILD_UNIT_TESTS )
+
 endif(GTEST_FOUND)

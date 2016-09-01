@@ -42,12 +42,14 @@ include_directories (
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${OPENGL_INCLUDE_DIR}
+  ${GLEW_INCLUDE_DIR}
   ${GLUT_INCLUDE_DIR}
   ${ADDITIONAL_PLUGINLIB_INCS}
   ${PACKAGE_INCLUDES}
 )
 
 link_directories (
+  ${GLEW_LIBRARY_DIR}
   ${ADDITIONAL_PLUGINLIB_LINK_DIRS}
 )
 
@@ -155,12 +157,14 @@ endif ()
 #=======================================================
 # Create library
 #=======================================================
+RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR}/../../ )
 
 if (QT5_FOUND)
   acg_add_library (OpenFlipperPluginLib SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
 elseif (QT4_FOUND)
   acg_add_library (OpenFlipperPluginLib SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
 endif ()
+
 
 if( ADDITIONAL_PLUGINLIB_COMPILER_FLAGS )
   set_target_properties (
@@ -169,11 +173,13 @@ if( ADDITIONAL_PLUGINLIB_COMPILER_FLAGS )
   )
 endif()
 
+
 target_link_libraries (OpenFlipperPluginLib
   ${OPENMESH_LIBRARIES}
   ACG
   ${QT_LIBRARIES}
   ${OPENGL_LIBRARIES}
+  ${GLEW_LIBRARY}
   ${GLUT_LIBRARIES}
   ${FTGL_LIBS}
   ${ADDITIONAL_PLUGINLIB_LIBS}

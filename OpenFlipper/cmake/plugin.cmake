@@ -16,6 +16,7 @@
 #                      [TRANSLATION_ADDFILES file1 file2 ...]
 #                      [LICENSEMANAGER])
 #
+
 # DIRS                   = additional directories with source files
 # DEPS                   = required dependencies for find_package macro
 # OPTDEPS                = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
@@ -28,6 +29,7 @@
 # INCDIRS                = additional include directories
 # ADDSRC                 = additional source files
 # INSTALLDATA            = directories that will be installed into the openflipper data directory
+# GLEWDEFINITIONS = Checks glew if it defines the given definitions
 #
 # TRANSLATION_LANGUAGES = language codes for translation
 # TRANSLATION_ADDFILES  = additional files that should be included into the translation files
@@ -59,6 +61,7 @@ endif(OPENFLIPPER_PLUGIN_INCLUDED)
 set(OPENFLIPPER_PLUGIN_INCLUDED TRUE PARENT_SCOPE)
 
 include (ACGCommon)
+include (MSVCMacros)
 
 # get plugin name from directory name
 macro (_get_plugin_name var)
@@ -70,7 +73,7 @@ endmacro ()
 macro (_get_plugin_parameters _prefix)
     set (_current_var _foo)
     set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD
-      LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
+      LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA GLEWDEFINITIONS TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
     set (_supported_flags LICENSEMANAGER)
     foreach (_val ${_supported_var})
         set (${_prefix}_${_val})
@@ -374,13 +377,32 @@ macro (_plugin_licensemanagement)
   endif()
 endmacro ()
 
+#======================================================
+# check dependencies in GLEW library
+# _prefix    : prefix used ( usually the plugin name )
+#======================================================
+macro (_check_plugin_glew_deps _prefix )
+
+ foreach (_extension ${${_prefix}_GLEWDEFINITIONS})
+
+   acg_test_glew_definition( ${_extension} ${_prefix}_GLEW_HAS_DEFINITION_${_extension}  )
+
+   # If the dependency is not found, we disable the plugin
+   if(NOT ${_prefix}_GLEW_HAS_DEFINITION_${_extension} )
+      set (${_prefix}_HAS_DEPS FALSE)
+      acg_set (_${_prefix}_MISSING_DEPS "${_${_prefix}_MISSING_DEPS} GLEW extension ${_extension}")
+   endif()
+
+ endforeach()
+
+endmacro ()
+
 
 
 #======================================================
 # main function
 #======================================================
 function (_build_openflipper_plugin plugin)
-
   acg_set (OPENFLIPPER_${_PLUGIN}_BUILD "0")
 
   # get upper plugin name
@@ -416,6 +438,10 @@ function (_build_openflipper_plugin plugin)
   endforeach ()
   set_property( GLOBAL PROPERTY GLOBAL_CORE_APP_LIBRARIES ${global_core_app_libraries} )
 
+  # CHECK for GLEW definitions
+  #============================================================================================
+
+  _check_plugin_glew_deps (${_PLUGIN})
 
   #============================================================================================
   # Remember Lib dirs for bundle generation
@@ -460,6 +486,7 @@ function (_build_openflipper_plugin plugin)
       ${${_PLUGIN}_DEPS_INCDIRS}
       ${${_PLUGIN}_INCDIRS}
       ${OPENGL_INCLUDE_DIR}
+      ${GLEW_INCLUDE_DIR}
       ${GLUT_INCLUDE_DIR}
       ${CMAKE_BINARY_DIR}/OpenFlipper/PluginLib
       ${PACKAGE_INCLUDES}
@@ -582,6 +609,10 @@ function (_build_openflipper_plugin plugin)
 
 
     add_library (Plugin-${plugin} MODULE ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
+    #group projects by parent folder name on MSVC (used for e.g. plugincollection)
+    get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+    get_filename_component(PARENT_DIR_NAME "${PARENT_DIR}" NAME)
+    GROUP_PROJECT(Plugin-${plugin} ${PARENT_DIR_NAME})
     # add this plugin to build plugin list for dependency tracking
     acg_set (OPENFLIPPER_PLUGINS "${OPENFLIPPER_PLUGINS};Plugin-${plugin}")
     acg_set (OPENFLIPPER_${_PLUGIN}_BUILD "1")
@@ -757,7 +788,6 @@ endfunction ()
 
 macro (openflipper_plugin)
   _get_plugin_name (_plugin)
-  
   string (TOUPPER ${_plugin} _PLUGIN)
 
   # add option to disable plugin build
@@ -776,6 +806,8 @@ macro (openflipper_plugin)
   )
 
   if (NOT DISABLE_PLUGIN_${_PLUGIN})
+    #group the files in msvc
+    RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR} )
     _build_openflipper_plugin (${_plugin} ${ARGN})
     set(LOADED_PACKAGES ${LOADED_PACKAGES} PARENT_SCOPE)
     set(INSTALLDATA_DIRS ${INSTALLDATA_DIRS} PARENT_SCOPE)

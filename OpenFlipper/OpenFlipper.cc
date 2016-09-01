@@ -117,6 +117,29 @@
 #endif
 
 #ifdef WIN32
+
+  void attachConsole()
+  {
+	  //try to attach the console of the parent process
+	  if (AttachConsole(-1))
+	  {
+		  //if the console was attached change stdinput and output
+		  freopen("CONIN$", "r", stdin);
+		  freopen("CONOUT$", "w", stdout);
+		  freopen("CONOUT$", "w", stderr);
+	  }
+	  else
+	  {
+		  //create and attach a new console if needed
+		  if (OpenFlipper::Options::logToConsole())
+		  {
+			  AllocConsole();
+			  freopen("CONIN$", "r", stdin);
+			  freopen("CONOUT$", "w", stdout);
+			  freopen("CONOUT$", "w", stderr);
+		  }
+	  }
+  }
 #ifdef WIN_GET_DEBUG_CONSOLE
     void getConsole() {
       //Create a console for this application
@@ -404,6 +427,11 @@ int main(int argc, char **argv)
       delete w;
       return 1;
     }
+#ifdef WIN32
+#ifndef WIN_GET_DEBUG_CONSOLE //only attach to parent console if no separate debug console is requested
+	attachConsole();
+#endif
+#endif
 
     QString tLang = OpenFlipperSettings().value("Core/Language/Translation","en_US").toString();
 
@@ -446,9 +474,13 @@ int main(int argc, char **argv)
         }
       }
      }
-
+    
     // After setting all Options from command line, build the real gui
-    w->init();   
+    w->init();
+
+    #ifndef __APPLE__
+    initGlew();
+    #endif
  
     for ( int i = 0 ; i < args.FileCount(); ++i )
       w->commandLineOpen(args.File(i), openPolyMeshes);    

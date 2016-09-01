@@ -125,8 +125,8 @@ private slots:
   void changeSpecularColor(QColor _newColor);
   void changeOverlayColor(QColor _newColor);
   void changeShine(int _new);
-  void changePointSize(int _new);
-  void changeLineWidth(int _new);
+  void changePointSize(double _new);
+  void changeLineWidth(double _new);
   void changeRoundPoints(bool _b);
   void changeLineSmooth(bool _b);
   void changeBackfaceCulling(bool _b);
@@ -142,6 +142,7 @@ private slots:
 
   void enableProperty();
   void enableProperty(int i);
+  void enableProperty(double d);
 
   QString paramToStr(GLenum param);
 

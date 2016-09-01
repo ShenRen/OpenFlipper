@@ -81,7 +81,8 @@ FilePLYPlugin::FilePLYPlugin()
   loadVertexTexCoord_(0),
   loadFaceNormal_(0),
   loadFaceColor_(0),
-  loadDefaultButton_(0) {
+  loadDefaultButton_(0),
+  trimeshOptions_(0) {
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -250,8 +251,8 @@ int FilePLYPlugin::loadObject(QString _filename) {
 
         // If Ask is selected -> show dialog
         QMetaObject::invokeMethod(this,"handleTrimeshDialog",Qt::BlockingQueuedConnection);
-        if ((trimeshOptions == TYPEPOLY) ||
-            (trimeshOptions == TYPEASK && !isTriMesh)) {
+        if ((trimeshOptions_ == TYPEPOLY) ||
+            (trimeshOptions_ == TYPEASK && !isTriMesh)) {
 
           PolyMeshObject* object(0);
           if(PluginFunctions::getObject( objectId, object )) {
@@ -317,11 +318,11 @@ void FilePLYPlugin::handleTrimeshDialog()
 
 
    if (msgBox.clickedButton() == triButton)
-    trimeshOptions =  TYPETRIANGLE ;
+    trimeshOptions_ =  TYPETRIANGLE ;
    else if (msgBox.clickedButton() == polyButton)
-    trimeshOptions = TYPEPOLY ;
+    trimeshOptions_ = TYPEPOLY ;
    else
-     trimeshOptions = TYPEASK;
+     trimeshOptions_ = TYPEASK;
 }
 
 //-----------------------------------------------------------------------------------------------------

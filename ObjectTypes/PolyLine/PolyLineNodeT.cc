@@ -312,14 +312,14 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
         else
           _state.set_color( color );
 
-        sphere_->draw(_state, polyline_.vertex_radius(), (Vec3f)polyline_.point(i));
+        sphere_->draw(_state, _state.point_size(), (Vec3f)polyline_.point(i));
       }
     }
     else
     {
       _state.set_color( color );
       for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
-        sphere_->draw(_state, polyline_.vertex_radius(), (Vec3f)polyline_.point(i));
+        sphere_->draw(_state, _state.point_size(), (Vec3f)polyline_.point(i));
     }
   }
   // draw vertices as spheres with constant size on screen
@@ -330,8 +330,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
       sphere_ = new GLSphere(10,10);
 
     // precompute desired radius of projected sphere
-    double r = 0.5*_state.point_size()/double(_state.viewport_height())*2.0*_state.near_plane()*tan(0.5*_state.fovy());
-    r /= _state.near_plane();
+    double r = 0.5*_state.point_size() / double(_state.viewport_height()) * 2.0 * tan(0.5*_state.fovy());
 
     if( polyline_.vertex_selections_available())
     {
@@ -461,10 +460,14 @@ pick_vertices( GLState& _state )
 
   if (pickShader && pickShader->isLinked())
   {
+    // Update the vbo only if required.
+    if (updateVBO_)
+      updateVBO();
+
     // Bind the vertex array
     ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
 
-    unsigned int pickOffsetIndex = _state.pick_current_index();
+    int pickOffsetIndex = int(_state.pick_current_index());
 
     vertexDecl_.activateShaderPipeline(pickShader);
 
@@ -517,7 +520,7 @@ pick_spheres( GLState& _state )
   for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
   {
     _state.pick_set_name (i);
-    sphere_->draw(_state, polyline_.vertex_radius(), (Vec3f)polyline_.point(i));
+    sphere_->draw(_state, _state.point_size(), (Vec3f)polyline_.point(i));
   }
 }
 
@@ -535,8 +538,7 @@ pick_spheres_screen( GLState& _state )
   _state.pick_set_name(0);
 
   // precompute desired radius of projected sphere
-  double r = 0.5*_state.point_size()/double(_state.viewport_height())*2.0*_state.near_plane()*tan(0.5*_state.fovy());
-  r /= _state.near_plane();
+  double r = 0.5*_state.point_size()/double(_state.viewport_height())*2.0*tan(0.5*_state.fovy());
 
   for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
   {
@@ -570,6 +572,10 @@ pick_edges( GLState& _state, unsigned int _offset)
 
   if (pickShader && pickShader->isLinked())
   {
+    // Update the vbo only if required.
+    if (updateVBO_)
+      updateVBO();
+
     // Bind the vertex array
     ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
 
@@ -951,6 +957,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         _renderer->addRenderObject(&ro);
 
         break;
+
       case ACG::SceneGraph::DrawModes::PRIMITIVE_WIREFRAME:
       case ACG::SceneGraph::DrawModes::PRIMITIVE_EDGE:
 
@@ -1000,6 +1007,81 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         _renderer->addRenderObject(&ro);
 
         break;
+
+
+      case ACG::SceneGraph::DrawModes::PRIMITIVE_POLYGON:
+        {
+          // create sphere object for each vertex
+          // potential optimization: create only one render object and use instancing 
+
+          // use world space radius or screen space point size?
+          bool screenScale = _drawMode & POINTS_SPHERES_SCREEN;
+
+          // clear shaders used by thick line / point drawing
+          ro.shaderDesc.vertexTemplateFile.clear();
+          ro.shaderDesc.geometryTemplateFile.clear();
+          ro.shaderDesc.fragmentTemplateFile.clear();
+
+          // create sphere if not yet done
+          if (!sphere_)
+            sphere_ = new GLSphere(10, 10);
+
+          // precompute desired radius of projected sphere
+          double r = 1.0;
+          if (screenScale)
+            r = 0.5*_state.point_size() / double(_state.viewport_height())*2.0*tan(0.5*_state.fovy());
+
+          // get eye position and view direction in world space
+          Vec3d eyePos = _state.eye();
+          Vec3d viewDir = _state.viewing_direction();
+
+          // render-objects for the selected points with selection color
+          if (polyline_.vertex_selections_available())
+          {
+            ro.debugName = "polyline.Sphere.selected";
+            localMaterial.baseColor(selectionColor);
+            ro.setMaterial(&localMaterial);
+
+            for (unsigned int i = 0; i < polyline_.n_vertices(); ++i)
+            {
+              if (polyline_.vertex_selected(i))
+              {
+                double radius = _state.point_size();
+                if (screenScale)
+                {
+                  // compute radius in 3D
+                  const Vec3d p = (Vec3d)polyline_.point(i) - eyePos;
+                  radius = (p | viewDir) * r;
+                }
+
+                sphere_->addToRenderer(_renderer, &ro, radius, (Vec3f)polyline_.point(i));
+              }
+            }
+          }
+
+          // unselected points with default color
+          ro.debugName = "polyline.Sphere";
+          localMaterial.baseColor(defaultColor);
+          ro.setMaterial(&localMaterial);
+
+          for (unsigned int i = 0; i < polyline_.n_vertices(); ++i)
+          {
+            if (!polyline_.vertex_selections_available() || !polyline_.vertex_selected(i))
+            {
+              double radius = _state.point_size();
+              if (screenScale)
+              {
+                // compute radius in 3D
+                const Vec3d p = (Vec3d)polyline_.point(i) - eyePos;
+                radius = (p | viewDir) * r;
+              }
+
+              sphere_->addToRenderer(_renderer, &ro, radius, (Vec3f)polyline_.point(i));
+            }
+          }
+        } break;
+
+
       default:
         break;
     }

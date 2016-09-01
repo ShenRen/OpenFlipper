@@ -891,7 +891,6 @@ void MeshCompiler::forceUnsharedFaceVertex()
         for (int t = 0; t < numRemainingTris; ++t)
         {
           // check if the triangle references the good corner by testing the 3 vertices of the triangulation
-          bool triSkipped = true;
           for (int k = 0; k < 3; ++k)
           {
             int cornerID = -1 - triIndexBuffer_[(triCounter + currentTri->id) * 3 + k];
@@ -915,7 +914,6 @@ void MeshCompiler::forceUnsharedFaceVertex()
 
 
               ++numTrisCovered;
-              triSkipped = false;
 
               // remove triangle from the ring list
               currentTri->prev->next = currentTri->next;

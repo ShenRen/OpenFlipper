@@ -195,6 +195,7 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
     // TYPE is TRIMESH
     if ( o_it->dataType( DATA_TRIANGLE_MESH ) ) {
 
+      TriMeshObject* object = PluginFunctions::triMeshObject(*o_it);
       TriMesh* mesh = PluginFunctions::triMesh(o_it);
 
       //get perObjectData
@@ -213,12 +214,29 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
         if ( objects[i] == o_it->id() )
           holeInfo->selectHole( holes[i] );
 
+      // We only fly if we have exacly one object and one hole
+      if (  (objects.size() == 1) && (holes.size() == 1) && ( objects[0] == o_it->id() ) ){
+
+        TriMesh::Point center;
+        TriMesh::Normal normal;
+        holeInfo->getHolePostitionInfo(holes[0], normal, center);
+
+        // Get bounding box to get a scaling for the movement
+        TriMesh::Point _bbMin;
+        TriMesh::Point _bbMax;
+
+        object->boundingBox(_bbMin, _bbMax);
+
+        PluginFunctions::flyTo(center + normal * (_bbMax-_bbMin).length() , center, 10.0);
+      }
+
       //update the object
       emit updatedObject(o_it->id(),UPDATE_SELECTION);
     }
     // DATATYPE is  POLYMESH
     else if ( o_it->dataType( DATA_POLY_MESH ) ) {
 
+      PolyMeshObject* object = PluginFunctions::polyMeshObject(*o_it);
       PolyMesh* mesh = PluginFunctions::polyMesh(o_it);
 
       //get perObjectData
@@ -236,6 +254,22 @@ void HoleFillerPlugin::slotItemSelectionChanged() {
       for (uint i = 0; i < objects.size(); i++)
         if ( objects[i] == o_it->id() )
           holeInfo->selectHole( holes[i] );
+
+      // We only fly if we have exacly one object and one hole
+      if (  (objects.size() == 1) && (holes.size() == 1) && ( objects[0] == o_it->id() ) ){
+
+        PolyMesh::Point center;
+        PolyMesh::Normal normal;
+        holeInfo->getHolePostitionInfo(holes[0], normal, center);
+
+        // Get bounding box to get a scaling for the movement
+        PolyMesh::Point _bbMin;
+        PolyMesh::Point _bbMax;
+
+        object->boundingBox(_bbMin, _bbMax);
+
+        PluginFunctions::flyTo(center + normal * (_bbMax-_bbMin).length() , center, 10.0);
+      }
 
       //update the object
       emit updatedObject(o_it->id(),UPDATE_SELECTION);
@@ -290,18 +324,8 @@ void HoleFillerPlugin::slotCellDoubleClicked(int _row , int /*_col*/) {
   // DATATYPE is  POLYMESH
   else if ( object->dataType( DATA_POLY_MESH ) ) {
     
-//     PolyMesh* mesh = PluginFunctions::polyMesh(object);
-//     
-//     HoleInfo< PolyMesh >* holeInfo = dynamic_cast< HoleInfo< PolyMesh >* > ( object->objectData(HOLEINFO) );
-//     
-//     if (holeInfo == 0){
-//       holeInfo = new HoleInfo< PolyMesh >( mesh );
-//       object->setObjectData(HOLEINFO, holeInfo);
-//     }
-//     
-//     holeInfo->getHoles();    
-    
     emit log(LOGWARN,tr("HoleFilling unsupported for poly meshes"));
+
     return;
   }
 }
@@ -325,26 +349,26 @@ void HoleFillerPlugin::detectButton( )
       holeInfo->getHoles();
     }
 
-//     //case POLYMESH
-//     if ( o_it->dataType( DATA_POLY_MESH ) ) {
-// 
-//       HoleInfo< PolyMesh >* holeInfo = dynamic_cast< HoleInfo< PolyMesh >* > ( o_it->objectData(HOLEINFO) );
-//     
-//       if (holeInfo == 0){
-//         PolyMesh* mesh = PluginFunctions::polyMesh(*o_it);
-//         holeInfo = new HoleInfo< PolyMesh >( mesh );
-//         o_it->setObjectData(HOLEINFO, holeInfo);
-//       }
-// 
-//       holeInfo->getHoles();
-//     }
+     //case POLYMESH
+     if ( o_it->dataType( DATA_POLY_MESH ) ) {
+
+       HoleInfo< PolyMesh >* holeInfo = dynamic_cast< HoleInfo< PolyMesh >* > ( o_it->objectData(HOLEINFO) );
+
+       if (holeInfo == 0){
+         PolyMesh* mesh = PluginFunctions::polyMesh(*o_it);
+         holeInfo = new HoleInfo< PolyMesh >( mesh );
+         o_it->setObjectData(HOLEINFO, holeInfo);
+       }
+
+       holeInfo->getHoles();
+     }
   }
 
   update_menu();
 }
 
 /// check for holes if an object has changed
-void HoleFillerPlugin::slotObjectUpdated(int _identifier) {
+void HoleFillerPlugin::slotObjectUpdated( int _identifier, const UpdateType& _type ) {
 
   BaseObjectData* object;
 
@@ -354,25 +378,28 @@ void HoleFillerPlugin::slotObjectUpdated(int _identifier) {
 
   bool updated = false;
   
-  // get holes for TRIMESH
-  if ( object->dataType( DATA_TRIANGLE_MESH ) ) {
+  if ( _type.contains(UPDATE_TOPOLOGY) ) {
 
-    HoleInfo< TriMesh >* holeInfo = dynamic_cast< HoleInfo< TriMesh >* > ( object->objectData(HOLEINFO) );
-  
-    if ( holeInfo ) {
-      holeInfo->getHoles();
-      updated = true;
+    // get holes for TRIMESH
+    if ( object->dataType( DATA_TRIANGLE_MESH ) ) {
+
+      HoleInfo< TriMesh >* holeInfo = dynamic_cast< HoleInfo< TriMesh >* > ( object->objectData(HOLEINFO) );
+
+      if ( holeInfo ) {
+        holeInfo->getHoles();
+        updated = true;
+      }
     }
-  }
 
-  // get holes for POLYMESH
-  else if ( object->dataType( DATA_POLY_MESH ) ) {
+    // get holes for POLYMESH
+    else if ( object->dataType( DATA_POLY_MESH ) ) {
 
-    HoleInfo< PolyMesh >* holeInfo = dynamic_cast< HoleInfo< PolyMesh >* > ( object->objectData(HOLEINFO) );
-  
-    if ( holeInfo ) {
-      holeInfo->getHoles();
-      updated = true;
+      HoleInfo< PolyMesh >* holeInfo = dynamic_cast< HoleInfo< PolyMesh >* > ( object->objectData(HOLEINFO) );
+
+      if ( holeInfo ) {
+        holeInfo->getHoles();
+        updated = true;
+      }
     }
   }
 
@@ -420,47 +447,30 @@ void HoleFillerPlugin::update_menu() {
           name->setFlags( 0 );
           name->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,0,name);
-    
+
+          size_t egde_count = 0;
+          double boundaryLength = 0.0;
+          TriMesh::Scalar bbDiagonal = 0.0;
+
+          holeInfo->getHoleInfo(i, egde_count, boundaryLength, bbDiagonal);
+
           // Set Number of the edges
-          QTableWidgetItem* size = new QTableWidgetItem( QString::number( (*holeInfo->holes())[i].size() ) );
+          QTableWidgetItem* size = new QTableWidgetItem( QString::number( egde_count ) );
           size->setFlags( 0 );
           size->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,1,size);
     
           // Set boundary Length
-          std::vector< TriMesh::EdgeHandle >::iterator endIter = (*holeInfo->holes())[i].end();
-          double boundaryLength = 0.0;
-          TriMesh* mesh = 0;
-          PluginFunctions::getMesh(o_it->id(),mesh);
-          for (std::vector< TriMesh::EdgeHandle >::iterator edgeIter = (*holeInfo->holes())[i].begin(); edgeIter != endIter; ++edgeIter)
-            boundaryLength += mesh->calc_edge_length(*edgeIter);
           QTableWidgetItem* boundaryLengthWidget = new QTableWidgetItem( QString::number(boundaryLength) );
           boundaryLengthWidget->setFlags( 0 );
           boundaryLengthWidget->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,2,boundaryLengthWidget);
 
-          //compute bounding box
-          TriMesh::Point minCoord = TriMesh::Point(std::numeric_limits<TriMesh::Scalar>::max(),std::numeric_limits<TriMesh::Scalar>::max(),std::numeric_limits<TriMesh::Scalar>::max());
-          TriMesh::Point maxCoord = TriMesh::Point(-std::numeric_limits<TriMesh::Scalar>::max(),-std::numeric_limits<TriMesh::Scalar>::max(),-std::numeric_limits<TriMesh::Scalar>::max());
-          for (std::vector< TriMesh::EdgeHandle >::iterator edgeIter = (*holeInfo->holes())[i].begin(); edgeIter != endIter; ++edgeIter)
-          {
-            TriMesh::Point pos = mesh->point(mesh->from_vertex_handle(mesh->halfedge_handle(*edgeIter,0)));
-            minCoord[0] = std::min(minCoord[0],pos[0]);
-            minCoord[1] = std::min(minCoord[1],pos[1]);
-            minCoord[2] = std::min(minCoord[2],pos[2]);
-
-            maxCoord[0] = std::max(maxCoord[0],pos[0]);
-            maxCoord[1] = std::max(maxCoord[1],pos[1]);
-            maxCoord[2] = std::max(maxCoord[2],pos[2]);
-          }
-
-          TriMesh::Scalar bbDiagonal = (minCoord-maxCoord).length();
-
           QTableWidgetItem* bbDiagonalWidget = new QTableWidgetItem( QString::number(bbDiagonal) );
           bbDiagonalWidget->setFlags( 0 );
           bbDiagonalWidget->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,3,bbDiagonalWidget);
-    
+
           // remember the id for the hole
           holeMapping_.push_back( std::pair<int , int>( o_it->id() , i ) );
     
@@ -485,18 +495,30 @@ void HoleFillerPlugin::update_menu() {
           name->setFlags( 0 );
           name->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,0,name);
-    
+
+          size_t egde_count = 0;
+          double boundaryLength = 0.0;
+          TriMesh::Scalar bbDiagonal = 0.0;
+
+          holeInfo->getHoleInfo(i, egde_count, boundaryLength, bbDiagonal);
+
           // Set Number of the edges
-          QTableWidgetItem* size = new QTableWidgetItem( QString::number( (*holeInfo->holes())[i].size() ) );
+          QTableWidgetItem* size = new QTableWidgetItem( QString::number( egde_count ) );
           size->setFlags( 0 );
           size->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,1,size);
     
-          // Set radius
-          QTableWidgetItem* radius = new QTableWidgetItem( "TODO" );
+          // Set Bounding box diagonal
+          QTableWidgetItem* radius = new QTableWidgetItem( QString::number(boundaryLength) );
           radius->setFlags( 0 );
           radius->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
           tool_->tableWidget->setItem(count,2,radius);
+
+          // Set Bounding box diagonal
+          QTableWidgetItem* bbDiagonalWidget = new QTableWidgetItem( QString::number(bbDiagonal) );
+          bbDiagonalWidget->setFlags( 0 );
+          bbDiagonalWidget->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+          tool_->tableWidget->setItem(count,3,bbDiagonalWidget);
     
           // remember the id for the hole
           holeMapping_.push_back( std::pair<int , int>( o_it->id() , i ) );

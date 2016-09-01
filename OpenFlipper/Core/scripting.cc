@@ -254,48 +254,15 @@ void Core::activateToolbox(QString _pluginName, QString _toolboxName, bool activ
 }
 
 void Core::addToolbox(QString _name ,QWidget* _widget) {
-  int id = -1;
-
-  // Find the plugin which added this Toolbox
-  for ( uint i = 0 ; i < plugins_.size(); ++i ) {
-    if ( plugins_[i].plugin == sender() ) {
-      id = i;
-      break;
-    }
-  }
-
-  // Find the scripting plugin because we assign this toolBox to it as we did not find the original sender
-  if ( id == -1 ) {
-    for ( uint i = 0 ; i < plugins_.size(); ++i ) {
-      if ( plugins_[i].name == "Scripting" ) {
-        id = i;
-        break;
-      }
-    }
-
-
-    if ( id == -1 ) {
-      std::cerr << "Unknown sender plugin when adding Toolbox!" << std::endl;
-      return;
-    }
-  }
-
-  spinBoxEventFilter_.hookUpToWidgetTree(_widget);
-  plugins_[id].toolboxWidgets.push_back( std::pair< QString,QWidget* >( _name , _widget) );
-  plugins_[id].toolboxIcons.push_back( 0 );
-
-  // add widget name to viewMode 'all'
-  if ( !viewModes_[0]->visibleToolboxes.contains(_name) ){
-    viewModes_[0]->visibleToolboxes << _name;
-    viewModes_[0]->visibleToolboxes.sort();
-  }
-
-  setViewMode( OpenFlipper::Options::currentViewMode() );
+    addToolbox(_name, _widget, 0, 0);
 }
 
-//-----------------------------------------------------------------------------
-
 void Core::addToolbox(QString _name ,QWidget* _widget, QIcon* _icon) {
+    addToolbox(_name, _widget, _icon, 0);
+}
+
+void Core::addToolbox(QString _name ,QWidget* _widget, QIcon* _icon,
+        QWidget *_headerAreaWidget) {
   int id = -1;
 
   // Find the plugin which added this Toolbox
@@ -325,6 +292,7 @@ void Core::addToolbox(QString _name ,QWidget* _widget, QIcon* _icon) {
   spinBoxEventFilter_.hookUpToWidgetTree(_widget);
   plugins_[id].toolboxWidgets.push_back( std::pair< QString,QWidget* >( _name , _widget) );
   plugins_[id].toolboxIcons.push_back( _icon );
+  plugins_[id].headerAreaWidgets.push_back( std::pair< QString,QWidget* >( _name , _headerAreaWidget) );
 
   // add widget name to viewMode 'all'
   if ( !viewModes_[0]->visibleToolboxes.contains(_name) ){

@@ -2,9 +2,9 @@ cmake_minimum_required (VERSION 2.8.9)
 
 # ACG Environment default settings
 # This is ugly but currently we need to work around the default installed 5.3 on debian
-if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.5.1/5.5/gcc_64/ )
+if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ )
   # Default to this install path for QT%_INSTALL_DIR
-  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.5.1/5.5/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
+  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
 endif()
 
 
@@ -40,6 +40,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
 
 # include our cmake files
 include (ACGCommon)
+include (MSVCMacros)
 
 acg_get_version (OpenFlipper)
 
@@ -131,10 +132,15 @@ endif()
 
 acg_openmp ()
 
-# check for OpenGL and GLUT as our required dependencies
+# check for OpenGL, GLEW and GLUT as our required dependencies
 find_package (OpenGL)
 if (NOT OPENGL_FOUND)
   message (FATAL_ERROR "OpengGL not found!")
+endif ()
+
+find_package (GLEW)
+if (NOT GLEW_FOUND)
+  message (FATAL_ERROR "GLEW not found!")
 endif ()
 
 find_package (GLUT)
@@ -240,6 +246,15 @@ foreach (_localLib ${REMAINING_LOCAL_LIBS})
     add_subdirectory (${CMAKE_SOURCE_DIR}/${_local_lib_dir})
   endif()
 endforeach ()
+
+# Group the external libraries in a folder libs_required
+GROUP_PROJECT(OpenMeshTools libs_required)
+GROUP_PROJECT(OpenMeshCore libs_required)
+GROUP_PROJECT(OpenVolumeMesh libs_required)
+
+if( DOXYGEN_FOUND )
+GROUP_PROJECT(doc-install Documentation)
+endif()
 
 # ========================================================================
 # Core Library Components (Except the Core application)

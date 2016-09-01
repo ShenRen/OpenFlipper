@@ -172,12 +172,14 @@ void CoreWidget::slotAddViewModeToolbars(QString _mode, bool _custom, QStringLis
     } else {
       //insert before custom viewModes
       int i = viewModes_.size();
-      for (int k=0; k < viewModes_.size(); k++)
+      for (int k=0; k < viewModes_.size(); k++) {
         if (viewModes_[k]->custom == true){
           i = k;
           break;
         }
-        viewModes_.insert(i,vm);
+      }
+
+      viewModes_.insert(i,vm);
     }
   } else {
     vm = viewModes_[id];
@@ -271,14 +273,18 @@ void CoreWidget::slotSetViewModeIcon(QString _mode, bool _custom, QString _iconN
     if (_custom) {
       viewModes_.push_back(vm);
     } else {
+ 
       //insert before custom viewModes
       int i = viewModes_.size();
-      for (int k=0; k < viewModes_.size(); k++)
+
+      for (int k=0; k < viewModes_.size(); k++) {
         if (viewModes_[k]->custom == true){
           i = k;
           break;
         }
-        viewModes_.insert(i,vm);
+      }
+
+      viewModes_.insert(i,vm);
     }
   } else {
     vm = viewModes_[id];
@@ -337,24 +343,10 @@ void CoreWidget::slotViewModeDialog(){
   widget->show( OpenFlipper::Options::currentViewMode() );
 }
 
-void CoreWidget::slotViewChangeDialog() {
-  //init widget
-  static viewModeChangeWidget* modeChangeWidget = 0;
-
-  if ( !modeChangeWidget ){
-    modeChangeWidget = new viewModeChangeWidget(viewModes_, this);
-    modeChangeWidget->setWindowIcon( OpenFlipper::Options::OpenFlipperIcon() );
-    connect(modeChangeWidget, SIGNAL(changeView(QString, QStringList, QStringList, QStringList)), this, SLOT(slotChangeView(QString, QStringList, QStringList, QStringList)) );
-  }
-
-  // Make it look like a dialog
-  modeChangeWidget->setWindowFlags(Qt::Popup);
-  modeChangeWidget->show( OpenFlipper::Options::currentViewMode() );
-
-  // Move it to the position of the push button
-  QPoint posButton = vmChangeButton_->mapToGlobal(vmChangeButton_->pos());
-  modeChangeWidget->move( posButton);
-
+void CoreWidget::closeChangeViewModePopup() {
+    QWidget *parent = qobject_cast<QWidget*>(modeChangeWidget->parent());
+    if (parent)
+        parent->close();
 }
 
 /// Slot for Changing visible toolWidgets
@@ -392,7 +384,7 @@ void CoreWidget::slotChangeView(QString _mode, QStringList _toolboxWidgets, QStr
 
           // only add items that have not been added yet
           if (!skip) {
-            toolBox_->addItem (plugins_[p].plugin, plugins_[p].toolboxWidgets[j].second, plugins_[p].toolboxWidgets[j].first, plugins_[p].toolboxIcons[j] );
+            toolBox_->addItem (plugins_[p].plugin, plugins_[p].toolboxWidgets[j].second, plugins_[p].toolboxWidgets[j].first, plugins_[p].toolboxIcons[j], plugins_[p].headerAreaWidgets[j].second );
 
             // move item to the correct position
             if (i < toolBox_->lastPos_) {

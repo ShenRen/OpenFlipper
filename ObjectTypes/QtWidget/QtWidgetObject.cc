@@ -186,10 +186,13 @@ QString QtWidgetObject::getObjectinfo() {
   output += "========================================================================\n";
   output += BaseObjectData::getObjectinfo();
 
-  if ( dataType( DATA_QT_WIDGET ) )
+  if ( dataType( DATA_QT_WIDGET ) ) {
     output += "Qt Accessible Name: ";
     output += widgetNode_->widget()->accessibleName();
     output += "\n";
+  } else {
+    output += "!!Unable to access data type DATA_QT_WIDGET ";
+  }
   output += "========================================================================\n";
   return output;
 }

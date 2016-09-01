@@ -662,6 +662,11 @@ Core::init() {
       coreWidget_->toolBox_->restoreState (windowStates);
       windowStates.endGroup ();
 
+
+      // Restore if window was maximized or not
+      if ( windowStates.value("Core/Window/WindowState",false).toBool() )
+        coreWidget_->setWindowState( coreWidget_->windowState() | Qt::WindowMaximized  );
+
     } else {
 
       coreWidget_->show();
@@ -1132,6 +1137,7 @@ Core::writeOnExit() {
 
     windowStates.setValue("Core/Window/State", coreWidget_->saveState ());
     windowStates.setValue("Core/Window/Geometry", coreWidget_->saveGeometry ());
+    windowStates.setValue("Core/Window/WindowState", coreWidget_->isMaximized() );
 
     windowStates.setValue ("Core/ToolSplitter", coreWidget_->toolSplitter_->saveState ());
     windowStates.setValue ("Core/LogSplitter", coreWidget_->splitter_->saveState ());
@@ -1282,14 +1288,14 @@ void Core::slotSetSlotDescription(QString      _slotName,   QString _slotDescrip
   //handle plugin slots
 
   //find plugin
- PluginInfo* pluginInfo = 0;
+  PluginInfo* pluginInfo = 0;
 
   for (uint i=0; i < plugins_.size(); i++)
     if (plugins_[i].plugin == sender())
       pluginInfo = &plugins_[i];
 
-    if (pluginInfo == 0){
-      emit log(LOGERR, tr("Unable to set slot-description. Plugin not found!"));
+  if (pluginInfo == 0){
+    emit log(LOGERR, tr("Unable to set slot-description. Plugin not found!"));
     return;
   }
 
@@ -2035,7 +2041,7 @@ void Core::showReducedMenuBar(bool reduced) {
 }
 
 void Core::finishSplash() {
-    splash_->finish(coreWidget_);	
+    splash_->finish(coreWidget_);
 }
 
 

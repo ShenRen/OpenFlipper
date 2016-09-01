@@ -83,7 +83,8 @@ DataControlPlugin::DataControlPlugin() :
         headerPopupType_(0),
         targetAction_(0),
         sourceAction_(0),
-        removeAction_(0)
+        removeAction_(0),
+        advancedSettingsBtn_(0)
 {
 
 }
@@ -160,7 +161,7 @@ void DataControlPlugin::pluginsInitialized() {
   PluginFunctions::setDefaultViewObjectMarker (&objectMarker);
   PluginFunctions::setViewObjectMarker (&objectMarker);
   
-  connect(tool_->lightSources, SIGNAL(stateChanged(int)), this, SLOT(slotShowLightSources(int)));
+  connect(tool_->lightSources, SIGNAL(toggled(bool)), this, SLOT(slotShowLightSources(bool)));
   //update light visibility, if layout was changed
   connect(model_, SIGNAL(layoutChanged ()), this, SLOT(slotShowLightSources()) );
   connect(model_, SIGNAL(rowsRemoved(const QModelIndex& , int , int )), this, SLOT(slotShowLightSources()));
@@ -200,13 +201,14 @@ void DataControlPlugin::initializePlugin()
   connect( view_,SIGNAL(customContextMenuRequested ( const QPoint &  )  ),
       this,SLOT(slotCustomContextMenuRequested ( const QPoint & ) ));
 
-  connect( tool_->notSelected, SIGNAL(stateChanged ( int ) ),
+  connect( tool_->notSelected, SIGNAL(toggled ( bool ) ),
       this, SLOT (slotBoundingBoxChange ( ) ));
-  connect( tool_->sourceSelected, SIGNAL(stateChanged ( int ) ),
+  connect( tool_->sourceSelected, SIGNAL(toggled ( bool ) ),
       this, SLOT (slotBoundingBoxChange ( ) ));
-  connect( tool_->targetSelected, SIGNAL(stateChanged ( int ) ),
+  connect( tool_->targetSelected, SIGNAL(toggled ( bool ) ),
       this, SLOT (slotBoundingBoxChange ( ) ));
 
+  connect( this, SIGNAL(objectsGrouped(IdList)), this, SLOT(slotObjectsGrouped(IdList)),Qt::QueuedConnection);
 
   viewHeader_ = tool_->treeView->header();
   viewHeader_->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -217,18 +219,49 @@ void DataControlPlugin::initializePlugin()
 
   toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"datacontrol-toolbox.png");
 
-  emit addToolbox("Data Control", tool_, toolIcon_);
+  QWidget *headerAreaWidget = new QWidget();
+  advancedSettingsBtn_ = new QToolButton();
+  advancedSettingsBtn_->setAutoRaise(true);
+  advancedSettingsBtn_->setIcon(QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"preferences.png"));
+  advancedSettingsBtn_->setIconSize(QSize(16, 16));
+  advancedSettingsBtn_->setPopupMode(QToolButton::InstantPopup);
+  advancedSettingsBtn_->setToolTip(tr("Advanced Settings"));
+  QHBoxLayout *hl = new QHBoxLayout;
+  hl->addWidget(advancedSettingsBtn_);
+  hl->addStretch(1);
+  hl->setContentsMargins(8, 0, 0, 0);
+  headerAreaWidget->setLayout(hl);
 
-  QIcon icon = QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"datacontrol-boundingBox.png");
-  tool_->boundingBoxBtn->setIcon( icon );
-  icon = QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"datacontrol-hide-object.png");
-  tool_->visibleDataBtn->setIcon( icon );
+  QMenu *menu = new QMenu();
+  menu->addAction(tool_->lightSources);
+  menu->addAction(tool_->notSelected);
+  menu->addAction(tool_->sourceSelected);
+  menu->addAction(tool_->targetSelected);
+  advancedSettingsBtn_->setMenu(menu);
 
-  //hide additional boxes
-  tool_->visibleDataBtn->setChecked(false);
-  tool_->boundingBoxBtn->setChecked(false);
+  emit addToolbox("Data Control", tool_, toolIcon_, headerAreaWidget);
 }
 
+//******************************************************************************
+
+/** \brief update objects when they have been grouped
+ *
+ */
+void DataControlPlugin::slotObjectsGrouped(IdList _lst)
+{
+  // Get all selected rows
+  int selectedRows = _lst.size();
+
+  //update each item
+  for(int i = 0 ; i < selectedRows ; ++i)
+  {
+    int id = _lst[i];
+    BaseObject* item = 0;
+
+    if ( id != -1 && PluginFunctions::getObject(id,item) )
+      emit updatedObject(item->id(),UPDATE_ALL);
+  }
+}
 
 //******************************************************************************
 
@@ -395,7 +428,7 @@ void DataControlPlugin::fileOpened(int _id){
 
     // Only if the added object was a light source, we will traverse the objects!
     if ( obj->dataType() == DATA_LIGHT)
-      slotShowLightSources(tool_->lightSources->checkState());
+      slotShowLightSources(tool_->lightSources->isChecked());
 
     view_->resizeColumnToContents(0);
   }
@@ -535,14 +568,14 @@ void DataControlPlugin::slotMoveBaseObject(int _id, int _newParentId){
 
 //******************************************************************************
 
-void DataControlPlugin::slotShowLightSources( int _state ) {
+void DataControlPlugin::slotShowLightSources( bool _state ) {
 
     int rows = model_->rowCount();
 
     for(int i = 0; i < rows; ++i) {
         TreeItem* item = model_->getItem(model_->index(i,0));
         if(item->dataType() == DATA_LIGHT) {
-          view_->setRowHidden(i, model_->parent(model_->index(i,0)), !(_state == Qt::Checked));
+          view_->setRowHidden(i, model_->parent(model_->index(i,0)), !_state);
         }else{
           //always show, if it is not a light
           view_->setRowHidden(i, model_->parent(model_->index(i,0)), false);
@@ -553,7 +586,7 @@ void DataControlPlugin::slotShowLightSources( int _state ) {
 
 void DataControlPlugin::slotShowLightSources()
 {
-  slotShowLightSources( tool_->lightSources->checkState() );
+  slotShowLightSources( tool_->lightSources->isChecked() );
 }
 //******************************************************************************
 
@@ -885,11 +918,8 @@ void DataControlPlugin::saveOnExit(INIFile& _ini){
 }
 
 void DataControlPlugin::showReducedUi(bool reduced) {
-    tool_->boundingBoxWidget->setVisible(!reduced);
-    tool_->boundingBoxBtn->setVisible(!reduced);
-    tool_->line_2->setVisible(!reduced);
-    tool_->visibleDataWidget->setVisible(!reduced);
-    tool_->visibleDataBtn->setVisible(!reduced);
+    if (advancedSettingsBtn_)
+        advancedSettingsBtn_->setVisible(reduced);
 }
 
 void DataControlPlugin::slotObjectUpdated( int _identifier, const UpdateType& _type )

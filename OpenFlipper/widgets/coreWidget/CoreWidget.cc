@@ -72,7 +72,6 @@
 
 // -------------------- Qt event Includes
 #include <QGLFormat>
-#include "common/glew_wrappers.hh"
 
 #define WIDGET_HEIGHT 800
 #define WIDGET_WIDTH  800
@@ -132,7 +131,6 @@ QToolBar * PickMode::toolbar() const {
 
 
 
-
 /** \brief Constructor for the Core Widget
  *
 */
@@ -155,6 +153,8 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   pickToolBarExternal_(0),
   cursorPainter_(0),
   sceneGraphDialog_(0),
+  viewModeChangePopupAction_(0),
+  modeChangeWidget(0),
   fileMenu_(0),
   viewMenu_(0),
   toolsMenu_(0),
@@ -250,7 +250,6 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
 #endif
 
   glWidget_ = new QGLWidget(format,0);
-  glWidget_->makeCurrent();
   PluginFunctions::shareGLWidget (glWidget_);
 
   glView_ = new QtGLGraphicsView(stackedWidget_);
@@ -318,8 +317,6 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   // ======================================================================
   // Create examiner
   // ======================================================================
-
-  initOpenGLFunctions();
 
   // First we analyze the scenegraph
   unsigned int maxPases = 1;
@@ -549,22 +546,50 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
 
   toolBoxArea_ = new QWidget (toolSplitter_);
 
-  viewModeControlBox_ = new QGroupBox (tr("ViewMode"));
+  viewModeControlBox_ = new QWidget();
 
   QHBoxLayout *hLayout = new QHBoxLayout;
 
-  vmChangeButton_ = new QPushButton(tr("Change View Mode"));
-  QPushButton* vmEditButton   = new QPushButton(tr("Edit View Modes"));
+  //vmChangeButton_ = new QPushButton(tr("Change View Mode"));
+  //QPushButton* vmEditButton   = new QPushButton(tr("Edit View Modes"));
 
-  hLayout->addWidget(vmChangeButton_);
-  hLayout->addWidget(vmEditButton);
+  /*
+   * Set up view mode popup button.
+   */
+  viewModePopupBtn_ = new QToolButton();
+  viewModePopupBtn_->setAutoRaise(true);
+  //viewModePopupBtn->setText(QString::fromUtf8("⚙"));
+  viewModePopupBtn_->setIcon(QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"preferences.png"));
+  viewModePopupBtn_->setIconSize(QSize(16, 16));
+  viewModePopupBtn_->setPopupMode(QToolButton::InstantPopup);
+
+  //init widget
+  modeChangeWidget = new viewModeChangeWidget(viewModes_, this);
+  modeChangeWidget->setWindowIcon(OpenFlipper::Options::OpenFlipperIcon());
+  connect(modeChangeWidget,
+          SIGNAL(changeView(QString, QStringList, QStringList, QStringList)),
+          this,
+          SLOT(slotChangeView(QString, QStringList, QStringList, QStringList)));
+
+  viewModeChangePopupAction_ = new QWidgetAction(viewModePopupBtn_);
+  viewModeChangePopupAction_->setDefaultWidget(modeChangeWidget);
+  viewModePopupBtn_->addAction(viewModeChangePopupAction_);
+
+
+  hLayout->setContentsMargins(0, 0, 0, 0);
+  hLayout->addStretch(1);
+  hLayout->addWidget(viewModePopupBtn_);
   viewModeControlBox_->setLayout (hLayout);
 
-  connect(vmChangeButton_, SIGNAL(clicked()), this, SLOT(slotViewChangeDialog()));
-  connect(vmEditButton, SIGNAL(clicked()), this, SLOT(slotViewModeDialog()));
+  connect(modeChangeWidget->editViewModes_pb, SIGNAL(clicked()),
+          this, SLOT(slotViewModeDialog()));
+  connect(modeChangeWidget, SIGNAL(wantClose()),
+          this, SLOT(closeChangeViewModePopup()));
+
 
   toolBoxScroll_ = new QScrollArea ();
   toolBox_ = new SideArea ();
+  toolBoxScroll_->setContentsMargins(0, 0, 0, 0);
   toolBoxScroll_->setWidget (toolBox_);
   toolBoxScroll_->setWidgetResizable (true);
   toolBoxScroll_->setFrameStyle (QFrame::StyledPanel);
@@ -572,6 +597,8 @@ CoreWidget( QVector<ViewMode*>& _viewModes,
   QVBoxLayout *vLayout = new QVBoxLayout;
   vLayout->addWidget(viewModeControlBox_);
   vLayout->addWidget(toolBoxScroll_);
+  vLayout->setContentsMargins(0, 0, 0, 0);
+  vLayout->setSpacing(0);
   
   if ( OpenFlipperSettings().value("Core/Gui/TaskSwitcher/Hide",false).toBool() ) {
     viewModeControlBox_->hide();

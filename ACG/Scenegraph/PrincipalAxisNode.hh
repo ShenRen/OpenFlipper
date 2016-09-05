@@ -233,7 +233,9 @@ public:
   void get_axes_colors(Vec4f out_colors[3]) const;
 
 private:
-  
+
+  void diagonalize(const double (&A)[3][3], double (&Q)[3][3], double (&D)[3][3]);
+
   // vector of Principal Components
   std::vector< PrincipalComponent > pc_;
 

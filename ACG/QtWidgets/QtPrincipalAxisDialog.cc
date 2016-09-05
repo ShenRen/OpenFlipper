@@ -50,6 +50,7 @@
 #include "QtPrincipalAxisDialog.hh"
 
 #include <QtGui>
+#include <limits>
 
 //== NAMESPACES ===============================================================
 

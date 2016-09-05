@@ -54,6 +54,8 @@
 
 #include <ACG/QtWidgets/QtPrincipalAxisDialog.hh>
 
+#include <limits>
+
 //== NAMESPACES ===============================================================
 
 namespace ACG {

@@ -52,7 +52,6 @@
 
 #include "PrincipalAxisNode.hh"
 #include <ACG/GL/gl.hh>
-#include <gmm/gmm.h>
 
 
 //== NAMESPACES ===============================================================
@@ -69,7 +68,7 @@ void
 PrincipalAxisNode::
 set_vector( unsigned int _i, const Vec3d _p, const VectorT& _v)
 {
-  gmm::dense_matrix<double> m(3,3);
+  Matrix4x4T<double> m;
 
   m(0,0) = _v[0];
   m(1,1) = _v[1];
@@ -86,23 +85,28 @@ set_vector( unsigned int _i, const Vec3d _p, const VectorT& _v)
 
 
 template<class MatrixT>
-void 
+void
 PrincipalAxisNode::
 set_matrix( unsigned int _i, const Vec3d _p, const MatrixT& _m)
 {
-  // create gmm matrix
-  gmm::dense_matrix<double> s(3,3);
+  // create matrix
+  double s[3][3];
 
   // copy values
   for(unsigned int i=0; i<3; ++i)
     for(unsigned int j=0; j<3; ++j)
-      s(i,j) = _m(i,j);
-    
-  // compute eigenvalues and eigenvectors
-  std::vector<double> eigval(3);
-  gmm::dense_matrix<double> eigvect(3,3);
+      s[i][j] = _m(i,j);
 
-  gmm::symmetric_qr_algorithm(s, eigval, eigvect);
+  // compute eigenvalues and eigenvectors
+  double Q[3][3];
+  double D[3][3];
+
+  diagonalize(s, Q, D);
+
+  std::vector<double> eigval;
+  for (int i = 0; i < 3; ++i)
+    eigval.push_back(D[i][i]);
+
 
   unsigned int pstress_idx[3];
   if( fabs(eigval[0]) >= fabs(eigval[1]) && fabs(eigval[0]) >= fabs(eigval[2])) pstress_idx[0] = 0;
@@ -128,23 +132,23 @@ set_matrix( unsigned int _i, const Vec3d _p, const MatrixT& _m)
   for(unsigned int j=0; j<3; ++j)
   {
     // set sign
-    if( eigval[ pstress_idx[j]] < 0 ) 
+    if( eigval[ pstress_idx[j]] < 0 )
       sign[j] = false;
     else
       sign[j] = true;
 
     for(unsigned int k=0; k<3; ++k)
-      a[j][k] = eigval[ pstress_idx[j]]*eigvect(k, pstress_idx[j]);
+      a[j][k] = eigval[ pstress_idx[j]]*Q[k][pstress_idx[j]];
   }
-    
-  set(_i, 
+
+  set(_i,
       PrincipalComponent(_p,
-			 a[0],
-			 a[1],
-			 a[2],
-			 sign[0],
-			 sign[1],
-			 sign[2] ) );
+       a[0],
+       a[1],
+       a[2],
+       sign[0],
+       sign[1],
+       sign[2] ) );
 
 }
 

@@ -330,7 +330,7 @@ void viewModeWidget::slotSetAllWidgets(){
       }
       
       
-      if ( !modes_.empty() ) {
+    if ( !modes_.empty() ) {
         QStringList allToolboxes = modes_[0]->visibleToolboxes;
         QStringList allToolbars  = modes_[0]->visibleToolbars;
         QStringList allContextMenus  = modes_[0]->visibleContextMenus;
@@ -358,9 +358,9 @@ void viewModeWidget::slotSetAllWidgets(){
         availableToolbars->addItems(availableToolbarList);
         availableContextMenus->addItems(availableContextMenuList);
         
-      } else {
-        std::cerr << "Mode not found!" << std::endl;
-      }
+    } else {
+      std::cerr << "Mode not found!" << std::endl;
+    }
       
 }
 
@@ -877,7 +877,7 @@ void viewModeWidget::show(QString _lastMode){
     if (viewModeList->item(i)->text() == _lastMode)
       viewModeList->setCurrentRow(i);
     
-    removeButton->setEnabled(false);
+  removeButton->setEnabled(false);
 }
 
 

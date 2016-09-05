@@ -1288,14 +1288,14 @@ void Core::slotSetSlotDescription(QString      _slotName,   QString _slotDescrip
   //handle plugin slots
 
   //find plugin
- PluginInfo* pluginInfo = 0;
+  PluginInfo* pluginInfo = 0;
 
   for (uint i=0; i < plugins_.size(); i++)
     if (plugins_[i].plugin == sender())
       pluginInfo = &plugins_[i];
 
-    if (pluginInfo == 0){
-      emit log(LOGERR, tr("Unable to set slot-description. Plugin not found!"));
+  if (pluginInfo == 0){
+    emit log(LOGERR, tr("Unable to set slot-description. Plugin not found!"));
     return;
   }
 

@@ -170,36 +170,48 @@ target_link_libraries ( ACG  ${OPENMESH_LIBRARIES}
 #===================================================================
 find_package(GoogleTest)
 if (GTEST_FOUND)
-  enable_testing()
-  file(GLOB_RECURSE TEST_SOURCES tests/*.cc)
-  set(TESTED_SOURCES
-        Algorithm/DBSCANT.cc
-     )
-  include_directories(${GTEST_INCLUDE_DIRS} ${OPENMESH_INCLUDE_DIR})
-  link_directories ( ${GTEST_LIBRARY_DIR})
 
-  if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-     add_definitions( /D _VARIADIC_MAX=10 )
+
+  if ( NOT DEFINED ACG_BUILD_UNIT_TESTS )
+    set( ACG_BUILD_UNIT_TESTS false CACHE BOOL "Enable or disable unit tests on ACG library." )
   endif()
+
+  if ( ACG_BUILD_UNIT_TESTS )
+
+    enable_testing()
+
+    file(GLOB_RECURSE TEST_SOURCES tests/*.cc)
+    set(TESTED_SOURCES
+          Algorithm/DBSCANT.cc
+       )
+    include_directories(${GTEST_INCLUDE_DIRS} ${OPENMESH_INCLUDE_DIR})
+    link_directories ( ${GTEST_LIBRARY_DIR})
+
+    if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+       add_definitions( /D _VARIADIC_MAX=10 )
+    endif()
  
-  add_executable (ACG_tests ${TEST_SOURCES})
+    add_executable (ACG_tests ${TEST_SOURCES})
 
-  set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-  # run tests in build directory of OF
-  if ( ${PROJECT_NAME} MATCHES "OpenFlipper" AND WIN32)
-    set(OUT_DIR  ${CMAKE_BINARY_DIR}/Build)
-  endif()
+    set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    # run tests in build directory of OF
+    if ( ${PROJECT_NAME} MATCHES "OpenFlipper" AND WIN32)
+      set(OUT_DIR  ${CMAKE_BINARY_DIR}/Build)
+    endif()
 
-  set_target_properties(ACG_tests PROPERTIES
-    COMPILE_FLAGS "-UNDEBUG"
-    RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUT_DIR}
-  )
+    set_target_properties(ACG_tests PROPERTIES
+      COMPILE_FLAGS "-UNDEBUG"
+      RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUT_DIR}
+    )
   
-  target_link_libraries(ACG_tests
-        ${GTEST_LIBRARIES} ${OPENMESH_LIBRARIES} ACG
-  )
+    target_link_libraries(ACG_tests
+          ${GTEST_LIBRARIES} ${OPENMESH_LIBRARIES} ACG
+    )
   
-  add_test(NAME AllTestsIn_ACG_tests COMMAND ${OUT_DIR}/ACG_tests)
+    add_test(NAME AllTestsIn_ACG_tests COMMAND ${OUT_DIR}/ACG_tests)
+
+  endif( ACG_BUILD_UNIT_TESTS )
+
 endif(GTEST_FOUND)

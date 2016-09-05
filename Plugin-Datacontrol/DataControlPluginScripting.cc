@@ -401,10 +401,16 @@ int DataControlPlugin::groupObjects(IdList _objectIDs, QString _groupName) {
     groupItem->setParent(parent);
   }
 
+  IdList ids;
   //append new children to group
-  for ( int i = 0 ; i < objs.size() ; ++i) {
+  for ( int i = 0 ; i < objs.size() ; ++i)
+  {
     (objs[i])->setParent(groupItem);
+    ids.push_back((objs[i])->id());
   }
+
+  emit objectsGrouped(ids);
+  emit updatedObject(groupId,UPDATE_ALL);
   
   return groupId;
 }

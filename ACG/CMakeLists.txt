@@ -125,6 +125,7 @@ endif ()
 acg_append_files (headers "*.hh" ${directories})
 acg_append_files (sources "*.cc" ${directories})
 acg_append_files (ui "*.ui" ${directories})
+acg_append_files (qrc "*.qrc" ${directories} .)
 
 # remove template cc files from source file list
 acg_drop_templates (sources)
@@ -133,16 +134,18 @@ acg_drop_templates (sources)
 if (QT5_FOUND)
   acg_qt5_autouic (uic_targets ${ui})
   acg_qt5_automoc (moc_targets ${headers})
+  acg_qt5_autoqrc (qrc_targets ${qrc})
 elseif (QT4_FOUND)
   acg_qt4_autouic (uic_targets ${ui})
   acg_qt4_automoc (moc_targets ${headers})
+  acg_qt4_autoqrc (qrc_targets ${qrc})
 endif()
 
 
 if (QT5_FOUND)
-  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
+  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets})
 elseif (QT4_FOUND)
-  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
+  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets})
 endif()
 if ( NOT WIN32 )
   set_target_properties (ACG PROPERTIES VERSION ${ACG_VERSION_MAJOR}.${ACG_VERSION_MINOR}

@@ -215,7 +215,7 @@ void
 PrincipalAxisNode::
 set(unsigned int _i, const PrincipalComponent& _pc)
 {
-  if( _i <= pc_.size())
+  if( _i < pc_.size())
   {
     // set values
     pc_[_i] = _pc;
@@ -238,7 +238,7 @@ void
 PrincipalAxisNode::
 get(unsigned int _i, PrincipalComponent& _pc)
 {
-  if( _i <= pc_.size())
+  if( _i < pc_.size())
   {
     // set values
     _pc = pc_[_i];

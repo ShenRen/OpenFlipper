@@ -658,16 +658,17 @@ void PrincipalAxisNode::diagonalize(const double (&A)[3][3], double (&Q)[3][3], 
     // returns Q and D such that
     // Diagonal matrix D = QT * A * Q;  and  A = Q*D*QT
     const int maxsteps=24;  // certainly wont need that many.
-    int k0, k1, k2;
     double o[3], m[3];
     double q [4] = {0.0,0.0,0.0,1.0};
     double jr[4];
-    double sqw, sqx, sqy, sqz;
-    double tmp1, tmp2, mq;
     double AQ[3][3];
-    double thet, sgn, t, c;
     for(int i=0;i < maxsteps;++i)
     {
+        int k0, k1, k2;
+        double sqw, sqx, sqy, sqz;
+        double tmp1, tmp2, mq;
+        double thet, sgn, t, c;
+
         // quat to matrix
         sqx      = q[0]*q[0];
         sqy      = q[1]*q[1];

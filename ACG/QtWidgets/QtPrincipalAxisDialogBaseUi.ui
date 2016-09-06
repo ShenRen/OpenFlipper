@@ -85,8 +85,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>:/PhySim/Icons/PrincipalAxis_CS1.png</normaloff>:/PhySim/Icons/PrincipalAxis_CS1.png</iconset>
+         <iconset resource="../resources.qrc">
+          <normaloff>:/ACG/Icons/PrincipalAxis_CS1.png</normaloff>:/ACG/Icons/PrincipalAxis_CS1.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -102,8 +102,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>:/PhySim/Icons/PrincipalAxis_CS2.png</normaloff>:/PhySim/Icons/PrincipalAxis_CS2.png</iconset>
+         <iconset resource="../resources.qrc">
+          <normaloff>:/ACG/Icons/PrincipalAxis_CS2.png</normaloff>:/ACG/Icons/PrincipalAxis_CS2.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -119,8 +119,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>:/PhySim/Icons/PrincipalAxis_CS3.png</normaloff>:/PhySim/Icons/PrincipalAxis_CS3.png</iconset>
+         <iconset resource="../resources.qrc">
+          <normaloff>:/ACG/Icons/PrincipalAxis_CS3.png</normaloff>:/ACG/Icons/PrincipalAxis_CS3.png</iconset>
         </property>
         <property name="iconSize">
          <size>

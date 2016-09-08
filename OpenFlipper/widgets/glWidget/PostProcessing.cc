@@ -146,14 +146,14 @@ int PostProcessing::setupScene( int _viewerID, int _width, int _height, int _sam
 
   GLuint texInternalFmt = requiresFP ? GL_RGBA32F : GL_RGBA;
 
+	// save output target FBO
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, (GLint*)&backbufferFBO_);
+	glGetIntegerv(GL_DRAW_BUFFER, (GLint*)&backbufferTarget_);
+	glGetFloatv(GL_VIEWPORT, backbufferViewport_);
+
   // allocate enough FBOs for the pipeline
   if (_stereoEye < 1)
   {
-    // save output target FBO
-    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, (GLint*)&backbufferFBO_);
-    glGetIntegerv(GL_DRAW_BUFFER, (GLint*)&backbufferTarget_);
-    glGetIntegerv(GL_VIEWPORT, backbufferViewport_);
-
     // in stereo mode, allocation for both eyes is done while setting up the left eye
 
     // alloc/resize scene targets
@@ -180,7 +180,14 @@ int PostProcessing::setupScene( int _viewerID, int _width, int _height, int _sam
   int targetFboId = std::max(std::min(_stereoEye, 1), 0); // clamp(eye, 0, 1)
   sceneFBO_[targetFboId].bind();
   glDrawBuffer(GL_COLOR_ATTACHMENT0);
-  glViewport(0, 0, _width, _height);
+#ifdef GL_ARB_viewport_array
+	if (glViewportIndexedf)
+		glViewportIndexedf(0, backbufferViewport_[0], backbufferViewport_[1], _width, _height);
+	else
+		glViewport(0, 0, _width, _height);
+#else
+	glViewport(0, 0, _width, _height);
+#endif
 
   // clear fbo
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -259,6 +266,10 @@ void PostProcessing::postProcess( int _viewerID, ACG::GLState* _glstate, const A
   glColorMask(1,1,1,1);
 
 
+	// get fract viewport offset to support ssaa
+	GLfloat fractVP[4];
+	glGetFloatv(GL_VIEWPORT, fractVP);
+
   // execute
 
   for (int chainId = 0; chainId < numChainExecs; ++chainId) {
@@ -313,9 +324,9 @@ void PostProcessing::postProcess( int _viewerID, ACG::GLState* _glstate, const A
       // specify output target of the next post processor
       GLuint outputFBO = procFBO_[postProcTarget].getFboID();
       GLuint outputDrawbuffer = GL_COLOR_ATTACHMENT0;
-      GLint outputViewport[4] = {0, 0, procFBO_[postProcTarget].width(), procFBO_[postProcTarget].height()};
+      GLfloat outputViewport[4] = {fractVP[0], fractVP[1], procFBO_[postProcTarget].width(), procFBO_[postProcTarget].height()};
 
-      const GLint* outputViewportPtr = outputViewport;
+      const GLfloat* outputViewportPtr = outputViewport;
 
       // write to stereo or back buffer in last step
       if (i + 1 == numProcs) 
@@ -370,11 +381,11 @@ void PostProcessing::postProcess( int _viewerID, ACG::GLState* _glstate, const A
         if (debugLevel_ > 0)
         {
           GLint testFBO = 0, testDrawbuffer = 0;
-          GLint testVp[4];
+          GLfloat testVp[4];
 
           glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &testFBO);
           glGetIntegerv(GL_DRAW_BUFFER, &testDrawbuffer);
-          glGetIntegerv(GL_VIEWPORT, testVp);
+          glGetFloatv(GL_VIEWPORT, testVp);
 
           if (GLuint(testFBO) != postProcOutput.fbo_)
             std::cerr << "Error: PostProcessor does not write to specified FBO: " << proc->plugin->postProcessorName().toStdString() << std::endl;
@@ -402,7 +413,7 @@ void PostProcessing::postProcess( int _viewerID, ACG::GLState* _glstate, const A
   // restore backbuffer
   glBindFramebuffer(GL_FRAMEBUFFER, backbufferFBO_);
   glDrawBuffer(backbufferTarget_);
-  glViewport(backbufferViewport_[0], backbufferViewport_[1], backbufferViewport_[2], backbufferViewport_[3]);
+	_glstate->viewport(backbufferViewport_[0], backbufferViewport_[1], backbufferViewport_[2], backbufferViewport_[3]);
 
   // restore depth func
   glDepthFunc(saveDepthFunc);

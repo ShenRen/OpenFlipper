@@ -192,7 +192,19 @@ void ToonRenderer::render(ACG::GLState* _glState, Viewer::ViewerProperties& _pro
   // bind fbo for scene + depth tex
   viewRes->scene_->bind();
 
-  glViewport(0, 0, _glState->viewport_width(), _glState->viewport_height());
+#ifdef GL_ARB_viewport_array
+	if (glViewportIndexedf)
+	{
+		GLfloat vp[4];
+		glGetFloatv(GL_VIEWPORT, vp);
+		glViewport(vp[0], vp[1], _glState->viewport_width(), _glState->viewport_height());
+	}
+	else
+		glViewport(0, 0, _glState->viewport_width(), _glState->viewport_height());
+#else
+	glViewport(0, 0, _glState->viewport_width(), _glState->viewport_height());
+#endif
+
 
   // clear depth texture
   glDrawBuffer(GL_COLOR_ATTACHMENT1);

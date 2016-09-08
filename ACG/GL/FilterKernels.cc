@@ -473,7 +473,7 @@ void RadialBlurFilter::setKernel( int _numSamples )
 
 
 PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int _numTris, bool _disk )
-  : radius_(_radius), sampleDistance_(_sampleDistance), numTries_(_numTris)
+  : radius_(_radius), sampleDistance_(_sampleDistance), numTries_(_numTris), disk_(_disk)
 {
   // "Fast Poisson Disk Sampling in Arbitrary Dimensions"
   // http://people.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
@@ -694,12 +694,15 @@ void PoissonBlurFilter::plotSamples( QImage* _image )
 
     _image->fill(qRgb(255,255,255));
 
-    // draw outer circle
-    QPainter plotter;
-    plotter.begin(_image);
-    plotter.setPen(QPen(qRgb(0,0,0)));
-    plotter.drawEllipse(0, 0, _image->width()-1, _image->height()-1);
-    plotter.end();
+		if (disk_)
+		{
+			// draw outer circle
+			QPainter plotter;
+			plotter.begin(_image);
+			plotter.setPen(QPen(qRgb(0, 0, 0)));
+			plotter.drawEllipse(0, 0, _image->width() - 1, _image->height() - 1);
+			plotter.end();
+		}
 
     // draw samples
     for (int i = 0; i < numSamples(); ++i)

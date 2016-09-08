@@ -132,7 +132,7 @@ private:
   /// backbuffer output,  not owned by this class
   GLuint backbufferFBO_,
     backbufferTarget_;
-  GLint backbufferViewport_[4];
+  GLfloat backbufferViewport_[4];
 
   /// postprocessing in stereo mode
   bool stereoMode_;

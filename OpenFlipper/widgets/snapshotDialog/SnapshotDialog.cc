@@ -102,6 +102,7 @@ SnapshotDialog::SnapshotDialog(QString _suggest, bool _captureViewers, int _w, i
   connect(okButton,  SIGNAL(clicked()), this, SLOT(slotOk()) );
 
   connect(supersampling_dist, SIGNAL(valueChanged(double)), this, SLOT(updatePoisson()));
+	connect(supersampling_res_incr, SIGNAL(valueChanged(int)), this, SLOT(updateResMultiplier()));
 
   connect(filename, SIGNAL(textChanged(const QString &)), this, SLOT(filenameChanged(const QString &)));
 
@@ -248,6 +249,44 @@ void SnapshotDialog::updatePoisson() {
   poissonFilter_ = new ACG::PoissonBlurFilter(0.5f, d, 30, false);
 
   poissonFilter_->plotSamples(&poissonImage_);
-  poissonPixmap_ = QPixmap::fromImage(poissonImage_);
-  poisson_samples->setPixmap(poissonPixmap_);
+
+	updateResMultiplier();
+}
+
+void SnapshotDialog::updateResMultiplier() {
+
+	// separate distribution update and res multiplier update,
+	// as adding grid lines for the muliplier is much faster than recomputing a poisson sample distribution
+
+	// copy image
+	poissonResMultImage_ = poissonImage_;
+
+	int resMult = supersampling_res_incr->value();
+
+	// add grid lines to visualize the resolution increase multiplier
+	int w = poissonResMultImage_.width(),
+		h = poissonResMultImage_.height();
+
+	int dw = w / resMult,
+		dh = h / resMult;
+
+	QPainter painter;
+	painter.begin(&poissonResMultImage_);
+	painter.setPen(QPen(qRgb(0, 0, 0)));
+
+	for (int i = 1; i < resMult; ++i) {
+		painter.drawLine(0, dh * i, w, dh * i);
+		painter.drawLine(dw * i, 0, dw * i, h);
+	}
+
+	// boundary
+	painter.drawLine(0, 0, w, 0);
+	painter.drawLine(0, h - 1, w, h - 1);
+	painter.drawLine(0, 0, 0, h);
+	painter.drawLine(w - 1, 0, w - 1, h);
+
+	painter.end();
+
+	poissonResMultPixmap_ = QPixmap::fromImage(poissonResMultImage_);
+	poisson_samples->setPixmap(poissonResMultPixmap_);
 }

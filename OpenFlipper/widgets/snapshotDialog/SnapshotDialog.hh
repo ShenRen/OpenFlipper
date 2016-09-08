@@ -97,6 +97,7 @@ class SnapshotDialog : public QDialog, public Ui::SnapshotDialog
 
 
     void updatePoisson();
+		void updateResMultiplier();
 
   signals:
     void resizeApplication(int _width, int _height);
@@ -107,6 +108,10 @@ private:
   // sample visualization
   QImage poissonImage_;
   QPixmap poissonPixmap_;
+
+	// samples with resolution multiplier grid
+	QImage poissonResMultImage_;
+	QPixmap poissonResMultPixmap_;
 
   // poisson samples
   ACG::PoissonBlurFilter* poissonFilter_;

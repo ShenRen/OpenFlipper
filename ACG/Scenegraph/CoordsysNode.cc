@@ -329,10 +329,10 @@ draw(GLState&  _state  , const DrawModes::DrawMode& /*_drawMode*/)
 
   if ( mode_ == SCREENPOS ) {
 
-    float left, bottom, width, height;
+		float vp[4];
     double aspect = _state.aspect();
 
-    _state.get_viewport(left, bottom, width, height);
+    glGetFloatv(GL_VIEWPORT, vp);
 
     // Projection reset
     _state.push_projection_matrix();
@@ -347,10 +347,10 @@ draw(GLState&  _state  , const DrawModes::DrawMode& /*_drawMode*/)
     _state.reset_modelview();
 
     float rel_size = 50.0;
-    float projdist = sqrt ( (width*height) / rel_size );
+    float projdist = sqrt ( (vp[2]*vp[3]) / rel_size );
 
-    float posx = left + width - projdist ;
-    float posy = bottom + height - projdist ;
+    float posx = vp[0] + vp[2] - projdist ;
+    float posy = vp[1] + vp[3] - projdist ;
 
     // get our desired coordsys position in scene coordinates
     pos3D = _state.unproject (Vec3d (posx, posy, 0.5));

@@ -324,7 +324,20 @@ void DepthPeeling::renderFrontPeeling(ACG::GLState* _glState,
     // begin peeling
     //  draw  first layer
     //  target depth buffer: depth0, front0
-    glViewport(0, 0, viewRes->width_, viewRes->height_);
+#ifdef GL_ARB_viewport_array
+		if (glViewportIndexedf)
+		{
+			// ssaa support: fractional viewport offset
+			GLfloat vp[4];
+			glGetFloatv(GL_VIEWPORT, vp);
+
+			glViewportIndexedf(0, vp[0], vp[1], viewRes->width_, viewRes->height_);
+		}
+		else
+			glViewport(0, 0, viewRes->width_, viewRes->height_);
+#else
+		glViewport(0, 0, viewRes->width_, viewRes->height_);
+#endif
     glBindFramebuffer(GL_FRAMEBUFFER, viewRes->singleFbo_->getFboID());
 
     // allow color+depth write access
@@ -565,7 +578,20 @@ void DepthPeeling::renderDualPeeling(ACG::GLState* _glState, Viewer::ViewerPrope
 
     // clear render targets
 //    viewRes->dualFboACG_->bind();
-    glViewport(0, 0, _glState->viewport_width(), _glState->viewport_height());
+#ifdef GL_ARB_viewport_array
+		if (glViewportIndexedf)
+		{
+			// ssaa support: fractional viewport offset
+			GLfloat vp[4];
+			glGetFloatv(GL_VIEWPORT, vp);
+
+			glViewportIndexedf(0, vp[0], vp[1], _glState->viewport_width(), _glState->viewport_height());
+		}
+		else
+			glViewport(0, 0, _glState->viewport_width(), _glState->viewport_height());
+#else
+		glViewport(0, 0, _glState->viewport_width(), _glState->viewport_height());
+#endif
     glBindFramebuffer(GL_FRAMEBUFFER, viewRes->dualFbo_->getFboID());
 
     const GLenum depthTarget = GL_COLOR_ATTACHMENT0; // stores (-minDepth, maxDepth)

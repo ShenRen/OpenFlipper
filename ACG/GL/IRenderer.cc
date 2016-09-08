@@ -703,19 +703,26 @@ void IRenderer::restoreInputFbo()
     restoreFbo(prevFbo_, prevViewport_, prevDrawBuffer_);
 }
 
-void IRenderer::saveActiveFbo( GLint* _outFboId, GLint* _outViewport, GLint* _outDrawBuffer ) const
+void IRenderer::saveActiveFbo( GLint* _outFboId, GLfloat* _outViewport, GLint* _outDrawBuffer ) const
 {
   // save active fbo
   glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, _outFboId);
-  glGetIntegerv(GL_VIEWPORT, _outViewport);
+  glGetFloatv(GL_VIEWPORT, _outViewport);
   glGetIntegerv(GL_DRAW_BUFFER, _outDrawBuffer);
 }
 
-void IRenderer::restoreFbo( GLint _fboId, const GLint* _outViewport, GLint _drawBuffer ) const
+void IRenderer::restoreFbo( GLint _fboId, const GLfloat* _outViewport, GLint _drawBuffer ) const
 {
   glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
   glDrawBuffer(_drawBuffer);
-  glViewport(_outViewport[0], _outViewport[1], _outViewport[2], _outViewport[3]);
+#ifdef GL_ARB_viewport_array
+	if (glViewportIndexedf)
+		glViewportIndexedf(0, _outViewport[0], _outViewport[1], _outViewport[2], _outViewport[3]);
+	else
+		glViewport(_outViewport[0], _outViewport[1], _outViewport[2], _outViewport[3]);
+#else
+	glViewport(_outViewport[0], _outViewport[1], _outViewport[2], _outViewport[3]);
+#endif
 }
 
 void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
@@ -1209,7 +1216,7 @@ void IRenderer::copyDepthToBackBuffer( GLuint _depthTex, float _scale /*= 1.0f*/
   {
     // save important opengl states
     GLint curFbo;
-    GLint curViewport[4];
+    GLfloat curViewport[4];
     GLint curDrawBuffer;
     saveActiveFbo(&curFbo, curViewport, &curDrawBuffer);
 

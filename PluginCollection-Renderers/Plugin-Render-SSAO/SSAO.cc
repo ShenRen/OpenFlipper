@@ -566,8 +566,8 @@ void SSAOPlugin::render(ACG::GLState* _glState, Viewer::ViewerProperties& _prope
   // the farthest depth value possible in the depth buffer
   const float maxDepth = 1000.0f;
 
-  GLint oldViewport[4];
-  glGetIntegerv(GL_VIEWPORT, oldViewport);
+  GLfloat oldViewport[4];
+  glGetFloatv(GL_VIEWPORT, oldViewport);
 
   for (int i = 0; i < 6; ++i)
   {
@@ -580,7 +580,17 @@ void SSAOPlugin::render(ACG::GLState* _glState, Viewer::ViewerProperties& _prope
 
   // ---------------------------------------------
   // 1. render scene with standard materials:
-  glViewport(0, 0, pViewer->rtSceneWidth_, pViewer->rtSceneHeight_);
+#ifdef GL_ARB_viewport_array
+	if (glViewportIndexedf)
+	{
+		glViewportIndexedf(0, oldViewport[0], oldViewport[1], pViewer->rtSceneWidth_, pViewer->rtSceneHeight_);
+	}
+	else
+		glViewport(0, 0, pViewer->rtSceneWidth_, pViewer->rtSceneHeight_);
+#else
+	glViewport(0, 0, pViewer->rtSceneWidth_, pViewer->rtSceneHeight_);
+#endif
+
 
   ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, pViewer->sceneFbo_);
   ACG::GLState::drawBuffer(drawBuffers[0]); // scene buffer in render target 0
@@ -714,7 +724,14 @@ void SSAOPlugin::render(ACG::GLState* _glState, Viewer::ViewerProperties& _prope
 
   //-----------------------------------------
   // 6. final pass, present result
-  glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+#ifdef GL_ARB_viewport_array
+	if (glViewportIndexedf)
+		glViewportIndexedf(0, oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+	else
+		glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+#else
+	glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+#endif
   ACG::GLState::bindFramebuffer(GL_FRAMEBUFFER_EXT, targetFbo);
 
   ACG::GLState::activeTexture(GL_TEXTURE1);

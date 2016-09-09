@@ -54,6 +54,7 @@
 //== INCLUDES =================================================================
 
 #include <ACG/Config/ACGDefines.hh>
+#include <ACG/GL/VertexDeclaration.hh>
 
 #include "BaseNode.hh"
 #include "DrawModes.hh"
@@ -159,7 +160,7 @@ public:
 
   // draw settings
   void set_draw_style(DrawStyle _ds) { draw_style_ = _ds;}
-  void set_color_mode(ColorMode _cm) { color_mode_ = _cm;}
+  void set_color_mode(ColorMode _cm) { color_mode_ = _cm; updateVBO(); }
   void show_tensor_component(unsigned int _i, unsigned char _show);
 
   // number of tensors to display
@@ -232,7 +233,15 @@ public:
   void set_axes_colors(const Vec4f colors[3]);
   void get_axes_colors(Vec4f out_colors[3]) const;
 
+  /// Overriding BaseNode::getRenderObjects.
+  void getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
+
+  void updateVBO() { updateVBO_ = true; };
+
 private:
+
+  /// creates the vbo only if update was requested
+  void createVBO();
 
   void diagonalize(const double (&A)[3][3], double (&Q)[3][3], double (&D)[3][3]);
 
@@ -279,6 +288,16 @@ private:
   GLUquadricObj *qobj;
 
   GLfloat axes_colors[3][4];
+
+  // Vertex buffer object used in this node
+  unsigned int vbo_;
+
+  ACG::VertexDeclaration vertexDecl_;
+
+  // True if points changed and the vbo has to be updated
+  bool         updateVBO_;
+
+  std::string nodeName_;
 
 };
 

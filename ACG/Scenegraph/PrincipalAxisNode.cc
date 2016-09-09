@@ -49,7 +49,9 @@
 
 //== INCLUDES =================================================================
 
+#include <ACG/GL/acg_glew.hh>
 #include "PrincipalAxisNode.hh"
+#include <ACG/GL/IRenderer.hh>
 #include <ACG/GL/gl.hh>
 
 #include <ACG/QtWidgets/QtPrincipalAxisDialog.hh>
@@ -90,7 +92,9 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
     cylinder_radius_scale_(1.0),
     min_spacing_(0.0),
     draw_style_(DS_3D),
-    color_mode_(CM_Axis) {
+    color_mode_(CM_Axis),
+    vbo_(0),
+    updateVBO_(true) {
 
   static const Vec4f default_cols[3] = {
           Vec4f(0.91, 0.11, 0.09, 1.0),
@@ -143,6 +147,7 @@ show_tensor_component(unsigned int _i, unsigned char _show)
   show_tensor_component_[_i] = _show;
 
   auto_update_range();
+  updateVBO();
 }
 
 
@@ -228,6 +233,8 @@ set(unsigned int _i, const PrincipalComponent& _pc)
 //     update_bounding_box();
   }
   else std::cerr << "PrincipalComponent index error!\n";
+
+  updateVBO();
 }
 
 
@@ -259,6 +266,8 @@ add(const PrincipalComponent& _pc, bool _enable)
   // update range
   if( auto_range_)
     auto_update_range();
+
+  updateVBO();
 }
 
 
@@ -284,6 +293,7 @@ set_min_abs_value( double _v)
     std::cerr << "Warning: Auto update min/max abs_values is enabled! Setting has no effect.\n";
 
   min_abs_value_ = _v;
+  updateVBO();
 }
 
 
@@ -298,6 +308,7 @@ set_max_abs_value( double _v)
     std::cerr << "Warning: Auto update min/max abs_values is enabled! Setting has no effect.\n";
 
   max_abs_value_ = _v;
+  updateVBO();
 }
 
 //----------------------------------------------------------------------------
@@ -309,6 +320,7 @@ set_min_draw_radius( double _v)
 {
   min_draw_radius_ = _v;
   default_radius_ = false;
+  updateVBO();
 }
 
 
@@ -321,6 +333,7 @@ set_max_draw_radius( double _v)
 {
   max_draw_radius_ = _v;
   default_radius_ = false;
+  updateVBO();
 }
 
 
@@ -635,6 +648,8 @@ void PrincipalAxisNode::set_axes_colors(const Vec4f colors[3]) {
             axes_colors[i][j] = colors[i][j];
         }
     }
+
+    updateVBO();
 }
 
 void PrincipalAxisNode::get_axes_colors(Vec4f out_colors[3]) const {
@@ -753,6 +768,133 @@ void PrincipalAxisNode::diagonalize(const double (&A)[3][3], double (&Q)[3][3], 
     }
 }
 
+void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
+        const DrawModes::DrawMode& _drawMode,
+        const ACG::SceneGraph::Material* _mat) {
+
+    if (pc_.empty())
+        return;
+
+    // init base render object
+
+    RenderObject ro;
+    ro.initFromState(&_state);
+    ro.setMaterial(_mat);
+
+    nodeName_ = std::string("PrincipalAxisNode: ") + name();
+    ro.debugName = nodeName_.c_str();
+
+    ro.depthTest = true;
+    ro.depthWrite = true;
+
+    // simulate line width via quad extrusion in geometry shader
+    QString geomTemplate = ShaderProgGenerator::getShaderDir();
+    geomTemplate += "Wireframe/geom_line2quad.tpl";
+
+    ro.shaderDesc.geometryTemplateFile = geomTemplate;
+
+    ro.setUniform("screenSize",
+            Vec2f((float) _state.viewport_width(),
+                    (float) _state.viewport_height()));
+    ro.setUniform("lineWidth", static_cast<float>(cylinder_radius_scale_));
+
+    createVBO();
+    ro.vertexBuffer = vbo_;
+    // vertexDecl is defined in createVBO
+    ro.vertexDecl = &vertexDecl_;
+
+    //besides of the position, colors are saved so we can show them
+    if (vertexDecl_.getNumElements() > 1)
+        ro.shaderDesc.vertexColors = true;
+
+    int tensorComponentCount = 0;
+    for (int i = 0; i < 3; ++i) {
+        tensorComponentCount += show_tensor_component_[i] ? 1 : 0;
+    }
+
+    ro.glDrawArrays(GL_LINES, 0, static_cast<int>(pc_.size() * tensorComponentCount * 2));
+
+    _renderer->addRenderObject(&ro);
+
+}
+
+void PrincipalAxisNode::createVBO() {
+    if (!updateVBO_)
+        return;
+
+    // create vbo if it does not exist
+    if (!vbo_)
+        glGenBuffersARB(1, &vbo_);
+
+    int tensorComponentCount = 0;
+    for (int i = 0; i < 3; ++i) {
+        tensorComponentCount += show_tensor_component_[i] ? 1 : 0;
+    }
+    vertexDecl_.clear();
+    vertexDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
+    vertexDecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_COLOR);
+
+    //3 coordinates + 4 color components per vertex, 2 vertices per principal component
+    std::vector<float> vboData((3 + 4) * 2 * tensorComponentCount * pc_.size(), 0.f);
+
+    float* vboPtr = &vboData[0];
+
+    for (int tensor_component = 0; tensor_component < 3; ++tensor_component) {
+        if (!show_tensor_component_[tensor_component]) continue;
+
+        /*
+         * Constant color per tensor component.
+         * FIXME: We store the same color pc_.size() times. Way redundant!
+         */
+        const GLfloat (&color)[4] = axes_colors[tensor_component];
+
+        for (std::vector<PrincipalComponent>::const_iterator it = pc_.begin();
+                it != pc_.end(); ++it) {
+
+            Vec3d pc_dir = it->a[tensor_component];
+
+            /*
+             * Weird scale computation copied from draw().
+             */
+            const double pc_dir_norm = pc_dir.norm();
+            double length;
+            length = std::max( min_abs_value_, pc_dir_norm);
+            length = std::min( max_abs_value_, length  );
+
+            if( pc_dir_norm > 1e-8 ) pc_dir.normalize();
+
+            // Bug fixed: Visualizing all unit vectors yieled scaled_length = nan
+            double scaled_length(min_draw_radius_);
+            if (fabs(max_abs_value_-min_abs_value_) > 1e-6)
+              scaled_length += (length-min_abs_value_)/(max_abs_value_-min_abs_value_)*(max_draw_radius_-min_draw_radius_);
+
+            pc_dir *= scaled_length;
+
+            const Vec3d pc_from = it->p -
+                    (show_tensor_component_[tensor_component] == 2
+                        ? pc_dir
+                        : Vec3d(0, 0, 0));
+            const Vec3d pc_to = it->p + pc_dir;
+
+            for (int i = 0; i < 3; ++i)
+                *(vboPtr++) = pc_from[i];
+            for (int i = 0; i < 4; ++i)
+                *(vboPtr++) = color[i];
+            for (int i = 0; i < 3; ++i)
+                *(vboPtr++) = pc_to[i];
+            for (int i = 0; i < 4; ++i)
+                *(vboPtr++) = color[i];
+        }
+    }
+    assert(vboPtr == &vboData[0] + vboData.size());
+
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, vboData.size() * sizeof(float),
+            &vboData[0], GL_STATIC_DRAW_ARB);
+
+    // Update done.
+    updateVBO_ = false;
+}
 
 //=============================================================================
 } // namespace SceneGraph

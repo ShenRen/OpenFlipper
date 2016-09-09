@@ -241,7 +241,13 @@ void PostProcessing::setupFBO( ACG::FBO* _dst, int _width, int _height, GLuint _
 
 void PostProcessing::postProcess( int _viewerID, ACG::GLState* _glstate, const ACG::GLMatrixd& _modelview, const ACG::GLMatrixd& _proj1, const ACG::GLMatrixd& _proj2, bool _hwOpenGLStereo )
 {
-  // disable multisample FBO
+	// # post processors in chain
+	const int numProcs = postProcessorManager().numActive(_viewerID);
+
+	if (!numProcs)
+		return;
+
+	// disable multisample FBO
   if (sceneFBO_[0].getMultisamplingCount())
     glDisable(GL_MULTISAMPLE);
 
@@ -251,9 +257,6 @@ void PostProcessing::postProcess( int _viewerID, ACG::GLState* _glstate, const A
 
   std::vector<const PostProcessorInput*> postProcInputVec;
   postProcInputVec.push_back(&postProcInput);
-
-  // # post processors in chain
-  const int numProcs = postProcessorManager().numActive(_viewerID);
 
   // # executions of postproc chain, one for each eye
   int numChainExecs = stereoMode_ ? 2 : 1;

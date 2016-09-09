@@ -212,6 +212,13 @@ public:
 
   int numSubpixels() const { return subpixels_; }
 
+	int width() const { return width_; }
+	int height() const { return height_; }
+
+	int resolutionIncrease() const { return resolutionIncrease_; }
+
+	float sampleDistance() const { return sampleDistance_; }
+
 
   Vec2f subpixelOffset(int i) const;
 

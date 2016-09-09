@@ -398,10 +398,6 @@ void SubpixelSupersampling::endSubpixel(int i) {
 
   glReadPixels(0, 0, width_, height_, texformat, GL_UNSIGNED_BYTE, &pixels[0]);
   
-
-  // composite
-  Vec2f offset = subpixelOffset(i);
-
   // find group of subpixel in the increased resolution
   Vec2i group = subpixelGroup(i);
 

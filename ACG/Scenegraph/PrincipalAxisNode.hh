@@ -238,11 +238,11 @@ public:
   /// Overriding BaseNode::getRenderObjects.
   void getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
 
-	/// world transform of an axis (orientation and translation)
-	GLMatrixd axisTransform(const PrincipalComponent& _pc, int _axis, double* _outSize = 0) const;
+  /// world transform of an axis (orientation and translation)
+  GLMatrixd axisTransform(const PrincipalComponent& _pc, int _axis, double* _outSize = 0) const;
 
-	/// scaled axis
-	Vec3d axisScaled(const PrincipalComponent& _pc, int _axis) const;
+  /// scaled axis
+  Vec3d axisScaled(const PrincipalComponent& _pc, int _axis) const;
 
   /// emit individual objects for each axis for each principal component (slow if tensor count high)
   void emitIndividualRenderobjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode,  const ACG::SceneGraph::Material* _mat);

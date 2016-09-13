@@ -93,6 +93,11 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
     min_spacing_(0.0),
     draw_style_(DS_3D),
     color_mode_(CM_Axis),
+    cone_height_factor_(2.5f),
+    cylinder_(8, 2, 1.0f, true, false),
+    cone_(8, 2, 2.0f / cone_height_factor_, 0.0f, true, false),
+    invalidateInstanceData_(true),
+    supportsInstancing_(-1),
     vbo_(0),
     updateVBO_(true) {
 
@@ -109,9 +114,6 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
 
   for(unsigned int i=0; i<3; ++i)
     show_tensor_component_[i] = 2;
-
-  // create new quadric object
-  qobj = gluNewQuadric();
 }
 
 
@@ -120,8 +122,17 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
 
 PrincipalAxisNode::~PrincipalAxisNode()
 {
-  // delete quadric object
-  gluDeleteQuadric( qobj );
+}
+
+//----------------------------------------------------------------------------
+
+void PrincipalAxisNode::set_color_mode(ColorMode _cm)
+{
+  if (color_mode_ != _cm)
+  {
+    color_mode_ = _cm;
+    invalidateInstanceData_ = true;
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -143,6 +154,11 @@ PrincipalAxisNode::
 show_tensor_component(unsigned int _i, unsigned char _show)
 {
   if (_i > 2) return;
+
+  // instance data has to be invalidated if components change visibility.
+  // toggling between single and double direction is possible without update
+  if ((show_tensor_component_[_i] && !_show) || (!show_tensor_component_[_i] && _show))
+    invalidateInstanceData_ = true;
 
   show_tensor_component_[_i] = _show;
 
@@ -180,7 +196,11 @@ enable ( unsigned int _i)
 {
   if(_i < draw_pc_.size())
   {
-    draw_pc_[_i] = true;
+    if (!draw_pc_[_i])
+    {
+      draw_pc_[_i] = true;
+      invalidateInstanceData_ = true;
+    }
   }
   else std::cerr << "principal component index out of range\n";
 }
@@ -195,7 +215,11 @@ disable ( unsigned int _i)
 {
   if(_i < draw_pc_.size())
   {
-    draw_pc_[_i] = false;
+    if (!draw_pc_[_i])
+    {
+      draw_pc_[_i] = false;
+      invalidateInstanceData_ = true;
+    }
   }
   else std::cerr << "principal component index out of range\n";
 }
@@ -228,6 +252,8 @@ set(unsigned int _i, const PrincipalComponent& _pc)
     // update range
     if( auto_range_)
       auto_update_range();
+
+    invalidateInstanceData_ = true;
 
 //     // update bounding_box
 //     update_bounding_box();
@@ -266,6 +292,8 @@ add(const PrincipalComponent& _pc, bool _enable)
   // update range
   if( auto_range_)
     auto_update_range();
+
+  invalidateInstanceData_ = true;
 
   updateVBO();
 }
@@ -579,17 +607,18 @@ draw_arrow( const Vec3d& _axis, double _r)
     else
       glRotatef(rot_angle,1,0,0);
 
-    gluQuadricDrawStyle(qobj, GLU_FILL);
-    gluQuadricNormals(qobj, GLU_SMOOTH);
+    glPushMatrix();
+    glScalef(_r, _r, 0.85f*size);
+    cylinder_.draw_primitive();
+    glPopMatrix();
 
-    gluCylinder(qobj, base_radius, top_radius, 0.85f*size, slices, 1);
-    glRotatef( 180, 1, 0 ,0);
-    gluDisk(qobj, 0, base_radius, slices, 1);
-    glRotatef( 180, 1, 0 ,0);
-    glTranslatef(0,0,0.85f*size);
-    gluCylinder(qobj, 2.0*base_radius, 0, /*0.15f*size*/ 2.5*base_radius, slices, 1);
-    glRotatef( 180, 1, 0 ,0);
-    gluDisk(qobj, 0, 2.0*base_radius, slices, 1);
+    glPushMatrix();
+    glTranslatef(0, 0, 0.85f*size);
+    glScalef(cone_height_factor_ * _r, cone_height_factor_ * _r, cone_height_factor_ * _r);
+    cone_.draw_primitive();
+    glPopMatrix();
+
+
 
 
     glPopMatrix();
@@ -817,6 +846,75 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
     _renderer->addRenderObject(&ro);
 
 }
+
+//----------------------------------------------------------------------------
+
+Vec3d
+PrincipalAxisNode::
+axisScaled(const PrincipalComponent& _pc, int _axis) const
+{
+  Vec3d a;
+  a = _pc.a[_axis];
+
+  // compute arrow length in world coords
+  double length;
+  length = std::max(min_abs_value_, a.norm());
+  length = std::min(max_abs_value_, length);
+
+  if (a.norm() > 1e-8)
+    a.normalize();
+
+  // Bug fixed: Visualizing all unit vectors yieled scaled_length = nan
+  double scaled_length(min_draw_radius_);
+
+  if (fabs(max_abs_value_ - min_abs_value_) > 1e-6)
+    scaled_length += (length - min_abs_value_) / (max_abs_value_ - min_abs_value_)*(max_draw_radius_ - min_draw_radius_);
+
+  a *= scaled_length;
+  return a;
+}
+
+//----------------------------------------------------------------------------
+
+GLMatrixd
+PrincipalAxisNode::
+axisTransform(const PrincipalComponent& _pc, int _axis, double* _outSize) const
+{
+  assert(0 <= _axis && _axis < 3);
+
+  GLMatrixd axisTransform;
+  axisTransform.identity();
+  axisTransform.translate(_pc.p);
+
+  Vec3d a = axisScaled(_pc, _axis);
+  double size = a.norm();
+
+  if (_outSize)
+    *_outSize = size;
+
+  // orientation
+  if (size > 1e-10)
+  {
+    Vec3d direction = a;
+    Vec3d z_axis(0, 0, 1);
+    Vec3d rot_normal;
+    double rot_angle;
+    direction.normalize();
+    rot_angle = acos((z_axis | direction)) * 180 / M_PI;
+    rot_normal = ((z_axis % direction).normalize());
+
+    if (fabs(rot_angle) > 0.0001 && fabs(180 - rot_angle) > 0.0001)
+      axisTransform.rotate(rot_angle, rot_normal[0], rot_normal[1], rot_normal[2]);
+    else
+      axisTransform.rotate(rot_angle, 1, 0, 0);
+  }
+
+  return axisTransform;
+}
+
+//----------------------------------------------------------------------------
+
+
 
 void PrincipalAxisNode::createVBO() {
     if (!updateVBO_)

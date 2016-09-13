@@ -825,8 +825,6 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
     }
 
     // check support for instancing if not done yet
-    supportsInstancing_ = 0;
-
     if (supportsInstancing_ < 0)
       supportsInstancing_ = checkExtensionSupported("GL_ARB_instanced_arrays") ? 1 : 0;
     if (supportsInstancing_)

@@ -321,6 +321,7 @@ set_min_abs_value( double _v)
     std::cerr << "Warning: Auto update min/max abs_values is enabled! Setting has no effect.\n";
 
   min_abs_value_ = _v;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -336,6 +337,7 @@ set_max_abs_value( double _v)
     std::cerr << "Warning: Auto update min/max abs_values is enabled! Setting has no effect.\n";
 
   max_abs_value_ = _v;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -348,6 +350,7 @@ set_min_draw_radius( double _v)
 {
   min_draw_radius_ = _v;
   default_radius_ = false;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -361,6 +364,7 @@ set_max_draw_radius( double _v)
 {
   max_draw_radius_ = _v;
   default_radius_ = false;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -678,6 +682,7 @@ void PrincipalAxisNode::set_axes_colors(const Vec4f colors[3]) {
         }
     }
 
+    invalidateInstanceData_ = true;
     updateVBO();
 }
 
@@ -848,19 +853,17 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
       // count number of instances
       int numInstances = 0;
 
+      int visibleTensors = 0;
+      for (unsigned int k = 0; k < 3; ++k)
+      {
+        if (show_tensor_component_[k]) 
+          ++visibleTensors;
+      }
+
       for (size_t i = 0; i < pc_.size(); ++i)
       {
         if (draw_pc_[i])
-        {
-          for (unsigned int k = 0; k < 3; ++k)
-          {
-            if (!show_tensor_component_[k]) continue;
-
-            double size = axisScaled(pc_[i], k).norm();
-            if (size > 1e-10)
-              ++numInstances;
-          }
-        }
+          numInstances += visibleTensors;
       }
 
       if (!numInstances)
@@ -891,38 +894,35 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
               double size = 1.0;
               GLMatrixd axisWorld = axisTransform(pc, k, &size);
 
-              if (size > 1e-10)
+              // store 4x3 part of axis transform
+
+              for (int r = 0; r < 3; ++r)
+                for (int c = 0; c < 4; ++c)
+                  instanceData[instanceOffset * numDwordsPerInstance + r * 4 + c] = axisWorld(r, c);
+
+              // store size
+              instanceData[instanceOffset * numDwordsPerInstance + 4 * 3] = size;
+
+              // store color
+              Vec4uc instanceColor(0, 0, 0, 255);
+
+              if (color_mode_ == CM_Sign)
               {
-                // store 4x3 part of axis transform
-
-                for (int r = 0; r < 3; ++r)
-                  for (int c = 0; c < 4; ++c)
-                    instanceData[instanceOffset * numDwordsPerInstance + r * 4 + c] = axisWorld(r, c);
-
-                // store size
-                instanceData[instanceOffset * numDwordsPerInstance + 4 * 3] = size;
-
-                // store color
-                Vec4uc instanceColor(0, 0, 0, 255);
-
-                if (color_mode_ == CM_Sign)
-                {
-                  // choose color based on eigenvalue sign
-                  if (pc.sign[k] == true)
-                    instanceColor = Vec4uc(255, 0, 0, 255);
-                  else
-                    instanceColor = Vec4uc(0, 0, 255, 255);
-                }
-                else // choose color based on eigenvalue
-                {
-                  for (int m = 0; m < 4; ++m)
-                    instanceColor[m] = static_cast<unsigned char>(std::max(std::min(int(axes_colors[k][m] * 255.0f), int(255)), int(0)));
-                }
-
-                memcpy(&instanceData[instanceOffset * numDwordsPerInstance + 4 * 3 + 1], instanceColor.data(), 4);
-
-                ++instanceOffset;
+                // choose color based on eigenvalue sign
+                if (pc.sign[k] == true)
+                  instanceColor = Vec4uc(255, 0, 0, 255);
+                else
+                  instanceColor = Vec4uc(0, 0, 255, 255);
               }
+              else // choose color based on eigenvalue
+              {
+                for (int m = 0; m < 4; ++m)
+                  instanceColor[m] = static_cast<unsigned char>(std::max(std::min(int(axes_colors[k][m] * 255.0f), int(255)), int(0)));
+              }
+
+              memcpy(&instanceData[instanceOffset * numDwordsPerInstance + 4 * 3 + 1], instanceColor.data(), 4);
+
+              ++instanceOffset;
             }
           }
         }

@@ -952,20 +952,23 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
       }
 
       // scale and offset based on visualization mode (single or both directions)
-      Vec3f pa_scale, pa_offset;
+      Vec3f pa_scale(0.0f, 0.0f, 0.0f), pa_offset(0.0f, 0.0f, 0.0f);
 
+      int curTensor = 0;
       for (int k = 0; k < 3; ++k)
       {
         if (show_tensor_component_[k] == 2)
         {
-          pa_scale[k] = 2.0f;
-          pa_offset[k] = -1.0f;
+          pa_scale[curTensor] = 2.0f;
+          pa_offset[curTensor] = -1.0f;
         }
         else
         {
-          pa_scale[k] = 1.0f;
-          pa_offset[k] = 0.0f;
+          pa_scale[curTensor] = 1.0f;
+          pa_offset[curTensor] = 0.0f;
         }
+        if (show_tensor_component_[k])
+          ++curTensor;
       }
 
       if (draw_style_ == DS_2D)
@@ -982,6 +985,7 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
         obj.setUniform("pa_screenSize", Vec2f(_state.viewport_width(), _state.viewport_height()));
         obj.setUniform("pa_scale", pa_scale);
         obj.setUniform("pa_offset", pa_offset);
+        obj.setUniform("pa_visible_tensors", visibleTensors);
 
         obj.vertexBuffer = lineBuffer_.id();
         obj.vertexDecl = &lineDeclInstanced_;
@@ -1007,6 +1011,7 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
         obj.setUniform("pa_cone_offset", Vec3f(0.0f, 0.0f, 0.0f));
         obj.setUniform("pa_scale", pa_scale * 0.85f);
         obj.setUniform("pa_offset", pa_offset * 0.85f);
+        obj.setUniform("pa_visible_tensors", visibleTensors);
 
         obj.vertexBuffer = cylinder_.getVBO();
         obj.vertexDecl = &cylinderDeclInstanced_;

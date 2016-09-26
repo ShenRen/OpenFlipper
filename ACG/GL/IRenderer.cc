@@ -82,6 +82,7 @@ prevFboSaved_(false),
 prevVAO_(0),
 depthCopyShader_(0),
 errorDetectionLevel_(1),
+coreProfile_(false),
 enableLineThicknessGL42_(false)
 {
   prevViewport_[0] = 0;
@@ -490,6 +491,8 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
 #ifdef GL_ARB_vertex_array_object
   glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO_);
 #endif
+
+  coreProfile_ = !_glState->compatibilityProfile();
 
   // grab view transform from glstate
   viewMatrix_ = _glState->modelview();
@@ -908,13 +911,16 @@ void IRenderer::bindObjectRenderStates(ACG::RenderObject* _obj)
   else
     glDisable(GL_BLEND);
 
-  if (_obj->alphaTest)
+  if (!coreProfile_)
   {
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(_obj->alphaFunc, _obj->alphaRef);
+    if (_obj->alphaTest)
+    {
+      glEnable(GL_ALPHA_TEST);
+      glAlphaFunc(_obj->alphaFunc, _obj->alphaRef);
+    }
+    else
+      glDisable(GL_ALPHA_TEST);
   }
-  else
-    glDisable(GL_ALPHA_TEST);
 
   if (_obj->depthTest)
     glEnable(GL_DEPTH_TEST);

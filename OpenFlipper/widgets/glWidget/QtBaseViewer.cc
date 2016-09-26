@@ -680,7 +680,10 @@ void glViewer::drawScene()
     ACG::IRenderer* shaderRenderPlugin = dynamic_cast<ACG::IRenderer*>(renderPlugin);
 
     if (shaderRenderPlugin)
+    {
       shaderRenderPlugin->setViewerID( properties_.viewerId() );
+      shaderRenderPlugin->setCoreProfileMode( OpenFlipper::Options::coreProfile() );
+    }
 
     if (stereoOpenGL || stereoAnaglyph) {
       // save current fbo

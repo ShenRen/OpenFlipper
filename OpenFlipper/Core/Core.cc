@@ -638,6 +638,14 @@ Core::init() {
 //     emit log(LOGWARN,"Work is in progress to resolve this issue.");
   }
 
+
+  // todo: there are still some buffers used by qt internally without any vao active:
+//  if (OpenFlipper::Options::coreProfile())
+//  {
+//    ACG::VertexArrayObject* vao = new ACG::VertexArrayObject();
+//    vao->bind();
+//  }
+
   if ( OpenFlipper::Options::gui() ) {
 
     QFile statesFile(OpenFlipper::Options::configDirStr()  + OpenFlipper::Options::dirSeparator() + "WindowStates.dat");

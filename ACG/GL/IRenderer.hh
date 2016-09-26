@@ -444,6 +444,13 @@ public:
    */
   void setViewerID(int _viewerID);
 
+
+  /** \brief Tell renderer to use core or compatibility profile
+   *
+   * @param _enable  renderer should use opengl in core profile mode
+   */
+  void setCoreProfileMode(bool _enable) {coreProfile_ = _enable;}
+
 protected:
   /// Number of Lights
   int numLights_;
@@ -507,6 +514,9 @@ protected:
 
   /// error-detection level for checking render objects
   int errorDetectionLevel_;
+
+  /// core profile mode
+  bool coreProfile_;
 
 private:
 

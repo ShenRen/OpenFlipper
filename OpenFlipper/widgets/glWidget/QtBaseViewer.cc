@@ -216,7 +216,7 @@ glViewer::glViewer( QGraphicsScene* _scene,
 glViewer::~glViewer()
 {
   delete glstate_;
-  
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
   makeCurrent();
   delete glDebugLogger_;
@@ -1036,7 +1036,6 @@ void glViewer::initializeGL()
   glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-
   // unlock update (we started locked)
   properties_.unLockUpdate();
 
@@ -1054,7 +1053,7 @@ void glViewer::initializeGL()
   }
 
 
-  // qt opengl debug info
+  // qt opengl  info
 #if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
   if (OpenFlipper::Options::debug())
   {
@@ -1077,6 +1076,17 @@ void glViewer::paintGL()
 {
   if (!initialized_)
     initializeGL ();
+
+
+  // some drivers in core profile require a VAO object to be bound for all buffer array operations
+  if (!glstate_->compatibilityProfile())
+  {
+    if (!defaultVAO_.isSupported())
+      std::cerr << "Error - using core profile, but required VAO is not supported!" << std::endl;
+    else
+      defaultVAO_.bind();
+  }
+
 
   if (!properties_.updateLocked())
   {
@@ -2634,7 +2644,8 @@ void glViewer::computeProjStereo( int _viewportWidth, int _viewportHeight, Viewe
 
 void glViewer::processGLDebugMessage(const QOpenGLDebugMessage& msg)
 {
-  std::cerr << msg.message().toStdString() << std::endl;
+  if (msg.severity() & QOpenGLDebugMessage::HighSeverity)
+    std::cerr << msg.message().toStdString() << std::endl;
 }
 
 #endif

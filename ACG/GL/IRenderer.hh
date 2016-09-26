@@ -499,6 +499,9 @@ protected:
   /// flag indicating a that saveCurrentFbo() has been called prior restoreFbo()
   bool prevFboSaved_;
 
+  /// previously bound VAO
+  GLint prevVAO_;
+
   /// shader copies depth of the first front layer to the back buffer
   GLSL::Program* depthCopyShader_;
 

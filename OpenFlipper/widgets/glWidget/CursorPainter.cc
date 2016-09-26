@@ -308,12 +308,19 @@ void CursorPainter::cursorToTexture()
         index += 4;
       }
 
-  ACG::GLState::enable (GL_TEXTURE_2D);
+
+  // avoid call to glEnable(GL_TEXTURE_2D) in core profile
+
+  if (!OpenFlipper::Options::coreProfile())
+    ACG::GLState::enable (GL_TEXTURE_2D);
+
   ACG::GLState::bindTexture (GL_TEXTURE_2D, texture_);
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, buf);
   ACG::GLState::bindTexture (GL_TEXTURE_2D, 0);
-  ACG::GLState::disable (GL_TEXTURE_2D);
+
+  if (!OpenFlipper::Options::coreProfile())
+    ACG::GLState::disable (GL_TEXTURE_2D);
 
   hasCursor_ = true;
 }

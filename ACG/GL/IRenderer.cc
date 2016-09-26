@@ -79,6 +79,7 @@ curViewerID_(0),
 prevFbo_(0),
 prevDrawBuffer_(GL_BACK),
 prevFboSaved_(false),
+prevVAO_(0),
 depthCopyShader_(0),
 errorDetectionLevel_(1),
 enableLineThicknessGL42_(false)
@@ -485,6 +486,11 @@ int IRenderer::cmpPriority(const void* _a, const void* _b)
 
 void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode* _scenegraphRoot)
 {
+  // save default VAO
+#ifdef GL_ARB_vertex_array_object
+  glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO_);
+#endif
+
   // grab view transform from glstate
   viewMatrix_ = _glState->modelview();
   camPosWS_ = Vec3f( viewMatrix_(0,3), viewMatrix_(1,3), viewMatrix_(2,3) );
@@ -591,7 +597,7 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
 void IRenderer::finishRenderingPipeline(bool _drawOverlay)
 {
 #ifdef GL_ARB_vertex_array_object
-  glBindVertexArray(0);
+  glBindVertexArray(prevVAO_);
 #endif
 
   // draw thick lines
@@ -647,7 +653,7 @@ void IRenderer::finishRenderingPipeline(bool _drawOverlay)
   }
 
 #ifdef GL_ARB_vertex_array_object
-  glBindVertexArray(0);
+  glBindVertexArray(prevVAO_);
 #endif
 
   glDepthMask(1);
@@ -760,7 +766,8 @@ void IRenderer::bindObjectVBO(ACG::RenderObject* _obj,
 
 
 #ifdef GL_ARB_vertex_array_object
-  glBindVertexArray(_obj->vertexArrayObject);
+  if (_obj->vertexArrayObject)
+    glBindVertexArray(_obj->vertexArrayObject);
 #endif
 
   if (!_obj->vertexArrayObject)
@@ -1023,7 +1030,7 @@ void IRenderer::renderObject(ACG::RenderObject* _obj,
 
 #ifdef GL_ARB_vertex_array_object
   if (_obj->vertexArrayObject)
-    glBindVertexArray(0);
+    glBindVertexArray(prevVAO_);
 #endif
 
 }

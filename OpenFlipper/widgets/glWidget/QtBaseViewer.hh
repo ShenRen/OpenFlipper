@@ -617,6 +617,8 @@ private:
   // Used to calculate the time passed between redraws
   QTime redrawTime_;
 
+  // Default VAO needed in core profile mode
+  ACG::VertexArrayObject defaultVAO_;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
   // Get additional debug info from OpenGL

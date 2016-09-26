@@ -60,8 +60,13 @@
 #include "PropertyModelFactory.hh"
 
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+    #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+    #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 
 //== IMPLEMENTATION ==========================================================
@@ -197,9 +202,12 @@ void PropertyVisPlugin::updateGUI()
 	datatype |= DataType(DATA_POLYHEDRAL_MESH);
 #endif
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
-	datatype |= DataType(DATA_HEXAHEDRAL_MESH);
+        datatype |= DataType(DATA_HEXAHEDRAL_MESH);
 #endif
-	objectListItemModel_.refresh(datatype);
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+        datatype |= DataType(DATA_TETRAHEDRAL_MESH);
+#endif
+        objectListItemModel_.refresh(datatype);
 }
 
 //-----------------------------------------------------------------------------

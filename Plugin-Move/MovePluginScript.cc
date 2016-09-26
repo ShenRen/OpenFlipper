@@ -60,6 +60,9 @@
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
+#endif
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
@@ -215,6 +218,16 @@ void MovePlugin::translate( int _objectId , Vector _vector) {
       mesh.set_vertex(*v_it, mesh.vertex(*v_it) + _vector );
   }
 #endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::VertexIter v_it = mesh.vertices_begin();
+    OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
+    for (; v_it != v_end; ++v_it)
+      mesh.set_vertex(*v_it, mesh.vertex(*v_it) + _vector );
+  }
+#endif
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
 
@@ -300,6 +313,16 @@ void MovePlugin::translate( int _objectId , IdList _vHandles, Vector _vector ){
   else if ( object->dataType(DATA_HEXAHEDRAL_MESH) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
+    for (unsigned int i = 0; i < _vHandles.size(); ++i) {
+      OpenVolumeMesh::VertexHandle v(_vHandles[i]);
+      mesh.set_vertex(v, mesh.vertex(v) + _vector );
+    }
+  }
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
     for (unsigned int i = 0; i < _vHandles.size(); ++i) {
       OpenVolumeMesh::VertexHandle v(_vHandles[i]);
       mesh.set_vertex(v, mesh.vertex(v) + _vector );
@@ -401,6 +424,20 @@ void MovePlugin::translateVertexSelection( int _objectId , Vector _vector) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
     OpenVolumeMesh::StatusAttrib& statusAttrib = ((HexahedralMeshObject*)object)->status();
+    OpenVolumeMesh::VertexIter v_it = mesh.vertices_begin();
+    OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
+    for (; v_it != v_end; ++v_it)
+      if (statusAttrib[*v_it].selected()) {
+        noneSelected = false;
+        mesh.set_vertex(*v_it, mesh.vertex(*v_it) + _vector );
+      }
+  }
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::StatusAttrib& statusAttrib = ((TetrahedralMeshObject*)object)->status();
     OpenVolumeMesh::VertexIter v_it = mesh.vertices_begin();
     OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
     for (; v_it != v_end; ++v_it)
@@ -809,6 +846,19 @@ void MovePlugin::transform( int _objectId , Matrix4x4 _matrix ){
     }
   }
 #endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::NormalAttrib<TetrahedralMesh>& normalAttrib = ((TetrahedralMeshObject*)object)->normals();
+    OpenVolumeMesh::VertexIter v_it = mesh.vertices_begin();
+    OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
+    for (; v_it != v_end; ++v_it) {
+      mesh.set_vertex(*v_it, _matrix.transform_point ( mesh.vertex(*v_it) ) );
+      normalAttrib[*v_it] = normalMatrix.transform_vector( normalAttrib[*v_it] );
+    }
+  }
+#endif
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
 
@@ -911,6 +961,18 @@ void MovePlugin::transform( int _objectId , IdList _vHandles, Matrix4x4 _matrix 
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
     OpenVolumeMesh::NormalAttrib<HexahedralMesh>& normalAttrib = ((HexahedralMeshObject*)object)->normals();
+    for (unsigned int i = 0; i < _vHandles.size(); ++i) {
+      OpenVolumeMesh::VertexHandle v(_vHandles[i]);
+      mesh.set_vertex(v, _matrix.transform_point ( mesh.vertex(v) ) );
+      normalAttrib[v] = normalMatrix.transform_vector( normalAttrib[v] );
+    }
+  }
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::NormalAttrib<TetrahedralMesh>& normalAttrib = ((TetrahedralMeshObject*)object)->normals();
     for (unsigned int i = 0; i < _vHandles.size(); ++i) {
       OpenVolumeMesh::VertexHandle v(_vHandles[i]);
       mesh.set_vertex(v, _matrix.transform_point ( mesh.vertex(v) ) );
@@ -1034,6 +1096,22 @@ bool MovePlugin::transformVertexSelection( int _objectId , Matrix4x4 _matrix ){
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
     OpenVolumeMesh::NormalAttrib<HexahedralMesh>& normalAttrib = ((HexahedralMeshObject*)object)->normals();
     OpenVolumeMesh::StatusAttrib& statusAttrib = ((HexahedralMeshObject*)object)->status();
+    OpenVolumeMesh::VertexIter v_it  = mesh.vertices_begin();
+    OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
+    for (; v_it!=v_end; ++v_it)
+      if ( statusAttrib[*v_it].selected() )
+      {
+        noneSelected = false;
+        mesh.set_vertex(*v_it, _matrix.transform_point ( mesh.vertex(*v_it) ) );
+        normalAttrib[*v_it] = normalMatrix.transform_vector( normalAttrib[*v_it] );
+      }
+  }
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::NormalAttrib<TetrahedralMesh>& normalAttrib = ((TetrahedralMeshObject*)object)->normals();
+    OpenVolumeMesh::StatusAttrib& statusAttrib = ((TetrahedralMeshObject*)object)->status();
     OpenVolumeMesh::VertexIter v_it  = mesh.vertices_begin();
     OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
     for (; v_it!=v_end; ++v_it)
@@ -1184,6 +1262,38 @@ bool MovePlugin::transformFaceSelection( int _objectId , Matrix4x4 _matrix ){
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
     OpenVolumeMesh::NormalAttrib<HexahedralMesh>& normalAttrib = ((HexahedralMeshObject*)object)->normals();
     OpenVolumeMesh::StatusAttrib& statusAttrib = ((HexahedralMeshObject*)object)->status();
+    OpenVolumeMesh::VertexIter v_begin  = mesh.vertices_begin();
+    OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
+
+    //init tags
+    for (OpenVolumeMesh::VertexIter v_it = v_begin; v_it!=v_end; ++v_it)
+        statusAttrib[*v_it].set_tagged(false);
+
+    OpenVolumeMesh::FaceIter f_it  = mesh.faces_begin();
+    OpenVolumeMesh::FaceIter f_end = mesh.faces_end();
+    for (; f_it!=f_end; ++f_it)
+      if ( statusAttrib[*f_it].selected() )
+      {
+        noneSelected = false;
+        for (OpenVolumeMesh::HalfFaceVertexIter hfv_it = mesh.hfv_iter(mesh.halfface_handle(*f_it,0)); hfv_it.valid(); ++hfv_it)
+            statusAttrib[*hfv_it].set_tagged(true);
+      }
+
+    for (OpenVolumeMesh::VertexIter v_it = v_begin; v_it!=v_end; ++v_it)
+      if ( statusAttrib[*v_it].tagged() )
+      {
+          mesh.set_vertex(*v_it, _matrix.transform_point ( mesh.vertex(*v_it) ) );
+          normalAttrib[*v_it] = normalMatrix.transform_vector( normalAttrib[*v_it] );
+      }
+
+  }
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  if ( object->dataType( DATA_TETRAHEDRAL_MESH ) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::NormalAttrib<TetrahedralMesh>& normalAttrib = ((TetrahedralMeshObject*)object)->normals();
+    OpenVolumeMesh::StatusAttrib& statusAttrib = ((TetrahedralMeshObject*)object)->status();
     OpenVolumeMesh::VertexIter v_begin  = mesh.vertices_begin();
     OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
 
@@ -1397,6 +1507,39 @@ bool MovePlugin::transformEdgeSelection( int _objectId , Matrix4x4 _matrix ){
 
   }
 #endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  if ( object->dataType( DATA_TETRAHEDRAL_MESH ) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::NormalAttrib<TetrahedralMesh>& normalAttrib = ((TetrahedralMeshObject*)object)->normals();
+    OpenVolumeMesh::StatusAttrib& statusAttrib = ((TetrahedralMeshObject*)object)->status();
+    OpenVolumeMesh::VertexIter v_begin  = mesh.vertices_begin();
+    OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
+
+    //init tags
+    for (OpenVolumeMesh::VertexIter v_it = v_begin; v_it!=v_end; ++v_it)
+        statusAttrib[*v_it].set_tagged(false);
+
+    OpenVolumeMesh::EdgeIter e_it  = mesh.edges_begin();
+    OpenVolumeMesh::EdgeIter e_end = mesh.edges_end();
+    for (; e_it!=e_end; ++e_it)
+      if ( statusAttrib[*e_it].selected() )
+      {
+        noneSelected = false;
+        OpenVolumeMesh::OpenVolumeMeshEdge e(mesh.edge(*e_it));
+        statusAttrib[e.from_vertex()].set_tagged(true);
+        statusAttrib[e.to_vertex()].set_tagged(true);
+      }
+
+    for (OpenVolumeMesh::VertexIter v_it = v_begin; v_it!=v_end; ++v_it)
+      if ( statusAttrib[*v_it].tagged() )
+      {
+          mesh.set_vertex(*v_it, _matrix.transform_point ( mesh.vertex(*v_it) ) );
+          normalAttrib[*v_it] = normalMatrix.transform_vector( normalAttrib[*v_it] );
+      }
+
+  }
+#endif
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
   if ( object->dataType( DATA_POLYHEDRAL_MESH ) ) {
 
@@ -1487,6 +1630,38 @@ bool MovePlugin::transformCellSelection( int _objectId , Matrix4x4 _matrix ){
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
     OpenVolumeMesh::NormalAttrib<HexahedralMesh>& normalAttrib = ((HexahedralMeshObject*)object)->normals();
     OpenVolumeMesh::StatusAttrib& statusAttrib = ((HexahedralMeshObject*)object)->status();
+    OpenVolumeMesh::VertexIter v_begin  = mesh.vertices_begin();
+    OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
+
+    //init tags
+    for (OpenVolumeMesh::VertexIter v_it = v_begin; v_it!=v_end; ++v_it)
+        statusAttrib[*v_it].set_tagged(false);
+
+    OpenVolumeMesh::CellIter c_it  = mesh.cells_begin();
+    OpenVolumeMesh::CellIter c_end = mesh.cells_end();
+    for (; c_it!=c_end; ++c_it)
+      if ( statusAttrib[*c_it].selected() )
+      {
+        noneSelected = false;
+        for (OpenVolumeMesh::CellVertexIter cv_it = mesh.cv_iter(*c_it); cv_it.valid(); ++cv_it)
+            statusAttrib[*cv_it].set_tagged(true);
+      }
+
+    for (OpenVolumeMesh::VertexIter v_it = v_begin; v_it!=v_end; ++v_it)
+      if ( statusAttrib[*v_it].tagged() )
+      {
+          mesh.set_vertex(*v_it, _matrix.transform_point ( mesh.vertex(*v_it) ) );
+          normalAttrib[*v_it] = normalMatrix.transform_vector( normalAttrib[*v_it] );
+      }
+
+  }
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  if ( object->dataType( DATA_TETRAHEDRAL_MESH ) ) {
+
+    TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
+    OpenVolumeMesh::NormalAttrib<TetrahedralMesh>& normalAttrib = ((TetrahedralMeshObject*)object)->normals();
+    OpenVolumeMesh::StatusAttrib& statusAttrib = ((TetrahedralMeshObject*)object)->status();
     OpenVolumeMesh::VertexIter v_begin  = mesh.vertices_begin();
     OpenVolumeMesh::VertexIter v_end = mesh.vertices_end();
 

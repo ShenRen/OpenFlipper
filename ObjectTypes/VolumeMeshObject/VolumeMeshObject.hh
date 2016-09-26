@@ -73,6 +73,7 @@ class DLLEXPORTONLY VolumeMeshObject : public BaseObjectData {
 
   friend class TypePolyhedralMeshPlugin;
   friend class TypeHexahedralMeshPlugin;
+  friend class TypeTetrahedralMeshPlugin;
 
 public:
 

@@ -117,6 +117,10 @@ void VolumeMeshSelectionPlugin::pluginsInitialized() {
     registerType(environmentHandle_, DATA_POLYHEDRAL_MESH);
     emit
     registerType(environmentHandle_, DATA_HEXAHEDRAL_MESH);
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    emit
+    registerType(environmentHandle_, DATA_TETRAHEDRAL_MESH);
+#endif
 
     emit addPrimitiveType(environmentHandle_, "Select Volume Mesh Vertices", iconPath + VERTEX_TYPE, vertexType_);
     emit addPrimitiveType(environmentHandle_, "Select Volume Mesh Edges", iconPath + EDGE_TYPE, edgeType_);
@@ -239,98 +243,103 @@ void VolumeMeshSelectionPlugin::slotSelectionOperation(QString _operation) {
     PluginFunctions::IteratorRestriction restriction = (targetsOnly ? PluginFunctions::TARGET_OBJECTS
                                                                     : PluginFunctions::ALL_OBJECTS);
 
+    DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    data_type |= DATA_TETRAHEDRAL_MESH;
+#endif
+
     if (_operation == V_SELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 selectAllVertices(o_it->id());
         }
     } else if (_operation == V_DESELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deselectAllVertices(o_it->id());
         }
     } else if (_operation == V_INVERT) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 invertVertexSelection(o_it->id());
         }
     } else if (_operation == V_DELETE) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deleteSelectedVertices(o_it->id());
         }
     } else if (_operation == E_SELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 selectAllEdges(o_it->id());
         }
     } else if (_operation == E_DESELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deselectAllEdges(o_it->id());
         }
     } else if (_operation == E_INVERT) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 invertEdgeSelection(o_it->id());
         }
     } else if (_operation == E_DELETE) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deleteSelectedEdges(o_it->id());
         }
     } else if (_operation == F_SELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 selectAllFaces(o_it->id());
         }
     } else if (_operation == F_DESELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deselectAllFaces(o_it->id());
         }
     } else if (_operation == F_INVERT) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 invertFaceSelection(o_it->id());
         }
     } else if (_operation == F_DELETE) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deleteSelectedFaces(o_it->id());
         }
     } else if (_operation == C_SELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 selectAllCells(o_it->id());
         }
     } else if (_operation == C_DESELECT_ALL) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deselectAllCells(o_it->id());
         }
     } else if (_operation == C_INVERT) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 invertCellSelection(o_it->id());
         }
     } else if (_operation == C_DELETE) {
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible())
                 deleteSelectedCells(o_it->id());
@@ -364,16 +373,10 @@ void VolumeMeshSelectionPlugin::slotToggleSelection(QMouseEvent* _event,
 
         if(successfullyPicked) {
 
-            PolyhedralMesh* polyMesh = PluginFunctions::polyhedralMesh(object);
-            HexahedralMesh* hexMesh = PluginFunctions::hexahedralMesh(object);
-            if(!polyMesh && !hexMesh) {
-                emit log(LOGERR, tr("Neither polyhedral nor hexahedral mesh!"));
+            if (getStatus(object) == NULL)
                 return;
-            }
 
-            OpenVolumeMesh::StatusAttrib& status = (PluginFunctions::polyhedralMeshObject(object) != 0 ?
-                                                    PluginFunctions::polyhedralMeshObject(object)->status() :
-                                                    PluginFunctions::hexahedralMeshObject(object)->status());
+            OpenVolumeMesh::StatusAttrib& status = *getStatus(object);
 
             if(status[OpenVolumeMesh::VertexHandle(target_idx)].selected() || _deselect)
                 status[OpenVolumeMesh::VertexHandle(target_idx)].set_selected(false);
@@ -392,16 +395,10 @@ void VolumeMeshSelectionPlugin::slotToggleSelection(QMouseEvent* _event,
 
         if(successfullyPicked) {
 
-            PolyhedralMesh* polyMesh = PluginFunctions::polyhedralMesh(object);
-            HexahedralMesh* hexMesh = PluginFunctions::hexahedralMesh(object);
-            if(!polyMesh && !hexMesh) {
-                emit log(LOGERR, tr("Neither polyhedral nor hexahedral mesh!"));
+            if (getStatus(object) == NULL)
                 return;
-            }
 
-            OpenVolumeMesh::StatusAttrib& status = (PluginFunctions::polyhedralMeshObject(object) != 0 ?
-                                                    PluginFunctions::polyhedralMeshObject(object)->status() :
-                                                    PluginFunctions::hexahedralMeshObject(object)->status());
+            OpenVolumeMesh::StatusAttrib& status = *getStatus(object);
 
             if(status[OpenVolumeMesh::EdgeHandle(target_idx)].selected() || _deselect)
                 status[OpenVolumeMesh::EdgeHandle(target_idx)].set_selected(false);
@@ -420,16 +417,10 @@ void VolumeMeshSelectionPlugin::slotToggleSelection(QMouseEvent* _event,
 
         if(successfullyPicked) {
 
-            PolyhedralMesh* polyMesh = PluginFunctions::polyhedralMesh(object);
-            HexahedralMesh* hexMesh = PluginFunctions::hexahedralMesh(object);
-            if(!polyMesh && !hexMesh) {
-                emit log(LOGERR, tr("Neither polyhedral nor hexahedral mesh!"));
+            if (getStatus(object) == NULL)
                 return;
-            }
 
-            OpenVolumeMesh::StatusAttrib& status = (PluginFunctions::polyhedralMeshObject(object) != 0 ?
-                                                    PluginFunctions::polyhedralMeshObject(object)->status() :
-                                                    PluginFunctions::hexahedralMeshObject(object)->status());
+            OpenVolumeMesh::StatusAttrib& status = *getStatus(object);
 
             if(status[OpenVolumeMesh::FaceHandle(target_idx)].selected() || _deselect)
                 status[OpenVolumeMesh::FaceHandle(target_idx)].set_selected(false);
@@ -449,16 +440,10 @@ void VolumeMeshSelectionPlugin::slotToggleSelection(QMouseEvent* _event,
 
         if(successfullyPicked) {
 
-            PolyhedralMesh* polyMesh = PluginFunctions::polyhedralMesh(object);
-            HexahedralMesh* hexMesh = PluginFunctions::hexahedralMesh(object);
-            if(!polyMesh && !hexMesh) {
-                emit log(LOGERR, tr("Neither polyhedral nor hexahedral mesh!"));
+            if (getStatus(object) == NULL)
                 return;
-            }
 
-            OpenVolumeMesh::StatusAttrib& status = (PluginFunctions::polyhedralMeshObject(object) != 0 ?
-                                                    PluginFunctions::polyhedralMeshObject(object)->status() :
-                                                    PluginFunctions::hexahedralMeshObject(object)->status());
+            OpenVolumeMesh::StatusAttrib& status = *getStatus(object);
 
             if(status[OpenVolumeMesh::CellHandle(target_idx)].selected() || _deselect) {
                 status[OpenVolumeMesh::CellHandle(target_idx)].set_selected(false);
@@ -554,6 +539,25 @@ void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
                     }
                 }
             }
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+            else if(object->dataType() == DATA_TETRAHEDRAL_MESH)
+            {
+                if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE,
+                            _event->pos(), node_idx, target_idx, &hit_point))
+                {
+                    if(PluginFunctions::getPickedObject(node_idx, object) )
+                    {
+                        if(object->dataType(DATA_TETRAHEDRAL_MESH))
+                        {
+                            floodFillSelection(PluginFunctions::tetrahedralMesh(object),
+                                    target_idx, _maxAngle, _currentType, _deselect);
+
+                            emit updatedObject(object->id(), UPDATE_SELECTION);
+                        }
+                    }
+                }
+            }
+#endif
             else
             {
                 emit log(LOGERR, tr("floodFillSelection: Unsupported dataType"));
@@ -579,6 +583,13 @@ bool SelectVolumeAction::operator()(BaseNode* _node)
             HexahedralMesh* m = PluginFunctions::hexahedralMesh(object);
             selected = plugin_->volumeSelection(m, state_, &region_, type_, deselection_);
         }
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+        else if(object->dataType(DATA_TETRAHEDRAL_MESH)) {
+
+            TetrahedralMesh* m = PluginFunctions::tetrahedralMesh(object);
+            selected = plugin_->volumeSelection(m, state_, &region_, type_, deselection_);
+        }
+#endif
 
         if (selected){
             emit plugin_->updatedObject(object->id(), UPDATE_SELECTION);
@@ -794,6 +805,48 @@ VolumeMeshSelectionPlugin::HFPair VolumeMeshSelectionPlugin::getCommonFace(const
     return HFPair(HexahedralMesh::InvalidHalfFaceHandle, HexahedralMesh::InvalidHalfFaceHandle);
 }
 
+OpenVolumeMesh::StatusAttrib*VolumeMeshSelectionPlugin::getStatus(int _objectId)
+{
+    PolyhedralMeshObject* polyMeshObj = NULL;
+    PluginFunctions::getObject(_objectId, polyMeshObj);
+    if (polyMeshObj != NULL)
+        return &polyMeshObj->status();
+
+    HexahedralMeshObject* hexMeshObj = NULL;
+    PluginFunctions::getObject(_objectId, hexMeshObj);
+    if (hexMeshObj != NULL)
+        return &hexMeshObj->status();
+
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    TetrahedralMeshObject* tetMeshObj = NULL;
+    PluginFunctions::getObject(_objectId, tetMeshObj);
+    if (tetMeshObj != NULL)
+        return &tetMeshObj->status();
+#endif
+
+    return NULL;
+}
+
+OpenVolumeMesh::StatusAttrib* VolumeMeshSelectionPlugin::getStatus(BaseObjectData* object)
+{
+    PolyhedralMeshObject* polyMeshObj = PluginFunctions::polyhedralMeshObject(object);
+    if (polyMeshObj != NULL)
+        return &polyMeshObj->status();
+
+    HexahedralMeshObject* hexMeshObj = PluginFunctions::hexahedralMeshObject(object);
+    if (hexMeshObj != NULL)
+        return &hexMeshObj->status();
+
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    TetrahedralMeshObject* tetMeshObj = PluginFunctions::tetrahedralMeshObject(object);
+    if (tetMeshObj != NULL)
+        return &tetMeshObj->status();
+#endif
+
+    emit log(LOGERR, tr("Neither polyhedral nor hexahedral nor tetrahedral mesh!"));
+    return NULL;
+}
+
 //==============================================================================================
 
 void VolumeMeshSelectionPlugin::loadSelection(int _objId, const QString& _filename) {
@@ -884,7 +937,12 @@ void VolumeMeshSelectionPlugin::slotLoadSelection(const INIFile& _file) {
 
     // Iterate over all polyhedral mesh objects in the scene and save
     // the selections for all supported entity types
-    for (PluginFunctions::ObjectIterator o_it(PluginFunctions::ALL_OBJECTS, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+    DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    data_type |= DATA_TETRAHEDRAL_MESH;
+#endif
+
+    for (PluginFunctions::ObjectIterator o_it(PluginFunctions::ALL_OBJECTS, data_type);
          o_it != PluginFunctions::objectsEnd(); ++o_it) {
 
         // Read section for each object
@@ -928,8 +986,12 @@ void VolumeMeshSelectionPlugin::slotSaveSelection(INIFile& _file) {
 
     // Iterate over all volumemesh objects in the scene and save
     // the selections for all vertices
-    for(PluginFunctions::ObjectIterator o_it(PluginFunctions::ALL_OBJECTS,
-            DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+    DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    data_type |= DATA_TETRAHEDRAL_MESH;
+#endif
+
+    for(PluginFunctions::ObjectIterator o_it(PluginFunctions::ALL_OBJECTS, data_type);
             o_it != PluginFunctions::objectsEnd(); ++o_it) {
 
         // Create section for each object
@@ -964,10 +1026,14 @@ void VolumeMeshSelectionPlugin::slotKeyShortcutEvent(int _key, Qt::KeyboardModif
     targetObjectsOnly(targetsOnly);
     PluginFunctions::IteratorRestriction restriction = (targetsOnly ? PluginFunctions::TARGET_OBJECTS
                                                                     : PluginFunctions::ALL_OBJECTS);
+    DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    data_type |= DATA_TETRAHEDRAL_MESH;
+#endif
 
     if(_key == Qt::Key_A && _modifiers == Qt::ControlModifier) {
         // Select all entities
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
             o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible()) {
                 if(type & vertexType_)
@@ -983,7 +1049,7 @@ void VolumeMeshSelectionPlugin::slotKeyShortcutEvent(int _key, Qt::KeyboardModif
         }
     } else if(_key == Qt::Key_C && _modifiers == Qt::NoModifier) {
         // Deselect all entities
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
             o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible()) {
                 if(type & vertexType_)
@@ -999,7 +1065,7 @@ void VolumeMeshSelectionPlugin::slotKeyShortcutEvent(int _key, Qt::KeyboardModif
         }
     } else if(_key == Qt::Key_I && _modifiers == Qt::NoModifier) {
         // Invert entity selection
-        for (PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for (PluginFunctions::ObjectIterator o_it(restriction, data_type);
             o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if (o_it->visible()) {
                 if(type & vertexType_)
@@ -1016,7 +1082,7 @@ void VolumeMeshSelectionPlugin::slotKeyShortcutEvent(int _key, Qt::KeyboardModif
 
     } else if(_key == Qt::Key_Delete && _modifiers == Qt::NoModifier) {
         // Delete selected entities and its children
-        for(PluginFunctions::ObjectIterator o_it(restriction, DataType(DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH));
+        for(PluginFunctions::ObjectIterator o_it(restriction, data_type);
                 o_it != PluginFunctions::objectsEnd(); ++o_it) {
             if(o_it->visible()) {
                 if(type & vertexType_)

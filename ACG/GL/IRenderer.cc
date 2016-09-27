@@ -51,6 +51,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 #include <QFile>
 #include <QTextStream>
 
@@ -436,7 +437,7 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
     {
 
       if ( _node->status() != ACG::SceneGraph::BaseNode::HideNode )
-        _node->enter(*_glState, nodeDM);
+        _node->enter(this, *_glState, nodeDM);
 
 
       // fetch material (Node itself can be a material node, so we have to
@@ -468,7 +469,7 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
 
 
       if (_node->status() != ACG::SceneGraph::BaseNode::HideNode )
-        _node->leave(*_glState, nodeDM);
+        _node->leave(this, *_glState, nodeDM);
     }
   }
 }

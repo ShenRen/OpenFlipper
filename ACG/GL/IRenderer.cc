@@ -496,10 +496,6 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
   // First, all render objects get collected.
   collectRenderObjects(_glState, _drawMode, _scenegraphRoot);
 
-  // Check if there is anything to render
-  if (renderObjects_.empty())
-    return;
-
   // ==========================================================
   // Sort renderable objects based on their priority
   // Filter for overlay, lines etc.
@@ -519,22 +515,25 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
           numLineObjects++;
   }
 
-  // sort for priority
-  if (sortedObjects_.size() < numRenderObjects)
-    sortedObjects_.resize(numRenderObjects);
+  /*
+   * Neither clear() nor resize() ever decreases the capacity of
+   * a vector. So it has no adverse impact on performance to clear
+   * the vectors here.
+   */
+  sortedObjects_.clear();
+  sortedObjects_.reserve(numRenderObjects);
 
-  if (overlayObjects_.size() < numOverlayObjects)
-    overlayObjects_.resize(numOverlayObjects);
+  overlayObjects_.clear();
+  overlayObjects_.reserve(numOverlayObjects);
 
-  if (lineGL42Objects_.size() < numLineObjects)
-    lineGL42Objects_.resize(numLineObjects);
+  lineGL42Objects_.clear();
+  lineGL42Objects_.reserve(numLineObjects);
 
   // init sorted objects array
-  size_t sceneObjectOffset = 0, overlayObjectOffset = 0, lineObjectOffset = 0;
   for (size_t i = 0; i < renderObjects_.size(); ++i)
   {
     if (renderObjects_[i].overlay)
-      overlayObjects_[overlayObjectOffset++] = &renderObjects_[i];
+      overlayObjects_.push_back(&renderObjects_[i]);
     else if (enableLineThicknessGL42_ && numLineObjects && renderObjects_[i].isDefaultLineObject())
     {
       renderObjects_[i].shaderDesc.geometryTemplateFile = "Wireframe/gl42/geometry.tpl";
@@ -544,10 +543,10 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
       renderObjects_[i].glColorMask(0,0,0,0);
 
 //      sortedObjects_[sceneObjectOffset++] = &renderObjects_[i];
-      lineGL42Objects_[lineObjectOffset++] = &renderObjects_[i];
+      lineGL42Objects_.push_back(&renderObjects_[i]);
     }
     else
-      sortedObjects_[sceneObjectOffset++] = &renderObjects_[i];
+      sortedObjects_.push_back(&renderObjects_[i]);
   }
 
   sortRenderObjects();
@@ -608,7 +607,7 @@ void IRenderer::finishRenderingPipeline(bool _drawOverlay)
 
   if (_drawOverlay)
   {
-    const int numOverlayObj = getNumOverlayObjects();
+    const int numOverlayObj = overlayObjects_.size();
     // two-pass overlay rendering:
     // 1. clear depth buffer at pixels of overlay objects
     // 2. render overlay with correct depth-testing
@@ -754,9 +753,9 @@ void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
 void IRenderer::sortRenderObjects()
 {
   if (!sortedObjects_.empty())
-    qsort(&sortedObjects_[0], getNumRenderObjects(), sizeof(ACG::RenderObject*), cmpPriority);
+    qsort(&sortedObjects_[0], sortedObjects_.size(), sizeof(ACG::RenderObject*), cmpPriority);
   if (!overlayObjects_.empty())
-    qsort(&overlayObjects_[0], getNumOverlayObjects(), sizeof(ACG::RenderObject*), cmpPriority);
+    qsort(&overlayObjects_[0], overlayObjects_.size(), sizeof(ACG::RenderObject*), cmpPriority);
 }
 
 
@@ -1052,39 +1051,8 @@ void IRenderer::addLight(const LightData& _light)
 }
 
 
-int IRenderer::getNumRenderObjects() const
-{
-  int n = 0;
-  for (size_t i = 0; i < renderObjects_.size(); ++i)
-    if (!renderObjects_[i].overlay && !(renderObjects_[i].isDefaultLineObject() && enableLineThicknessGL42_))
-//    if (!renderObjects_[i].overlay)
-      ++n;
-
-  return n;
-}
-
-int IRenderer::getNumOverlayObjects() const
-{
-  int n = 0;
-  for (size_t i = 0; i < renderObjects_.size(); ++i)
-    if (renderObjects_[i].overlay)
-      ++n;
-
-  return n;
-}
-
-int IRenderer::getNumLineGL42Objects() const
-{
-  int n = 0;
-
-  if (enableLineThicknessGL42_)
-  {
-    for (size_t i = 0; i < renderObjects_.size(); ++i)
-      if (renderObjects_[i].isDefaultLineObject())
-        ++n;
-  }
-
-  return n;
+int IRenderer::getNumRenderObjects() const {
+    return sortedObjects_.size();
 }
 
 int IRenderer::getNumLights() const
@@ -1397,7 +1365,7 @@ void IRenderer::renderLineThicknessGL42()
   //  imageBuffer works
   //  - check with different gpu
 
-  const int numLines = getNumLineGL42Objects();
+  const int numLines = lineGL42Objects_.size();
 
   // configs
   const bool useBufferTexture = true;  // imageBuffer or image2D

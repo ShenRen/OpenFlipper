@@ -473,16 +473,6 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
   }
 }
 
-
-int IRenderer::cmpPriority(const void* _a, const void* _b)
-{
-  const ACG::RenderObject* a = *(const ACG::RenderObject**)_a;
-  const ACG::RenderObject* b = *(const ACG::RenderObject**)_b;
-
-  return a->priority - b->priority;
-}
-
-
 void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode* _scenegraphRoot)
 {
   // grab view transform from glstate
@@ -752,10 +742,13 @@ void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
 
 void IRenderer::sortRenderObjects()
 {
-  if (!sortedObjects_.empty())
-    qsort(&sortedObjects_[0], sortedObjects_.size(), sizeof(ACG::RenderObject*), cmpPriority);
-  if (!overlayObjects_.empty())
-    qsort(&overlayObjects_[0], overlayObjects_.size(), sizeof(ACG::RenderObject*), cmpPriority);
+  struct RenderObjectComparator {
+      bool operator() (ACG::RenderObject *a, ACG::RenderObject * b) {
+          return (a->priority < b->priority);
+      }
+  };
+  std::sort(sortedObjects_.begin(), sortedObjects_.end(), RenderObjectComparator());
+  std::sort(overlayObjects_.begin(), overlayObjects_.end(), RenderObjectComparator());
 }
 
 

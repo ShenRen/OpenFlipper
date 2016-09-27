@@ -505,9 +505,19 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
   // Filter for overlay, lines etc.
   // ==========================================================
 
-  const size_t numRenderObjects = getNumRenderObjects(),
-    numOverlayObjects = getNumOverlayObjects(),
-    numLineObjects = getNumLineGL42Objects();
+  size_t numRenderObjects = 0,
+    numOverlayObjects = 0,
+    numLineObjects = 0;
+
+  for (std::vector<ACG::RenderObject>::const_iterator it = renderObjects_.begin();
+          it != renderObjects_.end(); ++it) {
+      if (!it->overlay && !(it->isDefaultLineObject() && enableLineThicknessGL42_))
+          numRenderObjects++;
+      if (it->overlay)
+          numOverlayObjects++;
+      if (enableLineThicknessGL42_ && it->isDefaultLineObject())
+          numLineObjects++;
+  }
 
   // sort for priority
   if (sortedObjects_.size() < numRenderObjects)

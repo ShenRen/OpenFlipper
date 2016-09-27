@@ -739,14 +739,16 @@ void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
   glDisable(GL_SCISSOR_TEST);
 }
 
+namespace {
+struct RenderObjectComparator {
+    bool operator() (ACG::RenderObject *a, ACG::RenderObject * b) {
+        return (a->priority < b->priority);
+    }
+};
+}
 
 void IRenderer::sortRenderObjects()
 {
-  struct RenderObjectComparator {
-      bool operator() (ACG::RenderObject *a, ACG::RenderObject * b) {
-          return (a->priority < b->priority);
-      }
-  };
   std::sort(sortedObjects_.begin(), sortedObjects_.end(), RenderObjectComparator());
   std::sort(overlayObjects_.begin(), overlayObjects_.end(), RenderObjectComparator());
 }

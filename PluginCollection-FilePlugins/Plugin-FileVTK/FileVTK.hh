@@ -73,6 +73,9 @@
 #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
+#endif
 
 enum Dataset {
   STRUCTURED_POINTS,
@@ -943,13 +946,137 @@ class FileVTKPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     bool writeASCIIData(std::ostream& _out, PolyhedralMesh& _mesh);
 #endif //ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
 
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    /** \brief Adds a tetra cell to the volume mesh.
+    *
+    *
+    * @param _mesh        Mesh the cell is added to
+    * @param _indices     Indices of the vertices of the cell, ordered according to vtk standard
+    *
+    * @return             index of the first added primitive
+    */
+    int addTetraCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices);
+
+    /** \brief Adds a hexa cell to the volume mesh.
+    *
+    *
+    * @param _mesh        Mesh the cell is added to
+    * @param _indices     Indices of the vertices of the cell, ordered according to vtk standard
+    *
+    * @return             index of the first added primitive
+    */
+    int addHexaCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices);
+
+    /** \brief Adds a wedge cell to the volume mesh.
+    *
+    *
+    * @param _mesh        Mesh the cell is added to
+    * @param _indices     Indices of the vertices of the cell, ordered according to vtk standard
+    *
+    * @return             index of the first added primitive
+    */
+    int addWedgeCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices);
+
+    /** \brief Adds a pyramid cell to the volume mesh.
+    *
+    *
+    * @param _mesh        Mesh the cell is added to
+    * @param _indices     Indices of the vertices of the cell, ordered according to vtk standard
+    *
+    * @return             index of the first added primitive
+    */
+    int addPyramidCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices);
+
+    /** \brief Adds a face to the volume mesh.
+    *
+    *
+    * @param _mesh        Mesh the face is added to
+    * @param _indices     Indices of the vertices of the face, counter clockwise order
+    *
+    * @return             index of the first added primitive
+    */
+    int addFace(TetrahedralMesh*& _mesh, std::vector<quint32> indices);
+
+    /** \brief Adds a face to the volume mesh.
+    *
+    *
+    * @param _mesh        Mesh the face is added to
+    * @param _index1      First index of the vertices of the face, counter clockwise order
+    * @param _index2      Second index of the vertices of the face, counter clockwise order
+    * @param _index3      Third index of the vertices of the face, counter clockwise order
+    *
+    * @return             index of the first added primitive
+    */
+    int addFace(TetrahedralMesh*& _mesh, quint32 _index1, quint32 _index2, quint32 _index3);
+
+    /** \brief Updates face normals.
+    *
+    * Does nothing. Only added for compatibility.
+    *
+    * @param _mesh        Mesh whose face normals should be updated
+    */
+    void updateFaceNormals(TetrahedralMesh*& _mesh){/* don't need to be updated */};
+
+    /** \brief Updates vertex normals.
+    *
+    * Does nothing. Only added for compatibility.
+    *
+    * @param _mesh        Mesh whose vertex normals should be updated
+    */
+    void updateVertexNormals(TetrahedralMesh*& _mesh){/* don't need to be updated */};
+
+    /** \brief Removed temporary properties that might have been added during file reading.
+    *
+    * Does nothing. Only added for compatibility.
+    *
+    * @param _mesh        Mesh whose temporary properties should be removed
+    */
+    void removeTemporaryProperties(TetrahedralMesh*& _mesh){/* don't need to be removed */};
+
+    /** \brief Adds a vertex normal.
+    *
+    *
+    * @param _mesh        Mesh the vertex normal is added to
+    * @param _index       Index of the vertex
+    * @param _normal      Normal that is added
+    */
+    void addVertexNormal(TetrahedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal);
+
+    /** \brief Adds a face normal.
+    *
+    *
+    * @param _mesh        Mesh the face normal is added to
+    * @param _index       Index of the face
+    * @param _normal      Normal that is added
+    */
+    void addFaceNormal(TetrahedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal);
+
+    /** \brief Sets normals of duplicated vertices that were created for non-manifold meshes.
+    *
+    * Does nothing because volume mesh does not need to add vertices for non-manifold meshes.
+    * Only added for compatibility.
+    *
+    * @param _mesh        Mesh to work on
+    */
+    void setNormalsOfDuplicatedVertices(TetrahedralMesh*& _mesh){/* we didn't duplicate any vertices */};
+
+    /** \brief Writes the data of the VTK file in ASCII format
+    *
+    *
+    * @param _out         Textstream to write the file
+    * @param _mesh        Mesh to work on
+    */
+    bool writeASCIIData(std::ostream& _out, TetrahedralMesh& _mesh);
+#endif //ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+
 
     enum BestMeshType {
-        BMT_None           = 0,
-        BMT_TriMesh        = 1,
-        BMT_PolyMesh       = 1 << 1,
-        BMT_HexahedralMesh = 1 << 2,
-        BMT_PolyhedralMesh = 1 << 3
+        BMT_None            = 0,
+        BMT_TriMesh         = 1,
+        BMT_PolyMesh        = 1 << 1,
+        BMT_HexahedralMesh  = 1 << 2,
+        BMT_PolyhedralMesh  = 1 << 3,
+        BMT_TetrahedralMesh = 1 << 4
     };
 
     /// Reads the file to check for present primitives and returns the object type that fits best

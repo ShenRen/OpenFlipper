@@ -68,6 +68,9 @@
 
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
+#endif
 
 class VolumeMeshSelectionPlugin : public QObject, BaseInterface, KeyInterface,
             INIInterface, BackupInterface, LoggingInterface, ScriptInterface, SelectionInterface
@@ -344,6 +347,10 @@ private:
     typedef std::pair<OpenVolumeMesh::HalfFaceHandle,OpenVolumeMesh::HalfFaceHandle> HFPair;
     HFPair getCommonFace(const OpenVolumeMesh::CellHandle& _ch1,
             const OpenVolumeMesh::CellHandle& _ch2, const HexahedralMesh* _mesh) const;
+
+
+    OpenVolumeMesh::StatusAttrib* getStatus(int _objectId);
+    OpenVolumeMesh::StatusAttrib* getStatus(BaseObjectData* object);
 
     /// Handle to selection environment
     QString environmentHandle_;

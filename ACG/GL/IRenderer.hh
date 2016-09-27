@@ -177,14 +177,6 @@ protected:
   //=========================================================================
 protected:
 
-    /** \brief Compare priority of render objects
-     *
-     * compare function for qsort. This is required to compare render objects based
-     * on their prioerity and render them in the right order
-    */
-    static int cmpPriority(const void*, const void*);
-
-
     /** \brief Sort the renderobjects by priority
      *
      * Sort array of renderobjects by priority and store the result in sortedObjects_.

@@ -400,7 +400,7 @@ void IRenderer::collectRenderObjects( ACG::GLState* _glState, ACG::SceneGraph::D
 //  {
 //    renderObjects_[i].uniformPool_.clear();
 //  }
-  renderObjects_.resize(0);
+  renderObjects_.clear();
 
 
   // default material needed
@@ -439,6 +439,7 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
       if ( _node->status() != ACG::SceneGraph::BaseNode::HideNode )
         _node->enter(this, *_glState, nodeDM);
 
+      const size_t subtree_index_start = renderObjects_.size();
 
       // fetch material (Node itself can be a material node, so we have to
       // set that in front of the nodes own rendering
@@ -467,6 +468,10 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
 
       }
 
+      // Prepare current subtree info before calling leave().
+      current_subtree_objects_ = RenderObjectRange(
+              renderObjects_.begin() + subtree_index_start,
+              renderObjects_.end());
 
       if (_node->status() != ACG::SceneGraph::BaseNode::HideNode )
         _node->leave(this, *_glState, nodeDM);

@@ -123,6 +123,25 @@ public:
     ACG::Vec2f spotCutoffExponent; // (cutoff angle, exponent) for spotlights
   };
 
+  class RenderObjectRange {
+      public:
+          RenderObjectRange() {}
+          RenderObjectRange(std::vector<ACG::RenderObject>::iterator begin,
+                  std::vector<ACG::RenderObject>::iterator end) :
+                      begin_(begin), end_(end) {}
+
+          std::vector<ACG::RenderObject>::iterator begin() const {
+              return begin_;
+          }
+
+          std::vector<ACG::RenderObject>::iterator end() const {
+              return end_;
+          }
+
+      private:
+          std::vector<ACG::RenderObject>::iterator begin_, end_;
+  };
+
   /** \brief Callback for the scenegraph nodes, which send new lights to the renderer via this function
    *
    * Scenegraph nodes are able to add new light sources to the renderer with this function.
@@ -168,7 +187,7 @@ protected:
    *
    * Calls getRenderObjects on each node of the scenegraph recursively. Each node then triggers the callbacks.
    */
-  void traverseRenderableNodes(ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode* _node, const ACG::SceneGraph::Material* _mat);
+  void traverseRenderableNodes(ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode &_node, const ACG::SceneGraph::Material &_mat);
 
 
 
@@ -430,6 +449,18 @@ public:
    */
   void setViewerID(int _viewerID);
 
+  /**
+   * During traversal of the scene graph this method returns the range of
+   * render objects that has been collected in the current subtree.
+   *
+   * This method is exclusively intended to be called in the leave() function
+   * of scene graph nodes. Calling it from anywhere else will yield an
+   * undefined result with potentially invalid iterators.
+   */
+  const RenderObjectRange &getCollectedSubtreeObjects() const {
+      return current_subtree_objects_;
+  }
+
 protected:
   /// Number of Lights
   int numLights_;
@@ -490,6 +521,8 @@ protected:
 
   /// error-detection level for checking render objects
   int errorDetectionLevel_;
+
+  RenderObjectRange current_subtree_objects_;
 
 private:
 

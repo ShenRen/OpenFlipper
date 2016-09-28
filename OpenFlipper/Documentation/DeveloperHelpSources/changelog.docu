@@ -3,18 +3,27 @@
 - <b>OpenFlipper 3.1 ( ?/?/? )</b>
      - <b>General</b>
          - Fix missleading indentation warnings on gcc 6.x
+         - Added Tetrahedral mesh support
      - <b>ACG</b>
         - Use std::vector in BaseNode instead of std::list for performance reasons (closes #61)
+        - Added PrincipalAxisNode (Including shader pipeline support)
+        - Fixed shading when shininess is 0
+        - Optimizations and cleanup in IRenderer
+        - Added floating subtree node (Can be used to render whole subtrees as overlays
      - <b>Core</b>
          - Windows: Attach console to allow output directly to command line
+         - Fixed aspect ratio of screenshot function
      - <b>Plugins</b>
          - DataControl
              - Fixed grouping (Not visualized correctly)
          - HoleFiller
              - Fly to selected holes
              - Compute boundary information on poly meshes
+         - VTK
+             - read tetmeshes from vtk files
      - <b>Build System</b>
          - Added cmake flag to disable ACG unit tests
+         - Added flag to safeguard a gcc compiler bug (optimizer)
 
 - <b>OpenFlipper 3.0 ( 2016/07/13 )</b>
      - <b>LICENSE<b>

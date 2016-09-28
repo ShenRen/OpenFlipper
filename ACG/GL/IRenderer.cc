@@ -422,12 +422,12 @@ void IRenderer::collectRenderObjects( ACG::GLState* _glState, ACG::SceneGraph::D
 namespace {
 class ScenegraphTraversalStackEl {
     public:
-        ScenegraphTraversalStackEl(ACG::SceneGraph::BaseNode &_node,
+        ScenegraphTraversalStackEl(ACG::SceneGraph::BaseNode *_node,
                 const ACG::SceneGraph::Material *_material) :
             node(_node), material(_material),
             subtree_index_start(0), leave(false) {}
 
-        ACG::SceneGraph::BaseNode &node;
+        ACG::SceneGraph::BaseNode *node;
         const ACG::SceneGraph::Material* material;
         size_t subtree_index_start;
         bool leave;
@@ -442,10 +442,10 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
     std::vector<ScenegraphTraversalStackEl> stack;
     // That's roughly the minimum size every scenegraph requries.
     stack.reserve(32);
-    stack.push_back(ScenegraphTraversalStackEl(_node, &_mat));
+    stack.push_back(ScenegraphTraversalStackEl(&_node, &_mat));
     while (!stack.empty()) {
         ScenegraphTraversalStackEl &cur = stack.back();
-        ACG::SceneGraph::DrawModes::DrawMode nodeDM = cur.node.drawMode();
+        ACG::SceneGraph::DrawModes::DrawMode nodeDM = cur.node->drawMode();
         if (nodeDM == ACG::SceneGraph::DrawModes::DEFAULT)
           nodeDM = _drawMode;
 
@@ -453,41 +453,41 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
             /*
              * Stuff that happens before processing cur.node's children.
              */
-            if ( cur.node.status() != ACG::SceneGraph::BaseNode::HideNode )
-                cur.node.enter(this, *_glState, nodeDM);
+            if ( cur.node->status() != ACG::SceneGraph::BaseNode::HideNode )
+                cur.node->enter(this, *_glState, nodeDM);
 
             cur.subtree_index_start = renderObjects_.size();
 
             // fetch material (Node itself can be a material node, so we have to
             // set that in front of the nodes own rendering
             ACG::SceneGraph::MaterialNode* matNode =
-                    dynamic_cast<ACG::SceneGraph::MaterialNode*>(&cur.node);
+                    dynamic_cast<ACG::SceneGraph::MaterialNode*>(cur.node);
             if (matNode)
               cur.material = &matNode->material();
 
-            if (cur.node.status() != ACG::SceneGraph::BaseNode::HideNode)
-                cur.node.getRenderObjects(this, *_glState, nodeDM, cur.material);
+            if (cur.node->status() != ACG::SceneGraph::BaseNode::HideNode)
+                cur.node->getRenderObjects(this, *_glState, nodeDM, cur.material);
 
             // Process children?
-            if (cur.node.status() != ACG::SceneGraph::BaseNode::HideChildren) {
+            if (cur.node->status() != ACG::SceneGraph::BaseNode::HideChildren) {
                 // Process all children which are second pass
                 for (ACG::SceneGraph::BaseNode::ChildIter
-                        cIt = cur.node.childrenBegin(),
-                        cEnd = cur.node.childrenEnd(); cIt != cEnd; ++cIt) {
+                        cIt = cur.node->childrenBegin(),
+                        cEnd = cur.node->childrenEnd(); cIt != cEnd; ++cIt) {
                   if (((*cIt)->traverseMode() &
                           ACG::SceneGraph::BaseNode::SecondPass) &&
                           (*cIt)->status() != ACG::SceneGraph::BaseNode::HideSubtree)
-                      stack.push_back(ScenegraphTraversalStackEl(**cIt, cur.material));
+                      stack.push_back(ScenegraphTraversalStackEl(*cIt, cur.material));
                 }
 
                 // Process all children which are not second pass
                 for (ACG::SceneGraph::BaseNode::ChildIter
-                        cIt = cur.node.childrenBegin(),
-                        cEnd = cur.node.childrenEnd(); cIt != cEnd; ++cIt) {
+                        cIt = cur.node->childrenBegin(),
+                        cEnd = cur.node->childrenEnd(); cIt != cEnd; ++cIt) {
                   if ((~(*cIt)->traverseMode() &
                           ACG::SceneGraph::BaseNode::SecondPass) &&
                           (*cIt)->status() != ACG::SceneGraph::BaseNode::HideSubtree)
-                      stack.push_back(ScenegraphTraversalStackEl(**cIt, cur.material));
+                      stack.push_back(ScenegraphTraversalStackEl(*cIt, cur.material));
                 }
             }
 
@@ -502,8 +502,8 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
                     renderObjects_.begin() + cur.subtree_index_start,
                     renderObjects_.end());
 
-            if (cur.node.status() != ACG::SceneGraph::BaseNode::HideNode )
-                cur.node.leave(this, *_glState, nodeDM);
+            if (cur.node->status() != ACG::SceneGraph::BaseNode::HideNode )
+                cur.node->leave(this, *_glState, nodeDM);
             stack.pop_back();
         }
     }

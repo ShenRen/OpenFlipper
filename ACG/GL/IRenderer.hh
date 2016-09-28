@@ -177,14 +177,6 @@ protected:
   //=========================================================================
 protected:
 
-    /** \brief Compare priority of render objects
-     *
-     * compare function for qsort. This is required to compare render objects based
-     * on their prioerity and render them in the right order
-    */
-    static int cmpPriority(const void*, const void*);
-
-
     /** \brief Sort the renderobjects by priority
      *
      * Sort array of renderobjects by priority and store the result in sortedObjects_.
@@ -391,12 +383,6 @@ protected:
 
   /// Get the number of collected render objects (not including overlay objects or gl4.2 line objects)
   int getNumRenderObjects() const;
-
-  /// Get the number of render objects in the overlay (for instance objects from coordsys are overlayed)
-  int getNumOverlayObjects() const;
-
-  /// Get the number of default line objects rendered with opengl 4.2
-  int getNumLineGL42Objects() const;
 
   /// Get the number of current light sources
   int getNumLights() const;

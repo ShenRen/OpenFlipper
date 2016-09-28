@@ -55,6 +55,8 @@
 
 #include <ACG/Config/ACGDefines.hh>
 #include <ACG/GL/VertexDeclaration.hh>
+#include <ACG/GL/GLPrimitives.hh>
+#include <ACG/GL/globjects.hh>
 
 #include "BaseNode.hh"
 #include "DrawModes.hh"
@@ -160,7 +162,7 @@ public:
 
   // draw settings
   void set_draw_style(DrawStyle _ds) { draw_style_ = _ds;}
-  void set_color_mode(ColorMode _cm) { color_mode_ = _cm; updateVBO(); }
+  void set_color_mode(ColorMode _cm);
   void show_tensor_component(unsigned int _i, unsigned char _show);
 
   // number of tensors to display
@@ -168,7 +170,7 @@ public:
 
   void resize( unsigned int _n);
 
-  void clear() {pc_.clear();}
+	void clear() { pc_.clear(); invalidateInstanceData_ = true; }
 
   // enable/disable drawing the _i'th PC
   void enable ( unsigned int _i);
@@ -236,6 +238,15 @@ public:
   /// Overriding BaseNode::getRenderObjects.
   void getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
 
+  /// world transform of an axis (orientation and translation)
+  GLMatrixd axisTransform(const PrincipalComponent& _pc, int _axis, double* _outSize = 0) const;
+
+  /// scaled axis
+  Vec3d axisScaled(const PrincipalComponent& _pc, int _axis) const;
+
+  /// emit individual objects for each axis for each principal component (slow if tensor count high)
+  void emitIndividualRenderobjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode,  const ACG::SceneGraph::Material* _mat);
+
   void updateVBO() { updateVBO_ = true; };
 
 private:
@@ -284,8 +295,25 @@ private:
 
   friend class ACG::QtPrincipalAxisDialog;
 
-  // quadric object
-  GLUquadricObj *qobj;
+  const float cone_height_factor_; // cone_height / base_radius
+  GLCylinder cylinder_;
+
+  GLCone cone_;
+
+  GeometryBuffer    lineBuffer_;
+  VertexDeclaration lineDecl_;
+  VertexDeclaration lineDeclInstanced_;
+
+  // data per instance:
+  //  float4x3     axisTransform
+  //  float        size
+  //  byte4_unorm  color
+  GeometryBuffer lineInstanceBuffer_;
+  bool invalidateInstanceData_;
+
+  VertexDeclaration cylinderDeclInstanced_;
+
+  int supportsInstancing_;
 
   GLfloat axes_colors[3][4];
 

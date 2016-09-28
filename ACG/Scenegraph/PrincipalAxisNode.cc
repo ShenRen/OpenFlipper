@@ -93,6 +93,11 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
     min_spacing_(0.0),
     draw_style_(DS_3D),
     color_mode_(CM_Axis),
+    cone_height_factor_(2.5f),
+    cylinder_(8, 2, 1.0f, true, false),
+    cone_(8, 2, 2.0f / cone_height_factor_, 0.0f, true, false),
+    invalidateInstanceData_(true),
+    supportsInstancing_(-1),
     vbo_(0),
     updateVBO_(true) {
 
@@ -109,9 +114,6 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
 
   for(unsigned int i=0; i<3; ++i)
     show_tensor_component_[i] = 2;
-
-  // create new quadric object
-  qobj = gluNewQuadric();
 }
 
 
@@ -120,8 +122,17 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
 
 PrincipalAxisNode::~PrincipalAxisNode()
 {
-  // delete quadric object
-  gluDeleteQuadric( qobj );
+}
+
+//----------------------------------------------------------------------------
+
+void PrincipalAxisNode::set_color_mode(ColorMode _cm)
+{
+  if (color_mode_ != _cm)
+  {
+    color_mode_ = _cm;
+    invalidateInstanceData_ = true;
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -143,6 +154,11 @@ PrincipalAxisNode::
 show_tensor_component(unsigned int _i, unsigned char _show)
 {
   if (_i > 2) return;
+
+  // instance data has to be invalidated if components change visibility.
+  // toggling between single and double direction is possible without update
+  if ((show_tensor_component_[_i] && !_show) || (!show_tensor_component_[_i] && _show))
+    invalidateInstanceData_ = true;
 
   show_tensor_component_[_i] = _show;
 
@@ -180,7 +196,11 @@ enable ( unsigned int _i)
 {
   if(_i < draw_pc_.size())
   {
-    draw_pc_[_i] = true;
+    if (!draw_pc_[_i])
+    {
+      draw_pc_[_i] = true;
+      invalidateInstanceData_ = true;
+    }
   }
   else std::cerr << "principal component index out of range\n";
 }
@@ -195,7 +215,11 @@ disable ( unsigned int _i)
 {
   if(_i < draw_pc_.size())
   {
-    draw_pc_[_i] = false;
+    if (!draw_pc_[_i])
+    {
+      draw_pc_[_i] = false;
+      invalidateInstanceData_ = true;
+    }
   }
   else std::cerr << "principal component index out of range\n";
 }
@@ -228,6 +252,8 @@ set(unsigned int _i, const PrincipalComponent& _pc)
     // update range
     if( auto_range_)
       auto_update_range();
+
+    invalidateInstanceData_ = true;
 
 //     // update bounding_box
 //     update_bounding_box();
@@ -267,6 +293,8 @@ add(const PrincipalComponent& _pc, bool _enable)
   if( auto_range_)
     auto_update_range();
 
+  invalidateInstanceData_ = true;
+
   updateVBO();
 }
 
@@ -293,6 +321,7 @@ set_min_abs_value( double _v)
     std::cerr << "Warning: Auto update min/max abs_values is enabled! Setting has no effect.\n";
 
   min_abs_value_ = _v;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -308,6 +337,7 @@ set_max_abs_value( double _v)
     std::cerr << "Warning: Auto update min/max abs_values is enabled! Setting has no effect.\n";
 
   max_abs_value_ = _v;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -320,6 +350,7 @@ set_min_draw_radius( double _v)
 {
   min_draw_radius_ = _v;
   default_radius_ = false;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -333,6 +364,7 @@ set_max_draw_radius( double _v)
 {
   max_draw_radius_ = _v;
   default_radius_ = false;
+  invalidateInstanceData_ = true;
   updateVBO();
 }
 
@@ -579,17 +611,18 @@ draw_arrow( const Vec3d& _axis, double _r)
     else
       glRotatef(rot_angle,1,0,0);
 
-    gluQuadricDrawStyle(qobj, GLU_FILL);
-    gluQuadricNormals(qobj, GLU_SMOOTH);
+    glPushMatrix();
+    glScalef(_r, _r, 0.85f*size);
+    cylinder_.draw_primitive();
+    glPopMatrix();
 
-    gluCylinder(qobj, base_radius, top_radius, 0.85f*size, slices, 1);
-    glRotatef( 180, 1, 0 ,0);
-    gluDisk(qobj, 0, base_radius, slices, 1);
-    glRotatef( 180, 1, 0 ,0);
-    glTranslatef(0,0,0.85f*size);
-    gluCylinder(qobj, 2.0*base_radius, 0, /*0.15f*size*/ 2.5*base_radius, slices, 1);
-    glRotatef( 180, 1, 0 ,0);
-    gluDisk(qobj, 0, 2.0*base_radius, slices, 1);
+    glPushMatrix();
+    glTranslatef(0, 0, 0.85f*size);
+    glScalef(cone_height_factor_ * _r, cone_height_factor_ * _r, cone_height_factor_ * _r);
+    cone_.draw_primitive();
+    glPopMatrix();
+
+
 
 
     glPopMatrix();
@@ -649,6 +682,7 @@ void PrincipalAxisNode::set_axes_colors(const Vec4f colors[3]) {
         }
     }
 
+    invalidateInstanceData_ = true;
     updateVBO();
 }
 
@@ -775,48 +809,491 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
     if (pc_.empty())
         return;
 
-    // init base render object
 
-    RenderObject ro;
-    ro.initFromState(&_state);
-    ro.setMaterial(_mat);
+    if (draw_style_ == DS_2D && !lineDecl_.getNumElements())
+    {
+      // line vertex layout
+      // float3 pos
+      // float x_offset (for quad extrusion with line width in vertex shader)
+      float lineVBOData[] =
+      {
+        0.0f, 0.0f, 1.0f, -1.0f,
+        0.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 0.0f, -1.0f,
+      };
 
-    nodeName_ = std::string("PrincipalAxisNode: ") + name();
-    ro.debugName = nodeName_.c_str();
+      lineBuffer_.upload(sizeof(lineVBOData), lineVBOData, GL_STATIC_DRAW);
 
-    ro.depthTest = true;
-    ro.depthWrite = true;
-
-    // simulate line width via quad extrusion in geometry shader
-    QString geomTemplate = ShaderProgGenerator::getShaderDir();
-    geomTemplate += "Wireframe/geom_line2quad.tpl";
-
-    ro.shaderDesc.geometryTemplateFile = geomTemplate;
-
-    ro.setUniform("screenSize",
-            Vec2f((float) _state.viewport_width(),
-                    (float) _state.viewport_height()));
-    ro.setUniform("lineWidth", static_cast<float>(cylinder_radius_scale_));
-
-    createVBO();
-    ro.vertexBuffer = vbo_;
-    // vertexDecl is defined in createVBO
-    ro.vertexDecl = &vertexDecl_;
-
-    //besides of the position, colors are saved so we can show them
-    if (vertexDecl_.getNumElements() > 1)
-        ro.shaderDesc.vertexColors = true;
-
-    int tensorComponentCount = 0;
-    for (int i = 0; i < 3; ++i) {
-        tensorComponentCount += show_tensor_component_[i] ? 1 : 0;
+      lineDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
+      lineDecl_.addElement(GL_FLOAT, 1, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_xOffset");
     }
 
-    ro.glDrawArrays(GL_LINES, 0, static_cast<int>(pc_.size() * tensorComponentCount * 2));
+    // check support for instancing if not done yet
+    if (supportsInstancing_ < 0)
+      supportsInstancing_ = checkExtensionSupported("GL_ARB_instanced_arrays") ? 1 : 0;
+    if (supportsInstancing_)
+    {
+      RenderObject obj;
 
-    _renderer->addRenderObject(&ro);
+      obj.initFromState(&_state);
+      obj.depthTest = true;
 
+      if (!_drawMode.getLayer(0)->lighting())
+        obj.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+      else
+      {
+        if (_drawMode.getLayer(0)->flatShaded())
+          obj.shaderDesc.shadeMode = SG_SHADE_FLAT;
+        else
+          obj.shaderDesc.shadeMode = SG_SHADE_GOURAUD;
+      }
+
+
+      // count number of instances
+      int numInstances = 0;
+
+      int visibleTensors = 0;
+      for (unsigned int k = 0; k < 3; ++k)
+      {
+        if (show_tensor_component_[k]) 
+          ++visibleTensors;
+      }
+
+      for (size_t i = 0; i < pc_.size(); ++i)
+      {
+        if (draw_pc_[i])
+          numInstances += visibleTensors;
+      }
+
+      if (!numInstances)
+        return;
+
+      if (invalidateInstanceData_)
+      {
+        /*
+        data stored per instance:
+        float4x3 world matrix
+        byte4_unorm color
+        */
+
+        const int numDwordsPerInstance = 4 * 3 + 2;
+        std::vector<float> instanceData(numInstances * numDwordsPerInstance);
+        int instanceOffset = 0;
+
+        for (unsigned int i = 0; i < pc_.size(); ++i)
+        {
+          if (draw_pc_[i])
+          {
+            const PrincipalComponent& pc = pc_[i];
+            for (unsigned int k = 0; k < 3; ++k)
+            {
+              if (!show_tensor_component_[k]) continue;
+
+              // compute axis transform
+              double size = 1.0;
+              GLMatrixd axisWorld = axisTransform(pc, k, &size);
+
+              // store 4x3 part of axis transform
+
+              for (int r = 0; r < 3; ++r)
+                for (int c = 0; c < 4; ++c)
+                  instanceData[instanceOffset * numDwordsPerInstance + r * 4 + c] = axisWorld(r, c);
+
+              // store size
+              instanceData[instanceOffset * numDwordsPerInstance + 4 * 3] = size;
+
+              // store color
+              Vec4uc instanceColor(0, 0, 0, 255);
+
+              if (color_mode_ == CM_Sign)
+              {
+                // choose color based on eigenvalue sign
+                if (pc.sign[k] == true)
+                  instanceColor = Vec4uc(255, 0, 0, 255);
+                else
+                  instanceColor = Vec4uc(0, 0, 255, 255);
+              }
+              else // choose color based on eigenvalue
+              {
+                for (int m = 0; m < 4; ++m)
+                  instanceColor[m] = static_cast<unsigned char>(std::max(std::min(int(axes_colors[k][m] * 255.0f), int(255)), int(0)));
+              }
+
+              memcpy(&instanceData[instanceOffset * numDwordsPerInstance + 4 * 3 + 1], instanceColor.data(), 4);
+
+              ++instanceOffset;
+            }
+          }
+        }
+
+        lineInstanceBuffer_.upload(instanceData.size() * 4, &instanceData[0], GL_STATIC_DRAW);
+
+        lineDeclInstanced_.clear();
+        // vbo data layout
+        lineDeclInstanced_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
+        lineDeclInstanced_.addElement(GL_FLOAT, 1, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_xOffset");
+        // instance data layout
+        lineDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_worldTransform0", 1, lineInstanceBuffer_.id());
+        lineDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_worldTransform1", 1, lineInstanceBuffer_.id());
+        lineDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_worldTransform2", 1, lineInstanceBuffer_.id());
+        lineDeclInstanced_.addElement(GL_FLOAT, 1, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_size", 1, lineInstanceBuffer_.id());
+        lineDeclInstanced_.addElement(GL_UNSIGNED_BYTE, 4, VERTEX_USAGE_COLOR, size_t(0), 0, 1, lineInstanceBuffer_.id());
+
+        cylinderDeclInstanced_.clear();
+        cylinderDeclInstanced_ = *cylinder_.getVertexDecl();
+        cylinderDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_worldTransform0", 1, lineInstanceBuffer_.id());
+        cylinderDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_worldTransform1", 1, lineInstanceBuffer_.id());
+        cylinderDeclInstanced_.addElement(GL_FLOAT, 4, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_worldTransform2", 1, lineInstanceBuffer_.id());
+        cylinderDeclInstanced_.addElement(GL_FLOAT, 1, VERTEX_USAGE_SHADER_INPUT, size_t(0), "pa_size", 1, lineInstanceBuffer_.id());
+        cylinderDeclInstanced_.addElement(GL_UNSIGNED_BYTE, 4, VERTEX_USAGE_COLOR, size_t(0), 0, 1, lineInstanceBuffer_.id());
+
+        invalidateInstanceData_ = false;
+      }
+
+      // scale and offset based on visualization mode (single or both directions)
+      Vec3f pa_scale(0.0f, 0.0f, 0.0f), pa_offset(0.0f, 0.0f, 0.0f);
+
+      int curTensor = 0;
+      for (int k = 0; k < 3; ++k)
+      {
+        if (show_tensor_component_[k] == 2)
+        {
+          pa_scale[curTensor] = 2.0f;
+          pa_offset[curTensor] = -1.0f;
+        }
+        else
+        {
+          pa_scale[curTensor] = 1.0f;
+          pa_offset[curTensor] = 0.0f;
+        }
+        if (show_tensor_component_[k])
+          ++curTensor;
+      }
+
+      if (draw_style_ == DS_2D)
+      {
+        // line object
+        obj.debugName = "PrincipalAxisNode.line";
+        obj.name = name() + std::string(".line");
+
+        obj.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+        obj.shaderDesc.vertexColors = true;
+        obj.shaderDesc.vertexTemplateFile = "PrincipalAxisNode/lines_extruded_instanced.glsl";
+
+        obj.setUniform("pa_lineWidth", float(cylinder_radius_scale_));
+        obj.setUniform("pa_screenSize", Vec2f(_state.viewport_width(), _state.viewport_height()));
+        obj.setUniform("pa_scale", pa_scale);
+        obj.setUniform("pa_offset", pa_offset);
+        obj.setUniform("pa_visible_tensors", visibleTensors);
+
+        obj.vertexBuffer = lineBuffer_.id();
+        obj.vertexDecl = &lineDeclInstanced_;
+
+        obj.glDrawInstancedArrays(GL_TRIANGLE_STRIP, 0, 4, numInstances);
+
+        _renderer->addRenderObject(&obj);
+      }
+      else
+      {
+        float radius = max_draw_radius_ * 0.015 * cylinder_radius_scale_;
+
+        obj.debugName = "PrincipalAxisNode.cylinder";
+        obj.name = name() + std::string(".cylinder");
+
+        obj.shaderDesc.vertexColors = true;
+        obj.shaderDesc.vertexTemplateFile = "PrincipalAxisNode/3d_instanced.glsl";
+        obj.shaderDesc.colorMaterialMode = GL_AMBIENT_AND_DIFFUSE;
+
+        obj.ambient = obj.diffuse = Vec3f(1.0f, 1.0f, 1.0f);
+
+        obj.setUniform("pa_cone_radius", radius);
+        obj.setUniform("pa_cone_offset", Vec3f(0.0f, 0.0f, 0.0f));
+        obj.setUniform("pa_scale", pa_scale * 0.85f);
+        obj.setUniform("pa_offset", pa_offset * 0.85f);
+        obj.setUniform("pa_visible_tensors", visibleTensors);
+
+        obj.vertexBuffer = cylinder_.getVBO();
+        obj.vertexDecl = &cylinderDeclInstanced_;
+
+        obj.glDrawInstancedArrays(GL_TRIANGLES, 0, cylinder_.getNumTriangles() * 3, numInstances);
+
+        _renderer->addRenderObject(&obj);
+
+        // arrowheads
+        obj.debugName = "PrincipalAxisNode.cone";
+
+        obj.shaderDesc.vertexTemplateFile = "PrincipalAxisNode/3d_cone_instanced.glsl";
+
+        obj.setUniform("pa_cone_radius", cone_height_factor_ * radius);
+        obj.setUniform("pa_cone_offset", Vec3f(0.0f, 0.0f, 0.0f));
+        obj.setUniform("pa_cone_mirror", 1.0f);
+
+        obj.vertexBuffer = cone_.getVBO();
+
+        obj.glDrawInstancedArrays(GL_TRIANGLES, 0, cone_.getNumTriangles() * 3, numInstances);
+
+        _renderer->addRenderObject(&obj);
+
+        if (show_tensor_component_[0] == 2 ||
+          show_tensor_component_[1] == 2 ||
+          show_tensor_component_[2] == 2)
+        {
+          obj.debugName = "PrincipalAxisNode.cone_mirror";
+          obj.setUniform("pa_cone_mirror", -1.0f);
+
+          _renderer->addRenderObject(&obj);
+        }
+      }
+    }
+    else
+    {
+      // non-instanced
+
+//      emitIndividualRenderobjects(_renderer, _state, _drawMode, _mat);
+
+      RenderObject ro;
+      ro.initFromState(&_state);
+      ro.setMaterial(_mat);
+
+      nodeName_ = std::string("PrincipalAxisNode: ") + name();
+      ro.debugName = nodeName_.c_str();
+
+      ro.depthTest = true;
+      ro.depthWrite = true;
+
+      ro.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+
+      // simulate line width via quad extrusion in geometry shader
+      QString geomTemplate = ShaderProgGenerator::getShaderDir();
+      geomTemplate += "Wireframe/geom_line2quad.tpl";
+
+      ro.shaderDesc.geometryTemplateFile = geomTemplate;
+
+      ro.setUniform("screenSize",
+        Vec2f((float)_state.viewport_width(),
+          (float)_state.viewport_height()));
+      ro.setUniform("lineWidth", static_cast<float>(cylinder_radius_scale_));
+
+      createVBO();
+      ro.vertexBuffer = vbo_;
+      // vertexDecl is defined in createVBO
+      ro.vertexDecl = &vertexDecl_;
+
+      int curOffset = 0;
+      int vertexCount = static_cast<int>(pc_.size() * 2);
+      for (int i = 0; i < 3; ++i) 
+      {
+        if (show_tensor_component_[i]) 
+        {
+          // set axis color
+          for (int k = 0; k < 3; ++k)
+            ro.emissive[k] = axes_colors[i][k];
+
+          ro.glDrawArrays(GL_LINES, curOffset, vertexCount);
+          _renderer->addRenderObject(&ro);
+
+          curOffset += vertexCount;
+        }
+      }
+
+    }
 }
+
+//----------------------------------------------------------------------------
+
+void PrincipalAxisNode::emitIndividualRenderobjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode, const ACG::SceneGraph::Material* _mat)
+{
+  RenderObject obj;
+
+  obj.initFromState(&_state);
+  obj.depthTest = true;
+
+  if (!_drawMode.getLayer(0)->lighting())
+    obj.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+  else
+  {
+    if (_drawMode.getLayer(0)->flatShaded())
+      obj.shaderDesc.shadeMode = SG_SHADE_FLAT;
+    else
+      obj.shaderDesc.shadeMode = SG_SHADE_GOURAUD;
+  }
+
+
+  for (unsigned int i = 0; i < pc_.size(); ++i)
+  {
+    if (draw_pc_[i])
+    {
+      const PrincipalComponent& pc = pc_[i];
+
+      for (unsigned int k = 0; k < 3; ++k)
+      {
+        if (!show_tensor_component_[k]) continue;
+
+        if (color_mode_ == CM_Sign)
+        {
+          // choose color due to eigenvalue sign
+          if (pc.sign[k] == true)
+            obj.ambient = obj.diffuse = Vec3f(1.0f, 0.0f, 0.0f);
+          else
+            obj.ambient = obj.diffuse = Vec3f(0.0f, 0.0f, 1.0f);
+        }
+        else // choose color due to eigenvalue
+          obj.ambient = obj.diffuse = Vec3f(axes_colors[k][0], axes_colors[k][1], axes_colors[k][2]);
+
+        double size = 1.0;
+        GLMatrixd axisModelView = _state.modelview() * axisTransform(pc, k, &size);
+
+        if (size > 1e-10)
+        {
+          // draw both axis
+          if (draw_style_ == DS_3D)
+          {
+            double radius = max_draw_radius_ * 0.015 * cylinder_radius_scale_;
+
+            // cylinder
+            obj.name = name() + std::string(".cylinder");
+
+            obj.modelview = axisModelView;
+
+            if (show_tensor_component_[k] == 2)
+            {
+              obj.modelview.scale(radius, radius, 2.0 * 0.85 * size);
+              obj.modelview.translate(0.0, 0.0, -0.5);
+            }
+            else
+              obj.modelview.scale(radius, radius, 0.85 * size);
+
+            obj.vertexDecl = cylinder_.getVertexDecl();
+            obj.vertexBuffer = cylinder_.getVBO();
+
+            obj.glDrawArrays(GL_TRIANGLES, 0, cylinder_.getNumTriangles() * 3);
+
+            _renderer->addRenderObject(&obj);
+
+            // arrowhead
+            obj.name = name() + std::string(".cone");
+
+            obj.modelview = axisModelView;
+            obj.modelview.translate(0, 0, 0.85 * size);
+            obj.modelview.scale(cone_height_factor_ * radius, cone_height_factor_ * radius, cone_height_factor_ * radius);
+
+            obj.vertexDecl = cone_.getVertexDecl();
+            obj.vertexBuffer = cone_.getVBO();
+
+            obj.glDrawArrays(GL_TRIANGLES, 0, cone_.getNumTriangles() * 3);
+
+            _renderer->addRenderObject(&obj);
+
+            if (show_tensor_component_[k] == 2)
+            {
+              obj.modelview = axisModelView;
+              obj.modelview.rotate(180, 1, 0, 0);
+              obj.modelview.translate(0, 0, 0.85 * size);
+
+              obj.modelview.scale(cone_height_factor_ * radius, cone_height_factor_ * radius, cone_height_factor_ * radius);
+
+              _renderer->addRenderObject(&obj);
+            }
+          }
+          else
+          {
+            // line object
+            obj.name = name() + std::string(".line");
+
+            obj.modelview = axisModelView;
+            obj.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+            obj.emissive = obj.diffuse;
+
+            if (show_tensor_component_[k] == 2)
+            {
+              obj.modelview.scale(1.0, 1.0, 2.0 * size);
+              obj.modelview.translate(0.0, 0.0, -0.5);
+            }
+            else
+              obj.modelview.scale(1.0, 1.0, size);
+
+            obj.vertexBuffer = lineBuffer_.id();
+            obj.vertexDecl = &lineDecl_;
+
+            obj.glDrawArrays(GL_LINES, 0, 2);
+
+            _renderer->addRenderObject(&obj);
+          }
+        }
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
+
+Vec3d
+PrincipalAxisNode::
+axisScaled(const PrincipalComponent& _pc, int _axis) const
+{
+  Vec3d a;
+  a = _pc.a[_axis];
+
+  // compute arrow length in world coords
+  double length;
+  length = std::max(min_abs_value_, a.norm());
+  length = std::min(max_abs_value_, length);
+
+  if (a.norm() > 1e-8)
+    a.normalize();
+
+  // Bug fixed: Visualizing all unit vectors yieled scaled_length = nan
+  double scaled_length(min_draw_radius_);
+
+  if (fabs(max_abs_value_ - min_abs_value_) > 1e-6)
+    scaled_length += (length - min_abs_value_) / (max_abs_value_ - min_abs_value_)*(max_draw_radius_ - min_draw_radius_);
+
+  a *= scaled_length;
+  return a;
+}
+
+//----------------------------------------------------------------------------
+
+GLMatrixd
+PrincipalAxisNode::
+axisTransform(const PrincipalComponent& _pc, int _axis, double* _outSize) const
+{
+  assert(0 <= _axis && _axis < 3);
+
+  GLMatrixd axisTransform;
+  axisTransform.identity();
+  axisTransform.translate(_pc.p);
+
+  Vec3d a = axisScaled(_pc, _axis);
+  double size = a.norm();
+
+  if (_outSize)
+    *_outSize = size;
+
+  // orientation
+  if (size > 1e-10)
+  {
+    Vec3d direction = a;
+    Vec3d z_axis(0, 0, 1);
+    Vec3d rot_normal;
+    double rot_angle;
+    direction.normalize();
+    rot_angle = acos((z_axis | direction)) * 180 / M_PI;
+    rot_normal = ((z_axis % direction).normalize());
+
+    if (fabs(rot_angle) > 0.0001 && fabs(180 - rot_angle) > 0.0001)
+      axisTransform.rotate(rot_angle, rot_normal[0], rot_normal[1], rot_normal[2]);
+    else
+      axisTransform.rotate(rot_angle, 1, 0, 0);
+  }
+
+  return axisTransform;
+}
+
+//----------------------------------------------------------------------------
+
+
 
 void PrincipalAxisNode::createVBO() {
     if (!updateVBO_)
@@ -832,21 +1309,14 @@ void PrincipalAxisNode::createVBO() {
     }
     vertexDecl_.clear();
     vertexDecl_.addElement(GL_FLOAT, 3, VERTEX_USAGE_POSITION);
-    vertexDecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_COLOR);
 
-    //3 coordinates + 4 color components per vertex, 2 vertices per principal component
-    std::vector<float> vboData((3 + 4) * 2 * tensorComponentCount * pc_.size(), 0.f);
+    //3 coordinates per vertex, 2 vertices per principal component
+    std::vector<float> vboData(3 * 2 * tensorComponentCount * pc_.size(), 0.f);
 
     float* vboPtr = &vboData[0];
 
     for (int tensor_component = 0; tensor_component < 3; ++tensor_component) {
         if (!show_tensor_component_[tensor_component]) continue;
-
-        /*
-         * Constant color per tensor component.
-         * FIXME: We store the same color pc_.size() times. Way redundant!
-         */
-        const GLfloat (&color)[4] = axes_colors[tensor_component];
 
         for (std::vector<PrincipalComponent>::const_iterator it = pc_.begin();
                 it != pc_.end(); ++it) {
@@ -878,12 +1348,8 @@ void PrincipalAxisNode::createVBO() {
 
             for (int i = 0; i < 3; ++i)
                 *(vboPtr++) = pc_from[i];
-            for (int i = 0; i < 4; ++i)
-                *(vboPtr++) = color[i];
             for (int i = 0; i < 3; ++i)
                 *(vboPtr++) = pc_to[i];
-            for (int i = 0; i < 4; ++i)
-                *(vboPtr++) = color[i];
         }
     }
     assert(vboPtr == &vboData[0] + vboData.size());

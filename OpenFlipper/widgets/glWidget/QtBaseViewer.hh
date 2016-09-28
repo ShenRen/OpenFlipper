@@ -483,7 +483,7 @@ protected:
   /// initialize OpenGL states
   virtual void initializeGL();
   /// draw the scene. Triggered by updateGL().
-  virtual void paintGL();
+  virtual void paintGL(double _aspect = 0.0);
   /// handle resize events
   virtual void resizeEvent(QGraphicsSceneResizeEvent * _e);
   /// handle move events
@@ -515,7 +515,7 @@ protected:
 
 
   /// updates projection matrix
-  void updateProjectionMatrix();
+  void updateProjectionMatrix(double _aspect = 0.0);
 
 
 //------------------------------------------------------------- protected slots
@@ -545,7 +545,7 @@ private:
 
   /* Recursively draws each node in the scene graph.
       Called by paintGL(). */
-  void drawScene();
+  void drawScene(double _aspect = 0.0);
   // helper called by drawScene().
   void drawScene_mono();
   /// helper function for setting the projection mode of the coordinate system node

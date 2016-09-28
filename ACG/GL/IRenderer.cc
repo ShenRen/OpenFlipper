@@ -51,6 +51,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 #include <QFile>
 #include <QTextStream>
 
@@ -409,8 +410,9 @@ void IRenderer::collectRenderObjects( ACG::GLState* _glState, ACG::SceneGraph::D
 //  {
 //    renderObjects_[i].uniformPool_.clear();
 //  }
-  renderObjects_.resize(0);
+  renderObjects_.clear();
 
+  if (!_sceneGraphRoot) return;
 
   // default material needed
   ACG::SceneGraph::Material defMat;
@@ -422,85 +424,100 @@ void IRenderer::collectRenderObjects( ACG::GLState* _glState, ACG::SceneGraph::D
   //  defMat.alphaValue(1.0f);
 
   // collect renderables
-  traverseRenderableNodes(_glState, _drawMode, _sceneGraphRoot, &defMat);
+  traverseRenderableNodes(_glState, _drawMode, *_sceneGraphRoot, defMat);
 }
 
 
+/// Stack element used in IRenderer::traverseRenderableNodes
+namespace {
+class ScenegraphTraversalStackEl {
+    public:
+        ScenegraphTraversalStackEl(ACG::SceneGraph::BaseNode *_node,
+                const ACG::SceneGraph::Material *_material) :
+            node(_node), material(_material),
+            subtree_index_start(0), leave(false) {}
 
+        ACG::SceneGraph::BaseNode *node;
+        const ACG::SceneGraph::Material* material;
+        size_t subtree_index_start;
+        bool leave;
+};
+}
 
-
-void IRenderer::traverseRenderableNodes( ACG::GLState* _glState,
-  ACG::SceneGraph::DrawModes::DrawMode _drawMode, 
-  ACG::SceneGraph::BaseNode* _node, 
-  const ACG::SceneGraph::Material* _mat )
+void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode &_node, const ACG::SceneGraph::Material &_mat )
 {
-  if (_node)
-  {
-    ACG::SceneGraph::BaseNode::StatusMode status(_node->status());
+    if (_node.status() == ACG::SceneGraph::BaseNode::HideSubtree)
+        return;
 
-    ACG::SceneGraph::DrawModes::DrawMode nodeDM = _node->drawMode();
+    std::vector<ScenegraphTraversalStackEl> stack;
+    // That's roughly the minimum size every scenegraph requries.
+    stack.reserve(32);
+    stack.push_back(ScenegraphTraversalStackEl(&_node, &_mat));
+    while (!stack.empty()) {
+        ScenegraphTraversalStackEl &cur = stack.back();
+        ACG::SceneGraph::DrawModes::DrawMode nodeDM = cur.node->drawMode();
+        if (nodeDM == ACG::SceneGraph::DrawModes::DEFAULT)
+          nodeDM = _drawMode;
 
-    if (nodeDM == ACG::SceneGraph::DrawModes::DEFAULT)
-      nodeDM = _drawMode;
+        if (!cur.leave) {
+            /*
+             * Stuff that happens before processing cur.node's children.
+             */
+            if ( cur.node->status() != ACG::SceneGraph::BaseNode::HideNode )
+                cur.node->enter(this, *_glState, nodeDM);
 
+            cur.subtree_index_start = renderObjects_.size();
 
-    // If the subtree is hidden, ignore this node and its children while rendering
-    if (status != ACG::SceneGraph::BaseNode::HideSubtree)
-    {
+            // fetch material (Node itself can be a material node, so we have to
+            // set that in front of the nodes own rendering
+            ACG::SceneGraph::MaterialNode* matNode =
+                    dynamic_cast<ACG::SceneGraph::MaterialNode*>(cur.node);
+            if (matNode)
+              cur.material = &matNode->material();
 
-      if (_node->status() != ACG::SceneGraph::BaseNode::HideNode)
-      {
-        _node->enter(*_glState, nodeDM);
-        _node->attachRenderObjectModifiers(this, *_glState, nodeDM);
-      }
+            if (cur.node->status() != ACG::SceneGraph::BaseNode::HideNode)
+                cur.node->getRenderObjects(this, *_glState, nodeDM, cur.material);
 
+            // Process children?
+            if (cur.node->status() != ACG::SceneGraph::BaseNode::HideChildren) {
+                // Process all children which are second pass
+                for (ACG::SceneGraph::BaseNode::ChildIter
+                        cIt = cur.node->childrenBegin(),
+                        cEnd = cur.node->childrenEnd(); cIt != cEnd; ++cIt) {
+                  if (((*cIt)->traverseMode() &
+                          ACG::SceneGraph::BaseNode::SecondPass) &&
+                          (*cIt)->status() != ACG::SceneGraph::BaseNode::HideSubtree)
+                      stack.push_back(ScenegraphTraversalStackEl(*cIt, cur.material));
+                }
 
-      // fetch material (Node itself can be a material node, so we have to
-      // set that in front of the nodes own rendering
-      ACG::SceneGraph::MaterialNode* matNode = dynamic_cast<ACG::SceneGraph::MaterialNode*>(_node);
-      if (matNode)
-        _mat = &matNode->material();
+                // Process all children which are not second pass
+                for (ACG::SceneGraph::BaseNode::ChildIter
+                        cIt = cur.node->childrenBegin(),
+                        cEnd = cur.node->childrenEnd(); cIt != cEnd; ++cIt) {
+                  if ((~(*cIt)->traverseMode() &
+                          ACG::SceneGraph::BaseNode::SecondPass) &&
+                          (*cIt)->status() != ACG::SceneGraph::BaseNode::HideSubtree)
+                      stack.push_back(ScenegraphTraversalStackEl(*cIt, cur.material));
+                }
+            }
 
-      if (_node->status() != ACG::SceneGraph::BaseNode::HideNode)
-        _node->getRenderObjects(this, *_glState, nodeDM, _mat);
+            // Next time process the other branch of this if statement.
+            cur.leave = true;
 
-      // Process children?
-      if (status != ACG::SceneGraph::BaseNode::HideChildren)
-      {
+        } else {
+            /*
+             * Stuff that happens after processing cur.node's children.
+             */
+            current_subtree_objects_ = RenderObjectRange(
+                    renderObjects_.begin() + cur.subtree_index_start,
+                    renderObjects_.end());
 
-        ACG::SceneGraph::BaseNode::ChildIter cIt, cEnd(_node->childrenEnd());
-
-        // Process all children which are not second pass
-        for (cIt = _node->childrenBegin(); cIt != cEnd; ++cIt)
-          if (~(*cIt)->traverseMode() & ACG::SceneGraph::BaseNode::SecondPass)
-            traverseRenderableNodes( _glState, _drawMode, *cIt, _mat);
-
-        // Process all children which are second pass
-        for (cIt = _node->childrenBegin(); cIt != cEnd; ++cIt)
-          if ((*cIt)->traverseMode() & ACG::SceneGraph::BaseNode::SecondPass)
-            traverseRenderableNodes( _glState, _drawMode, *cIt, _mat);
-
-      }
-
-
-      if (_node->status() != ACG::SceneGraph::BaseNode::HideNode)
-      {
-        _node->leave(*_glState, nodeDM);
-        _node->detachRenderObjectModifiers(this, *_glState, nodeDM);
-      }
+            if (cur.node->status() != ACG::SceneGraph::BaseNode::HideNode )
+                cur.node->leave(this, *_glState, nodeDM);
+            stack.pop_back();
+        }
     }
-  }
 }
-
-
-int IRenderer::cmpPriority(const void* _a, const void* _b)
-{
-  const ACG::RenderObject* a = *(const ACG::RenderObject**)_a;
-  const ACG::RenderObject* b = *(const ACG::RenderObject**)_b;
-
-  return a->priority - b->priority;
-}
-
 
 void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode* _scenegraphRoot)
 {
@@ -515,35 +532,44 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
   // First, all render objects get collected.
   collectRenderObjects(_glState, _drawMode, _scenegraphRoot);
 
-  // Check if there is anything to render
-  if (renderObjects_.empty())
-    return;
-
   // ==========================================================
   // Sort renderable objects based on their priority
   // Filter for overlay, lines etc.
   // ==========================================================
 
-  const size_t numRenderObjects = getNumRenderObjects(),
-    numOverlayObjects = getNumOverlayObjects(),
-    numLineObjects = getNumLineGL42Objects();
+  size_t numRenderObjects = 0,
+    numOverlayObjects = 0,
+    numLineObjects = 0;
 
-  // sort for priority
-  if (sortedObjects_.size() < numRenderObjects)
-    sortedObjects_.resize(numRenderObjects);
+  for (std::vector<ACG::RenderObject>::const_iterator it = renderObjects_.begin();
+          it != renderObjects_.end(); ++it) {
+      if (!it->overlay && !(it->isDefaultLineObject() && enableLineThicknessGL42_))
+          numRenderObjects++;
+      if (it->overlay)
+          numOverlayObjects++;
+      if (enableLineThicknessGL42_ && it->isDefaultLineObject())
+          numLineObjects++;
+  }
 
-  if (overlayObjects_.size() < numOverlayObjects)
-    overlayObjects_.resize(numOverlayObjects);
+  /*
+   * Neither clear() nor resize() ever decreases the capacity of
+   * a vector. So it has no adverse impact on performance to clear
+   * the vectors here.
+   */
+  sortedObjects_.clear();
+  sortedObjects_.reserve(numRenderObjects);
 
-  if (lineGL42Objects_.size() < numLineObjects)
-    lineGL42Objects_.resize(numLineObjects);
+  overlayObjects_.clear();
+  overlayObjects_.reserve(numOverlayObjects);
+
+  lineGL42Objects_.clear();
+  lineGL42Objects_.reserve(numLineObjects);
 
   // init sorted objects array
-  size_t sceneObjectOffset = 0, overlayObjectOffset = 0, lineObjectOffset = 0;
   for (size_t i = 0; i < renderObjects_.size(); ++i)
   {
     if (renderObjects_[i].overlay)
-      overlayObjects_[overlayObjectOffset++] = &renderObjects_[i];
+      overlayObjects_.push_back(&renderObjects_[i]);
     else if (enableLineThicknessGL42_ && numLineObjects && renderObjects_[i].isDefaultLineObject())
     {
       renderObjects_[i].shaderDesc.geometryTemplateFile = "Wireframe/gl42/geometry.tpl";
@@ -553,10 +579,10 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
       renderObjects_[i].glColorMask(0,0,0,0);
 
 //      sortedObjects_[sceneObjectOffset++] = &renderObjects_[i];
-      lineGL42Objects_[lineObjectOffset++] = &renderObjects_[i];
+      lineGL42Objects_.push_back(&renderObjects_[i]);
     }
     else
-      sortedObjects_[sceneObjectOffset++] = &renderObjects_[i];
+      sortedObjects_.push_back(&renderObjects_[i]);
   }
 
   sortRenderObjects();
@@ -617,7 +643,7 @@ void IRenderer::finishRenderingPipeline(bool _drawOverlay)
 
   if (_drawOverlay)
   {
-    const int numOverlayObj = getNumOverlayObjects();
+    const int numOverlayObj = overlayObjects_.size();
     // two-pass overlay rendering:
     // 1. clear depth buffer at pixels of overlay objects
     // 2. render overlay with correct depth-testing
@@ -762,13 +788,18 @@ void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
   glDisable(GL_SCISSOR_TEST);
 }
 
+namespace {
+struct RenderObjectComparator {
+    bool operator() (ACG::RenderObject *a, ACG::RenderObject * b) {
+        return (a->priority < b->priority);
+    }
+};
+}
 
 void IRenderer::sortRenderObjects()
 {
-  if (!sortedObjects_.empty())
-    qsort(&sortedObjects_[0], getNumRenderObjects(), sizeof(ACG::RenderObject*), cmpPriority);
-  if (!overlayObjects_.empty())
-    qsort(&overlayObjects_[0], getNumOverlayObjects(), sizeof(ACG::RenderObject*), cmpPriority);
+  std::sort(sortedObjects_.begin(), sortedObjects_.end(), RenderObjectComparator());
+  std::sort(overlayObjects_.begin(), overlayObjects_.end(), RenderObjectComparator());
 }
 
 
@@ -1077,7 +1108,6 @@ void IRenderer::addLight(const LightData& _light)
   }
 }
 
-
 void IRenderer::addRenderObjectModifier(RenderObjectModifier* _mod)
 {
   renderObjectModifiers_.push_back(_mod);
@@ -1092,39 +1122,8 @@ void IRenderer::removeRenderObjectModifier(RenderObjectModifier* _mod)
   }
 }
 
-int IRenderer::getNumRenderObjects() const
-{
-  int n = 0;
-  for (size_t i = 0; i < renderObjects_.size(); ++i)
-    if (!renderObjects_[i].overlay && !(renderObjects_[i].isDefaultLineObject() && enableLineThicknessGL42_))
-//    if (!renderObjects_[i].overlay)
-      ++n;
-
-  return n;
-}
-
-int IRenderer::getNumOverlayObjects() const
-{
-  int n = 0;
-  for (size_t i = 0; i < renderObjects_.size(); ++i)
-    if (renderObjects_[i].overlay)
-      ++n;
-
-  return n;
-}
-
-int IRenderer::getNumLineGL42Objects() const
-{
-  int n = 0;
-
-  if (enableLineThicknessGL42_)
-  {
-    for (size_t i = 0; i < renderObjects_.size(); ++i)
-      if (renderObjects_[i].isDefaultLineObject())
-        ++n;
-  }
-
-  return n;
+int IRenderer::getNumRenderObjects() const {
+    return sortedObjects_.size();
 }
 
 int IRenderer::getNumLights() const
@@ -1437,7 +1436,7 @@ void IRenderer::renderLineThicknessGL42()
   //  imageBuffer works
   //  - check with different gpu
 
-  const int numLines = getNumLineGL42Objects();
+  const int numLines = lineGL42Objects_.size();
 
   // configs
   const bool useBufferTexture = true;  // imageBuffer or image2D

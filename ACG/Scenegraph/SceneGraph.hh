@@ -395,12 +395,12 @@ public:
 
   void enter (BaseNode *_node)
   {
-    _node->enter(state_, DrawModes::DEFAULT);
+    _node->enter(0, state_, DrawModes::DEFAULT);
   }
 
   void leave (BaseNode *_node)
   {
-    _node->leave(state_, DrawModes::DEFAULT);
+    _node->leave(0, state_, DrawModes::DEFAULT);
   }
 
   /// Returns minimum point of the bounding box
@@ -717,17 +717,17 @@ public:
   void enter(BaseNode* _node)
   {
     if (_node->drawMode() == DrawModes::DEFAULT)
-      _node->enter(state_, drawMode_);
+      _node->enter(0, state_, drawMode_);
     else
-      _node->enter(state_, _node->drawMode());
+      _node->enter(0, state_, _node->drawMode());
   }
   
   void leave(BaseNode* _node)
   {
     if (_node->drawMode() == DrawModes::DEFAULT)
-      _node->leave(state_, drawMode_);
+      _node->leave(0, state_, drawMode_);
     else
-      _node->leave(state_, _node->drawMode());
+      _node->leave(0, state_, _node->drawMode());
   }
 
 private:

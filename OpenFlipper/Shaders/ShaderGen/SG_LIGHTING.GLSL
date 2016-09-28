@@ -33,7 +33,7 @@ vec3 LitPointLight(vec3 vPosition,
  
 	// specular
 	vec3 h = normalize(vLightDir - vec3(0,0,-1)); // half vector between light and view direction
-	float hdotn = max(dot(h, vNormal), 0.0);
+	float hdotn = max(dot(h, vNormal), 0.001); // small epsilon to avoid undefined pow(0, 0) if shininess is also 0
 	cLight += (pow(hdotn, SHININESS) * cLightSpecular) * g_cSpecular;
 	
 	
@@ -60,7 +60,7 @@ vec3 LitDirLight(vec3 vPosition,
 
 	// specular
 	vec3 h = normalize(vLightDir - vec3(0,0,-1)); // half vector between light and view direction
-	float hdotn = max(dot(h, vNormal), 0.0);
+	float hdotn = max(dot(h, vNormal), 0.001); // small epsilon to avoid undefined pow(0, 0) if shininess is also 0
 	cLight += (pow(hdotn, SHININESS) * cLightSpecular) * g_cSpecular;
 
 	return cLight;
@@ -93,7 +93,7 @@ vec3 LitSpotLight(vec3 vPosition,
 
 	// specular
 	vec3 h = normalize(vLightDir - vec3(0,0,-1)); // half vector between light and view direction
-	float hdotn = max(dot(h, vNormal), 0.0);
+	float hdotn = max(dot(h, vNormal), 0.001); // small epsilon to avoid undefined pow(0, 0) if shininess is also 0
 	cLight += (pow(hdotn, SHININESS) * cLightSpecular) * g_cSpecular;
 
 	

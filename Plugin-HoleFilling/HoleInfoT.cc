@@ -132,7 +132,7 @@ void HoleInfo< MeshT >::getHoles()
 
         ch = *(++voh_it);
 
-      }else
+      } else
         ch = mesh_->next_halfedge_handle( ch );
 
     } while ( ch != hh );
@@ -150,17 +150,17 @@ void HoleInfo< MeshT >::getHoles()
       if ( ! mesh_->is_boundary( hh ) )
         hh = mesh_->opposite_halfedge_handle( hh );
 
-        typename MeshT::VertexHandle vh = mesh_->from_vertex_handle(hh);
+      typename MeshT::VertexHandle vh = mesh_->from_vertex_handle(hh);
 
-        typename MeshT::Normal n = mesh_->normal( vh );
+      typename MeshT::Normal n = mesh_->normal( vh );
 
-        typename MeshT::Point p = mesh_->point( vh );
+      typename MeshT::Point p = mesh_->point( vh );
 
-        if ( (p - center).norm() < (p + n - center).norm()  ){
+      if ( (p - center).norm() < (p + n - center).norm()  ){
 //           isHole = false;
 //           break;
-          err++;
-        }
+        err++;
+      }
     }
 
 //   std::cerr << "Errors " << err << " Size " << hole.count << std::endl; 

@@ -39,6 +39,11 @@
  *                                                                           *
 \*===========================================================================*/
 
+/*
+ * This class is available on C++11 compilers only.
+ */
+#if (defined(_MSC_VER) && (_MSC_VER >= 1900)) || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__)
+
 #include "../../ACG/Scenegraph/FloatingSubtreeNode.hh"
 
 #include <ACG/GL/IRenderer.hh>
@@ -105,3 +110,5 @@ void FloatingSubtreeNode::setModelViewOverride(GLMatrixd modelview_override) {
 
 } /* namespace Scenegraph */
 } /* namespace ACG */
+
+#endif /* C++11 */

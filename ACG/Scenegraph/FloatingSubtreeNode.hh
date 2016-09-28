@@ -42,6 +42,11 @@
 #ifndef ACG_SCENEGRAPH_FLOATINGSUBTREENODE_HH_
 #define ACG_SCENEGRAPH_FLOATINGSUBTREENODE_HH_
 
+/*
+ * This class is available on C++11 compilers only.
+ */
+#if (defined(_MSC_VER) && (_MSC_VER >= 1900)) || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__)
+
 #include <ACG/Math/GLMatrixT.hh>
 #include <ACG/Scenegraph/BaseNode.hh>
 #include <ACG/Scenegraph/DrawModes.hh>
@@ -102,5 +107,7 @@ class ACGDLLEXPORT FloatingSubtreeNode : public BaseNode {
 
 } /* namespace Scenegraph */
 } /* namespace ACG */
+
+#endif /* C++11 */
 
 #endif /* ACG_SCENEGRAPH_FLOATINGSUBTREENODE_HH_ */

@@ -125,11 +125,17 @@ public:
   /// set class name
   ACG_CLASSNAME(ClippingNode);
 
-  /// set texture
+  /// enable clipping plane
   void enter(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawmode);
 
-  /// restores original texture (or no-texture)
+  /// disable clipping plane
   void leave(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawmode);
+
+  /// enable clipping plane
+  void enter(GLState& _state, const DrawModes::DrawMode& _drawmode);
+
+  /// disable clipping plane
+  void leave(GLState& _state, const DrawModes::DrawMode& _drawmode);
 
   /// set position and normal of plane
   void set_plane(const Vec3f& _position, const Vec3f& _normal, float _eps=0.0);

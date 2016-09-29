@@ -144,27 +144,22 @@ ClippingNode::set_offset(float _offset)
 //----------------------------------------------------------------------------
   
 
-void ClippingNode::enter(IRenderer* _renderer, GLState& /* _state */ , const DrawModes::DrawMode& /* _drawmode */ ) 
+void ClippingNode::enter(GLState& /* _state */ , const DrawModes::DrawMode& /* _drawmode */ ) 
 {
-  if (_renderer)
-    _renderer->addRenderObjectModifier(&mod_);
+  // one clipping plane
+  if (slice_width_ == 0.0)
+  {
+    glClipPlane(GL_CLIP_PLANE0, offset_plane0_);
+    ACG::GLState::enable(GL_CLIP_PLANE0);
+  }
+
+  // two planes -> slice
   else
   {
-    // one clipping plane
-    if (slice_width_ == 0.0)
-    {
-      glClipPlane(GL_CLIP_PLANE0, offset_plane0_);
-      ACG::GLState::enable(GL_CLIP_PLANE0);
-    }
-
-    // two planes -> slice
-    else
-    {
-      glClipPlane(GL_CLIP_PLANE0, offset_plane0_);
-      ACG::GLState::enable(GL_CLIP_PLANE0);
-      glClipPlane(GL_CLIP_PLANE1, offset_plane1_);
-      ACG::GLState::enable(GL_CLIP_PLANE1);
-    }
+    glClipPlane(GL_CLIP_PLANE0, offset_plane0_);
+    ACG::GLState::enable(GL_CLIP_PLANE0);
+    glClipPlane(GL_CLIP_PLANE1, offset_plane1_);
+    ACG::GLState::enable(GL_CLIP_PLANE1);
   }
 }
 
@@ -172,16 +167,29 @@ void ClippingNode::enter(IRenderer* _renderer, GLState& /* _state */ , const Dra
 //----------------------------------------------------------------------------
 
 
-void ClippingNode::leave(IRenderer* _renderer, GLState& /* _state */ , const DrawModes::DrawMode& /* _drawmode */ )
+void ClippingNode::leave(GLState& /* _state */ , const DrawModes::DrawMode& /* _drawmode */ )
 {
-  if (_renderer)
-    _renderer->removeRenderObjectModifier(&mod_);
-  else
-  {
-    ACG::GLState::disable(GL_CLIP_PLANE0);
-    if (slice_width_ > 0.0)
-      ACG::GLState::disable(GL_CLIP_PLANE1);
-  }
+  ACG::GLState::disable(GL_CLIP_PLANE0);
+  if (slice_width_ > 0.0)
+    ACG::GLState::disable(GL_CLIP_PLANE1);
+}
+
+
+//----------------------------------------------------------------------------
+
+
+void ClippingNode::enter(IRenderer* _renderer, GLState& /* _state */, const DrawModes::DrawMode& /* _drawmode */)
+{
+  _renderer->addRenderObjectModifier(&mod_);
+}
+
+
+//----------------------------------------------------------------------------
+
+
+void ClippingNode::leave(IRenderer* _renderer, GLState& /* _state */, const DrawModes::DrawMode& /* _drawmode */)
+{
+  _renderer->removeRenderObjectModifier(&mod_);
 }
 
 //=============================================================================

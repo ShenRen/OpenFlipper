@@ -205,6 +205,8 @@ RenderObject::RenderObject()
   blendSrc(GL_SRC_ALPHA), blendDest(GL_ONE_MINUS_SRC_ALPHA),
   depthRange(0.0f, 1.0f), 
 
+  clipDistanceMask(0),
+
   patchDefaultInnerLevel(1.0f, 1.0f),
   patchDefaultOuterLevel(1.0f, 1.0f, 1.0f, 1.0f),
 

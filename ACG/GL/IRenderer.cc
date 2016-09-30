@@ -72,6 +72,8 @@
 namespace ACG
 {
 
+int IRenderer::maxClipDistances_ = -1;
+
 IRenderer::IRenderer()
 : numLights_(0), 
 renderObjects_(0), 
@@ -307,6 +309,14 @@ void IRenderer::addRenderObject(ACG::RenderObject* _renderObject)
 
 
     ACG::RenderObject* p = &renderObjects_.back();
+
+    // apply modifiers
+    size_t numMods = renderObjectModifiers_.size();
+    for (size_t i = 0; i < numMods; ++i)
+    {
+      if (renderObjectModifiers_[i])
+        renderObjectModifiers_[i]->apply(p);
+    }
 
     if (!p->shaderDesc.numLights)
       p->shaderDesc.numLights = numLights_;
@@ -683,6 +693,9 @@ void IRenderer::finishRenderingPipeline(bool _drawOverlay)
   glBindVertexArray(0);
 #endif
 
+  for (int i = 0; i < maxClipDistances_; ++i)
+    glDisable(GL_CLIP_DISTANCE0 + i);
+
   glDepthMask(1);
   glColorMask(1,1,1,1);
 
@@ -964,6 +977,20 @@ void IRenderer::bindObjectRenderStates(ACG::RenderObject* _obj)
   //  ACG::GLState::shadeModel(_obj->shadeModel);
 
   ACG::GLState::blendFunc(_obj->blendSrc, _obj->blendDest);
+
+  if (maxClipDistances_ < 0)
+  {
+    glGetIntegerv(GL_MAX_CLIP_DISTANCES, &maxClipDistances_);
+    maxClipDistances_ = std::min(maxClipDistances_, 32); // clamp to 32 bits
+  }
+
+  for (int i = 0; i < maxClipDistances_; ++i)
+  {
+    if (_obj->clipDistanceMask & (1 << i))
+      glEnable(GL_CLIP_DISTANCE0 + i);
+    else
+      glDisable(GL_CLIP_DISTANCE0 + i);
+  }
 }
 
 void IRenderer::drawObject(ACG::RenderObject* _obj)
@@ -1081,6 +1108,19 @@ void IRenderer::addLight(const LightData& _light)
   }
 }
 
+void IRenderer::addRenderObjectModifier(RenderObjectModifier* _mod)
+{
+  renderObjectModifiers_.push_back(_mod);
+}
+
+void IRenderer::removeRenderObjectModifier(RenderObjectModifier* _mod)
+{
+  for (int i = int(renderObjectModifiers_.size()) - 1; i >= 0; --i)
+  {
+    if (renderObjectModifiers_[i] == _mod)
+      renderObjectModifiers_.erase(renderObjectModifiers_.begin() + i);
+  }
+}
 
 int IRenderer::getNumRenderObjects() const {
     return sortedObjects_.size();

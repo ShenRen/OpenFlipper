@@ -62,6 +62,10 @@
 
 #include "ClippingNode.hh"
 
+#include <ACG/GL/IRenderer.hh>
+
+#include <OpenMesh/Core/Utils/vector_cast.hh>
+
 #include <QImage>
 
 
@@ -149,9 +153,8 @@ void ClippingNode::enter(GLState& /* _state */ , const DrawModes::DrawMode& /* _
     ACG::GLState::enable(GL_CLIP_PLANE0);
   }
 
-
   // two planes -> slice
-  else 
+  else
   {
     glClipPlane(GL_CLIP_PLANE0, offset_plane0_);
     ACG::GLState::enable(GL_CLIP_PLANE0);
@@ -172,7 +175,84 @@ void ClippingNode::leave(GLState& /* _state */ , const DrawModes::DrawMode& /* _
 }
 
 
+//----------------------------------------------------------------------------
+
+
+void ClippingNode::enter(IRenderer* _renderer, GLState& /* _state */, const DrawModes::DrawMode& /* _drawmode */)
+{
+  _renderer->addRenderObjectModifier(&mod_);
+}
+
+
+//----------------------------------------------------------------------------
+
+
+void ClippingNode::leave(IRenderer* _renderer, GLState& /* _state */, const DrawModes::DrawMode& /* _drawmode */)
+{
+  _renderer->removeRenderObjectModifier(&mod_);
+}
+
 //=============================================================================
+
+ClippingNode::ClippingShaderModifier ClippingNode::shaderMod1_(1);
+ClippingNode::ClippingShaderModifier ClippingNode::shaderMod2_(2);
+
+ClippingNode::ClippingShaderModifier::ClippingShaderModifier(int _numClipPlanes)
+  : numClipPlanes_(_numClipPlanes)
+{
+  ShaderProgGenerator::registerModifier(this);
+}
+
+
+void ClippingNode::ClippingShaderModifier::modifyVertexIO(ShaderGenerator* _shader)
+{
+  for (int i = 0; i < numClipPlanes_; ++i)
+    _shader->addUniform(QString("vec4 g_SlicePlane%1").arg(i));
+}
+
+
+void ClippingNode::ClippingShaderModifier::modifyVertexBeginCode(QStringList* _code)
+{
+  for (int i = 0; i < numClipPlanes_; ++i)
+    _code->push_back(QString("gl_ClipDistance[%1] = dot(SG_INPUT_POSOS, g_SlicePlane%1);").arg(i));
+}
+
+//=============================================================================
+
+ClippingNode::ClippingObjectModifier::ClippingObjectModifier(const ClippingNode* _node)
+  : RenderObjectModifier("ClippingNode"), node_(_node)
+{
+}
+
+//=============================================================================
+
+void ClippingNode::ClippingObjectModifier::apply(RenderObject* _obj)
+{
+  // set clipping plane equation as uniform and set shader mod id to the object
+  Vec4f p0 = OpenMesh::vector_cast<Vec4f, Vec4d>(node_->plane0());
+
+  _obj->setUniform("g_SlicePlane0", p0);
+  _obj->clipDistanceMask |= 0x1;
+
+  unsigned int shaderModID = shaderMod1_.getID();
+
+  if (node_->slice_width() > 0.0f)
+  {
+    Vec4f p1 = OpenMesh::vector_cast<Vec4f, Vec4d>(node_->plane1());
+    _obj->setUniform("g_SlicePlane1", p1);
+    _obj->clipDistanceMask |= 0x2;
+
+    shaderModID = shaderMod2_.getID();
+  }
+
+  // set shader modifier
+  _obj->shaderDesc.shaderMods.push_back(shaderModID);
+
+}
+
+//=============================================================================
+
+
 } // namespace SceneGraph
 } // namespace ACG
 //=============================================================================

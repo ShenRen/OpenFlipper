@@ -57,7 +57,8 @@ FloatingSubtreeNode::FloatingSubtreeNode(
 
     : BaseNode(_parent, _name),
       modelview_override_(std::move(modelview_override)),
-      render_object_count_(0) {
+      enable_modelview_override_(true),
+      enable_overlay_(true) {
 
     modelview_override_inv_ = modelview_override_;
     modelview_override_inv_.invert();
@@ -69,8 +70,10 @@ FloatingSubtreeNode::~FloatingSubtreeNode() {
 
 void FloatingSubtreeNode::enter(GLState &_state,
         const DrawModes::DrawMode &_drawMode) {
-    _state.push_modelview_matrix();
-    _state.set_modelview(modelview_override_, modelview_override_inv_);
+    if (enable_modelview_override_) {
+        _state.push_modelview_matrix();
+        _state.set_modelview(modelview_override_, modelview_override_inv_);
+    }
 }
 
 void FloatingSubtreeNode::enter(IRenderer* _renderer, GLState& _state,
@@ -80,14 +83,18 @@ void FloatingSubtreeNode::enter(IRenderer* _renderer, GLState& _state,
 
 void FloatingSubtreeNode::leave(GLState &_state,
         const DrawModes::DrawMode &_drawMode) {
-    _state.pop_modelview_matrix();
+    if (enable_modelview_override_) {
+        _state.pop_modelview_matrix();
+    }
 }
 
 void FloatingSubtreeNode::leave(IRenderer* _renderer, GLState& _state,
         const DrawModes::DrawMode& _drawMode) {
     FloatingSubtreeNode::leave(_state, _drawMode);
-    for (auto &obj_it : _renderer->getCollectedSubtreeObjects()) {
-        obj_it.overlay = true;
+    if (enable_overlay_) {
+        for (auto &obj_it : _renderer->getCollectedSubtreeObjects()) {
+            obj_it.overlay = true;
+        }
     }
 }
 

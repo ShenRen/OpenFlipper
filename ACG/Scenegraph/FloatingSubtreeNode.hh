@@ -81,6 +81,22 @@ class ACGDLLEXPORT FloatingSubtreeNode : public BaseNode {
             return modelview_override_;
         }
 
+        void enableModelViewOverride(bool value) {
+            enable_modelview_override_ = value;
+        }
+
+        bool isModelViewOverrideEnabled() {
+            return enable_modelview_override_;
+        }
+
+        void enableOverlay(bool value) {
+            enable_overlay_ = value;
+        }
+
+        bool isOverlayEnabled() {
+            return enable_overlay_;
+        }
+
         void enter(GLState &_state,
                 const DrawModes::DrawMode &_drawMode) override;
 
@@ -102,7 +118,7 @@ class ACGDLLEXPORT FloatingSubtreeNode : public BaseNode {
 
     private:
         GLMatrixd modelview_override_, modelview_override_inv_;
-        size_t render_object_count_;
+        bool enable_modelview_override_, enable_overlay_;
 };
 
 } /* namespace Scenegraph */

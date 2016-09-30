@@ -1,6 +1,6 @@
 /*===========================================================================*\
-*                                                                            *
-*                              OpenFlipper                                   *
+ *                                                                           *
+ *                              OpenFlipper                                  *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,26 +36,24 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                            *
+ *                                                                           *
 \*===========================================================================*/
 
-/*
- * ValenceHistogramWidget.cc
- *
- *  Created on: Jan 27, 2016
- *      Author: hc
- */
+// Based on QtHistogram by hc
 
-#include "ValenceHistogramWidget.hh"
+#include "QtHistogramWidget.hh"
 
 #include <QPainter>
 
-ValenceHistogramWidget::ValenceHistogramWidget(QWidget *parent) :
+namespace ACG {
+namespace QtWidgets {
+
+QtHistogramWidget::QtHistogramWidget(QWidget *parent) :
     histogram_(0) {
 
 }
 
-void ValenceHistogramWidget::paintEvent(QPaintEvent *event) {
+void QtHistogramWidget::paintEvent(QPaintEvent *event) {
     if (!histogram_) {
         QWidget::paintEvent(event);
         return;
@@ -134,7 +132,11 @@ void ValenceHistogramWidget::paintEvent(QPaintEvent *event) {
     }
 }
 
-void ValenceHistogramWidget::setHistogram(std::vector<size_t> *histogram) {
+void QtHistogramWidget::setHistogram(std::vector<size_t> *histogram) {
     histogram_ = histogram;
     this->update();
+}
+
+
+}
 }

@@ -52,6 +52,7 @@
 #define OVM_PROPERTY_VISUALIZER_ITEGER_CC
 
 #include "OVMPropertyVisualizerInteger.hh"
+#include <ACG/Utils/ColorConversion.hh>
 
 template <typename MeshT, typename T>
 OVMPropertyVisualizerInteger<MeshT,T>::OVMPropertyVisualizerInteger(MeshT* _mesh, int objectID,  PropertyInfo _propertyInfo, bool isUnsigned)
@@ -83,8 +84,8 @@ void OVMPropertyVisualizerInteger<MeshT, T>::visualizeProp(PropType prop, Entity
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
     ACG::Vec4f colorMin, colorMax;
 
-    colorMin = OVMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMin->color());
-    colorMax = OVMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMax->color());
+    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
 
     std::map< int, ACG::Vec4f> randomColor;
 

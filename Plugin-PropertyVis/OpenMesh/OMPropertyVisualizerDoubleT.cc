@@ -49,6 +49,7 @@
 
 #define OM_PROPERTY_VISUALIZER_DOUBLE_CC
 
+#include <ACG/Utils/ColorConversion.hh>
 #include "OMPropertyVisualizerDouble.hh"
 
 template <typename MeshT>

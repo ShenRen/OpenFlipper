@@ -53,6 +53,12 @@
 
 #include "OVMPropertyVisualizerDouble.hh"
 
+#include <ACG/Utils/IColorCoder.hh>
+#include <ACG/Utils/LinearTwoColorCoder.hh>
+#include <ACG/Utils/ColorConversion.hh>
+
+#include <QObject>
+
 template <typename MeshT>
 OVMPropertyVisualizerDouble<MeshT>::OVMPropertyVisualizerDouble(MeshT* _mesh, int objectID, PropertyInfo _propertyInfo)
     : OVMPropertyVisualizer<MeshT>(_mesh, objectID, _propertyInfo)
@@ -70,10 +76,8 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
     if (!prop) return;
 
     DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
-    ACG::Vec4f colorMin, colorMax;
-
-    colorMin = OVMPropertyVisualizer<MeshT>::convertColor(doubleWidget->doubleMin->color());
-    colorMax = OVMPropertyVisualizer<MeshT>::convertColor(doubleWidget->doubleMax->color());
+    ACG::Vec4f colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
+    ACG::Vec4f colorMax = ACG::to_Vec4f(doubleWidget->doubleMax->color());
 
     // color coder in [0,1]
     ACG::ColorCoder cc;

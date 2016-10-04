@@ -49,6 +49,7 @@
 
 #define OM_PROPERTY_VISUALIZER_INTEGER_CC
 
+#include <ACG/Utils/ColorConversion.hh>
 #include "OMPropertyVisualizerInteger.hh"
 
 template <typename MeshT, typename T>
@@ -79,8 +80,8 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeFaceProp(bool _setDrawMode)
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
     typename MeshT::Color colorMin, colorMax;
 
-    colorMin = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMin->color());
-    colorMax = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMax->color());
+    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
 
     // color coder in [0,1]
     ACG::ColorCoder cc;
@@ -169,8 +170,8 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeEdgeProp(bool _setDrawMode)
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
     typename MeshT::Color colorMin, colorMax;
 
-    colorMin = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMin->color());
-    colorMax = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMax->color());
+    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
 
     // color coder in [0,1]
     ACG::ColorCoder cc;
@@ -260,8 +261,8 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeHalfedgeProp(bool _setDrawM
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
     typename MeshT::Color colorMin, colorMax;
 
-    colorMin = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMin->color());
-    colorMax = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMax->color());
+    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
 
     // color coder in [0,1]
     ACG::ColorCoder cc;
@@ -350,8 +351,8 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeVertexProp(bool _setDrawMod
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
     typename MeshT::Color colorMin, colorMax;
 
-    colorMin = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMin->color());
-    colorMax = OMPropertyVisualizer<MeshT>::convertColor(integerWidget->intMax->color());
+    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
 
     // color coder in [0,1]
     ACG::ColorCoder cc;

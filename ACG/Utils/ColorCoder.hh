@@ -61,6 +61,7 @@
 #include <ACG/Math/VectorT.hh>
 #include <ACG/Config/ACGDefines.hh>
 #include <QColor>
+#include "IColorCoder.hh"
 
 //== NAMESPACES ===============================================================
 
@@ -72,7 +73,7 @@ namespace ACG {
  *
  *
  */
-class ACGDLLEXPORT ColorCoder {
+class ACGDLLEXPORT ColorCoder : public IColorCoder {
 public:
 
   /// Default constructor.
@@ -82,30 +83,16 @@ public:
   void set_range(float _min, float _max, bool _signed);
 
   /// color coding
-  ACG::Vec4uc color4(float _v) const;
+  ACG::Vec4uc color4(float _v) const override;
 
   /// color coding
-  ACG::Vec3uc color(float _v) const;
-
-  /// color coding
-  ACG::Vec3f color_float(float _v) const;
-
-  /// color coding
-  ACG::Vec4f color_float4(float _v) const;
-
-  /// color coding
-  QColor color_qcolor(float _v) const;
-
+  ACG::Vec4f color_float4(float _v) const override;
+\
   /// min scalar value
-  float min() const;
+  float min() const override;
 
   /// max scalar value
-  float max() const;
-
-  // Make the color coder usable as a function operator.
-  inline ACG::Vec4f operator() (float _v) const {
-      return color_float4(_v);
-  }
+  float max() const override;
 
 private:
 
@@ -115,6 +102,8 @@ private:
   float val0_, val1_, val2_, val3_, val4_;
   bool signed_mode_;
 };
+
+
 
 //=============================================================================
 }// namespace ACG

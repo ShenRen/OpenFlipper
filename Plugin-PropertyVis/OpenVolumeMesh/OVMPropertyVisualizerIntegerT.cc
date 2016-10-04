@@ -53,6 +53,7 @@
 
 #include "OVMPropertyVisualizerInteger.hh"
 #include <ACG/Utils/ColorConversion.hh>
+#include <ACG/Utils/LinearTwoColorCoder.hh>
 
 template <typename MeshT, typename T>
 OVMPropertyVisualizerInteger<MeshT,T>::OVMPropertyVisualizerInteger(MeshT* _mesh, int objectID,  PropertyInfo _propertyInfo, bool isUnsigned)
@@ -82,10 +83,8 @@ void OVMPropertyVisualizerInteger<MeshT, T>::visualizeProp(PropType prop, Entity
     if (!prop) return;
 
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
-    ACG::Vec4f colorMin, colorMax;
 
-    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
+    ACG::Vec4f colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
 
     std::map< int, ACG::Vec4f> randomColor;
 
@@ -113,7 +112,7 @@ void OVMPropertyVisualizerInteger<MeshT, T>::visualizeProp(PropType prop, Entity
         integerWidget->intFixedRangeMax->setValue(max);
     }
 
-    ACG::ColorCoder cc;
+    ACG::IColorCoder *cc = integerWidget->buildColorCoder();
 
     unsigned int range = max - min;
     VolumeMeshObject<MeshT>* object;
@@ -127,20 +126,9 @@ void OVMPropertyVisualizerInteger<MeshT, T>::visualizeProp(PropType prop, Entity
             T value = prop[*e_it];
             double pos = (value - min) / (double) range;
             ACG::Vec4f color;
-            if (integerWidget->intColorCoder->isChecked())
+            if ( integerWidget->intRandom->isChecked() )
             {
-                color = cc.color_float4(pos);
-            }
-            else
-            if ( !integerWidget->intRandom->isChecked() )
-            {
-                color[0] = colorMin[0] * (1-pos) + pos * colorMax[0];
-                color[1] = colorMin[1] * (1-pos) + pos * colorMax[1];
-                color[2] = colorMin[2] * (1-pos) + pos * colorMax[2];
-                color[3] = 1.0;
-            }
-            else
-            {
+                // TODO: build appropriate subclass of IColorCoder for this purpose
                 if ( randomColor.find( value ) == randomColor.end() )
                 {
                     color = mColorGenerator.generateNextColor();
@@ -149,11 +137,15 @@ void OVMPropertyVisualizerInteger<MeshT, T>::visualizeProp(PropType prop, Entity
                 }
                 color = randomColor[ value ];
             }
+            else
+            {
+                color = cc->color_float4(pos);
+            }
 
             object->colors()[*e_it] = color;
         }
     }
-
+    delete cc;
 }
 #define KOMMA ,
 CALLS_TO_VISUALIZE_PROP(OVMPropertyVisualizerInteger<MeshT KOMMA T>, typename MeshT KOMMA typename T, T)

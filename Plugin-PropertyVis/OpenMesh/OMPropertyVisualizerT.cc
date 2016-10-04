@@ -348,20 +348,6 @@ void OMPropertyVisualizer<MeshT>::clear()
         clearVertexProp();
 }
 
-
-template <typename MeshT>
-OpenMesh::Vec4f OMPropertyVisualizer<MeshT>::convertColor(const QColor _color){
-
-  OpenMesh::Vec4f color;
-
-  color[0] = _color.redF();
-  color[1] = _color.greenF();
-  color[2] = _color.blueF();
-  color[3] = _color.alphaF();
-
-  return color;
-}
-
 template <typename MeshT>
 void OMPropertyVisualizer<MeshT>::visualizeFaceProp(bool /*_setDrawMode*/)
 {

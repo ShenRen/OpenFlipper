@@ -68,7 +68,6 @@ public:
     virtual ~OVMPropertyVisualizerInteger(){}
 
 protected:
-
     template <typename PropType, typename EntityIterator>
     void visualizeProp(PropType prop, EntityIterator e_begin, EntityIterator e_end);
     virtual void duplicateProperty();

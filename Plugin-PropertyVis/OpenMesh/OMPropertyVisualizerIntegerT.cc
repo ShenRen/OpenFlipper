@@ -49,6 +49,7 @@
 
 #define OM_PROPERTY_VISUALIZER_INTEGER_CC
 
+#include <ACG/Utils/IColorCoder.hh>
 #include <ACG/Utils/ColorConversion.hh>
 #include "OMPropertyVisualizerInteger.hh"
 
@@ -78,13 +79,9 @@ template <typename MeshT, typename T>
 void OMPropertyVisualizerInteger<MeshT, T>::visualizeFaceProp(bool _setDrawMode)
 {
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
-    typename MeshT::Color colorMin, colorMax;
 
-    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
-
-    // color coder in [0,1]
-    ACG::ColorCoder cc;
+    typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 
@@ -132,19 +129,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeFaceProp(bool _setDrawMode)
 
             typename MeshT::Color color;
 
-            if (integerWidget->intColorCoder->isChecked())
-            {
-                color = cc.color_float4(pos);
-            }
-            else if ( !integerWidget->intRandom->isChecked() ){
-
-                color[0] = colorMin[0] * (1-pos) + pos * colorMax[0];
-                color[1] = colorMin[1] * (1-pos) + pos * colorMax[1];
-                color[2] = colorMin[2] * (1-pos) + pos * colorMax[2];
-                color[3] = 1.0;
-
-            } else {
-
+            if (integerWidget->intRandom->isChecked() ){
                 if ( randomColor.find( getValue(prop, f_it) ) == randomColor.end() ){
 
                     color = mColorGenerator.generateNextColor();
@@ -154,11 +139,14 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeFaceProp(bool _setDrawMode)
                 }
 
                 color = randomColor[ getValue(prop, f_it) ];
+            } else {
+                color = cc->color_float4(pos);
             }
 
             OMPropertyVisualizer<MeshT>::mesh->set_color(*f_it, color);
         }
     }
+    delete cc;
 
     if (_setDrawMode)
         PluginFunctions::setDrawMode(ACG::SceneGraph::DrawModes::SOLID_FACES_COLORED);
@@ -168,13 +156,9 @@ template <typename MeshT, typename T>
 void OMPropertyVisualizerInteger<MeshT, T>::visualizeEdgeProp(bool _setDrawMode)
 {
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
-    typename MeshT::Color colorMin, colorMax;
 
-    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
-
-    // color coder in [0,1]
-    ACG::ColorCoder cc;
+    typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 
@@ -222,19 +206,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeEdgeProp(bool _setDrawMode)
 
             typename MeshT::Color color;
 
-            if (integerWidget->intColorCoder->isChecked())
-            {
-                color = cc.color_float4(pos);
-            }
-            else if ( !integerWidget->intRandom->isChecked() ){
-
-                color[0] = colorMin[0] * (1-pos) + pos * colorMax[0];
-                color[1] = colorMin[1] * (1-pos) + pos * colorMax[1];
-                color[2] = colorMin[2] * (1-pos) + pos * colorMax[2];
-                color[3] = 1.0;
-
-            } else {
-
+            if (integerWidget->intRandom->isChecked() ){
                 if ( randomColor.find( getValue(prop, e_it) ) == randomColor.end() ){
 
                     color = mColorGenerator.generateNextColor();
@@ -244,6 +216,8 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeEdgeProp(bool _setDrawMode)
                 }
 
                 color = randomColor[ getValue(prop, e_it) ];
+            } else {
+                color = cc->color_float4(pos);
             }
 
             OMPropertyVisualizer<MeshT>::mesh->set_color(*e_it, color);
@@ -259,13 +233,9 @@ template <typename MeshT, typename T>
 void OMPropertyVisualizerInteger<MeshT, T>::visualizeHalfedgeProp(bool _setDrawMode)
 {
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
-    typename MeshT::Color colorMin, colorMax;
 
-    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
-
-    // color coder in [0,1]
-    ACG::ColorCoder cc;
+    typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 
@@ -313,19 +283,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeHalfedgeProp(bool _setDrawM
 
             typename MeshT::Color color;
 
-            if (integerWidget->intColorCoder->isChecked())
-            {
-                color = cc.color_float4(pos);
-            }
-            else if ( !integerWidget->intRandom->isChecked() ){
-
-                color[0] = colorMin[0] * (1-pos) + pos * colorMax[0];
-                color[1] = colorMin[1] * (1-pos) + pos * colorMax[1];
-                color[2] = colorMin[2] * (1-pos) + pos * colorMax[2];
-                color[3] = 1.0;
-
-            } else {
-
+            if (integerWidget->intRandom->isChecked() ){
                 if ( randomColor.find( getValue(prop, he_it) ) == randomColor.end() ){
 
                     color = mColorGenerator.generateNextColor();
@@ -335,6 +293,8 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeHalfedgeProp(bool _setDrawM
                 }
 
                 color = randomColor[ getValue(prop, he_it) ];
+            } else {
+                color = cc->color_float4(pos);
             }
 
             OMPropertyVisualizer<MeshT>::mesh->set_color(*he_it, color);
@@ -349,13 +309,9 @@ template <typename MeshT, typename T>
 void OMPropertyVisualizerInteger<MeshT, T>::visualizeVertexProp(bool _setDrawMode)
 {
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
-    typename MeshT::Color colorMin, colorMax;
 
-    colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    colorMax = ACG::to_Vec4f(integerWidget->intMax->color());
-
-    // color coder in [0,1]
-    ACG::ColorCoder cc;
+    typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
+    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 
@@ -403,21 +359,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeVertexProp(bool _setDrawMod
 
             typename MeshT::Color color;
 
-            if (integerWidget->intColorCoder->isChecked())
-            {
-                color = cc.color_float4(pos);
-            }
-            else if ( !integerWidget->intRandom->isChecked() ){
-
-                color[0] = colorMin[0] * (1-pos) + pos * colorMax[0];
-                color[1] = colorMin[1] * (1-pos) + pos * colorMax[1];
-                color[2] = colorMin[2] * (1-pos) + pos * colorMax[2];
-                color[3] = 1.0;
-
-            }
-            else
-            {
-
+            if (integerWidget->intRandom->isChecked() ){
                 if ( randomColor.find( getValue(prop, v_it) ) == randomColor.end() ){
 
                     color = mColorGenerator.generateNextColor();
@@ -427,6 +369,8 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeVertexProp(bool _setDrawMod
                 }
 
                 color = randomColor[ getValue(prop, v_it) ];
+            } else {
+                color = cc->color_float4(pos);
             }
 
             OMPropertyVisualizer<MeshT>::mesh->set_color(*v_it, color);

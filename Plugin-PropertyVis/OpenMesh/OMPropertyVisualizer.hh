@@ -125,7 +125,6 @@ protected:
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
 
-    OpenMesh::Vec4f convertColor(QColor color);
     virtual void setPropertyFromText(unsigned int index, QString text);
 
     virtual int getEntityCount();

@@ -58,9 +58,7 @@
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#include <ACG/Utils/ColorCoder.hh>
-
-
+#include <ACG/Utils/IColorCoder.hh>
 
 #include <iostream>
 
@@ -72,7 +70,6 @@ public:
     virtual ~OVMPropertyVisualizerDouble(){}
 
 protected:
-
     template <typename PropType, typename EntityIterator>
     void visualizeProp(PropType prop, EntityIterator e_begin, EntityIterator e_end);
     virtual void duplicateProperty();

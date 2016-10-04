@@ -110,8 +110,6 @@ protected:
     template<typename PropType>
     void duplicateProperty_stage1();
 
-    OpenMesh::Vec4f convertColor(QColor color);
-
     template <typename InnerType>
     QString getPropertyText_(unsigned int index);
 

@@ -52,6 +52,10 @@
 
 #include "ui_DoubleWidget.hh"
 
+#include "ACG/Utils/IColorCoder.hh"
+#include "ACG/Utils/LinearTwoColorCoder.hh"
+#include <ACG/Utils/ColorConversion.hh>
+
 #if QT_VERSION >= 0x050000 
   #include <QtWidgets>
 #else
@@ -68,6 +72,22 @@ public:
     : QWidget(parent)
   {
     setupUi(this);
+  }
+
+  /**
+   * @brief Builds a color coder according to UI settings
+   * @return Pointer to an IColorCoder for parameters in [0..1]
+   * @note Caller is responsible for deleting the returned object.
+   */
+  ACG::IColorCoder *buildColorCoder()
+  {
+      if (doubleColorCoder->isChecked()) {
+          return new ACG::ColorCoder();
+      } else {
+          return new ACG::LinearTwoColorCoder(
+                      ACG::to_Vec4f(doubleMin->color()),
+                      ACG::to_Vec4f(doubleMax->color()));
+      }
   }
   
   signals:

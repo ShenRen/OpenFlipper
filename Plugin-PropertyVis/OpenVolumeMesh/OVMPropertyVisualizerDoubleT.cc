@@ -57,8 +57,6 @@
 #include <ACG/Utils/LinearTwoColorCoder.hh>
 #include <ACG/Utils/ColorConversion.hh>
 
-#include <QObject>
-
 template <typename MeshT>
 OVMPropertyVisualizerDouble<MeshT>::OVMPropertyVisualizerDouble(MeshT* _mesh, int objectID, PropertyInfo _propertyInfo)
     : OVMPropertyVisualizer<MeshT>(_mesh, objectID, _propertyInfo)
@@ -77,11 +75,8 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
 
     DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
     ACG::Vec4f colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
-    ACG::Vec4f colorMax = ACG::to_Vec4f(doubleWidget->doubleMax->color());
 
-    // color coder in [0,1]
-    ACG::ColorCoder cc;
-
+    ACG::IColorCoder *cc = doubleWidget->buildColorCoder();
     double min, max;
 
     if ( doubleWidget->doubleAbsolute->isChecked() ){
@@ -137,13 +132,7 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
 
             double t = (value-min)/range;
 
-            ACG::Vec4f color;
-
-            if( doubleWidget->doubleColorCoder->isChecked())
-                color = cc.color_float4(t);
-            else {
-                color = (colorMin)*(1.0-t) + (colorMax)*t;
-            }
+            ACG::Vec4f color = cc->color_float4(t);
 
             if (doubleWidget->doubleMapOutsideRange->isChecked()) {
               if (prop[*e_it] < min || prop[*e_it] > max)
@@ -154,6 +143,7 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
             object->colors()[*e_it] = color;
         }
     }
+    delete cc;
 }
 CALLS_TO_VISUALIZE_PROP(OVMPropertyVisualizerDouble<MeshT>, typename MeshT, double)
 

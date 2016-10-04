@@ -235,19 +235,6 @@ void OVMPropertyVisualizer<MeshT>::visualize(bool _setDrawMode, QWidget* _widget
 }
 
 template <typename MeshT>
-OpenMesh::Vec4f OVMPropertyVisualizer<MeshT>::convertColor(const QColor _color){
-
-  OpenMesh::Vec4f color;
-
-  color[0] = _color.redF();
-  color[1] = _color.greenF();
-  color[2] = _color.blueF();
-  color[3] = _color.alphaF();
-
-  return color;
-}
-
-template <typename MeshT>
 void OVMPropertyVisualizer<MeshT>::visualizeFaceProp(bool /*_setDrawMode*/)
 {
     emit log(LOGERR, "Visualizing FaceProp not implemented");

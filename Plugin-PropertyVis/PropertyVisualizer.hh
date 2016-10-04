@@ -156,7 +156,6 @@ public:
     /// Returns the header for saving.
     virtual QString getHeader() = 0;
 
-
     static inline QString toStr(bool b)               { return b ? QObject::tr("True") : QObject::tr("False"); }
     static inline QString toStr(double d)             { return QObject::tr("%1").arg(d); }
     static inline QString toStr(int i)                { return QObject::tr("%1").arg(i); }

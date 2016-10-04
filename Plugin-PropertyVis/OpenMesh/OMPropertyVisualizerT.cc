@@ -423,3 +423,59 @@ void OMPropertyVisualizer<MeshT>::setVertexPropertyFromText(unsigned int index, 
 {
     emit log(LOGERR, "Setting vertex property not implemented");
 }
+
+
+#ifdef ENABLE_PROPVIS_HISTOGRAMS
+
+template<typename MeshT>
+template<typename Type>
+void OMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget) {
+    using PV = OMPropertyVisualizer<MeshT>;
+    const std::string &prop_name = PV::propertyInfo.propName();
+
+    // ugly repetition ahead. In C++14, we could use a generic lambda,
+    // in C++11 the cleanest solution would be to add another templated member function - not worth it.
+    switch (PropertyVisualizer::propertyInfo.entityType()) {
+    case PropertyInfo::EF_FACE:
+    {
+        OpenMesh::FPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    case PropertyInfo::EF_EDGE:
+    {
+        OpenMesh::EPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    case PropertyInfo::EF_HALFEDGE:
+    {
+        OpenMesh::HPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    case PropertyInfo::EF_VERTEX:
+    {
+        OpenMesh::VPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    default:
+        assert(false);
+    }
+}
+#endif
+
+

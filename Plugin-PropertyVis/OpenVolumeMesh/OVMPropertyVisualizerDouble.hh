@@ -89,6 +89,8 @@ protected:
     virtual void setEdgePropertyFromText(unsigned int index, QString text);
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
+
+    ACG::IColorCoder *buildColorCoder() override;
 };
 
 #if defined(INCLUDE_TEMPLATES) && !defined(OVM_PROPERTY_VISUALIZER_DOUBLE_CC)

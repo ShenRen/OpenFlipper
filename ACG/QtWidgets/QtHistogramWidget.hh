@@ -46,6 +46,8 @@
 
 #include <QWidget>
 #include "../Config/ACGDefines.hh"
+#include "../Utils/Histogram.hh"
+#include "../Utils/ColorCoder.hh"
 
 namespace ACG {
 namespace QtWidgets {
@@ -54,14 +56,36 @@ class ACGDLLEXPORT QtHistogramWidget : public QWidget {
     Q_OBJECT
 
     public:
-        QtHistogramWidget(QWidget *parent);
+        explicit QtHistogramWidget(QWidget *parent);
+        ~QtHistogramWidget();
 
-        void setHistogram(std::vector<size_t> *histogram);
+        QtHistogramWidget(const QtHistogramWidget &other) = delete;
+        QtHistogramWidget& operator=(const QtHistogramWidget &other) = delete;
+
+        /**
+         * @brief setHistogram
+         * @param histogram: This widget takes ownership of the Histogram
+         * and deletes it.
+         */
+        void setHistogram(Histogram* histogram);
+
+        /**
+         * @brief setColorCoder
+         * @param color_coder: This widget takes ownership of the IColorCoder
+         * and deletes it.
+         */
+        void setColorCoder(IColorCoder *color_coder);
 
     protected:
         void paintEvent(QPaintEvent *event);
+        QColor getColor(double val); // val in [0..1]
 
-        std::vector<size_t> *histogram_;
+        Histogram *histogram_ = 0;
+        double label_distance_ = 100;
+
+        QColor color_; // ignored if we have a color coder
+        IColorCoder *color_coder_ = 0;
+
 };
 
 

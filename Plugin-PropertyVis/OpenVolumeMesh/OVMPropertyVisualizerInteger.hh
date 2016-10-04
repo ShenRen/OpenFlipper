@@ -88,6 +88,8 @@ protected:
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
 
+    ACG::IColorCoder *buildColorCoder() override;
+
     T mNumericLimitMax;
     T mNumericLimitMin;
 

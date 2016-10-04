@@ -265,4 +265,11 @@ void OVMPropertyVisualizerInteger<MeshT, T>::setVertexPropertyFromText(unsigned 
     prop[vh] = this->strToInt(text);
 }
 
+template <typename MeshT, typename T>
+ACG::IColorCoder *OVMPropertyVisualizerInteger<MeshT, T>::buildColorCoder()
+{
+    IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
+    return integerWidget->buildColorCoder();
+}
+
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

@@ -155,3 +155,8 @@ OpenMesh::Vec2f PropertyVisualizer::strToVec2f (QString str)
     QStringList strList = s.split(QObject::tr(", "));
     return OpenMesh::Vec2f(strList[0].toFloat(),strList[1].toFloat());
 }
+
+ACG::IColorCoder *PropertyVisualizer::buildColorCoder()
+{
+    throw std::runtime_error("Requested color coder on a Propvis that does not implement it");
+}

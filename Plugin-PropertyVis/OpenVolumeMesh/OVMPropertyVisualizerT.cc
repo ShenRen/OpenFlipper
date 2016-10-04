@@ -63,6 +63,8 @@
 
 #include "OVMPropertyVisualizer.hh"
 
+#include <ACG/Utils/Histogram.hh>
+
 template <typename MeshT>
 template <typename InnerType>
 QString OVMPropertyVisualizer<MeshT>::getPropertyText_(unsigned int index)
@@ -406,5 +408,50 @@ void OVMPropertyVisualizer<MeshT>::setVertexPropertyFromText(unsigned int /*inde
 {
     emit log(LOGERR, "Setting VertexProp not implemented for this property type");
 }
+
+#ifdef ENABLE_PROPVIS_HISTOGRAMS
+
+template<typename MeshT>
+template<typename Type>
+void OVMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget) {
+    using PV = OVMPropertyVisualizer<MeshT>;
+    const std::string &prop_name = PV::propertyInfo.propName();
+
+    switch (PropertyVisualizer::propertyInfo.entityType()) {
+    case PropertyInfo::EF_CELL:
+        this->showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->template request_cell_property<Type>(prop_name));
+        break;
+    case PropertyInfo::EF_FACE:
+        this->showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->template request_face_property<Type>(prop_name));
+        break;
+    case PropertyInfo::EF_HALFFACE:
+        this->showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->template request_halfface_property<Type>(prop_name));
+        break;
+    case PropertyInfo::EF_EDGE:
+        this->showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->template request_edge_property<Type>(prop_name));
+        break;
+    case PropertyInfo::EF_HALFEDGE:
+        this->showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->template request_halfedge_property<Type>(prop_name));
+        break;
+    case PropertyInfo::EF_VERTEX:
+        this->showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->template request_vertex_property<Type>(prop_name));
+        break;
+    case PropertyInfo::EF_ANY:
+        assert(false);
+    }
+}
+#endif
 
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

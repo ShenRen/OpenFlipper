@@ -52,6 +52,45 @@ static void fillHistogramTable(std::vector<size_t> &hist, QTableWidget &tw) {
     tw.setHorizontalHeaderLabels(hheaders);
 }
 
+namespace {
+
+class ValenceHistogram : public ACG::Histogram {
+public:
+    ValenceHistogram(const std::vector<size_t> &bins)
+    {
+        std::vector<size_t>::const_iterator nonzero_begin = bins.begin();
+        for (; nonzero_begin != bins.end() && *nonzero_begin == 0;
+                ++nonzero_begin);
+        if (nonzero_begin == bins.end()) return;
+
+        std::vector<size_t>::const_iterator nonzero_end = bins.end();
+        for (; (nonzero_end-1) != nonzero_begin && *(nonzero_end-1) == 0;
+                --nonzero_end);
+
+        ofs_ = std::distance(bins.begin(), nonzero_begin);
+        bins_.assign(nonzero_begin, nonzero_end);
+        bin_widths_.assign(bins_.size() + 1, 1);
+    }
+
+    LabelType getLabelType() const override
+    {
+        return LabelType::PerBin;
+    }
+
+    QString getBinLabel (size_t idx) const override
+    {
+        return QString::number(ofs_ + idx);
+    }
+
+    double getTotalWidth() const override {
+        return bins_.size();
+    }
+private:
+    size_t ofs_ = 0;
+};
+
+} // namespace
+
 template<class MeshT>
 void ValenceHistogramDialog::init(MeshT &mesh) {
     /*
@@ -66,7 +105,7 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
         }
         vertex_valence_hist[valence] += 1;
     }
-    vertexValenceChart_wdgt->setHistogram(&vertex_valence_hist);
+    vertexValenceChart_wdgt->setHistogram(new ValenceHistogram(vertex_valence_hist));
     fillHistogramTable(vertex_valence_hist, *vertexValence_tw);
 
     /*
@@ -83,6 +122,6 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
         face_valence_hist[valence] += 1;
     }
 
-    faceValenceChart_wdgt->setHistogram(&face_valence_hist);
+    faceValenceChart_wdgt->setHistogram(new ValenceHistogram(face_valence_hist));
     fillHistogramTable(face_valence_hist, *faceValence_tw);
 }

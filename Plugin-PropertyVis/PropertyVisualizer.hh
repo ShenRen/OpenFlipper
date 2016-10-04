@@ -54,6 +54,8 @@
 
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
+#include <ACG/QtWidgets/QtHistogramWidget.hh>
+#include <ACG/Utils/IColorCoder.hh>
 
 #include "OpenMesh/Core/Geometry/VectorT.hh"
 
@@ -178,12 +180,31 @@ public:
 
 
 protected:
+    virtual ACG::IColorCoder *buildColorCoder();
+#ifdef ENABLE_PROPVIS_HISTOGRAMS
+    template<typename PropType, typename Iterable>
+    void showHistogramT(ACG::QtWidgets::QtHistogramWidget *widget,
+                       Iterable data);
+#endif
 
     PropertyInfo propertyInfo;
 
 public:
     QWidget* widget;
-
 };
+
+#ifdef ENABLE_PROPVIS_HISTOGRAMS
+template<typename PropType, typename Iterable>
+void PropertyVisualizer::showHistogramT(
+        ACG::QtWidgets::QtHistogramWidget *widget,
+        Iterable data)
+{
+    const size_t max_bins = 50; // TODO: expose in GUI?
+    widget->setMinimumHeight(300);
+    widget->setColorCoder(buildColorCoder());
+    ACG::Histogram *hist = new ACG::HistogramT<PropType>(data.begin(), data.end(), max_bins);
+    widget->setHistogram(hist);
+}
+#endif
 
 #endif /* PROPERTY_VISUALIZER_HH */

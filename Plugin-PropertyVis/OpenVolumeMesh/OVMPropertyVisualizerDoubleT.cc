@@ -57,6 +57,8 @@
 #include <ACG/Utils/LinearTwoColorCoder.hh>
 #include <ACG/Utils/ColorConversion.hh>
 
+#include <QObject>
+
 template <typename MeshT>
 OVMPropertyVisualizerDouble<MeshT>::OVMPropertyVisualizerDouble(MeshT* _mesh, int objectID, PropertyInfo _propertyInfo)
     : OVMPropertyVisualizer<MeshT>(_mesh, objectID, _propertyInfo)
@@ -65,6 +67,11 @@ OVMPropertyVisualizerDouble<MeshT>::OVMPropertyVisualizerDouble(MeshT* _mesh, in
     DoubleWidget* w = new DoubleWidget();
     w->paramDouble->setTitle(QString("Double Parameters of ").append(PropertyVisualizer::propertyInfo.propName().c_str()));
     PropertyVisualizer::widget = w;
+#ifdef ENABLE_PROPVIS_HISTOGRAMS
+    this->connect(w->computeHistogramButton, &QPushButton::clicked,
+                  [this, w](){this->template showHistogram<double>(w->histogram);});
+#endif
+
 }
 
 template <typename MeshT>
@@ -259,6 +266,13 @@ void OVMPropertyVisualizerDouble<MeshT>::setVertexPropertyFromText(unsigned int 
     OpenVolumeMesh::VertexHandle vh(index);
 
     prop[vh] = this->strToDouble(text);
+}
+
+template <typename MeshT>
+ACG::IColorCoder *OVMPropertyVisualizerDouble<MeshT>::buildColorCoder()
+{
+    DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
+    return doubleWidget->buildColorCoder();
 }
 
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

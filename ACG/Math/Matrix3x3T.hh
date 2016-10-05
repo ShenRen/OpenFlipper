@@ -33,16 +33,21 @@ class Matrix3x3T {
             }};
         }
 
-        static constexpr Matrix3x3T<Scalar> identity {{
-            1, 0, 0,
-            0, 1, 0,
-            0, 0, 1
-        }};
-        static constexpr Matrix3x3T<Scalar> zero {{
-            0, 0, 0,
-            0, 0, 0,
-            0, 0, 0
-        }};
+        static constexpr Matrix3x3T<Scalar> identity() {
+            return {{
+                1, 0, 0,
+                0, 1, 0,
+                0, 0, 1
+            }};
+        }
+
+        static constexpr Matrix3x3T<Scalar> zero() {
+            return {{
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0
+            }};
+        }
 
     public:
         Matrix3x3T() = default;
@@ -235,11 +240,6 @@ class Matrix3x3T {
     private:
         std::array<Scalar, 9> values_;
 };
-
-template<typename Scalar>
-constexpr Matrix3x3T<Scalar> Matrix3x3T<Scalar>::zero;
-template<typename Scalar>
-constexpr Matrix3x3T<Scalar> Matrix3x3T<Scalar>::identity;
 
 typedef Matrix3x3T<float> Matrix3x3f;
 typedef Matrix3x3T<double> Matrix3x3d;

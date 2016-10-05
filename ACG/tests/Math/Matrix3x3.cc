@@ -97,8 +97,8 @@ TYPED_TEST(Matrix3x3Test, det) {
 
     using Matrix3x3 = typename Matrix3x3Test<TypeParam>::Matrix3x3;
 
-    ASSERT_NEAR(1.0, Matrix3x3::identity.det(), 1e-8);
-    ASSERT_NEAR(0.0, Matrix3x3::zero.det(), 1e-8);
+    ASSERT_NEAR(1.0, Matrix3x3::identity().det(), 1e-8);
+    ASSERT_NEAR(0.0, Matrix3x3::zero().det(), 1e-8);
 
     {
         Matrix3x3 m {{ 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
@@ -124,7 +124,7 @@ TYPED_TEST(Matrix3x3Test, invert_inverted) {
 
     using Matrix3x3 = typename Matrix3x3Test<TypeParam>::Matrix3x3;
 
-    EXPECT_EQ(Matrix3x3::identity, Matrix3x3::identity.inverse());
+    EXPECT_EQ(Matrix3x3::identity(), Matrix3x3::identity().inverse());
     {
         Matrix3x3 m {{
             0.828277802518, 0.265835425799, 0.764172058766,
@@ -156,8 +156,8 @@ TYPED_TEST(Matrix3x3Test, invert_inverted) {
 TYPED_TEST(Matrix3x3Test, matrix_multiplication) {
     using Matrix3x3 = typename Matrix3x3Test<TypeParam>::Matrix3x3;
 
-    EXPECT_EQ(Matrix3x3::identity, Matrix3x3::identity * Matrix3x3::identity);
-    EXPECT_EQ(Matrix3x3::zero, Matrix3x3::identity * Matrix3x3::zero);
+    EXPECT_EQ(Matrix3x3::identity(), Matrix3x3::identity() * Matrix3x3::identity());
+    EXPECT_EQ(Matrix3x3::zero(), Matrix3x3::identity() * Matrix3x3::zero());
     {
         Matrix3x3 a {{
             0.0198677492323, 0.335847288905, 0.903519116051,
@@ -167,9 +167,9 @@ TYPED_TEST(Matrix3x3Test, matrix_multiplication) {
             0.685605402853, 0.550061681341, 0.963595467664,
             0.31801733629, 0.219196960585, 0.881308916676,
             0.593421354113, 0.562284336992, 0.0822415517585 }};
-        EXPECT_EQ(a, a * Matrix3x3::identity);
-        EXPECT_EQ(Matrix3x3::zero, a * Matrix3x3::zero);
-        EXPECT_EQ(Matrix3x3::zero, Matrix3x3::zero * a);
+        EXPECT_EQ(a, a * Matrix3x3::identity());
+        EXPECT_EQ(Matrix3x3::zero(), a * Matrix3x3::zero());
+        EXPECT_EQ(Matrix3x3::zero(), Matrix3x3::zero() * a);
         EXPECT_TRUE(areClose({{
             0.656594233747, 0.592579839624, 0.389436497614,
             0.592408452439, 0.540784373459, 0.290506772318,
@@ -221,10 +221,10 @@ TYPED_TEST(Matrix3x3Test, vector_multiplication) {
         EXPECT_TRUE(areClose(Vec3(0.176266051606,-0.230758666314,-0.146664256512), m * v));
         EXPECT_EQ(m * v, v * m);
 
-        EXPECT_EQ(v, Matrix3x3::identity * v);
-        EXPECT_EQ(v, v * Matrix3x3::identity);
-        EXPECT_EQ(Vec3(0), Matrix3x3::zero * v);
-        EXPECT_EQ(Vec3(0), v * Matrix3x3::zero);
+        EXPECT_EQ(v, Matrix3x3::identity() * v);
+        EXPECT_EQ(v, v * Matrix3x3::identity());
+        EXPECT_EQ(Vec3(0), Matrix3x3::zero() * v);
+        EXPECT_EQ(Vec3(0), v * Matrix3x3::zero());
     }
 }
 

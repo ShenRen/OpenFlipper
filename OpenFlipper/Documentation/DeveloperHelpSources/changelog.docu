@@ -1,6 +1,6 @@
 /*! \page changelog Changelog
 
-- <b>OpenFlipper 3.1 ( ?/?/? )</b>
+- <b>OpenFlipper 3.1 ( 2016/10/12 )</b>
      - <b>General</b>
          - Fix missleading indentation warnings on gcc 6.x
          - Added Tetrahedral mesh support
@@ -9,7 +9,10 @@
         - Added PrincipalAxisNode (Including shader pipeline support)
         - Fixed shading when shininess is 0
         - Optimizations and cleanup in IRenderer
-        - Added floating subtree node (Can be used to render whole subtrees as overlays
+        - Added floating subtree node (Can be used to render whole subtrees as overlays)
+		- Made constructor of GLMatrixT more flexible.
+		- New FloatingSubtreeNode: Enable/disable model view override and overlay mode.
+		- MeshCompiler: Fix crash for meshes with large faces. If the input adjacency is faulty, it gets recomputed now.
      - <b>Core</b>
          - Windows: Attach console to allow output directly to command line
          - Fixed aspect ratio of screenshot function

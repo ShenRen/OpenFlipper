@@ -102,7 +102,7 @@ void texturePropertiesWidget::show(TextureData* _texData, int _id, QString _name
 
   QTreeWidgetItem* activeItem = 0;
   
-  for (uint i=0; i < texData_->textures().size(); i++)
+  for (unsigned int i=0; i < texData_->textures().size(); i++) {
     if ( ! texData_->textures()[i].hidden() ) {
       if (  texData_->textures()[i].type() != MULTITEXTURE ) {
         
@@ -133,13 +133,14 @@ void texturePropertiesWidget::show(TextureData* _texData, int _id, QString _name
           activeItem = parent;
       }
     }
+  }
 
-    if ( textureList->invisibleRootItem()->childCount() == 0 )  {
-      QMessageBox msgBox(this);
-      msgBox.setText("Cannot show Properties. No Textures available!");
-      msgBox.exec();
-      return;
-    }
+  if ( textureList->invisibleRootItem()->childCount() == 0 )  {
+    QMessageBox msgBox(this);
+    msgBox.setText("Cannot show Properties. No Textures available!");
+    msgBox.exec();
+    return;
+  }
 
   if (id_ == -1)
     textureLabel->setText("<B>Global Textures</B>");

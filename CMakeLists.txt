@@ -8,9 +8,9 @@ set( CMAKE_CXX_STANDARD 11 )
 
 # ACG Environment default settings
 # This is ugly but currently we need to work around the default installed 5.3 on debian
-if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.7.0/5.7/gcc_64/ )
+if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ )
   # Default to this install path for QT%_INSTALL_DIR
-  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.7.0/5.7/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
+  set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
 endif()
 
 if ( WIN32 )

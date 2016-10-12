@@ -10,37 +10,6 @@ macro (acg_unset_qt_shared_variables version)
   set (ACG_INTERNAL_QT_LAST_VERSION "${version}" CACHE INTERNAL "Qt Version, which was used on the last time")
 endmacro()
 
-# look for selected qt dependencies
-macro (acg_qt4)
-  if (NOT QT4_FOUND)
-    acg_unset_qt_shared_variables(4)
-    set (QT_MIN_VERSION ${ARGN}) 
-
-    if(POLICY CMP0020)
-      # Automatically link Qt executables to qtmain target on Windows
-      cmake_policy(SET CMP0020 NEW)
-    endif(POLICY CMP0020)
-
-    find_package (Qt4 COMPONENTS QtCore QtGui )
-
-    set (QT_USE_QTOPENGL 1)
-    set (QT_USE_QTNETWORK 1)
-    set (QT_USE_QTSCRIPT 1)
-    set (QT_USE_QTSQL 1)
-    set (QT_USE_QTXML 1)
-    set (QT_USE_QTXMLPATTERNS 1)
-    set (QT_USE_QTHELP 1)
-    set (QT_USE_QTWEBKIT 1)
-    set (QT_USE_QTUITOOLS 1)
-
-    if (QT_QTSCRIPTTOOLS_FOUND)
-      set (QT_USE_QTSCRIPTTOOLS 1)
-    endif()
-
-    include (${QT_USE_FILE})
-  endif ()
-endmacro ()
-
 macro (acg_qt5)
 
    if(POLICY CMP0020)
@@ -249,51 +218,6 @@ macro (acg_qt5)
 endmacro ()
 
 # generate moc targets for sources in list
-macro (acg_qt4_automoc moc_SRCS)
-  qt4_get_moc_flags (_moc_INCS)
-  
-  list(REMOVE_DUPLICATES _moc_INCS)
-
-  set (_matching_FILES )
-  foreach (_current_FILE ${ARGN})
-
-     get_filename_component (_abs_FILE ${_current_FILE} ABSOLUTE)
-     # if "SKIP_AUTOMOC" is set to true, we will not handle this file here.
-     # here. this is required to make bouic work correctly:
-     # we need to add generated .cpp files to the sources (to compile them),
-     # but we cannot let automoc handle them, as the .cpp files don't exist yet when
-     # cmake is run for the very first time on them -> however the .cpp files might
-     # exist at a later run. at that time we need to skip them, so that we don't add two
-     # different rules for the same moc file
-     get_source_file_property (_skip ${_abs_FILE} SKIP_AUTOMOC)
-
-     if ( NOT _skip AND EXISTS ${_abs_FILE} )
-
-        file (READ ${_abs_FILE} _contents)
-
-        get_filename_component (_abs_PATH ${_abs_FILE} PATH)
-
-        string (REGEX MATCHALL "Q_OBJECT" _match "${_contents}")
-        if (_match)
-            get_filename_component (_basename ${_current_FILE} NAME_WE)
-            set (_header ${_abs_FILE})
-            set (_moc    ${CMAKE_CURRENT_BINARY_DIR}/moc_${_basename}.cpp)
-
-            add_custom_command (OUTPUT ${_moc}
-                COMMAND ${QT_MOC_EXECUTABLE}
-                ARGS ${_moc_INCS} ${_header} -o ${_moc}
-                DEPENDS ${_header}
-            )
-
-            add_file_dependencies (${_abs_FILE} ${_moc})
-            set (${moc_SRCS} ${${moc_SRCS}} ${_moc})
-            
-        endif ()
-     endif ()
-  endforeach ()
-endmacro ()
-
-# generate moc targets for sources in list
 macro (acg_qt5_automoc moc_SRCS)
   qt5_get_moc_flags (_moc_INCS)
   
@@ -339,38 +263,6 @@ macro (acg_qt5_automoc moc_SRCS)
 endmacro ()
 
 # generate uic targets for sources in list
-macro (acg_qt4_autouic uic_SRCS)
-
-  set (_matching_FILES )
-  foreach (_current_FILE ${ARGN})
-
-     get_filename_component (_abs_FILE ${_current_FILE} ABSOLUTE)
-
-     if ( EXISTS ${_abs_FILE} )
-
-        file (READ ${_abs_FILE} _contents)
-
-        get_filename_component (_abs_PATH ${_abs_FILE} PATH)
-
-        get_filename_component (_basename ${_current_FILE} NAME_WE)
-        string (REGEX REPLACE "Ui$" "" _cbasename ${_basename})
-        set (_outfile ${CMAKE_CURRENT_BINARY_DIR}/ui_${_basename}.hh)
-        set (_header ${_basename}.hh)
-        set (_source ${_abs_PATH}/${_cbasename}.cc)
-        
-        add_custom_command (OUTPUT ${_outfile}
-            COMMAND ${QT_UIC_EXECUTABLE}
-            ARGS -o ${_outfile} ${_abs_FILE}
-            MAIN_DEPENDENCY ${_abs_FILE} VERBATIM)
-
-        add_file_dependencies (${_source} ${_outfile})
-        set (${uic_SRCS} ${${uic_SRCS}} ${_outfile})
-            
-     endif ()
-  endforeach ()
-endmacro ()
-
-# generate uic targets for sources in list
 macro (acg_qt5_autouic uic_SRCS)
 
   set (_matching_FILES )
@@ -397,35 +289,6 @@ macro (acg_qt5_autouic uic_SRCS)
 
         add_file_dependencies (${_source} ${_outfile})
         set (${uic_SRCS} ${${uic_SRCS}} ${_outfile})
-
-     endif ()
-  endforeach ()
-endmacro ()
-
-# generate qrc targets for sources in list
-macro (acg_qt4_autoqrc qrc_SRCS)
-
-  set (_matching_FILES )
-  foreach (_current_FILE ${ARGN})
-
-     get_filename_component (_abs_FILE ${_current_FILE} ABSOLUTE)
-
-     if ( EXISTS ${_abs_FILE} )
-
-        file (READ ${_abs_FILE} _contents)
-
-        get_filename_component (_abs_PATH ${_abs_FILE} PATH)
-
-        get_filename_component (_basename ${_current_FILE} NAME_WE)
-        set (_outfile ${CMAKE_CURRENT_BINARY_DIR}/qrc_${_basename}.cpp)
-        
-        add_custom_command (OUTPUT ${_outfile}
-            COMMAND ${QT_RCC_EXECUTABLE}
-            ARGS -o ${_outfile}  ${_abs_FILE}
-            DEPENDS ${_abs_FILE}) 
-
-        add_file_dependencies (${_source} ${_outfile})
-        set (${qrc_SRCS} ${${qrc_SRCS}} ${_outfile})
 
      endif ()
   endforeach ()
@@ -482,16 +345,12 @@ function (acg_add_translations _target _languages _sources)
   if ( _new_ts_files )
     if (QT5_FOUND)
       #qt5_create_translation(_qm_files ${_sources} ${_new_ts_files})
-    elseif (QT4_FOUND)
-    qt4_create_translation(_qm_files ${_sources} ${_new_ts_files})
-  endif ()
+    endif ()
   endif ()
 
   if ( _ts_files )
     if (QT5_FOUND)
       #qt5_add_translation(_qm_files2 ${_ts_files})
-    elseif (QT4_FOUND)
-    qt4_add_translation(_qm_files2 ${_ts_files})
     endif()
     list (APPEND _qm_files ${_qm_files2})
   endif ()

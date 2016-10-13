@@ -1,4 +1,4 @@
-cd release
+cd rel
 
 
 set STRING_ARCH=32-Bit

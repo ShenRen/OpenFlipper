@@ -1,4 +1,4 @@
-cd release
+cd rel
 
 cd tests
 copy ..\Build\Qt*.dll testBinaries

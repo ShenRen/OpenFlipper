@@ -35,7 +35,7 @@ parallel(
       bat 'JI/Package-'+stageName+'.bat'
     }
     
-    archiveArtifacts artifacts: '**/release/*.exe', fingerprint: true
+    archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
 
   } 
 } ,
@@ -74,7 +74,7 @@ parallel(
       bat 'JI/Package-'+stageName+'.bat'
     }
 
-    archiveArtifacts artifacts: '**/release/*.exe', fingerprint: true
+    archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
   } 
 
 } ,
@@ -113,7 +113,7 @@ parallel(
       bat 'JI/Package-'+stageName+'.bat'
     }
     
-    archiveArtifacts artifacts: '**/release/*.exe', fingerprint: true
+    archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
 
   }
 }

@@ -1,5 +1,5 @@
-mkdir release
-cd release
+mkdir rel
+cd rel
 
 set ARCHITECTURE=x32
 set ARCH_VS=

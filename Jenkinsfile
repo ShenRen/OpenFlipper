@@ -5,9 +5,8 @@ parallel(
 
   node ('Qt5.6.0 && VS2015 ') {
   
-    String name = 'VS2015 Qt-5.6.0';
+    String name = 'VS2015 Qt-5.6.0 x64';
    
-    // Mark the code checkout 'stage'....
     stage('Checkout - ' + name) {
 
       // Checkout code from repository
@@ -16,11 +15,21 @@ parallel(
 
     }
 
-    // Mark the code build 'stage'....
-    stage('Configure - ' + name ) {
-      
-      bat 'JI/Configure-VS2015-Qt-5.6.0-x64.bat'
 
+    stage('Configure - ' + name ) {
+      bat 'JI/Configure-VS2015-Qt-5.6.0-x64.bat'
+    }
+
+    stage('Build - ' + name ) {
+      bat 'JI/Build-VS2015-Qt-5.6.0-x64.bat'
+    }
+
+    stage('Test - ' + name ) {
+      bat 'JI/Test-VS2015-Qt-5.6.0-x64.bat'
+    }
+
+    stage('Package - ' + name ) {
+      bat 'JI/Package-VS2015-Qt-5.6.0-x64.bat'
     }
 
   } 

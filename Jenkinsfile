@@ -21,19 +21,19 @@ parallel(
 
 
     stage('Configure - ' + name ) {
-      bat 'JI/Configure-$stageName.bat'
+      bat '''JI/Configure-$stageName.bat'''
     }
 
     stage('Build - ' + name ) {
-      bat 'JI/Build-$stageName.bat'
+      bat '''JI/Build-$stageName.bat'''
     }
 
     stage('Test - ' + name ) {
-      bat 'JI/Test-$stageName.bat'
+      bat '''JI/Test-$stageName.bat'''
     }
 
     stage('Package - ' + name ) {
-      bat 'JI/Package-$stageName.bat'
+      bat '''JI/Package-$stageName.bat'''
     }
 
   } 

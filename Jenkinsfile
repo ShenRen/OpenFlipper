@@ -13,7 +13,6 @@ parallel(
    
     stage('Checkout - ' + name) {
 
-      // Checkout code from repository
       // Configured in jenkins !!
       checkout scm
 
@@ -53,7 +52,6 @@ parallel(
 
     stage('Checkout - ' + name) {
 
-      // Checkout code from repository
       // Configured in jenkins !!
       checkout scm
 
@@ -93,7 +91,6 @@ parallel(
 
     stage('Checkout - ' + name) {
 
-      // Checkout code from repository
       // Configured in jenkins !!
       checkout scm
 

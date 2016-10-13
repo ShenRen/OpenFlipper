@@ -1,4 +1,10 @@
-cmake_minimum_required (VERSION 2.8.9)
+# Force minimal cmake version
+# Required 3.1 to set C++11 
+cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+
+# Set and enforce C++-11 flags
+set( CMAKE_CXX_STANDARD_REQUIRED TRUE )
+set( CMAKE_CXX_STANDARD 11 )
 
 # ACG Environment default settings
 # This is ugly but currently we need to work around the default installed 5.3 on debian
@@ -128,7 +134,7 @@ if (QT4_FOUND)
 	message(STATUS "Using QT4 for OpenFlipper")
 elseif(QT5_FOUND)
 	message(STATUS "Using QT5 for OpenFlipper")
-	set (OF_MAX_QT_VERSION "5.5.1")
+	set (OF_MAX_QT_VERSION "5.6.0")
     if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
       message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n"
         "OpenFlipper has not been tested with this QT Version on Windows.")

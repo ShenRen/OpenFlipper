@@ -1,11 +1,11 @@
 
 parallel(
 
-'VS2015-qt-56': { 
+'VS2015 Qt-5.6.0 ': { 
 
-  node ('Qt5.6.0&&VS2015') {
+  node ('Qt5.6.0 && VS2015') {
   
-    String name = 'VS2015 Qt 5.6.0';
+    String name = 'VS2015 Qt-5.6.0';
    
     // Mark the code checkout 'stage'....
     stage('Checkout - ' + name) {
@@ -17,7 +17,7 @@ parallel(
     }
 
     // Mark the code build 'stage'....
-    stage('Build') {
+    stage('Configure - ' + name ) {
       bat "echo \"Hello\" "
     }
   } 
@@ -25,11 +25,13 @@ parallel(
 
 'VS2013-qt-56': { 
 
-  node ('Qt5.6.0&&VS2013') {
+  node ('Qt5.6.0 && VS2013') {
 
+
+    String name = 'VS2013 Qt-5.6.0';
 
     // Mark the code checkout 'stage'....
-    stage('Checkout') {
+    stage('Checkout - ' + name) {
 
       // Checkout code from repository
       // Configured in jenkins !!
@@ -38,7 +40,7 @@ parallel(
     }
 
     // Mark the code build 'stage'....
-    stage('Build') {
+    stage('Configure - ' + name) {
       bat "echo \"Hello\" "
     }
   } 

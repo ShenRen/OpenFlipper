@@ -1,7 +1,7 @@
 
 parallel(
 
-VS2015-qt-56 : { node ('Qt5.6.0&&VS2015') {
+VS2015-qt-56: { node ('Qt5.6.0&&VS2015') {
    
    
    // Mark the code checkout 'stage'....
@@ -20,7 +20,7 @@ VS2015-qt-56 : { node ('Qt5.6.0&&VS2015') {
 } } ,
 
 
-VS2013-qt-56 : { node ('Qt5.6.0&&VS2013') {
+VS2013-qt-56: { node ('Qt5.6.0&&VS2013') {
 
 
    // Mark the code checkout 'stage'....

@@ -152,6 +152,29 @@ public:
   */
   virtual void addLight(const LightData& _light);
 
+  /** \brief Callback for the scenegraph nodes, which adds a render object modifier to the renderer via this function
+  *
+  * This function is needed whenever a scenegraph node wants to set certain rendering parameters for all its child nodes.
+  * A scenegraph node does not have direct access to render object created within its subtree.
+  * Instead, it can implement a render object modifier and attach it to the renderer.
+  * This modifier is applied to all render objects added to this renderer until it gets removed again.
+  * 
+  * A good place to call this function is in the derived BaseNode::enter() function.
+  *
+  * @param _mod address of the modifier. It has to remain in memory until it gets removed from the renderer!
+  */
+  virtual void addRenderObjectModifier(RenderObjectModifier* _mod);
+
+  /** \brief Callback for the scenegraph nodes, which removes a render object modifier from the renderer
+  *
+  * Remove a previously added modifier. RenderObjects added to the renderer afterwards will not be affected anymore.
+  *
+  * A good place to call this function is in the derived BaseNode::leave() function.
+  *
+  * @param _mod address of the modifier.
+  */
+  virtual void removeRenderObjectModifier(RenderObjectModifier* _mod);
+
   //=========================================================================
   // Render object collection and OpenGL setup for shader-based rendering
   //=========================================================================
@@ -482,6 +505,9 @@ protected:
   /// sorted list of overlay-only renderobjects (sorted in rendering order)
   std::vector<ACG::RenderObject*> overlayObjects_;
 
+  /// active render object modifiers
+  std::vector<ACG::RenderObjectModifier*> renderObjectModifiers_;
+
   /**
    * Stores fbo containing a depth map for each viewport.
    * The depth map is computed in a z-prepass if at least one RenderObject makes use of the scene depth map.
@@ -522,8 +548,10 @@ protected:
   /// error-detection level for checking render objects
   int errorDetectionLevel_;
 
-  RenderObjectRange current_subtree_objects_;
+  /// max number of clip distance outputs in a vertex shader
+  static int maxClipDistances_;
 
+  RenderObjectRange current_subtree_objects_;
 private:
 
   //=========================================================================

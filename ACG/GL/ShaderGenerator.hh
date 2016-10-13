@@ -154,6 +154,9 @@ public:
   QString geometryTemplateFile;
   QString fragmentTemplateFile;
 
+  // optionally specify shader mod ids
+  std::vector<unsigned int> shaderMods;
+
   // preprocessor macros for the shaders
   // these are added to all shaders directly after the #version directive
   QStringList macros;
@@ -302,6 +305,9 @@ public:
       if (texGenPerFragment != _rhs.texGenPerFragment)
         return false;
     }
+
+    if (shaderMods != _rhs.shaderMods)
+      return false;
 
     if (numLights)
       return memcmp(lightTypes, _rhs.lightTypes, numLights * sizeof(ShaderGenLightType)) == 0;

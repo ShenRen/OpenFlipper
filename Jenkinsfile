@@ -35,6 +35,8 @@ parallel(
     stage('Package - ' + name ) {
       bat 'JI/Package-'+stageName+'.bat'
     }
+    
+    archiveArtifacts artifacts: '**/release/*.exe', fingerprint: true
 
   } 
 } ,
@@ -74,6 +76,7 @@ parallel(
       bat 'JI/Package-'+stageName+'.bat'
     }
 
+    archiveArtifacts artifacts: '**/release/*.exe', fingerprint: true
   } 
 
 } ,
@@ -82,7 +85,7 @@ parallel(
 
   node ('Qt5.5.1 && VS2013 ') {
 
-    String VisualStudio = 'VS2015';
+    String VisualStudio = 'VS2013';
     String QtVersion    = 'Qt-5.5.1';
     String Arch         = 'x64';
     String name      = VisualStudio + ' ' + QtVersion + ' ' + Arch;
@@ -112,6 +115,8 @@ parallel(
     stage('Package - ' + name ) {
       bat 'JI/Package-'+stageName+'.bat'
     }
+    
+    archiveArtifacts artifacts: '**/release/*.exe', fingerprint: true
 
   }
 }

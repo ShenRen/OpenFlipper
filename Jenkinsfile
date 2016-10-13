@@ -4,10 +4,11 @@ parallel(
 'VS2015-qt-56': { 
 
   node ('Qt5.6.0&&VS2015') {
-   
+  
+    String name = 'VS2015 Qt 5.6.0';
    
     // Mark the code checkout 'stage'....
-    stage('Checkout') {
+    stage('Checkout - ' + name) {
 
       // Checkout code from repository
       // Configured in jenkins !!

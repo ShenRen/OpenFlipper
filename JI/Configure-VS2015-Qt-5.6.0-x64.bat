@@ -1,5 +1,5 @@
-mkdir build-release
-cd build-release
+mkdir release
+cd release
 
 set ARCHITECTURE=x64
 set ARCH_VS= Win64

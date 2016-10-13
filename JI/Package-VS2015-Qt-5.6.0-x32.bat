@@ -1,4 +1,4 @@
-cd build-release
+cd release
 
 
 set STRING_ARCH=32-Bit

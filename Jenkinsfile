@@ -8,6 +8,7 @@ node ('Qt5.6.0&&VS2015') {
    checkout scm
 
    // Update and fetch submodules
+   bat 'git submodule init'
    bat 'git submodule foreach --recursive git reset --hard'
    bat 'git submodule foreach --recursive git clean -fdx'
 

@@ -12,6 +12,7 @@ stage('Checkout') {
   // Checkout code from repository
   // Configured in jenkins !!
   checkout scm
+  bat "echo \"Hello\" "
 
   }},
 
@@ -21,6 +22,8 @@ stage('Checkout') {
   // Configured in jenkins !!
   checkout scm
 
+  bat "echo \"Hello\" "
+
   }}
 
 
@@ -28,10 +31,26 @@ stage('Checkout') {
 
 }
 
+// Mark the code checkout 'stage'....
+stage('Configure') {
 
-// Mark the code build 'stage'....
-stage('Build') {
+
+  parallel (
+
+  a: { node ('Qt5.6.0&&VS2013') {
+
   bat "echo \"Hello\" "
-}
 
+  }},
+
+  b: { node ('Qt5.6.0&&VS2015') {
+
+  bat "echo \"Hello\" "
+
+  }}
+
+
+  )
+
+}
 

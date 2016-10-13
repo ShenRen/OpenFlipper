@@ -1,4 +1,4 @@
-node ('Qt5.5.1 && VS2015') {
+node ('Qt5.6.0 && VS2015') {
 
    // Mark the code checkout 'stage'....
    stage 'Checkout'

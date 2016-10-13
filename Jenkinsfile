@@ -1,4 +1,7 @@
-node ('Qt5.6.0&&VS2015') {
+
+parallel(
+
+VS2015-qt-5.6.0 : { node ('Qt5.6.0&&VS2015') {
    
    
    // Mark the code checkout 'stage'....
@@ -10,14 +13,30 @@ node ('Qt5.6.0&&VS2015') {
 
    }
 
-   // Update and fetch submodules
-   //bat 'git submodule init'
-   //bat 'git submodule foreach --recursive git reset --hard'
-   //bat 'git submodule foreach --recursive git reset --hard'
-   //bat 'git submodule foreach --recursive git clean -fdx'
+   // Mark the code build 'stage'....
+   stage('Build') {
+     bat "echo \"Hello\" "
+   }
+} } ,
+
+
+VS2013-qt-5.6.0 : { node ('Qt5.6.0&&VS2013') {
+
+
+   // Mark the code checkout 'stage'....
+   stage('Checkout') {
+
+     // Checkout code from repository
+     // Configured in jenkins !!
+     checkout scm
+
+   }
 
    // Mark the code build 'stage'....
    stage('Build') {
      bat "echo \"Hello\" "
    }
-}
+} }
+
+)
+

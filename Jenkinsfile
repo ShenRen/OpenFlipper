@@ -2,7 +2,7 @@ node ('Qt5.6.0&&VS2015') {
    
    
    // Mark the code checkout 'stage'....
-   stage 'Checkout' {
+   stage 'Checkout' 
 
      // Cleanup
      gitClean()
@@ -14,7 +14,7 @@ node ('Qt5.6.0&&VS2015') {
      bat 'git submodule foreach --recursive git reset --hard'
      bat 'git submodule foreach --recursive git clean -fdx'
 
-   }
+   
 
    // Mark the code build 'stage'....
    stage 'Build'

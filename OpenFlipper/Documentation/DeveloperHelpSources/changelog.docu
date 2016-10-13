@@ -1,5 +1,11 @@
 /*! \page changelog Changelog
 
+
+- <b>OpenFlipper 4.0 ( ?/?/? )</b>
+     - <b>Build System</b>
+         - Enable C++-11 by default
+         - Drop support for Qt 4 
+
 - <b>OpenFlipper 3.1 ( 2016/10/12 )</b>
      - <b>General</b>
          - Fix missleading indentation warnings on gcc 6.x

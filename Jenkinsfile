@@ -1,5 +1,5 @@
 
-parallel
+parallel(
 
 'VS2015-qt-56': { 
 
@@ -44,5 +44,5 @@ parallel
 
 }
 
-
+)
 

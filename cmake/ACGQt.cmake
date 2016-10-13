@@ -357,11 +357,11 @@ function (acg_add_translations _target _languages _sources)
 
   # create a target for the translation files ( and object files )
   # Use this target, to update only the translations
-  add_custom_target (translations_target_${_target} DEPENDS ${_qm_files})
-  GROUP_PROJECT( translations_target_${_target} "Translations")
+  add_custom_target (tr_${_target} DEPENDS ${_qm_files})
+  GROUP_PROJECT( tr_${_target} "Translations")
 
   # Build translations with the application
-  add_dependencies(${_target} translations_target_${_target} )
+  add_dependencies(${_target} tr_${_target} )
 
   if (NOT EXISTS ${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Translations)
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Build/${ACG_PROJECT_DATADIR}/Translations )
@@ -369,7 +369,7 @@ function (acg_add_translations _target _languages _sources)
 
   foreach (_qm ${_qm_files})
     get_filename_component (_qm_name "${_qm}" NAME)
-    add_custom_command (TARGET translations_target_${_target} POST_BUILD
+    add_custom_command (TARGET tr_${_target} POST_BUILD
                         COMMAND ${CMAKE_COMMAND} -E
                         copy_if_different
                           ${_qm}

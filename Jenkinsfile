@@ -18,7 +18,7 @@ parallel(
 
     // Mark the code build 'stage'....
     stage('Configure - ' + name ) {
-      bat "echo \"Hello\" "
+      bat 'echo "Hello" '
     }
   } 
 } ,

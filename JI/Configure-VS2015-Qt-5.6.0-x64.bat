@@ -12,6 +12,7 @@ set GTESTVERSION=gtest-1.7.0
 set GENERATOR=Visual Studio 14%ARCH_VS%
 set VS_PATH="C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.com"
 
+set QT_VERSION=Qt5.6.0
 set QT_BASE_CONFIG=-DQT5_INSTALL_PATH=C:\Qt\%QT_VERSION%-vs2015-%STRING_ARCH%\%QT_REV%\msvc2015_64%QT_SUFFIX%
 
 set GLUT_INCLUDE_DIR=C:\libs\VS2015\%ARCHITECTURE%\freeglut-3.0.0\include

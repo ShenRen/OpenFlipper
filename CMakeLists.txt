@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
 # Workaround to ensure that the path lengths don't get too long
 if ( WIN32 )
-  message(STATUS "Horten paths to prevent errors") 
-  set( CMAKE_OBJECT_PATH_MAX 200 )
-  set( OBJECT_NAME_MAX 200)
+  message(STATUS "Shorten paths to prevent errors") 
+  set( CMAKE_OBJECT_PATH_MAX 240 )
+  set( OBJECT_NAME_MAX 240)
 endif()
 
 # Set and enforce C++-11 flags

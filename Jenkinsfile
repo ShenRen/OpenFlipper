@@ -76,7 +76,7 @@ parallel(
       }
  
       stage('Test - ' + name ) {
-        bat 'JI\\Test-'+stageName+'Test.bat'
+        bat 'JI\\Test-'+stageName+'.bat'
       }
  
       stage('Package - ' + name ) {

@@ -13,32 +13,34 @@ parallel(
 
     // Create a workspace that contains Project and branch name
     // Required to get a shorter name working around max pathlength on windows
-    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") 
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") {
    
-    stage('Checkout - ' + name) {
-
-      // Configured in jenkins !!
-      checkout scm
-
+      stage('Checkout - ' + name) {
+ 
+        // Configured in jenkins !!
+        checkout scm
+ 
+      }
+ 
+      stage('Configure - ' + name ) {
+        bat 'JI/Configure-'+stageName+'.bat'
+      }
+   
+      stage('Build - ' + name ) {
+        bat 'JI/Build-'+stageName+'.bat'
+      }
+   
+      stage('Test - ' + name ) {
+        bat 'JI/Test-'+stageName+'.bat'
+      }
+   
+      stage('Package - ' + name ) {
+        bat 'JI/Package-'+stageName+'.bat'
+      }
+      
+      archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
+   
     }
-
-    stage('Configure - ' + name ) {
-      bat 'JI/Configure-'+stageName+'.bat'
-    }
-
-    stage('Build - ' + name ) {
-      bat 'JI/Build-'+stageName+'.bat'
-    }
-
-    stage('Test - ' + name ) {
-      bat 'JI/Test-'+stageName+'.bat'
-    }
-
-    stage('Package - ' + name ) {
-      bat 'JI/Package-'+stageName+'.bat'
-    }
-    
-    archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
 
   } 
 } ,
@@ -55,33 +57,35 @@ parallel(
 
     // Create a workspace that contains Project and branch name
     // Required to get a shorter name working around max pathlength on windows
-    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") 
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") {
 
-    stage('Checkout - ' + name) {
-
-      // Configured in jenkins !!
-      checkout scm
+      stage('Checkout - ' + name) {
+ 
+        // Configured in jenkins !!
+        checkout scm
+ 
+      }
+ 
+ 
+      stage('Configure - ' + name ) {
+        bat 'JI/Configure-'+stageName+'.bat'
+      }
+ 
+      stage('Build - ' + name ) {
+        bat 'JI/Build-'+stageName+'.bat'
+      }
+ 
+      stage('Test - ' + name ) {
+        bat 'JI/-'+stageName+'Test.bat'
+      }
+ 
+      stage('Package - ' + name ) {
+        bat 'JI/Package-'+stageName+'.bat'
+      }
+ 
+      archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
 
     }
-
-
-    stage('Configure - ' + name ) {
-      bat 'JI/Configure-'+stageName+'.bat'
-    }
-
-    stage('Build - ' + name ) {
-      bat 'JI/Build-'+stageName+'.bat'
-    }
-
-    stage('Test - ' + name ) {
-      bat 'JI/-'+stageName+'Test.bat'
-    }
-
-    stage('Package - ' + name ) {
-      bat 'JI/Package-'+stageName+'.bat'
-    }
-
-    archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
   } 
 
 } ,
@@ -99,33 +103,35 @@ parallel(
 
     // Create a workspace that contains Project and branch name
     // Required to get a shorter name working around max pathlength on windows
-    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}")
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") {
 
-    stage('Checkout - ' + name) {
-
-      // Configured in jenkins !!
-      checkout scm
+      stage('Checkout - ' + name) {
+ 
+        // Configured in jenkins !!
+        checkout scm
+ 
+      }
+ 
+      stage('Configure - ' + name ) {
+        bat 'JI/Configure-'+stageName+'.bat'
+      }
+   
+      stage('Build - ' + name ) {
+        bat 'JI/Build-'+stageName+'.bat'
+      }
+   
+      stage('Test - ' + name ) {
+        bat 'JI/Test-'+stageName+'.bat'
+      }
+   
+      stage('Package - ' + name ) {
+        bat 'JI/Package-'+stageName+'.bat'
+      }
+      
+      archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
 
     }
-
-    stage('Configure - ' + name ) {
-      bat 'JI/Configure-'+stageName+'.bat'
-    }
-
-    stage('Build - ' + name ) {
-      bat 'JI/Build-'+stageName+'.bat'
-    }
-
-    stage('Test - ' + name ) {
-      bat 'JI/Test-'+stageName+'.bat'
-    }
-
-    stage('Package - ' + name ) {
-      bat 'JI/Package-'+stageName+'.bat'
-    }
-    
-    archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
-
+   
   }
 }
 

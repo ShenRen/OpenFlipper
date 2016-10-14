@@ -1,5 +1,5 @@
-mkdir VS2015-5.6-64
-cd VS2015-5.6-64
+mkdir rel
+cd rel
 
 set ARCHITECTURE=x64
 set ARCH_VS= Win64

@@ -1,4 +1,4 @@
-cd VS2013-5.5-64
+cd rel
 
 cd tests
 copy ..\Build\Qt*.dll testBinaries

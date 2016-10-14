@@ -1,4 +1,4 @@
-cd VS2015-5.6-64
+cd rel
 
 cd tests
 copy ..\Build\Qt*.dll testBinaries

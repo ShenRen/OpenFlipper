@@ -1,5 +1,5 @@
-mkdir VS2015-5.6-32
-cd VS2015-5.6-32
+mkdir rel
+cd rel
 
 set ARCHITECTURE=x32
 set ARCH_VS=

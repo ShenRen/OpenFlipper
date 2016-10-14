@@ -2,6 +2,11 @@
 # Required 3.1 to set C++11 
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
+
+if ( WIN32 ) 
+  set( CMAKE_OBJECT_PATH_MAX 220 )
+endif()
+
 # Set and enforce C++-11 flags
 set( CMAKE_CXX_STANDARD_REQUIRED TRUE )
 set( CMAKE_CXX_STANDARD 11 )

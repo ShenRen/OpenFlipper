@@ -13,7 +13,7 @@ parallel(
 
     // Create a workspace that contains Project and branch name
     // Required to get a shorter name working around max pathlength on windows
-    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") {
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}/"+stageName) {
    
       stage('Checkout - ' + name) {
  
@@ -57,7 +57,7 @@ parallel(
 
     // Create a workspace that contains Project and branch name
     // Required to get a shorter name working around max pathlength on windows
-    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") {
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}/"+stageName) {
 
       stage('Checkout - ' + name) {
  
@@ -103,7 +103,7 @@ parallel(
 
     // Create a workspace that contains Project and branch name
     // Required to get a shorter name working around max pathlength on windows
-    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") {
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}/"+stageName) {
 
       stage('Checkout - ' + name) {
  

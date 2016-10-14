@@ -1,4 +1,6 @@
 
+properties properties: [[$class: 'GitLabConnectionProperty', gitLabConnection: 'https://www.graphics.rwth-aachen.de:9000/']]
+
 parallel(
 
 'VS2015 Qt-5.6.0 x64': { 
@@ -25,23 +27,30 @@ parallel(
       String GITCOMMIT = bat( script: 'git rev-parse HEAD', returnStdout: true).trim().tokenize(' ').last().trim()
       env.GIT_COMMIT=GITCOMMIT
 
+      gitlabBuilds(builds: [ 'Configure - ' + name , 'Build - ' + name , 'Test - ' + name , 'Package - ' + name]) {
  
-      stage('Configure - ' + name ) {
-        bat 'JI\\Configure-'+stageName+'.bat'
-      }
-   
-      stage('Build - ' + name ) {
-        bat 'JI\\Build-'+stageName+'.bat'
-      }
-   
-      stage('Test - ' + name ) {
-        bat 'JI\\Test-'+stageName+'.bat'
-      }
-   
-      stage('Package - ' + name ) {
-        bat 'JI\\Package-'+stageName+'.bat'
-      }
-      
+        stage('Configure - ' + name ) 
+        gitlabCommitStatus('Configure - ' + name) {
+          bat 'JI\\Configure-'+stageName+'.bat'
+        }
+    
+        stage('Build - ' + name )
+        gitlabCommitStatus('Build - ' + name ) {
+          bat 'JI\\Build-'+stageName+'.bat'
+        }
+    
+        stage('Test - ' + name ) 
+        gitlabCommitStatus('Test - ' + name ) {
+          bat 'JI\\Test-'+stageName+'.bat'
+        }
+    
+        stage('Package - ' + name ) 
+        gitlabCommitStatus('Package - ' + name ) {
+          bat 'JI\\Package-'+stageName+'.bat'
+        }
+  
+      }      
+
       archiveArtifacts artifacts: '**/rel/*.exe', fingerprint: true
    
     }

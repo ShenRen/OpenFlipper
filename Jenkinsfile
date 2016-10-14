@@ -10,6 +10,10 @@ parallel(
     String Arch         = 'x64';
     String name      = VisualStudio + ' ' + QtVersion + ' ' + Arch;
     String stageName = VisualStudio + '-' + QtVersion + '-' + Arch; 
+
+    // Create a workspace that contains Project and branch name
+    // Required to get a shorter name working around max pathlength on windows
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") 
    
     stage('Checkout - ' + name) {
 
@@ -48,6 +52,10 @@ parallel(
     String Arch         = 'x32';
     String name      = VisualStudio + ' ' + QtVersion + ' ' + Arch;
     String stageName = VisualStudio + '-' + QtVersion + '-' + Arch;
+
+    // Create a workspace that contains Project and branch name
+    // Required to get a shorter name working around max pathlength on windows
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}") 
 
     stage('Checkout - ' + name) {
 
@@ -88,13 +96,17 @@ parallel(
     String name      = VisualStudio + ' ' + QtVersion + ' ' + Arch;
     String stageName = VisualStudio + '-' + QtVersion + '-' + Arch;
 
+
+    // Create a workspace that contains Project and branch name
+    // Required to get a shorter name working around max pathlength on windows
+    ws("workspace/${env.JOB_NAME.replaceAll('/', '-')}")
+
     stage('Checkout - ' + name) {
 
       // Configured in jenkins !!
       checkout scm
 
     }
-
 
     stage('Configure - ' + name ) {
       bat 'JI/Configure-'+stageName+'.bat'

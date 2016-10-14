@@ -18,9 +18,13 @@ parallel(
       stage('Checkout - ' + name) {
  
         // Configured in jenkins !!
-        checkout scm
- 
+        checkout scm 
       }
+
+      // Extract the current commit id and pass it to the environments
+      String GITCOMMIT = bat( script: 'git rev-parse HEAD', returnStdout: true).trim().tokenize(' ').last().trim()
+      env.GIT_COMMIT=GITCOMMIT
+
  
       stage('Configure - ' + name ) {
         bat 'JI\\Configure-'+stageName+'.bat'
@@ -65,7 +69,10 @@ parallel(
         checkout scm
  
       }
- 
+
+      // Extract the current commit id and pass it to the environments
+      String GITCOMMIT = bat( script: 'git rev-parse HEAD', returnStdout: true).trim().tokenize(' ').last().trim()
+      env.GIT_COMMIT=GITCOMMIT
  
       stage('Configure - ' + name ) {
         bat 'JI\\Configure-'+stageName+'.bat'
@@ -112,6 +119,10 @@ parallel(
  
       }
  
+      // Extract the current commit id and pass it to the environments
+      String GITCOMMIT = bat( script: 'git rev-parse HEAD', returnStdout: true).trim().tokenize(' ').last().trim()
+      env.GIT_COMMIT=GITCOMMIT
+
       stage('Configure - ' + name ) {
         bat 'JI\\Configure-'+stageName+'.bat'
       }

@@ -1,4 +1,4 @@
-cd rel
+cd VS2015-5.6-32
 
 
 set STRING_ARCH=32-Bit

@@ -18,7 +18,6 @@ parallel(
 
     }
 
-
     stage('Configure - ' + name ) {
       bat 'JI/Configure-'+stageName+'.bat'
     }
@@ -28,7 +27,7 @@ parallel(
     }
 
     stage('Test - ' + name ) {
-      bat 'JI/Test.bat'
+      bat 'JI/Test-'+stageName+'.bat'
     }
 
     stage('Package - ' + name ) {
@@ -67,7 +66,7 @@ parallel(
     }
 
     stage('Test - ' + name ) {
-      bat 'JI/Test.bat'
+      bat 'JI/-'+stageName+'Test.bat'
     }
 
     stage('Package - ' + name ) {
@@ -106,7 +105,7 @@ parallel(
     }
 
     stage('Test - ' + name ) {
-      bat 'JI/Test.bat'
+      bat 'JI/Test-'+stageName+'.bat'
     }
 
     stage('Package - ' + name ) {

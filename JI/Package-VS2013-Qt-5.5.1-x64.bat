@@ -1,4 +1,4 @@
-cd rel
+cd VS2013-5.5-64
 
 
 set STRING_ARCH=64-Bit

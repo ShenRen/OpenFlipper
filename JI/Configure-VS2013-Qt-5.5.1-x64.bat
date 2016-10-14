@@ -1,5 +1,5 @@
-mkdir rel
-cd rel
+mkdir VS2013-5.5-64
+cd VS2013-5.5-64
 
 set ARCHITECTURE=x64
 set ARCH_VS= Win64

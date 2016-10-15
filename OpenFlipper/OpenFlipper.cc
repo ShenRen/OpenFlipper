@@ -131,6 +131,14 @@
 	  else
 	  {
 		  //create and attach a new console if needed
+#ifdef _DEBUG
+		  //always open a console in debug mode
+		  AllocConsole();
+		  freopen("CONIN$", "r", stdin);
+		  freopen("CONOUT$", "w", stdout);
+		  freopen("CONOUT$", "w", stderr);
+		  return;
+#endif
 		  if (OpenFlipper::Options::logToConsole())
 		  {
 			  AllocConsole();

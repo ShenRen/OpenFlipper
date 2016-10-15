@@ -399,8 +399,10 @@ int main(int argc, char **argv)
       return 1;
     }
 
+#ifdef WIN32
 	//attach a console if necessary
 	attachConsole();
+#endif
 
     QString tLang = OpenFlipperSettings().value("Core/Language/Translation","en_US").toString();
 

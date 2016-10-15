@@ -145,10 +145,10 @@ public:
   // depth function
   GLenum depthFunc_;
 
-  // 4 buffer targets:
-  // GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_PIXEL_PACK_BUFFER, GL_PIXEL_UNPACK_BUFFER
+  // buffer targets available in opengl:
+  // GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_PIXEL_PACK_BUFFER, GL_PIXEL_UNPACK_BUFFER, GL_UNIFORM_BUFFER, GL_SHADER_STORAGE_BUFFER ...
   // current state of a buffer target
-  GLuint glBufferTargetState_[4];
+  GLuint glBufferTargetState_[14];
 
 
   // active texture unit: GL_TEXTUREi

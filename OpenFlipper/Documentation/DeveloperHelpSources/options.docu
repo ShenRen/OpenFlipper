@@ -12,6 +12,8 @@
  *
  * Log options:\n
  * --log-to-console ( -c )        : Write logger window contents to console\n
+ * \note On Window Systems, using the --log-to-console option causes the creation of a console if OpenFlipper was started without one.
+ * Otherwise the parent Console will be used for outputs.
  *
  * Other options:\n
  * -b     : Batch mode, you have to provide a script for execution and the system will start without gui\n

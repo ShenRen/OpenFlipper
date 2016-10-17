@@ -1,5 +1,5 @@
 
-properties properties: [[$class: 'GitLabConnectionProperty', gitLabConnection: 'https://www.graphics.rwth-aachen.de:9000/']]
+properties properties: [[$class: 'GitLabConnectionProperty', gitLabConnection: 'graphics']]
 
 parallel(
 

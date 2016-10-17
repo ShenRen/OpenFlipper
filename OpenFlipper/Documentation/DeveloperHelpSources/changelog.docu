@@ -4,7 +4,8 @@
 - <b>OpenFlipper 4.0 ( ?/?/? )</b>
      - <b>Build System</b>
          - Enable C++-11 by default
-         - Drop support for Qt 4 
+         - Drop support for Qt 4
+         - Drop support for QWT 5 
 
 - <b>OpenFlipper 3.1 ( 2016/10/12 )</b>
      - <b>General</b>

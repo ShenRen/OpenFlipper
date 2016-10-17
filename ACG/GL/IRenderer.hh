@@ -123,6 +123,25 @@ public:
     ACG::Vec2f spotCutoffExponent; // (cutoff angle, exponent) for spotlights
   };
 
+  class RenderObjectRange {
+      public:
+          RenderObjectRange() {}
+          RenderObjectRange(std::vector<ACG::RenderObject>::iterator begin,
+                  std::vector<ACG::RenderObject>::iterator end) :
+                      begin_(begin), end_(end) {}
+
+          std::vector<ACG::RenderObject>::iterator begin() const {
+              return begin_;
+          }
+
+          std::vector<ACG::RenderObject>::iterator end() const {
+              return end_;
+          }
+
+      private:
+          std::vector<ACG::RenderObject>::iterator begin_, end_;
+  };
+
   /** \brief Callback for the scenegraph nodes, which send new lights to the renderer via this function
    *
    * Scenegraph nodes are able to add new light sources to the renderer with this function.
@@ -132,6 +151,29 @@ public:
    * @param _light Newly added light
   */
   virtual void addLight(const LightData& _light);
+
+  /** \brief Callback for the scenegraph nodes, which adds a render object modifier to the renderer via this function
+  *
+  * This function is needed whenever a scenegraph node wants to set certain rendering parameters for all its child nodes.
+  * A scenegraph node does not have direct access to render object created within its subtree.
+  * Instead, it can implement a render object modifier and attach it to the renderer.
+  * This modifier is applied to all render objects added to this renderer until it gets removed again.
+  * 
+  * A good place to call this function is in the derived BaseNode::enter() function.
+  *
+  * @param _mod address of the modifier. It has to remain in memory until it gets removed from the renderer!
+  */
+  virtual void addRenderObjectModifier(RenderObjectModifier* _mod);
+
+  /** \brief Callback for the scenegraph nodes, which removes a render object modifier from the renderer
+  *
+  * Remove a previously added modifier. RenderObjects added to the renderer afterwards will not be affected anymore.
+  *
+  * A good place to call this function is in the derived BaseNode::leave() function.
+  *
+  * @param _mod address of the modifier.
+  */
+  virtual void removeRenderObjectModifier(RenderObjectModifier* _mod);
 
   //=========================================================================
   // Render object collection and OpenGL setup for shader-based rendering
@@ -168,7 +210,7 @@ protected:
    *
    * Calls getRenderObjects on each node of the scenegraph recursively. Each node then triggers the callbacks.
    */
-  void traverseRenderableNodes(ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode* _node, const ACG::SceneGraph::Material* _mat);
+  void traverseRenderableNodes(ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode &_node, const ACG::SceneGraph::Material &_mat);
 
 
 
@@ -176,14 +218,6 @@ protected:
   // Sorting
   //=========================================================================
 protected:
-
-    /** \brief Compare priority of render objects
-     *
-     * compare function for qsort. This is required to compare render objects based
-     * on their prioerity and render them in the right order
-    */
-    static int cmpPriority(const void*, const void*);
-
 
     /** \brief Sort the renderobjects by priority
      *
@@ -392,12 +426,6 @@ protected:
   /// Get the number of collected render objects (not including overlay objects or gl4.2 line objects)
   int getNumRenderObjects() const;
 
-  /// Get the number of render objects in the overlay (for instance objects from coordsys are overlayed)
-  int getNumOverlayObjects() const;
-
-  /// Get the number of default line objects rendered with opengl 4.2
-  int getNumLineGL42Objects() const;
-
   /// Get the number of current light sources
   int getNumLights() const;
 
@@ -444,6 +472,18 @@ public:
    */
   void setViewerID(int _viewerID);
 
+  /**
+   * During traversal of the scene graph this method returns the range of
+   * render objects that has been collected in the current subtree.
+   *
+   * This method is exclusively intended to be called in the leave() function
+   * of scene graph nodes. Calling it from anywhere else will yield an
+   * undefined result with potentially invalid iterators.
+   */
+  const RenderObjectRange &getCollectedSubtreeObjects() const {
+      return current_subtree_objects_;
+  }
+
 protected:
   /// Number of Lights
   int numLights_;
@@ -464,6 +504,9 @@ protected:
 
   /// sorted list of overlay-only renderobjects (sorted in rendering order)
   std::vector<ACG::RenderObject*> overlayObjects_;
+
+  /// active render object modifiers
+  std::vector<ACG::RenderObjectModifier*> renderObjectModifiers_;
 
   /**
    * Stores fbo containing a depth map for each viewport.
@@ -505,6 +548,10 @@ protected:
   /// error-detection level for checking render objects
   int errorDetectionLevel_;
 
+  /// max number of clip distance outputs in a vertex shader
+  static int maxClipDistances_;
+
+  RenderObjectRange current_subtree_objects_;
 private:
 
   //=========================================================================

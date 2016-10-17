@@ -1,25 +1,3 @@
-gcc-c++11-Qt4:
-  script: "CI/ci-linux.sh gcc C++11 QT4"
-  tags:
-    - Linux
-
-clang-c++11-Qt4:
-  script: "CI/ci-linux.sh clang C++11 QT4"
-  tags:
-    - Linux
-    - MultiThreads
-
-gcc-c++98-Qt4:
-  script: "CI/ci-linux.sh gcc C++98 QT4"
-  tags:
-    - Linux
-
-clang-c++98-Qt4:
-  script: "CI/ci-linux.sh clang C++98 QT4"
-  tags: 
-    - Linux
-    - MultiThreads
-
 gcc-c++11-Qt5:
   script: "CI/ci-linux.sh gcc C++11 QT5"
   tags:
@@ -28,17 +6,6 @@ gcc-c++11-Qt5:
 clang-c++11-Qt5:
   script: "CI/ci-linux.sh clang C++11 QT5"
   tags:
-    - Linux
-    - MultiThreads
-
-gcc-c++98-Qt5:
-  script: "CI/ci-linux.sh gcc C++98 QT5"
-  tags:
-    - Linux
-
-clang-c++98-Qt5:
-  script: "CI/ci-linux.sh clang C++98 QT5"
-  tags: 
     - Linux
     - MultiThreads
 

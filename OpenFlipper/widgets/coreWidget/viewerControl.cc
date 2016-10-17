@@ -1124,8 +1124,8 @@ void CoreWidget::slotSetViewingDirection(QAction* _action) {
   if (_action->data().toInt() != PluginFunctions::VIEW_FREE)
     PluginFunctions::allowRotation( false, PluginFunctions::activeExaminer() );
   
-    // Update view
-    examiner_widgets_[PluginFunctions::activeExaminer()]->updateGL();
+  // Update view
+  examiner_widgets_[PluginFunctions::activeExaminer()]->updateGL();
 }
 
 void CoreWidget::slotLockRotation(bool _lock) {

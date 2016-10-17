@@ -16,12 +16,13 @@ uniform vec2 pa_screenSize;
 
 uniform vec3 pa_scale;
 uniform vec3 pa_offset;
+uniform int pa_visible_tensors;
 
 void main()
 {
   SG_VERTEX_BEGIN;
   
-  int pa_component = gl_InstanceID % 3;
+  int pa_component = gl_InstanceID % pa_visible_tensors;
   
   // positions of the line end-points
   vec4 pa_posOS[2];

@@ -699,7 +699,7 @@ public:
 private:
 
   // compute adjacency information: vertex -> neighboring faces (, face -> neighboring faces [removed] )
-  void computeAdjacency();
+  void computeAdjacency(bool _forceRecompute = false);
 
   // convert per-face vertices to unique ids
   void splitVertices();

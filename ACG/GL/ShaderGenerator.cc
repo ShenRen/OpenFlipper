@@ -891,13 +891,29 @@ void ShaderProgGenerator::init( const ShaderGenDesc* _desc, const unsigned int* 
 
 void ShaderProgGenerator::init( const ShaderGenDesc* _desc, ShaderModifier* const* _modifiers, unsigned int _numActiveMods )
 {
-  if (_modifiers && _numActiveMods)
+  // mods provided by renderer are passed via parameters _modifiers, _numActiveMods
+  // mods provided by individual render objects are passed via ShaderGenDesc* _desc
+  // combine them
+  size_t numDescMods = _desc->shaderMods.size();
+  size_t numTotalMods = _numActiveMods + numDescMods;
+  if (numTotalMods)
   {
-    activeMods_.resize(_numActiveMods);
+    activeMods_.resize(numTotalMods);
 
-    for (unsigned int i = 0; i < _numActiveMods; ++i)
-      activeMods_[i] = _modifiers[i];
+    for (size_t i = 0; i < numDescMods; ++i)
+    {
+      unsigned int modID = _desc->shaderMods[i];
+      activeMods_[i] = registeredModifiers_[modID];
+    }
+
+    if (_modifiers && _numActiveMods)
+    {
+      for (unsigned int i = 0; i < _numActiveMods; ++i)
+        activeMods_[i + numDescMods] = _modifiers[i];
+    }
   }
+
+
 
 
   if (shaderDir_.isEmpty())

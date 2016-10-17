@@ -108,39 +108,39 @@
  *
  * ==========================================================*/
 
-// Includes for windows debugging console
 #ifdef WIN32
-#ifdef WIN_GET_DEBUG_CONSOLE
-  #include <fcntl.h>
-  #include <io.h>
-#endif
-#endif
 
-#ifdef WIN32
-#ifdef WIN_GET_DEBUG_CONSOLE
-    void getConsole() {
-      //Create a console for this application
-      AllocConsole();
-      //Redirect unbuffered STDOUT to the console
-      HANDLE ConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-      int SystemOutput = _open_osfhandle(intptr_t(ConsoleOutput), _O_TEXT);
-      FILE *COutputHandle = _fdopen(SystemOutput, "w" );
-      *stdout = *COutputHandle;
-      setvbuf(stdout, NULL, _IONBF, 0);
-      //Redirect unbuffered STDERR to the console
-      HANDLE ConsoleError = GetStdHandle(STD_ERROR_HANDLE);
-      int SystemError = _open_osfhandle(intptr_t(ConsoleError), _O_TEXT);
-      FILE *CErrorHandle = _fdopen(SystemError, "w" );
-      *stderr = *CErrorHandle;
-      setvbuf(stderr, NULL, _IONBF, 0);
-      //Redirect unbuffered STDIN to the console
-      HANDLE ConsoleInput = GetStdHandle(STD_INPUT_HANDLE);
-      int SystemInput = _open_osfhandle(intptr_t(ConsoleInput), _O_TEXT);
-      FILE *CInputHandle = _fdopen(SystemInput, "r" );
-      *stdin = *CInputHandle;
-      setvbuf(stdin, NULL, _IONBF, 0);
-    }
+  void attachConsole()
+  {
+	  //try to attach the console of the parent process
+	  if (AttachConsole(-1))
+	  {
+		  //if the console was attached change stdinput and output
+		  freopen("CONIN$", "r", stdin);
+		  freopen("CONOUT$", "w", stdout);
+		  freopen("CONOUT$", "w", stderr);
+	  }
+	  else
+	  {
+		  //create and attach a new console if needed
+#ifndef NDEBUG
+		  //always open a console in debug mode
+		  AllocConsole();
+		  freopen("CONIN$", "r", stdin);
+		  freopen("CONOUT$", "w", stdout);
+		  freopen("CONOUT$", "w", stderr);
+		  return;
 #endif
+		  if (OpenFlipper::Options::logToConsole())
+		  {
+			  AllocConsole();
+			  freopen("CONIN$", "r", stdin);
+			  freopen("CONOUT$", "w", stdout);
+			  freopen("CONOUT$", "w", stderr);
+		  }
+	  }
+  }
+
 #endif
 
 /* ==========================================================
@@ -370,12 +370,6 @@ int main(int argc, char **argv)
 
   OpenFlipper::Options::windowTitle(TOSTRING(PRODUCT_STRING)" v" + OpenFlipper::Options::coreVersion());
 
-#ifdef WIN32
-#ifdef WIN_GET_DEBUG_CONSOLE
-  getConsole();
-#endif
-#endif
-
   if ( !OpenFlipper::Options::nogui() ) {
 
     // OpenGL check
@@ -404,6 +398,11 @@ int main(int argc, char **argv)
       delete w;
       return 1;
     }
+
+#ifdef WIN32
+	//attach a console if necessary
+	attachConsole();
+#endif
 
     QString tLang = OpenFlipperSettings().value("Core/Language/Translation","en_US").toString();
 

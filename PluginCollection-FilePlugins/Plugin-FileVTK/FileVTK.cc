@@ -126,6 +126,9 @@ DataType  FileVTKPlugin::supportedType() {
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
     type |= DATA_HEXAHEDRAL_MESH;
 #endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    type |= DATA_TETRAHEDRAL_MESH;
+#endif
 
     return type;
 }
@@ -1195,6 +1198,19 @@ void FileVTKPlugin::addFaceNormal(PolyhedralMesh*& _mesh, quint32 _index, OpenMe
 bool FileVTKPlugin::writeASCIIData(std::ostream& _out, PolyhedralMesh& _mesh)                         { return writeASCIIDataOfOpenVolumeMesh(_out, _mesh);               }
 #endif //ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
 
+
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+int FileVTKPlugin::addTetraCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                 { return addTetraCellToOpenVolumeMesh(_mesh, indices);              }
+int FileVTKPlugin::addHexaCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                  { return addHexaCellToOpenVolumeMesh(_mesh, indices);               }
+int FileVTKPlugin::addWedgeCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                 { return addWedgeCellToOpenVolumeMesh(_mesh, indices);              }
+int FileVTKPlugin::addPyramidCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)               { return addPyramidCellToOpenVolumeMesh(_mesh, indices);            }
+int FileVTKPlugin::addFace(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                      { return addFaceToOpenVolumeMesh(_mesh, indices);                   }
+int FileVTKPlugin::addFace(TetrahedralMesh*& _mesh, quint32 _index1, quint32 _index2, quint32 _index3) { return addFaceToOpenVolumeMesh(_mesh, _index1, _index2, _index3); }
+void FileVTKPlugin::addVertexNormal(TetrahedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal)  { addVertexNormalToOpenVolumeMesh(_mesh, _index, _normal);          }
+void FileVTKPlugin::addFaceNormal(TetrahedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal)    { addFaceNormalToOpenVolumeMesh(_mesh, _index, _normal);            }
+bool FileVTKPlugin::writeASCIIData(std::ostream& _out, TetrahedralMesh& _mesh)                         { return writeASCIIDataOfOpenVolumeMesh(_out, _mesh);               }
+#endif //ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+
 //-----------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------
 //----------------------------------- end of cool helper function -------------------------------------
@@ -1403,6 +1419,11 @@ FileVTKPlugin::BestMeshType FileVTKPlugin::findBestObjectType(QString _filename)
 #else
         bool polyhedralMeshPossible = true;
 #endif
+#ifndef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+        bool tetrahedralMeshPossible = false;
+#else
+        bool tetrahedralMeshPossible = true;
+#endif
 
         quint32 read = 0;
         while ( read < cellCountTypes) {
@@ -1418,25 +1439,36 @@ FileVTKPlugin::BestMeshType FileVTKPlugin::findBestObjectType(QString _filename)
           if      (( 1 <= type ) && (type <=  6 ))
           {
               // vertex, poly vertex, line, poly line, triangle, triangle strip
-              // all mesh types possible except hexahedral mesh
-              hexahedralMeshPossible = false;
+              // all mesh types possible except hexahedral mesh and tetrahedral mesh
+            hexahedralMeshPossible = false;
+            tetrahedralMeshPossible = false;
           }
           else if (( 7 <= type ) && (type <=  9 ))
           {
               // polygone, pixel (axis alligned quad), quad -> triMesh not possible
-              // while polygone could be a triangle as well, we assume that it's not because
-              // we hope the file author would have chosen type == 5 int that case
+              // while polygon could be a triangle as well, we assume that it's not because
+              // we hope the file author would have chosen type == 5 in that case
               triMeshPossible = false;
               hexahedralMeshPossible = false;
+              tetrahedralMeshPossible = false;
           }
           // TODO: ignore if no OpenVolumeMesh support
-          else if (( 10 == type ) || ( 13 == type ) || (type ==  14 ))
+          else if ( 10 == type )
           {
-              // tetra, wedge, pyramid
+              // tetra
+              triMeshPossible = false;
+              polyMeshPossible = false;
+              hexahedralMeshPossible = false;
+          }
+          else if (( 13 == type ) || (type ==  14 ))
+          {
+              // wedge, pyramid
               // cannot be represented by anything other than polyhedral mesh
               triMeshPossible = false;
               polyMeshPossible = false;
               hexahedralMeshPossible = false;
+              tetrahedralMeshPossible = false;
+
           }
           else if (( 11 == type ) || ( 12 == type ))
           {
@@ -1460,6 +1492,8 @@ FileVTKPlugin::BestMeshType FileVTKPlugin::findBestObjectType(QString _filename)
             return BMT_PolyMesh;
         else if (hexahedralMeshPossible)
             return BMT_HexahedralMesh;
+        else if (tetrahedralMeshPossible)
+            return BMT_TetrahedralMesh;
         else if (polyhedralMeshPossible)
             return BMT_PolyhedralMesh;
         else
@@ -1654,7 +1688,7 @@ int FileVTKPlugin::loadObject(QString _filename) {
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
   else if (bestType == BMT_HexahedralMesh)
   {
-    // add a heexahedral mesh
+    // add a hexahedral mesh
     int id = -1;
     emit addEmptyObject(DATA_HEXAHEDRAL_MESH, id);
 
@@ -1679,6 +1713,34 @@ int FileVTKPlugin::loadObject(QString _filename) {
 
   }
 #endif //ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+  else if (bestType == BMT_TetrahedralMesh)
+  {
+    // add a tetrahedral mesh
+    int id = -1;
+    emit addEmptyObject(DATA_TETRAHEDRAL_MESH, id);
+
+    TetrahedralMeshObject* object(0);
+
+    if(PluginFunctions::getObject( id, object)){
+
+      TetrahedralMesh* _mesh;
+      _mesh = PluginFunctions::tetrahedralMesh(object);
+
+      if ( _mesh != 0 ) {
+        if ( !loadMesh(in,_mesh,dataset) ) {
+          emit log(LOGERR,"Unable to load mesh!");
+          return -1;
+        }
+      } else {
+        emit log(LOGERR,"Unable to add empty tetrahedral mesh!");
+        return -1;
+      }
+      baseObj = object;
+    }
+
+  }
+#endif //ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
 
   if (baseObj)
   {
@@ -2651,9 +2713,29 @@ bool FileVTKPlugin::saveObject(int _id, QString _filename) {
         object->setFromFileName(_filename);
         object->setName(object->filename());
 
-        HexahedralMeshObject* polyhedralObj = dynamic_cast<HexahedralMeshObject* >( object );
+        HexahedralMeshObject* hexahedralObj = dynamic_cast<HexahedralMeshObject* >( object );
 
-        if (writeMesh(ofs, *polyhedralObj->mesh())) {
+        if (writeMesh(ofs, *hexahedralObj->mesh())) {
+            emit log(LOGINFO, tr("Saved object to ") + _filename );
+            ofs.close();
+            return true;
+        } else {
+            emit log(LOGERR, tr("Unable to save ") + _filename);
+            ofs.close();
+            return false;
+        }
+    }
+#endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    else if ( object->dataType( DATA_TETRAHEDRAL_MESH ) )
+    {
+
+        object->setFromFileName(_filename);
+        object->setName(object->filename());
+
+        TetrahedralMeshObject* tetrahedralObj = dynamic_cast<TetrahedralMeshObject* >( object );
+
+        if (writeMesh(ofs, *tetrahedralObj->mesh())) {
             emit log(LOGINFO, tr("Saved object to ") + _filename );
             ofs.close();
             return true;

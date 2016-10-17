@@ -1,14 +1,7 @@
 
 if(BUILD_TESTING)
 
-IF(NOT QT5_FOUND AND NOT FORCE_QT4 AND NOT QT4_FOUND)
-  IF (NOT FORCE_QT4)
-    FIND_PACKAGE( Qt5Widgets REQUIRED QUIET )
-  endif()
-  if(NOT QT5_FOUND)
-    FIND_PACKAGE( Qt4 REQUIRED QUIET )
-  ENDIF()
-ENDIF()
+  FIND_PACKAGE( Qt5Widgets REQUIRED QUIET )
 
   add_executable (compareTool compareTool.cc )
 

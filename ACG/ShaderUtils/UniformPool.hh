@@ -135,8 +135,6 @@ namespace GLSL {
       virtual ~UniformBase() {}
 
       virtual void bind(GLuint _progID) const {}
-
-      virtual UniformBase* clone() const = 0;
     };
 
     struct UniformVecf : public UniformBase {
@@ -144,8 +142,6 @@ namespace GLSL {
       int size;
 
       void bind(GLuint _progID) const;
-
-      UniformBase* clone() const;
     };
 
     // separate float int vector because sizeof(int) != sizeof(float) for some compilers
@@ -154,8 +150,6 @@ namespace GLSL {
       int size;
 
       void bind(GLuint _progID) const;
-
-      UniformBase* clone() const;
     };
 
     struct UniformVecui : public UniformBase {
@@ -163,8 +157,6 @@ namespace GLSL {
       int size;
 
       void bind(GLuint _progID) const;
-
-      UniformBase* clone() const;
     };
 
 
@@ -175,8 +167,6 @@ namespace GLSL {
       int size;
 
       void bind(GLuint _progID) const;
-
-      UniformBase* clone() const;
     };
 
     struct UniformBuf : public UniformBase {
@@ -189,8 +179,6 @@ namespace GLSL {
       ~UniformBuf();
 
       void bind(GLuint _progID) const;
-
-      UniformBase* clone() const;
     };
 
 

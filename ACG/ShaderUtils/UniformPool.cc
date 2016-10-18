@@ -199,16 +199,6 @@ namespace GLSL {
     checkGLError2(id.c_str());
   }
 
-  /** \brief Create clone instance
-  *
-  * @return clone
-  */
-  UniformPool::UniformBase *UniformPool::UniformVecf::clone() const  {
-    UniformVecf* c = new UniformVecf;
-    *c = *this;
-    return c;
-  }
-
   /** \brief Bind uniform int vector to shader
   *
   * @param _progID  GL Program ID
@@ -240,16 +230,6 @@ namespace GLSL {
     checkGLError2(id.c_str());
   }
 
-  /** \brief Create clone instance
-  *
-  * @return clone
-  */
-  UniformPool::UniformBase *UniformPool::UniformVeci::clone() const  {
-    UniformVeci* c = new UniformVeci;
-    *c = *this;
-    return c;
-  }
-
   /** \brief Bind uniform  uint vector to shader
   *
   * @param _progID  GL Program ID
@@ -279,16 +259,6 @@ namespace GLSL {
     }
 
     checkGLError2(id.c_str());
-  }
-
-  /** \brief Create clone instance
-  *
-  * @return clone
-  */
-  UniformPool::UniformBase *UniformPool::UniformVecui::clone() const  {
-    UniformVecui* c = new UniformVecui;
-    *c = *this;
-    return c;
   }
 
   /** \brief Bind uniform matrix to shader
@@ -327,16 +297,6 @@ namespace GLSL {
     checkGLError2(id.c_str());
   }
 
-  /** \brief Create clone instance
-  *
-  * @return clone
-  */
-  UniformPool::UniformBase *UniformPool::UniformMat::clone() const  {
-    UniformMat* c = new UniformMat;
-    *c = *this;
-    return c;
-  }
-
   /** \brief Bind uniform array to shader
   *
   * @param _progID  GL Program ID
@@ -355,19 +315,6 @@ namespace GLSL {
 
     checkGLError2(id.c_str());
   }
-
-  /** \brief Create clone instance
-  *
-  * @return clone
-  */
-  UniformPool::UniformBase *UniformPool::UniformBuf::clone() const  {
-    UniformBuf* c = new UniformBuf;
-    *c = *this;
-    c->val = new float[c->size];
-    std::memcpy(c->val, val, size * sizeof(float));
-    return c;
-  }
-
 
   /** \brief Creates a copy of input data
   */

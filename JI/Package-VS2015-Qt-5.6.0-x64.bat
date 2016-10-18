@@ -12,3 +12,4 @@ del *.exe
 
 move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%GIT_COMMIT%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
 
+cd ..

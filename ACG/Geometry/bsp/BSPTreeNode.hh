@@ -68,16 +68,16 @@
 //== CLASS DEFINITION =========================================================
 
 // Node of the tree: contains parent, children and splitting plane
-template <class Mesh>
+template <class BSPTraits>
 struct TreeNode
 {
-    typedef typename Mesh::FaceHandle      Handle;
-    typedef typename Mesh::Point      	   Point;
-    typedef typename Mesh::VertexHandle    VertexHandle;
-    typedef std::vector<Handle>            Handles;
-    typedef typename Handles::iterator     HandleIter;
-    typedef typename Point::value_type     Scalar;
-    typedef ACG::Geometry::PlaneT<Scalar>  Plane;
+    typedef typename BSPTraits::Handle       Handle;
+    typedef typename BSPTraits::Point        Point;
+    typedef typename BSPTraits::VertexHandle VertexHandle;
+    typedef std::vector<Handle>              Handles;
+    typedef typename Handles::iterator       HandleIter;
+    typedef typename Point::value_type       Scalar;
+    typedef ACG::Geometry::PlaneT<Scalar>    Plane;
 
     TreeNode(const Handles& _handles, TreeNode* _parent)
             : handles_(_handles),
@@ -194,10 +194,10 @@ struct TreeNode
 
 };
 
-template<class Mesh>
-std::ostream &operator<< (std::ostream &stream, const TreeNode<Mesh> &node) {
+template<class BSPTraits>
+std::ostream &operator<< (std::ostream &stream, const TreeNode<BSPTraits> &node) {
     stream << "[TreeNode instance. Handles: ";
-    for (typename std::vector<typename TreeNode<Mesh>::Handle>::const_iterator it = node.handles_.begin(), it_end = node.handles_.end();
+    for (typename TreeNode<BSPTraits>::Handles::const_iterator it = node.handles_.begin(), it_end = node.handles_.end();
             it != it_end; ++it) {
         stream << it->idx();
         if (it < it_end-1) stream << ", ";

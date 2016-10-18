@@ -37,7 +37,13 @@ if (NOT OPENMESH_FOUND)
     message (FATAL_ERROR "OpenMesh not found!")
 endif ()
 
+find_package(OpenVolumeMesh)
+if(NOT OPENVOLUMEMESH_FOUND)
+    message (INFO "OpenVolumeMesh not found, building without OVM support.")
+endif()
+
 set(INCLUDE_DIRS ${OPENMESH_INCLUDE_DIRS}
+                 ${OPENVOLUMEMESH_INCLUDE_DIR}
                  ${CMAKE_CURRENT_SOURCE_DIR}
                  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderUtils
                  ${CMAKE_CURRENT_BINARY_DIR}
@@ -86,6 +92,7 @@ set (directories
   Geometry
   Config
   Geometry/Types
+  Geometry/bsp
   GL
   Glut
   IO

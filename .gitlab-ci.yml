@@ -17,3 +17,12 @@ cppcheck:
   artifacts:
     paths:
       - cppcheck.log
+
+VS2015-Qt-5.6.0-x64:
+  script: "JI\Configure-VS2015-Qt-5.6.0-x64.bat JI\Build-VS2015-Qt-5.6.0-x64.bat JI\Test-VS2015-Qt-5.6.0-x64.bat JI\Package-VS2015-Qt-5.6.0-x64.bat"
+  tags: 
+    - VS2015
+    - Qt56
+  artifacts:
+    paths:
+      - rel/*.exe

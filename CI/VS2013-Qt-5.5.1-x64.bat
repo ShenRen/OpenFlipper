@@ -35,14 +35,17 @@ IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
+echo %errorlevel%
+
 cd tests
 copy ..\Build\Qt*.dll testBinaries
 copy ..\Build\icu*.dll testBinaries
 run_tests.bat
 
+echo %errorlevel%
+
 pwd
 
-echo %errorlevel%
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 

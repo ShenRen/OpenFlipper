@@ -5,6 +5,8 @@ git submodule update --remote
 mkdir rel
 cd rel
 
+del *.exe
+
 set ARCHITECTURE=x64
 set ARCH_VS= Win64
 set STRING_ARCH=64-Bit

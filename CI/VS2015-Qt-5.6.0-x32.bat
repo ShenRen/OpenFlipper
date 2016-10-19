@@ -5,6 +5,8 @@ git submodule update --remote
 mkdir rel
 cd rel
 
+del *.exe
+
 set ARCHITECTURE=x32
 set ARCH_VS=
 set STRING_ARCH=32-Bit

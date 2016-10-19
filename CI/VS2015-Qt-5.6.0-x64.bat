@@ -44,7 +44,7 @@ del *.exe
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
-move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%GIT_COMMIT%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
+move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%CI_BUILD_REF%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
 
 cd tests
 copy ..\Build\Qt*.dll testBinaries

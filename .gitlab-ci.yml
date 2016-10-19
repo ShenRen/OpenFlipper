@@ -17,3 +17,40 @@ cppcheck:
   artifacts:
     paths:
       - cppcheck.log
+
+VS2015-Qt-5.6.0-x64:
+  script: "CI\\VS2015-Qt-5.6.0-x64.bat"
+  cache:
+    paths:
+      - rel/
+  tags: 
+    - VS2015
+    - Qt56
+  artifacts:
+    paths:
+      - rel/*.exe
+
+VS2015-Qt-5.6.0-x32:
+  script: "CI\\VS2015-Qt-5.6.0-x32.bat"
+  cache:
+    paths:
+      - rel/
+  tags: 
+    - VS2015
+    - Qt56
+  artifacts:
+    paths:
+      - rel/*.exe
+
+
+VS2013-Qt-5.5.1-x64:
+  script: "CI\\VS2013-Qt-5.5.1-x64.bat"
+  cache:
+    paths:
+      - rel/
+  tags:
+    - VS2013
+    - Qt551
+  artifacts:
+    paths:
+      - rel/*.exe

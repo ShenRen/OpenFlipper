@@ -5,9 +5,9 @@ git submodule update --remote
 mkdir rel
 cd rel
 
-set ARCHITECTURE=x64
-set ARCH_VS= Win64
-set STRING_ARCH=64-Bit
+set ARCHITECTURE=x32
+set ARCH_VS=
+set STRING_ARCH=32-Bit
 
 set QT_REV=5.6
 set QT_SUFFIX=
@@ -18,7 +18,7 @@ set GENERATOR=Visual Studio 14%ARCH_VS%
 set VS_PATH="C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.com"
 
 set QT_VERSION=Qt5.6.0
-set QT_BASE_CONFIG=-DQT5_INSTALL_PATH=C:\Qt\%QT_VERSION%-vs2015-%STRING_ARCH%\%QT_REV%\msvc2015_64%QT_SUFFIX%
+set QT_BASE_CONFIG=-DQT5_INSTALL_PATH=C:\Qt\%QT_VERSION%-vs2015-%STRING_ARCH%\%QT_REV%\msvc2015%QT_SUFFIX%
 
 set GLUT_INCLUDE_DIR=C:\libs\VS2015\%ARCHITECTURE%\freeglut-3.0.0\include
 set GLUT_GLUT_LIBRARY=C:\libs\VS2015\%ARCHITECTURE%\freeglut-3.0.0\lib\freeglut.lib
@@ -29,8 +29,21 @@ set CMAKE_CONFIGURATION=%QT_BASE_CONFIG% -DGLUT_INCLUDE_DIR="%GLUT_INCLUDE_DIR%"
 
 "C:\Program Files (x86)\CMake\bin\cmake.exe"  -DGTEST_PREFIX="%LIBPATH_BASE%\%ARCHITECTURE%\%GTESTVERSION%" -G "%GENERATOR%"  -DCMAKE_BUILD_TYPE=Release -DOPENFLIPPER_BUILD_UNIT_TESTS=TRUE %CMAKE_CONFIGURATION% ..
 
-pwd
+%VS_PATH% /Build "Release" OpenFlipper.sln /Project "ALL_BUILD"
+
+cd tests
+copy ..\Build\Qt*.dll testBinaries
+copy ..\Build\icu*.dll testBinaries
+run_tests.bat
 
 cd ..
 
-pwd
+
+set BUILD_PLATFORM=VS2015
+
+del *.exe
+
+%VS_PATH% /Build "Release" OpenFlipper.sln /Project "PACKAGE"
+
+move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%GIT_COMMIT%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
+

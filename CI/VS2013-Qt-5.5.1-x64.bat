@@ -40,10 +40,17 @@ copy ..\Build\Qt*.dll testBinaries
 copy ..\Build\icu*.dll testBinaries
 run_tests.bat
 
+pwd
+
+echo %errorlevel%
+
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
+
+pwd
 
 cd ..
 
+pwd
 
 set BUILD_PLATFORM=VS2013
 

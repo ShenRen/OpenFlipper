@@ -35,6 +35,18 @@ IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
+
+set BUILD_PLATFORM=VS2015
+
+del *.exe
+
+%VS_PATH% /Build "Release" OpenFlipper.sln /Project "PACKAGE"
+
+IF %errorlevel% NEQ 0 exit /b %errorlevel%
+
+move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%GIT_COMMIT%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
+
+
 cd tests
 copy ..\Build\Qt*.dll testBinaries
 copy ..\Build\icu*.dll testBinaries
@@ -52,13 +64,13 @@ cd ..
 
 pwd
 
-set BUILD_PLATFORM=VS2015
 
-del *.exe
 
-%VS_PATH% /Build "Release" OpenFlipper.sln /Project "PACKAGE"
 
-IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
-move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%GIT_COMMIT%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
+
+
+
+
+
 

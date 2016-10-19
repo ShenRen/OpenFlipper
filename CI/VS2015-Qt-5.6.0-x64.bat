@@ -46,23 +46,12 @@ IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%GIT_COMMIT%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
 
-
 cd tests
 copy ..\Build\Qt*.dll testBinaries
 copy ..\Build\icu*.dll testBinaries
 run_tests.bat
 
-pwd
-
-echo %errorlevel%
-
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
-
-pwd
-
-cd ..
-
-pwd
 
 
 

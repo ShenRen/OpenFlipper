@@ -82,7 +82,7 @@ public:
 //== CLASS DEFINITION =========================================================
 
 template <class Mesh, class SpecificTraits>
-class OVMOMCommonBSPTraits : public SpecificTraits
+class OVMOMCommonTriangleBSPTraits : public SpecificTraits
 {
 public:
 
@@ -93,7 +93,7 @@ public:
     typedef typename Handles::iterator        HandleIter;
     typedef TreeNode<SpecificTraits>          Node;
 
-    OVMOMCommonBSPTraits(const Mesh& _mesh) : SpecificTraits(_mesh) {}
+    OVMOMCommonTriangleBSPTraits(const Mesh& _mesh) : SpecificTraits(_mesh) {}
 
     Scalar sqrdist(const Handle _h, const Point& _p) const
     {
@@ -213,7 +213,7 @@ protected:
 };
 
 template<class Mesh>
-using OpenMeshTriangleBSPTraits = OVMOMCommonBSPTraits<Mesh, OMSpecificTriangleBSPTraits<Mesh>>;
+using OpenMeshTriangleBSPTraits = OVMOMCommonTriangleBSPTraits<Mesh, OMSpecificTriangleBSPTraits<Mesh>>;
 
 
 //== CLASS DEFINITION =========================================================

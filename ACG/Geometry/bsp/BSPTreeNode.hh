@@ -76,6 +76,7 @@ struct TreeNode
     typedef typename BSPTraits::VertexHandle VertexHandle;
     typedef std::vector<Handle>              Handles;
     typedef typename Handles::iterator       HandleIter;
+    typedef typename Handles::const_iterator HandleConstIter;
     typedef typename Point::value_type       Scalar;
     typedef ACG::Geometry::PlaneT<Scalar>    Plane;
 
@@ -99,7 +100,16 @@ struct TreeNode
     HandleIter begin() {
         return handles_.begin();
     }
+
     HandleIter end()   {
+        return handles_.end();
+    }
+
+    HandleConstIter begin() const {
+        return handles_.begin();
+    }
+
+    HandleConstIter end() const {
         return handles_.end();
     }
 

@@ -70,14 +70,13 @@
 #include <QPair>
 #include <QFileDialog>
 
-#include <OpenFlipper/common/OFGLWidget.hh>
+#include <OpenFlipper/common/OFGLWidget_type.hh>
 
 #include <ACG/Scenegraph/SceneGraph.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctionsViewControls.hh>
 
 //== FORWARDDECLARATIONS ======================================================
 class ViewObjectMarker;
-class QGLWidget;
 
 /** The Namespace PluginFunctions contains functions for all plugins. These functions should be used to get the
  *  objects to work on or to set modes in the examiner widget. */

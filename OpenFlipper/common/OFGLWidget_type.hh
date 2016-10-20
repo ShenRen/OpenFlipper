@@ -50,22 +50,19 @@
 #pragma once
 
 
+
+// use forward declaration header to avoid glew - qt clash
+
 #include <QtGlobal>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-
-#include <QOpenGLWidget>
-#include <QSurfaceFormat>
-
+class QOpenGLWidget;
+class QSurfaceFormat;
 typedef QOpenGLWidget OFGLWidget;
 typedef QSurfaceFormat OFGLFormat;
-
 #else
-
-#include <QGLWidget>
-#include <QGLFormat>
-
+class QGLWidget;
+class QGLFormat;
 typedef QGLWidget OFGLWidget;
 typedef QGLFormat OFGLFormat;
-
 #endif

@@ -83,9 +83,7 @@
 #include <QMouseEvent>
 #include <QTime>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
-#include <QOpenGLDebugLogger>
-#endif
+
 
 //== FORWARDDECLARATIONS ======================================================
 
@@ -122,6 +120,10 @@ class QOpenGLFramebufferObject;
 class QOpenGLFramebufferObjectFormat;
 #endif
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+class QOpenGLDebugLogger;
+class QOpenGLDebugMessage;
+#endif
 
 //== CLASS DEFINITION =========================================================
 
@@ -563,6 +565,9 @@ private:
   /// draw the cursor
   void drawCursor();
   
+  // start QOpenGLDebugLogger
+  void startGLDebugLogger();
+  void deleteGLDebugLogger();
 
 
 //-------------------------------------------------------------- protected data

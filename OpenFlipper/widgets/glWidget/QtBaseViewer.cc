@@ -217,10 +217,7 @@ glViewer::~glViewer()
 {
   delete glstate_;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
-  makeCurrent();
-  delete glDebugLogger_;
-#endif
+  deleteGLDebugLogger();
 }
 
 
@@ -238,14 +235,6 @@ glViewer::~glViewer()
 
 void glViewer::makeCurrent() {
   glWidget_->makeCurrent();
-}
-
-void glViewer::swapBuffers() {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-  glWidget_->context()->swapBuffers(glWidget_->context()->surface());
-#else
-  glWidget_->swapBuffers();
-#endif
 }
 
 
@@ -1057,18 +1046,7 @@ void glViewer::initializeGL()
 
 
   // qt opengl  info
-#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
-  if (OpenFlipper::Options::debug())
-  {
-    delete glDebugLogger_;
-    glDebugLogger_ = new QOpenGLDebugLogger(this);
-    if (glDebugLogger_->initialize())
-    {
-      connect(glDebugLogger_, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(processGLDebugMessage(QOpenGLDebugMessage)));
-      glDebugLogger_->startLogging();
-    }
-  }
-#endif
+  startGLDebugLogger();
 }
 
 
@@ -2643,18 +2621,6 @@ void glViewer::computeProjStereo( int _viewportWidth, int _viewportHeight, Viewe
     _outRight->translate(-offset, 0.0, 0.0);
   }
 }
-
-
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
-
-void glViewer::processGLDebugMessage(const QOpenGLDebugMessage& msg)
-{
-  if (msg.severity() & QOpenGLDebugMessage::HighSeverity)
-    std::cerr << msg.message().toStdString() << std::endl;
-}
-
-#endif
 
 
 //=============================================================================

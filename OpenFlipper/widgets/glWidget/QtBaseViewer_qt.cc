@@ -47,25 +47,90 @@
 *                                                                            *
 \*===========================================================================*/
 
-#pragma once
+
+// QOpenGL headers and glew are in conflict,
+// so implement functions that make use of QOpenGL classes in separate file
 
 
-#include <QtGlobal>
+//=============================================================================
+//
+//  CLASS glViewer - IMPLEMENTATION
+//
+//=============================================================================
 
+
+//== INCLUDES =================================================================
+
+#include "QtBaseViewer.hh"
+
+#include <OpenFlipper/common/GlobalOptions.hh>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,4,0))
+  #include <QOpenGLContext>
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+#include <QOpenGLDebugLogger>
+#endif
+
+
+//== NAMESPACES ===============================================================
+
+
+
+//== IMPLEMENTATION ==========================================================
+
+
+
+void glViewer::swapBuffers() {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-
-#include <QOpenGLWidget>
-#include <QSurfaceFormat>
-
-typedef QOpenGLWidget OFGLWidget;
-typedef QSurfaceFormat OFGLFormat;
-
+  glWidget_->context()->swapBuffers(glWidget_->context()->surface());
 #else
+  glWidget_->swapBuffers();
+#endif
+}
 
-#include <QGLWidget>
-#include <QGLFormat>
+//-----------------------------------------------------------------------------
 
-typedef QGLWidget OFGLWidget;
-typedef QGLFormat OFGLFormat;
+void glViewer::startGLDebugLogger()
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+  if (OpenFlipper::Options::debug())
+  {
+    delete glDebugLogger_;
+    glDebugLogger_ = new QOpenGLDebugLogger(this);
+    if (glDebugLogger_->initialize())
+    {
+      connect(glDebugLogger_, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(processGLDebugMessage(QOpenGLDebugMessage)));
+      glDebugLogger_->startLogging();
+    }
+  }
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
+void glViewer::deleteGLDebugLogger()
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+  makeCurrent();
+  delete glDebugLogger_;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,1,0))
+
+void glViewer::processGLDebugMessage(const QOpenGLDebugMessage& msg)
+{
+  if (msg.severity() & QOpenGLDebugMessage::HighSeverity)
+    std::cerr << msg.message().toStdString() << std::endl;
+}
 
 #endif
+
+
+//=============================================================================
+//=============================================================================
+

@@ -1,7 +1,42 @@
 /*! \page changelog Changelog
 
-- <b>OpenFlipper 3.0 ( ?/?/? , 21058 )</b>
-     - <b>LICENSE<b>
+
+- <b>OpenFlipper 4.0 ( ?/?/? )</b>
+     - <b>Build System</b>
+         - Enable C++-11 by default
+         - Drop support for Qt 4
+         - Drop support for QWT 5 
+
+- <b>OpenFlipper 3.1 ( 2016/10/12 )</b>
+     - <b>General</b>
+         - Fix missleading indentation warnings on gcc 6.x
+         - Added Tetrahedral mesh support
+     - <b>ACG</b>
+        - Use std::vector in BaseNode instead of std::list for performance reasons (closes #61)
+        - Added PrincipalAxisNode (Including shader pipeline support)
+        - Fixed shading when shininess is 0
+        - Optimizations and cleanup in IRenderer
+        - Added floating subtree node (Can be used to render whole subtrees as overlays)
+		- Made constructor of GLMatrixT more flexible.
+		- New FloatingSubtreeNode: Enable/disable model view override and overlay mode.
+		- MeshCompiler: Fix crash for meshes with large faces. If the input adjacency is faulty, it gets recomputed now.
+     - <b>Core</b>
+         - Windows: Attach console to allow output directly to command line
+         - Fixed aspect ratio of screenshot function
+     - <b>Plugins</b>
+         - DataControl
+             - Fixed grouping (Not visualized correctly)
+         - HoleFiller
+             - Fly to selected holes
+             - Compute boundary information on poly meshes
+         - VTK
+             - read tetmeshes from vtk files
+     - <b>Build System</b>
+         - Added cmake flag to disable ACG unit tests
+         - Added flag to safeguard a gcc compiler bug (optimizer)
+
+- <b>OpenFlipper 3.0 ( 2016/07/13 )</b>
+     - <b>LICENSE</b>
         - Switched to BSD-3 License
      - <b>ACG</b>
         - MeshCompiler and DrawMesh
@@ -34,6 +69,8 @@
              - New Query Object
              - Depth Range Render Object
      - <b>Core</b>
+        - BaseObject
+             - Make the object update functions protected (You have to use emit updatedObject instead)
         - IO
              - Emit warning in save object function, if object can't be retrieved
              - Async loaders to keep ui alive while loading
@@ -56,14 +93,21 @@
              - OpenFlipperThread: added jobid getter
         - Metadata Interface
              - Added new meta data interface (CVan be used to store additional metadata along with screenschots)
+        - Pluginfunctions
+             - Added C++11 range adapter for ObjectIterator
      - <b>UI</b>
+        - Updated Toolbox layouts
         - AboutWidget
              - set OpenFlipper System Information Tab read-only
         - Optionswidget
              - add option for max backups
+             - added option to always set new objects to target
         - Snapshots
              - The viewer snapshot dialog now automatically suggests file names that don't exist yet. If names of existing files are entered, a warning is displayed in real time. If non-writable paths are entered, a warning is displayed as well.
              - New feature: Copy view as C-style string. Holding Ctrl while clicking the "Copy View" context menu action now copies a C-style string to the clipboard.
+             - Added fully scriptable snapshot function
+        - CoreWidget
+             - Correctly restore window sizes after restart
      - <b>License Manager</b>
         - Remove function pointers which produce errors in C++11
         - Improved handling of time constraints for License management
@@ -76,6 +120,7 @@
         - Added PolyLine colored segment rendering
         - PolyLine fixes (performance, rendering bug for segments)
         - PolyLine: improved picking via shader
+        - MeshObject: Added hasBSP function
      - <b>Plugins</b>
          - Align Meshes 
              - New plugin which can be used to align meshes 
@@ -88,6 +133,7 @@
              - create correct object on poly/tri mesh copy
          - Datacontrol
              - Some null pointer checks to avoid a crash
+             - Smaller layout to redduce amount of wasted space
          - Decimater
              - Added process interface to decimater and using the observer pattern for progress bar
              - gui-only slots declared as private slots
@@ -106,13 +152,18 @@
              - Fix target count display on updates. closes #2443
          - IsotropicRemesher
              - nogui / batch mode support (closes #2384)
+         - MeshObjectInfo
+             - Added vertex and valence histograms
          - MemInfo
              - Fixed wrong visualization on Linux
              - Added Mac support
+         - Move 
+             - Make mesh normalization slots scriptable
          - PrimitiveGenerator
              - add initial backups for each generated primitive (refs #2407)
          - PropertyVis
              - force static property casts in property visualizer due to failing dynamic cast caused be different typeids over different shared objects on mac
+             - Enable uint8_t support
          - Remesher
              - add nogui support (closes #2384)
          - Selection
@@ -128,6 +179,8 @@
          - fix install path on 64-bit windows with 64-bit installer
          - Removed unneccessary ftgl
          - Removed various istream includes
+         - The libs dir for searching windows libraries is now configurable via cmake
+         - Allow to build plugins statically into core
 
 - <b>OpenFlipper 2.1 ( 2015/01/21 , 20181 )</b>
      - <b>General</b>

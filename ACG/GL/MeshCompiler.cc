@@ -157,7 +157,7 @@ void MeshCompiler::AdjacencyList::clear()
 
 
 
-void MeshCompiler::computeAdjacency()
+void MeshCompiler::computeAdjacency(bool _forceRecompute)
 {
   const int numVerts = input_[inputIDPos_].count;
 
@@ -168,7 +168,7 @@ void MeshCompiler::computeAdjacency()
   // store adj entries in a single tightly packed buffer
 
   // check if user provided adjacency information
-  if (faceInput_->getVertexAdjCount(0) < 0 && adjacencyVert_.bufSize <= 0)
+  if (_forceRecompute || (faceInput_->getVertexAdjCount(0) < 0 && adjacencyVert_.bufSize <= 0))
   {
     adjacencyVert_.init(numVerts);
 
@@ -406,6 +406,8 @@ void MeshCompiler::weldVertices()
 
   weldList.list.reserve(maxAdjCount);
 
+  bool retry = false;
+  
   for (int i = 0; i < numVerts; ++i)
   {
     // OPTIMIZATION: Moved constructor/destructor of WeldList out of for-loop
@@ -413,13 +415,15 @@ void MeshCompiler::weldVertices()
     weldList.list.clear();
 
     // Search for candidates in adjacent faces
-    for (int k = 0; k < getAdjVertexFaceCount(i); ++k)
+    int numAdjFaces = getAdjVertexFaceCount(i);
+    for (int k = 0; k < numAdjFaces; ++k)
     {
       const int adjFace = getAdjVertexFace(i, k);
 
       // find corner id of adj face
+      int adjFaceSize = getFaceSize(adjFace);
       int adjCornerId = -1;
-      for (int m = 0; m < getFaceSize(adjFace); ++m)
+      for (int m = 0; m < adjFaceSize; ++m)
       {
         const int adjVertex = getInputIndex(adjFace, m, inputIDPos_);
         
@@ -430,34 +434,47 @@ void MeshCompiler::weldVertices()
         }
       }
 
-      assert(adjCornerId != -1);
+      if (adjCornerId < 0)
+      {
+        // user provided adjacency is faulty
+        // retry with internally compute adjacency
+        retry = true;
+        break;
+      }
+      else
+      {
+        // check for existing entry
+        const int weldMapOffset = getInputFaceOffset(adjFace) + adjCornerId;
 
+        if (vertexWeldMapFace_[weldMapOffset] >= 0)
+          continue; // skip
 
-      // check for existing entry
-      const int weldMapOffset = getInputFaceOffset(adjFace) + adjCornerId;
-      
-      if (vertexWeldMapFace_[weldMapOffset] >= 0)
-        continue; // skip
-
-      weldList.add(adjFace, adjCornerId);
+        weldList.add(adjFace, adjCornerId);
+      }
     }
 
 
     // apply local WeldList of a vertex to global weld map
-
-    for (size_t e = 0; e < weldList.list.size(); ++e)
+    if (!retry)
     {
-      const WeldListEntry* it = &weldList.list[e];
-      const int weldMapOffset = getInputFaceOffset(it->faceId) + it->cornerId;
+      for (size_t e = 0; e < weldList.list.size(); ++e)
+      {
+        const WeldListEntry* it = &weldList.list[e];
+        const int weldMapOffset = getInputFaceOffset(it->faceId) + it->cornerId;
 
-      if (vertexWeldMapFace_[weldMapOffset] >= 0)
-        continue; // skip
+        if (vertexWeldMapFace_[weldMapOffset] >= 0)
+          continue; // skip
 
-      // store in map
-      vertexWeldMapFace_[weldMapOffset] = it->refFaceId;
-      vertexWeldMapCorner_[weldMapOffset] = it->refCornerId;
+        // store in map
+        vertexWeldMapFace_[weldMapOffset] = it->refFaceId;
+        vertexWeldMapCorner_[weldMapOffset] = it->refCornerId;
+      }
     }
+    else
+      break;
   }
+
+
 
 
   // -------------------------------------------------------------
@@ -512,9 +529,34 @@ void MeshCompiler::weldVertices()
 //   }
 //   // -------------------------------------------------------------
 
+  if (retry)
+  {
+    if (adjacencyVert_.bufSize <= 0)
+    {
+      // there is an issue with the external vertex-face adjacency list provided with the input interface
 
-  // fix incomplete welding map (isolated vertices)
-  fixWeldMap();
+      // 1. compute internal adjacency list and use that instead
+      computeAdjacency(true);
+
+      // 2. rollback welding progress
+
+      vertexWeldMapFace_.clear();
+      vertexWeldMapCorner_.clear();
+
+      // 3. try again with updated adjacency
+      weldVertices();
+    }
+    else
+    {
+      // something went badly wrong..
+      std::cerr << "MeshCompiler - faulty internal adjacency list" << std::endl;
+    }
+  }
+  else
+  {
+    // fix incomplete welding map (isolated vertices)
+    fixWeldMap();
+  }
 
   delete [] vtxCompBuf;
 }
@@ -3893,7 +3935,7 @@ void MeshCompiler::prepareData()
 
     for (int i = 0; i < numFaces_; ++i)
     {
-      faceSize_[i] = (unsigned char)faceInput_->getFaceSize(i);
+      faceSize_[i] = faceInput_->getFaceSize(i);
       faceStart_[i] = curOffset;
       curOffset += faceSize_[i];
     }

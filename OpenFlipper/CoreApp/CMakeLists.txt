@@ -95,9 +95,6 @@ if ( EXISTS ${BRANDING_DIRECTORY}/branding.qrc )
         if ( QT5_FOUND )
             QT5_ADD_RESOURCES(BRANDING_RC_SRC "${BRANDING_DIRECTORY}/branding.qrc")
             list(APPEND RC_SRC ${BRANDING_RC_SRC})
-        else()
-    	    QT4_ADD_RESOURCES(BRANDING_RC_SRC "${BRANDING_DIRECTORY}/branding.qrc")
-  	    list(APPEND RC_SRC ${BRANDING_RC_SRC})
         endif()
 endif()
 
@@ -156,13 +153,6 @@ if (NOT CATCH_SIGSEGV)
     add_definitions( -DNO_CATCH_SIGSEGV )
 endif()
 
-if (WIN32)
-  set ( WIN_GET_DEBUG_CONSOLE False CACHE BOOL "Whether a debug console should be visible on windows" )
-  if (WIN_GET_DEBUG_CONSOLE)
-      add_definitions( -DWIN_GET_DEBUG_CONSOLE )
-  endif()
-endif ()
-
 
 
 
@@ -203,7 +193,7 @@ if ( NOT found EQUAL -1 )
 endif()
 
 # use Qwt6 for QT5
-if (NOT FORCE_QT4 AND QT5_FOUND)
+if (QT5_FOUND)
   find_package(Qwt6)
 
   if (QWT6_FOUND)
@@ -211,14 +201,7 @@ if (NOT FORCE_QT4 AND QT5_FOUND)
     set(INCLUDE_DIRS ${INCLUDE_DIRS} ${QWT6_INCLUDE_DIRS} )
     set(COREAPP_ADDITIONAL_LINK_LIBRARIES ${COREAPP_ADDITIONAL_LINK_LIBRARIES} ${QWT6_LIBRARIES})
   endif()
-else()
-  find_package(Qwt5)
 
-  if(Qwt5_Qt4_FOUND)
-    add_definitions(-DWITH_QWT)
-    set(INCLUDE_DIRS ${INCLUDE_DIRS} ${Qwt5_INCLUDE_DIR} )
-    set(COREAPP_ADDITIONAL_LINK_LIBRARIES ${COREAPP_ADDITIONAL_LINK_LIBRARIES} ${Qwt5_Qt4_LIBRARY})
-  endif()
 endif()
 
 

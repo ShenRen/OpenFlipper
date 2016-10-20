@@ -1,4 +1,10 @@
-cmake_minimum_required (VERSION 2.8.9)
+# Force minimal cmake version
+# Required 3.1 to set C++11 
+cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+
+# Set and enforce C++-11 flags
+set( CMAKE_CXX_STANDARD_REQUIRED TRUE )
+set( CMAKE_CXX_STANDARD 11 )
 
 # ACG Environment default settings
 # This is ugly but currently we need to work around the default installed 5.3 on debian
@@ -6,7 +12,6 @@ if ( EXISTS /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ )
   # Default to this install path for QT%_INSTALL_DIR
   set (QT5_INSTALL_PATH /ACG/acgdev/gcc-4.9-x86_64/qt-5.6.0/5.6/gcc_64/ CACHE PATH "Qt5 install path set for ACG environment" )
 endif()
-
 
 if ( WIN32 )
   # This is the base directory for windows library search used in the finders we shipp.
@@ -28,6 +33,14 @@ endif()
 
 project (OpenFlipper)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "6.0" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "4.9" OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "4.9")
+		message(WARNING "Your version of GCC contains an optimizer bug. Please verify that you do not use -O3!")
+		string(REPLACE "-O3" "-O2" CMAKE_CXX_FLAGS_RELEASE_NEW "${CMAKE_CXX_FLAGS_RELEASE}")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE_NEW}" CACHE STRING "" FORCE)
+	endif()
+endif()
+
 # add our macro directory to cmake search path
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -38,6 +51,28 @@ file (
 )
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
 
+# ========================================================================
+# QT Setup 
+# ========================================================================
+
+# Qt setup
+include(ACGQt)
+
+acg_qt5 ()
+
+if (NOT QT5_FOUND)
+  message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5")
+endif()
+
+set (OF_MAX_QT_VERSION "5.6.0")
+
+if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
+  message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n" "OpenFlipper has not been tested with this QT Version.")
+endif()
+
+# ========================================================================
+# ========================================================================
+
 # include our cmake files
 include (ACGCommon)
 include (MSVCMacros)
@@ -47,8 +82,6 @@ acg_get_version (OpenFlipper)
 # ========================================================================
 # Branding 
 # ========================================================================
-
-
 
 # search all branding dirs in the packages and in toplevel
 file (
@@ -102,33 +135,6 @@ add_definitions(-DPRODUCT_NAME=${OPENFLIPPER_PRODUCT_NAME})
 
 include (package)
 include (ACGOutput)
-
-# try to use QT5 if possible otherwise stick to QT4
-set (FORCE_QT4 OFF CACHE BOOL "Use Qt4 even if Qt5 was found")
-
-if (NOT FORCE_QT4)
-  acg_qt5 ()
-else()
-  set (QT5_FOUND false)
-endif()
-
-if (NOT QT5_FOUND)
-  message(STATUS "Could not find QT5, searching for QT4")
-  acg_qt4 (4.7.0)
-endif()
-
-if (QT4_FOUND)
-	message(STATUS "Using QT4 for OpenFlipper")
-elseif(QT5_FOUND)
-	message(STATUS "Using QT5 for OpenFlipper")
-	set (OF_MAX_QT_VERSION "5.5.1")
-    if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
-      message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n"
-        "OpenFlipper has not been tested with this QT Version on Windows.")
-    endif()
-else()
-	message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5 or specify the QT_QMAKE_EXECUTABLE to build with QT4")
-endif()
 
 acg_openmp ()
 

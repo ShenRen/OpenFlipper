@@ -391,7 +391,7 @@ void glViewer::setFOVY(double _fovy) {
   updateProjectionMatrix();
 }
 
-void glViewer::updateProjectionMatrix()
+void glViewer::updateProjectionMatrix(double _aspect)
 {
   if( projectionUpdateLocked_ )
     return;
@@ -400,7 +400,7 @@ void glViewer::updateProjectionMatrix()
 
   glstate_->reset_projection();
 
-  const double aspect = this->aspect_ratio();
+  const double aspect = _aspect ? _aspect : this->aspect_ratio();
   // In stereo mode we have to use a perspective matrix
   if ( projectionMode_ == PERSPECTIVE_PROJECTION)
   {
@@ -553,7 +553,7 @@ void glViewer::updateGL()
 //-----------------------------------------------------------------------------
 
 
-void glViewer::drawScene()
+void glViewer::drawScene(double _aspect)
 {
   
   // Inside the glWidget rendering, the system should not send extra updates
@@ -585,7 +585,7 @@ void glViewer::drawScene()
 
   properties_.setPlanes(nearPlane,farPlane);
 
-  updateProjectionMatrix();
+  updateProjectionMatrix(_aspect);
 
   // store time since last repaint in gl state and restart timer
   glstate_->set_msSinceLastRedraw (redrawTime_.restart ());
@@ -1053,7 +1053,7 @@ void glViewer::initializeGL()
 //-----------------------------------------------------------------------------
 
 
-void glViewer::paintGL()
+void glViewer::paintGL(double _aspect)
 {
   if (!initialized_)
     initializeGL ();
@@ -1107,7 +1107,7 @@ void glViewer::paintGL()
     properties_.unLockUpdate();
 
     // draw scene
-    drawScene();
+    drawScene(_aspect);
 
     if (glstate_->compatibilityProfile())
     {
@@ -2253,17 +2253,16 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
     
     // Get viewport data
     glstate_->get_viewport(left, bottom, w, h);
+    double aspect = (double)w / (double)h;
     
     // Test if size is given:
     if(_width != 0 || _height != 0) {
         
         // Adapt dimensions if aspect ratio is demanded
         if(_width == 0) {
-            double aspect = (double)w / (double)h;
             _width = (int)((double)_height * aspect);
         }
         if(_height == 0) {
-            double aspect = (double)w / (double)h;
             _height = (int)((double)_width / aspect);
         }
         bak_w = w;
@@ -2273,8 +2272,9 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
         
         // Set new viewport
         glstate_->viewport(0, 0, w, h);
+        aspect = (double)w / (double)h;
     }
-    
+
     QFramebufferObjectFormat format;
     format.setInternalTextureFormat(GL_RGBA);
     format.setTextureTarget(GL_TEXTURE_2D);
@@ -2286,7 +2286,7 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
     format.setSamples(samples);
 
     makeCurrent();
-    QFramebufferObject fb(w,h,format);    
+    QFramebufferObject fb(w,h,format);
 
     if ( fb.isValid() ){
 
@@ -2326,7 +2326,7 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
       ACG::GLState::lockBlendFuncSeparate(false, true);
 
       glEnable(GL_MULTISAMPLE);
-      paintGL();
+      paintGL(aspect);
       glFinish();
 
       ACG::GLState::unlockBlendFuncSeparate();
@@ -2372,12 +2372,12 @@ void glViewer::snapshot(QImage& _image, int _width, int _height, bool _alpha, bo
 
 
     }
-    
+
     if(_width != 0 || _height != 0) {
         // Reset viewport to former size
         glstate_->viewport(left, bottom, bak_w, bak_h);
     }
-    
+
     glstate_->pop_modelview_matrix();
     glstate_->pop_projection_matrix();
 }

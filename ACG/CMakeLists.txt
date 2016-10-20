@@ -8,21 +8,10 @@ if ( ${PROJECT_NAME} MATCHES "OpenFlipper")
 endif()
 
 
-
-if (NOT FORCE_QT4)
-  # try to use QT5 if possible otherwise stick to QT4
-  acg_qt5 ()  
-else()
-  set (QT_MAX_VERSION 4.9.9)
-  set (QT5_FOUND false)
-endif()
-
+acg_qt5 ()  
 
 if (NOT QT5_FOUND)
-  message(STATUS "Using QT4 for ACG")
-  acg_qt4 (REQUIRED 4.5)
-else ()
-  message(STATUS "Using QT5 for ACG")
+  message(FATAL ERROR "Qt5 not found")
 endif ()
 
 acg_openmp ()
@@ -66,7 +55,7 @@ if (QJSON_FOUND)
 endif ()
 
 # use Qwt6 for QT5
-if (NOT FORCE_QT4 AND QT5_FOUND)
+if (QT5_FOUND)
   find_package(Qwt6)
 
   if (QWT6_FOUND)
@@ -74,14 +63,7 @@ if (NOT FORCE_QT4 AND QT5_FOUND)
     set(ADDITIONAL_LINK_LIBRARIES ${ADDITIONAL_LINK_LIBRARIES} ${QWT6_LIBRARIES})
     set(ADDITIONAL_BUILD_DIRS "QwtWidgets" )
   endif()
-else()
-  find_package(Qwt5)
 
-  if(Qwt5_Qt4_FOUND)
-    set(INCLUDE_DIRS ${INCLUDE_DIRS} ${Qwt5_INCLUDE_DIR} )
-    set(ADDITIONAL_LINK_LIBRARIES ${ADDITIONAL_LINK_LIBRARIES} ${Qwt5_Qt4_LIBRARY})
-    set(ADDITIONAL_BUILD_DIRS "QwtWidgets" )
-  endif()
 endif()
 
 include_directories (
@@ -125,6 +107,7 @@ endif ()
 acg_append_files (headers "*.hh" ${directories})
 acg_append_files (sources "*.cc" ${directories})
 acg_append_files (ui "*.ui" ${directories})
+acg_append_files (qrc "*.qrc" ${directories} .)
 
 # remove template cc files from source file list
 acg_drop_templates (sources)
@@ -133,17 +116,14 @@ acg_drop_templates (sources)
 if (QT5_FOUND)
   acg_qt5_autouic (uic_targets ${ui})
   acg_qt5_automoc (moc_targets ${headers})
-elseif (QT4_FOUND)
-  acg_qt4_autouic (uic_targets ${ui})
-  acg_qt4_automoc (moc_targets ${headers})
+  acg_qt5_autoqrc (qrc_targets ${qrc})
 endif()
 
 
 if (QT5_FOUND)
-  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
-elseif (QT4_FOUND)
-  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
+  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets})
 endif()
+
 if ( NOT WIN32 )
   set_target_properties (ACG PROPERTIES VERSION ${ACG_VERSION_MAJOR}.${ACG_VERSION_MINOR}
                                       SOVERSION ${ACG_VERSION_MAJOR}.${ACG_VERSION_MINOR})
@@ -170,36 +150,48 @@ target_link_libraries ( ACG  ${OPENMESH_LIBRARIES}
 #===================================================================
 find_package(GoogleTest)
 if (GTEST_FOUND)
-  enable_testing()
-  file(GLOB_RECURSE TEST_SOURCES tests/*.cc)
-  set(TESTED_SOURCES
-        Algorithm/DBSCANT.cc
-     )
-  include_directories(${GTEST_INCLUDE_DIRS} ${OPENMESH_INCLUDE_DIR})
-  link_directories ( ${GTEST_LIBRARY_DIR})
 
-  if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
-     add_definitions( /D _VARIADIC_MAX=10 )
+
+  if ( NOT DEFINED ACG_BUILD_UNIT_TESTS )
+    set( ACG_BUILD_UNIT_TESTS false CACHE BOOL "Enable or disable unit tests on ACG library." )
   endif()
+
+  if ( ACG_BUILD_UNIT_TESTS )
+
+    enable_testing()
+
+    file(GLOB_RECURSE TEST_SOURCES tests/*.cc)
+    set(TESTED_SOURCES
+          Algorithm/DBSCANT.cc
+       )
+    include_directories(${GTEST_INCLUDE_DIRS} ${OPENMESH_INCLUDE_DIR})
+    link_directories ( ${GTEST_LIBRARY_DIR})
+
+    if ( CMAKE_GENERATOR MATCHES "^Visual Studio 11.*" )
+       add_definitions( /D _VARIADIC_MAX=10 )
+    endif()
  
-  add_executable (ACG_tests ${TEST_SOURCES})
+    add_executable (ACG_tests ${TEST_SOURCES})
 
-  set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-  # run tests in build directory of OF
-  if ( ${PROJECT_NAME} MATCHES "OpenFlipper" AND WIN32)
-    set(OUT_DIR  ${CMAKE_BINARY_DIR}/Build)
-  endif()
+    set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    # run tests in build directory of OF
+    if ( ${PROJECT_NAME} MATCHES "OpenFlipper" AND WIN32)
+      set(OUT_DIR  ${CMAKE_BINARY_DIR}/Build)
+    endif()
 
-  set_target_properties(ACG_tests PROPERTIES
-    COMPILE_FLAGS "-UNDEBUG"
-    RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUT_DIR}
-  )
+    set_target_properties(ACG_tests PROPERTIES
+      COMPILE_FLAGS "-UNDEBUG"
+      RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUT_DIR}
+    )
   
-  target_link_libraries(ACG_tests
-        ${GTEST_LIBRARIES} ${OPENMESH_LIBRARIES} ACG
-  )
+    target_link_libraries(ACG_tests
+          ${GTEST_LIBRARIES} ${OPENMESH_LIBRARIES} ACG
+    )
   
-  add_test(NAME AllTestsIn_ACG_tests COMMAND ${OUT_DIR}/ACG_tests)
+    add_test(NAME AllTestsIn_ACG_tests COMMAND ${OUT_DIR}/ACG_tests)
+
+  endif( ACG_BUILD_UNIT_TESTS )
+
 endif(GTEST_FOUND)

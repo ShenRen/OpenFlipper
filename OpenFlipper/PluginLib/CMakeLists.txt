@@ -149,9 +149,6 @@ acg_drop_templates (sources)
 if (QT5_FOUND)
   acg_qt5_autouic (uic_targets ${ui})
   acg_qt5_automoc (moc_targets ${headers})
-elseif (QT4_FOUND)
-  acg_qt4_autouic (uic_targets ${ui})
-  acg_qt4_automoc (moc_targets ${headers})
 endif ()
 
 #=======================================================
@@ -160,8 +157,6 @@ endif ()
 RECURSE_GROUPS( ${CMAKE_CURRENT_SOURCE_DIR}/../../ )
 
 if (QT5_FOUND)
-  acg_add_library (OpenFlipperPluginLib SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
-elseif (QT4_FOUND)
   acg_add_library (OpenFlipperPluginLib SHARED ${uic_targets} ${sources} ${headers} ${moc_targets})
 endif ()
 

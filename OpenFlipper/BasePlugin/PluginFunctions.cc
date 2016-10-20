@@ -1256,4 +1256,12 @@ void invalidatePickCaches() {
     }
 }
 
+ObjectRange objects(IteratorRestriction _restriction, DataType _dataType) {
+    return ObjectRange(_restriction, _dataType);
+}
+
+ObjectReferenceRange objectReferences(IteratorRestriction _restriction, DataType _dataType) {
+    return ObjectReferenceRange(_restriction, _dataType);
+}
+
 } // End namespace PluginFunctions

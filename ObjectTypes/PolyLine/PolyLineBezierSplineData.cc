@@ -74,38 +74,38 @@ void PolyLineBezierSplineData::addInterpolatePoint(ACG::Vec3d _position, ACG::Ve
 
 bool PolyLineBezierSplineData::finishSpline()
 {
-    if(points_.size() < 2)
-        return false;
+  if(points_.size() < 2)
+      return false;
 
-	handles_.clear();
+  handles_.clear();
 
-	for(unsigned int i = 0; i + 1 < points_.size(); i++) {
+  for(unsigned int i = 0; i + 1 < points_.size(); i++) {
 
-		const ACG::Vec3d firstPoint = points_[i].position, sndPoint = points_[i + 1].position;
-		double r = (firstPoint - sndPoint).norm() / 4.0;
-		const ACG::Vec3d dir = sndPoint - firstPoint;
-		const ACG::Vec3d ort0 = dir % points_[i].normal, ort1 = dir % points_[i + 1].normal;
-		ACG::Vec3d f0 = ort0 % points_[i].normal, f1 = ort1 % points_[i + 1].normal;
+    const ACG::Vec3d firstPoint = points_[i].position, sndPoint = points_[i + 1].position;
+    double r = (firstPoint - sndPoint).norm() / 4.0;
+    const ACG::Vec3d dir = sndPoint - firstPoint;
+    const ACG::Vec3d ort0 = dir % points_[i].normal, ort1 = dir % points_[i + 1].normal;
+    ACG::Vec3d f0 = ort0 % points_[i].normal, f1 = ort1 % points_[i + 1].normal;
 
-		ACG::Vec3d near = firstPoint - f0.normalize() * r,
-				       far  = sndPoint   + f1.normalize() * r;
+    ACG::Vec3d near = firstPoint - f0.normalize() * r,
+   	       far  = sndPoint   + f1.normalize() * r;
 
-		handles_.push_back(near);
-		handles_.push_back(far);
+    handles_.push_back(near);
+    handles_.push_back(far);
 
-	}
+  }
 
-	//handles will be degenerate up to now
-	for(unsigned int i = 1; i + 1 < handles_.size(); i += 2) {
+  //handles will be degenerate up to now
+  for(unsigned int i = 1; i + 1 < handles_.size(); i += 2) {
 
-		const ACG::Vec3d dir = (handles_[i + 1] - handles_[i]) / 2.0;
+    const ACG::Vec3d dir = (handles_[i + 1] - handles_[i]) / 2.0;
 
-		InterpolatePoint& p = getInterpolatePoint(i);
-		handles_[i + 1]     = p.position + dir;
-		handles_[i]         = p.position - dir;
-	}
+    InterpolatePoint& p = getInterpolatePoint(i);
+    handles_[i + 1]     = p.position + dir;
+    handles_[i]         = p.position - dir;
+  }
 
-	return true;
+  return true;
 }
 
 PolyLineBezierSplineData::InterpolatePoint& PolyLineBezierSplineData::getInterpolatePoint(unsigned int _handleIndex)

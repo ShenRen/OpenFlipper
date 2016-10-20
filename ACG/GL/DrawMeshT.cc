@@ -2477,10 +2477,10 @@ typename Mesh::HalfedgeHandle ACG::DrawMeshT<Mesh>::mapToHalfedgeHandle(int _ver
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeVertexElement( void* _dstBuf, unsigned int _vertex, unsigned int _stride, unsigned int _elementOffset, unsigned int _elementSize, const void* _elementData )
+void ACG::DrawMeshT<Mesh>::writeVertexElement( void* _dstBuf, size_t _vertex, size_t _stride, size_t _elementOffset, size_t _elementSize, const void* _elementData )
 {
   // byte offset
-  unsigned int offset = _vertex * _stride + _elementOffset;
+  size_t offset = _vertex * _stride + _elementOffset;
 
   // write address
   char* dst = static_cast<char*>(_dstBuf) + offset;
@@ -2490,7 +2490,7 @@ void ACG::DrawMeshT<Mesh>::writeVertexElement( void* _dstBuf, unsigned int _vert
 }
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writePosition( unsigned int _vertex, const ACG::Vec3d& _n )
+void ACG::DrawMeshT<Mesh>::writePosition( size_t _vertex, const ACG::Vec3d& _n )
 {
   // store float3 position
   float f3[3] = {float(_n[0]), float(_n[1]), float(_n[2])};
@@ -2499,7 +2499,7 @@ void ACG::DrawMeshT<Mesh>::writePosition( unsigned int _vertex, const ACG::Vec3d
 }
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeNormal( unsigned int _vertex, const ACG::Vec3d& _n )
+void ACG::DrawMeshT<Mesh>::writeNormal( size_t _vertex, const ACG::Vec3d& _n )
 {
   // store float3 normal
   float f3[3] = {float(_n[0]), float(_n[1]), float(_n[2])};
@@ -2509,22 +2509,22 @@ void ACG::DrawMeshT<Mesh>::writeNormal( unsigned int _vertex, const ACG::Vec3d& 
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeTexcoord( unsigned int _vertex, const ACG::Vec2f& _uv )
+void ACG::DrawMeshT<Mesh>::writeTexcoord( size_t _vertex, const ACG::Vec2f& _uv )
 {
   writeVertexElement(&vertices_[0], _vertex, vertexDecl_->getVertexStride(), offsetTexc_, 8, _uv.data());
 }
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeColor( unsigned int _vertex, unsigned int _color )
+void ACG::DrawMeshT<Mesh>::writeColor( size_t _vertex, unsigned int _color )
 {
   writeVertexElement(&vertices_[0], _vertex, vertexDecl_->getVertexStride(), offsetColor_, 4, &_color);
 }
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeVertexProperty( unsigned int _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf )
+void ACG::DrawMeshT<Mesh>::writeVertexProperty( size_t _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf )
 {
-  unsigned int elementSize = VertexDeclaration::getElementSize(_elementDesc);
+  const size_t elementSize = VertexDeclaration::getElementSize(_elementDesc);
 
   writeVertexElement(&vertices_[0], _vertex, vertexDecl_->getVertexStride(), _elementDesc->getByteOffset(), elementSize, _propf.data());
 }

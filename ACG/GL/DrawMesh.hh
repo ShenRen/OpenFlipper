@@ -105,8 +105,8 @@ class ACGDLLEXPORT DrawMeshBase {
         void fillInvVertexMap(size_t n_vertices, void *data);
 
     public:
-        unsigned int getNumTris() const { return numTris_; }
-        unsigned int getNumVerts() const { return numVerts_; }
+        size_t getNumTris() const { return numTris_; }
+        size_t getNumVerts() const { return numVerts_; }
 
         /** \brief get mesh compiler used to create the draw mesh
         */
@@ -929,19 +929,19 @@ private:
   //========================================================================
   // write functions for flexible vertex format
 
-  void writeVertexElement(void* _dstBuf, unsigned int _vertex, unsigned int _stride, unsigned int _elementOffset, unsigned int _elementSize, const void* _elementData);
+  void writeVertexElement(void* _dstBuf, size_t _vertex, size_t _stride, size_t _elementOffset, size_t _elementSize, const void* _elementData);
 
-  void writePosition(unsigned int _vertex, const ACG::Vec3d& _p);
+  void writePosition(size_t _vertex, const ACG::Vec3d& _p);
 
-  void writeNormal(unsigned int _vertex, const ACG::Vec3d& _n);
+  void writeNormal(size_t _vertex, const ACG::Vec3d& _n);
 
-  void writeTexcoord(unsigned int _vertex, const ACG::Vec2f& _uv);
+  void writeTexcoord(size_t _vertex, const ACG::Vec2f& _uv);
 
-  void writeColor(unsigned int _vertex, unsigned int _color);
+  void writeColor(size_t _vertex, unsigned int _color);
 
-  void writeVertexProperty(unsigned int _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf);
+  void writeVertexProperty(size_t _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf);
 
-  void writeVertexProperty(unsigned int _vertex, const VertexElement* _elementDesc, const ACG::Vec4d& _propd);
+  void writeVertexProperty(size_t _vertex, const VertexElement* _elementDesc, const ACG::Vec4d& _propd);
 
 
   /** \brief Read one vertex from the rendering vbo.

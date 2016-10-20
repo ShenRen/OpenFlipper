@@ -339,11 +339,11 @@ public:
 
   /*! get size of GL_FLOAT, GL_INT ...
   */
-  static unsigned int getGLTypeSize(unsigned int _type);
+  static size_t getGLTypeSize(unsigned int _type);
 
   /*! get size of one vertex element
   */
-  static unsigned int getElementSize(const VertexElement* _pElement);
+  static size_t getElementSize(const VertexElement* _pElement);
 
   /*! Check hw support for streaming instance data from vbo
   */

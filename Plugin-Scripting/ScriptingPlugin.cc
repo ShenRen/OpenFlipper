@@ -681,6 +681,9 @@ void ScriptingPlugin::slotSaveScriptAs(){
 void ScriptingPlugin::slotFunctionClicked(QListWidgetItem * _item)
 {
 
+  if ( _item == 0)
+    return;
+
   QString slotDescription;
   QStringList params;
   QStringList descriptions;

@@ -1757,7 +1757,36 @@ int GLState::getBufferTargetIndex(GLenum _target)
   case GL_ELEMENT_ARRAY_BUFFER: return 1;
   case GL_PIXEL_PACK_BUFFER: return 2;
   case GL_PIXEL_UNPACK_BUFFER: return 3;
+#ifdef GL_ARB_uniform_buffer_object
+  case GL_UNIFORM_BUFFER: return 4;
+#endif
+#ifdef GL_ARB_shader_storage_buffer_object
+  case GL_SHADER_STORAGE_BUFFER: return 5;
+#endif
+#ifdef GL_ARB_shader_atomic_counters
+  case GL_ATOMIC_COUNTER_BUFFER: return 6;
+#endif
+#ifdef GL_ARB_copy_buffer
+  case GL_COPY_READ_BUFFER: return 7;
+  case GL_COPY_WRITE_BUFFER: return 8;
+#endif
+#ifdef GL_ARB_compute_shader
+  case GL_DISPATCH_INDIRECT_BUFFER: return 9;
+#endif
+#ifdef GL_ARB_draw_indirect
+  case GL_DRAW_INDIRECT_BUFFER: return 10;
+#endif
+#ifdef GL_ARB_query_buffer_object
+  case GL_QUERY_BUFFER: return 11;
+#endif
+#ifdef GL_ARB_texture_buffer_object
+  case GL_TEXTURE_BUFFER: return 12;
+#endif
+#ifdef GL_VERSION_3_0
+  case GL_TRANSFORM_FEEDBACK_BUFFER: return 13;
+#endif
   }
+  std::cerr << "error : GLState::bindBuffer - unknown buffer target type" << _target << std::endl;
   return -1;
 }
 

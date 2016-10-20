@@ -86,9 +86,13 @@ void OptionsWidget::startDownload( QString _url ) {
 
     statusLabel->setText(tr("Getting Versions file from Server"));
 
-    progressDialog->setWindowTitle(tr("HTTP"));
-    progressDialog->setLabelText(tr("Downloading %1.").arg(fileName));
-    progressDialog->show();
+    if ( ! progressDialog_ ) {
+      progressDialog_ = new QProgressDialog(this);
+      connect(progressDialog_, SIGNAL(canceled()), this, SLOT(cancelDownload()));
+    }
+    progressDialog_->setWindowTitle(tr("HTTP"));
+    progressDialog_->setLabelText(tr("Downloading %1.").arg(fileName));
+    progressDialog_->show();
 
     downloadRep_ = networkMan_->get(req);
 
@@ -126,13 +130,16 @@ void OptionsWidget::httpRequestFinished(QNetworkReply* _qnr)
       file = 0;
     }
 
-    progressDialog->hide();
+    progressDialog_->hide();
     checkUpdateButton->setEnabled(true);
     return;
   }
 
-  progressDialog->hide();
+  progressDialog_->hide();
   file->close();
+
+  delete(progressDialog_);
+  progressDialog_ = 0;
 
   if (error != QNetworkReply::NoError) {
     file->remove();
@@ -167,8 +174,10 @@ void OptionsWidget::updateDataReadProgress(qint64 _bytesReceived, qint64 _bytesT
   if (httpRequestAborted)
     return;
 
-  progressDialog->setMaximum(_bytesTotal);
-  progressDialog->setValue(_bytesReceived);
+  if (progressDialog_) {
+    progressDialog_->setMaximum(_bytesTotal);
+    progressDialog_->setValue(_bytesReceived);
+  }
 }
 
 void OptionsWidget::showError(QNetworkReply::NetworkError _error)

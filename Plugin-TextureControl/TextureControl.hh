@@ -75,6 +75,10 @@
     #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
 
+#ifdef ENABLE_BSPLINESURFACE_SUPPORT
+    #include <ObjectTypes/BSplineSurface/BSplineSurface.hh>
+#endif
+
 #include <OpenFlipper/common/Types.hh>
 #include "textureProperties.hh"
 
@@ -178,7 +182,7 @@ class TextureControlPlugin : public QObject, BaseInterface, BackupInterface, Tex
     bool StringToBool(QString _value);
 
     /// Checks for a correct drawmode and changes if necessary
-    void switchDrawMode( TextureType _type );
+    void switchDrawMode( TextureType _type, int _id );
 
     TextureData globalTextures_;
 

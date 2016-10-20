@@ -57,6 +57,9 @@
 #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
+#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
+#endif
 
 #include "OVMPropertyVisualizer.hh"
 

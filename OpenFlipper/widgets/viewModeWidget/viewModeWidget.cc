@@ -313,10 +313,10 @@ void viewModeWidget::slotSetAllWidgets(){
   QStringList contextmenus;
   
   //iterate over all selected modes
-  for (int m=0; m < viewModeList->selectedItems().size(); m++)
+  for (int m=0; m < viewModeList->selectedItems().size(); m++) {
     
     // find mode in modeVector modes_
-    for (int i=0; i < modes_.size(); i++)
+    for (int i=0; i < modes_.size(); i++) {
       if ( modes_[i]->name == (viewModeList->selectedItems()[m])->text() ) {
         toolboxes = modes_[i]->visibleToolboxes;
         toolbars = modes_[i]->visibleToolbars;
@@ -328,39 +328,41 @@ void viewModeWidget::slotSetAllWidgets(){
 	contextMenuList->addItems(contextmenus);
         break;
       }
+    }
+  }
       
       
-      if ( !modes_.empty() ) {
-        QStringList allToolboxes = modes_[0]->visibleToolboxes;
-        QStringList allToolbars  = modes_[0]->visibleToolbars;
-        QStringList allContextMenus  = modes_[0]->visibleContextMenus;
+  if ( !modes_.empty() ) {
+      QStringList allToolboxes = modes_[0]->visibleToolboxes;
+      QStringList allToolbars  = modes_[0]->visibleToolbars;
+      QStringList allContextMenus  = modes_[0]->visibleContextMenus;
         
-        QStringList availableToolboxList;
-        QStringList availableToolbarList;
-        QStringList availableContextMenuList;
+      QStringList availableToolboxList;
+      QStringList availableToolbarList;
+      QStringList availableContextMenuList;
         
-        for ( int i = 0; i < allToolboxes.size(); ++i ) {
-          if ( ! toolboxes.contains(allToolboxes[i]) ) 
-            availableToolboxList.push_back(allToolboxes[i]);
-        }
-        
-        for ( int i = 0; i < allToolbars.size(); ++i ) {
-          if ( ! toolbars.contains(allToolbars[i]) ) 
-            availableToolbarList.push_back(allToolbars[i]);
-        }
-        
-        for ( int i = 0; i < allContextMenus.size(); ++i ) {
-          if ( ! contextmenus.contains(allContextMenus[i]) ) 
-            availableContextMenuList.push_back(allContextMenus[i]);
-        }
-        
-        availableToolboxes->addItems(availableToolboxList);
-        availableToolbars->addItems(availableToolbarList);
-        availableContextMenus->addItems(availableContextMenuList);
-        
-      } else {
-        std::cerr << "Mode not found!" << std::endl;
+      for ( int i = 0; i < allToolboxes.size(); ++i ) {
+        if ( ! toolboxes.contains(allToolboxes[i]) ) 
+          availableToolboxList.push_back(allToolboxes[i]);
       }
+        
+      for ( int i = 0; i < allToolbars.size(); ++i ) {
+        if ( ! toolbars.contains(allToolbars[i]) ) 
+          availableToolbarList.push_back(allToolbars[i]);
+      }
+        
+      for ( int i = 0; i < allContextMenus.size(); ++i ) {
+        if ( ! contextmenus.contains(allContextMenus[i]) ) 
+          availableContextMenuList.push_back(allContextMenus[i]);
+      }
+        
+      availableToolboxes->addItems(availableToolboxList);
+      availableToolbars->addItems(availableToolbarList);
+      availableContextMenus->addItems(availableContextMenuList);
+        
+  } else {
+    std::cerr << "Mode not found!" << std::endl;
+  }
       
 }
 
@@ -877,7 +879,7 @@ void viewModeWidget::show(QString _lastMode){
     if (viewModeList->item(i)->text() == _lastMode)
       viewModeList->setCurrentRow(i);
     
-    removeButton->setEnabled(false);
+  removeButton->setEnabled(false);
 }
 
 

@@ -64,9 +64,11 @@
 
 //== IMPLEMENTATION ==========================================================
 
-SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* _icon) :
+SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* _icon,
+        QWidget *_headerAreaWidget) :
   parent_ (_parent),
   widget_ (_w),
+  headerAreaWidget_(_headerAreaWidget),
   name_ (_name),
   icon_ (_icon),
   active_ (0),
@@ -76,6 +78,7 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   font.setBold (false);
 
   QHBoxLayout *hl = new QHBoxLayout;
+  hl->setContentsMargins(2, 2, 2, 2);
 
   SideElement::TopArea *tra = new SideElement::TopArea (this);
 
@@ -97,7 +100,12 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   detachButton_->setAutoRaise(true);
   hl->addWidget (iconHolder_);
   hl->addWidget (label_);
-  hl->addStretch (1);
+  if (headerAreaWidget_) {
+      headerAreaWidget_->setVisible(false);
+      connect(this, SIGNAL(toggleActive(bool)), headerAreaWidget_, SLOT(setVisible(bool)));
+      hl->addWidget (headerAreaWidget_);
+  }
+  hl->addStretch(1);
   hl->addWidget (detachButton_);
 
 
@@ -123,7 +131,7 @@ SideElement::SideElement (SideArea *_parent, QWidget *_w, QString _name, QIcon* 
   mainLayout_->addWidget (tra);
   mainLayout_->addWidget (_w);
   mainLayout_->setSpacing (0);
-  mainLayout_->setContentsMargins (1,1,1,1);
+  mainLayout_->setContentsMargins(0, 0, 0, 0);
   setLayout (mainLayout_);
 
   _w->hide ();
@@ -138,6 +146,8 @@ SideElement::~SideElement ()
     dialog_->close ();
   }
   widget_->setParent (0);
+  if (headerAreaWidget_)
+      headerAreaWidget_->setParent(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -160,6 +170,8 @@ void SideElement::labelPress ()
     QFont font;
     font.setBold (active_);
     label_->setFont (font);
+
+    emit toggleActive(active_);
   }
 }
 
@@ -174,6 +186,7 @@ void SideElement::setActive(bool _active)
   }
   else
   {
+    const bool doEmit = (active_ != _active);
     active_ = _active;
     if (active_)
       widget_->show ();
@@ -183,6 +196,8 @@ void SideElement::setActive(bool _active)
     QFont font;
     font.setBold (active_);
     label_->setFont (font);
+
+    if (doEmit) emit toggleActive(active_);
   }
 }
 
@@ -260,7 +275,9 @@ void SideElement::restoreState (QSettings &_settings)
 {
   _settings.beginGroup (name_);
 
-  active_ = _settings.value ("Active", active_).toBool ();
+  bool active = _settings.value ("Active", active_).toBool ();
+  const bool doEmit = (active_ != active);
+  active_ = active;
 
   if (active_)
     widget_->show ();
@@ -270,6 +287,8 @@ void SideElement::restoreState (QSettings &_settings)
   QFont font;
   font.setBold (active_);
   label_->setFont (font);
+
+  if (doEmit) emit toggleActive(active_);
 
   if (_settings.value ("Detached", false).toBool () && !dialog_)
     detachPressed (true);

@@ -68,26 +68,17 @@ SideArea::SideArea (QWidget *_parent) :
   QVBoxLayout *l = new QVBoxLayout;
   l->addLayout (layout_);
   l->addStretch(1);
+  l->setContentsMargins(2, 2, 2, 2);
 
   setLayout (l);
 }
 
 //-----------------------------------------------------------------------------
 
-void SideArea::addItem (QObject const * const _plugin, QWidget *_w, QString _name, QIcon *_icon)
+void SideArea::addItem (QObject const * const _plugin, QWidget *_w, QString _name,
+        QIcon *_icon, QWidget *_headerAreaWidget)
 {
-  SideElement *e = new SideElement (this, _w, _name, _icon);
-  layout_->addWidget (e);
-  items_.push_back (e);
-  plugins_.push_back(_plugin);
-  itemNames_.push_back(_name);
-}
-
-//-----------------------------------------------------------------------------
-
-void SideArea::addItem (QObject const * const _plugin, QWidget *_w, QString _name)
-{
-  SideElement *e = new SideElement (this, _w, _name);
+  SideElement *e = new SideElement (this, _w, _name, _icon, _headerAreaWidget);
   layout_->addWidget (e);
   items_.push_back (e);
   plugins_.push_back(_plugin);

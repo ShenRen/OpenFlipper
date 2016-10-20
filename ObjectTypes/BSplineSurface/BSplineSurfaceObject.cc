@@ -246,6 +246,9 @@ update(UpdateType _type)
     splineSurfaceNode()->knotSelectionTextureValid(false);
 
     splineSurfaceNode()->updateGeometry();
+
+    if (textureNode())
+      splineSurfaceNode()->set_arb_texture(textureNode()->activeTexture());
   }
   else 
   {
@@ -262,6 +265,9 @@ update(UpdateType _type)
       splineSurfaceNode()->cpSelectionTextureValid(false);
     else if (_type.contains(UPDATE_SELECTION_KNOTS))
       splineSurfaceNode()->knotSelectionTextureValid(false);
+    if (_type.contains(UPDATE_TEXTURE) && textureNode())
+      splineSurfaceNode()->set_arb_texture(textureNode()->activeTexture());
+
   }
 }
 

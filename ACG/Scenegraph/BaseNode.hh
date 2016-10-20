@@ -72,7 +72,7 @@
 #include <QMouseEvent>
 
 // stdc++
-#include <list>
+#include <vector>
 #include <string>
 #include <algorithm>
 #include <iostream>
@@ -176,10 +176,39 @@ public:
   /** This function is called when traversing the scene graph and
       arriving at this node. It can be used to store GL states that
       will be changed in order to restore then in the leave()
-      function.  
+      function.
+
+      There are two overloads of the enter() function, one with IRenderer*
+      parameter, the other one without. As long the overload with IRenderer*
+      parameter is not being overridden, all renderers will make use of the
+      overload without the IRenderer* parameter. If the overload with IRenderer*
+      parameter is being overridden, only legacy renderers will use the version
+      without the additional parameter and new renderers implementing the
+      IRenderer interface will use the version with the additional parameter.
+
       \see MaterialNode 
   */
   virtual void enter(GLState& /*_state */, const DrawModes::DrawMode& /*_drawMode*/ ) {}
+
+  /** This function is called when traversing the scene graph and
+      arriving at this node. It can be used to store GL states that
+      will be changed in order to restore then in the leave()
+      function.
+
+      If you do not need the IRenderer* argument in your override of this
+      function, simply use the override without the additional parameter.
+
+      There are two overloads of the enter() function, one with IRenderer*
+      parameter, the other one without. As long the overload with IRenderer*
+      parameter is not being overridden, all renderers will make use of the
+      overload without the IRenderer* parameter. If the overload with IRenderer*
+      parameter is being overridden, only legacy renderers will use the version
+      without the additional parameter and new renderers implementing the
+      IRenderer interface will use the version with the additional parameter.
+   */
+  virtual void enter(IRenderer* /*_renderer*/, GLState& _state, const DrawModes::DrawMode& _drawMode) {
+      enter(_state, _drawMode);
+  }
 
   /** \brief Draw this node using the draw modes _drawMode
    *
@@ -212,9 +241,35 @@ public:
   virtual void getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawMode&  _drawMode , const Material* _mat)  {}
 
   /** The leave function is used to restore GL states the have been changed.
-      This function must restore the status before enter() ! 
+      This function must restore the status before enter()!
+
+      There are two overloads of the leave() function, one with IRenderer*
+      parameter, the other one without. As long the overload with IRenderer*
+      parameter is not being overridden, all renderers will make use of the
+      overload without the IRenderer* parameter. If the overload with IRenderer*
+      parameter is being overridden, only legacy renderers will use the version
+      without the additional parameter and new renderers implementing the
+      IRenderer interface will use the version with the additional parameter.
   */
   virtual void leave(GLState& /* _state */, const DrawModes::DrawMode& /* _drawMode */) {}
+
+  /** The leave function is used to restore GL states the have been changed.
+      This function must restore the status before enter()!
+
+      If you do not need the IRenderer* argument in your override of this
+      function, simply use the override without the additional parameter.
+
+      There are two overloads of the leave() function, one with IRenderer*
+      parameter, the other one without. As long the overload with IRenderer*
+      parameter is not being overridden, all renderers will make use of the
+      overload without the IRenderer* parameter. If the overload with IRenderer*
+      parameter is being overridden, only legacy renderers will use the version
+      without the additional parameter and new renderers implementing the
+      IRenderer interface will use the version with the additional parameter.
+   */
+  virtual void leave(IRenderer* /*_renderer*/, GLState& _state, const DrawModes::DrawMode& _drawMode) {
+      leave(_state, _drawMode);
+  }
 
   /** This function is called when traversing the scene graph during picking
       and arriving at this node. It can be used to store GL states that
@@ -257,14 +312,14 @@ public:
   // --- iterators ---
 
   /// allows to iterate over children
-  typedef std::list<BaseNode*>::const_iterator ConstChildIter;
+  typedef std::vector<BaseNode*>::const_iterator ConstChildIter;
   /// allows to iterate over children
-  typedef std::list<BaseNode*>::iterator ChildIter;
+  typedef std::vector<BaseNode*>::iterator ChildIter;
 
   /// allows to reverse iterate over children
-  typedef std::list<BaseNode*>::const_reverse_iterator ConstChildRIter;
+  typedef std::vector<BaseNode*>::const_reverse_iterator ConstChildRIter;
   /// allows to reverse iterate over children
-  typedef std::list<BaseNode*>::reverse_iterator ChildRIter;
+  typedef std::vector<BaseNode*>::reverse_iterator ChildRIter;
 
   /// Returns: begin-iterator of children
   ChildIter childrenBegin() { return children_.begin(); }
@@ -692,7 +747,7 @@ private:
   StatusMode status_;
   
   /// list of children
-  std::list<BaseNode*> children_; 
+  std::vector<BaseNode*> children_;
 
   /// used to provide unique IDs to nodes
   static unsigned int last_id_used__;

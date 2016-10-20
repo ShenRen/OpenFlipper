@@ -62,6 +62,7 @@ OptionsWidget::OptionsWidget(std::vector<PluginInfo>& _plugins, std::vector<KeyB
     plugins_(_plugins),
     coreKeys_(_core),
     keys_(_invKeys),
+    progressDialog_(NULL),
     restartRequired_(false),
     exitOnClose_(false)
 {
@@ -134,10 +135,6 @@ OptionsWidget::OptionsWidget(std::vector<PluginInfo>& _plugins, std::vector<KeyB
         this, SLOT(httpRequestFinished(QNetworkReply *)));
   connect(networkMan_,SIGNAL(authenticationRequired(QNetworkReply* , QAuthenticator *)),
         this,SLOT(authentication(QNetworkReply *, QAuthenticator*)));
-
-
-  progressDialog = new QProgressDialog(this);
-  connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
 
   //colordialog
   connect(backgroundButton, SIGNAL(clicked()), this, SLOT(getBackgroundColor()) );
@@ -276,6 +273,8 @@ void OptionsWidget::showEvent ( QShowEvent * /*event*/ ) {
   maxRecentBox->setValue( OpenFlipperSettings().value("Core/File/MaxRecent",15).toInt() );
   rbReloadShaders->setChecked(OpenFlipperSettings().value("Core/File/ReloadShaders",false).toBool()) ;
   leShaderOutputDir->setText(OpenFlipperSettings().value("Core/File/ShaderOutputDir","").toString());
+  allTarget->setChecked( OpenFlipperSettings().value("Core/File/AllTarget",false).toBool() );
+
 
   // UI settings
   toolBoxOrientation->setCurrentIndex((OpenFlipperSettings().value("Core/Gui/ToolBoxes/ToolBoxOnTheRight",true).toBool() ? 0 : 1));
@@ -586,6 +585,8 @@ void OptionsWidget::slotApply() {
   ACG::ShaderCache::getInstance()->setTimeCheck(rbReloadShaders->isChecked());
   OpenFlipperSettings().setValue("Core/File/ShaderOutputDir",leShaderOutputDir->text() ) ;
   ACG::ShaderCache::getInstance()->setDebugOutputDir(leShaderOutputDir->text().toUtf8());
+
+  OpenFlipperSettings().setValue("Core/File/AllTarget",allTarget->isChecked());
 
   
   // Toolbox orientation

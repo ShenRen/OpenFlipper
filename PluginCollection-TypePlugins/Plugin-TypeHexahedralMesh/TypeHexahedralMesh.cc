@@ -49,6 +49,7 @@
 
 #include "TypeHexahedralMesh.hh"
 #include <ObjectTypes/Plane/Plane.hh>
+#include <OpenFlipper/common/GlobalOptions.hh>
 
 TypeHexahedralMeshPlugin::TypeHexahedralMeshPlugin() :
 render_switch_(0),
@@ -103,11 +104,18 @@ int TypeHexahedralMeshPlugin::addEmpty() {
     // New object data struct
     HexahedralMeshObject* object = new HexahedralMeshObject(DATA_HEXAHEDRAL_MESH);
 
-    if (PluginFunctions::objectCount() == 1)
-        object->target(true);
+    if ( OpenFlipperSettings().value("Core/File/AllTarget",false).toBool() )
+      object->target(true);
+    else {
 
-    if (PluginFunctions::targetCount() == 0)
-        object->target(true);
+      // Only the first object in the scene will be target
+      if ( PluginFunctions::objectCount() == 1 )
+         object->target(true);
+
+      // If no target is available, we set the new object as target
+      if (PluginFunctions::targetCount() == 0 )
+         object->target(true);
+    }
 
     QString name = QString(tr("New Hexahedral Mesh %1.ovm").arg( object->id() ));
 

@@ -108,7 +108,6 @@ void SkeletalAnimationPlugin::initializePlugin()
   connect( pToolbox_->pbClearSkins, SIGNAL(clicked()), this, SLOT(slotClearSkins()) );
 
   connect( pToolbox_->cbAnimation,                SIGNAL(currentIndexChanged(int)), this, SLOT(slotAnimationIndexChanged(int)) );
-  connect( pToolbox_->hsFrame,                    SIGNAL(sliderMoved(int)),         this, SLOT(slotFrameChanged(int)) );
   connect( pToolbox_->hsFrame,                    SIGNAL(valueChanged(int)),        this, SLOT(slotFrameChanged(int)) );
   connect( pToolbox_->pbPlay,                     SIGNAL(clicked()),                this, SLOT( playAnimation() ) );
   connect( pToolbox_->pbStop,                     SIGNAL(clicked()),                this, SLOT( stopAnimation() ) );

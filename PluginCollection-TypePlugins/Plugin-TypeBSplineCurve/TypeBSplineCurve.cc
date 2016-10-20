@@ -274,11 +274,19 @@ addEmpty()
   // new object data struct
   BSplineCurveObject * object = new BSplineCurveObject();
 
-  if ( PluginFunctions::objectCount() == 1 )
-    object->target(true);
 
-  if (PluginFunctions::targetCount() == 0 )
+  if ( OpenFlipperSettings().value("Core/File/AllTarget",false).toBool() )
     object->target(true);
+  else {
+
+    // Only the first object in the scene will be target
+    if ( PluginFunctions::objectCount() == 1 )
+       object->target(true);
+
+    // If no target is available, we set the new object as target
+    if (PluginFunctions::targetCount() == 0 )
+       object->target(true);
+  }
 
   QString name = "BSplineCurve_" + QString::number( object->id() ) + ".bsc";
 

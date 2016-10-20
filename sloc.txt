@@ -1,0 +1,161 @@
+Creating filelist for ACG
+Creating filelist for Arch
+Creating filelist for CI
+Have a non-directory at the top, so creating directory top_dir
+Adding /servers/krag/ssd-home1/moebius/projects/OpenFlipper-Free/./CMakeLists.txt to top_dir
+Adding /servers/krag/ssd-home1/moebius/projects/OpenFlipper-Free/./COPYING to top_dir
+Creating filelist for License
+Creating filelist for Math_Tools
+Creating filelist for MeshTools
+Creating filelist for ObjectTypes
+Creating filelist for OpenFlipper
+Adding /servers/krag/ssd-home1/moebius/projects/OpenFlipper-Free/./OpenFlipper.cmake to top_dir
+Creating filelist for Plugin-AlignMeshes
+Creating filelist for Plugin-Backup
+Creating filelist for Plugin-Color
+Creating filelist for Plugin-Components
+Creating filelist for Plugin-Datacontrol
+Creating filelist for Plugin-Decimater
+Creating filelist for Plugin-DeserializeScreenshotMetadata
+Creating filelist for Plugin-GaussCurvature
+Creating filelist for Plugin-HoleFilling
+Creating filelist for Plugin-INI
+Creating filelist for Plugin-InfoMeshObject
+Creating filelist for Plugin-InfoSkeleton
+Creating filelist for Plugin-InfoVolumeMeshObject
+Creating filelist for Plugin-IsotropicRemesher
+Creating filelist for Plugin-Laplace
+Creating filelist for Plugin-MaterialPicker
+Creating filelist for Plugin-MeanCurvature
+Creating filelist for Plugin-MemInfo
+Creating filelist for Plugin-MeshCompare
+Creating filelist for Plugin-MeshRepair
+Creating filelist for Plugin-Move
+Creating filelist for Plugin-PolyLine
+Creating filelist for Plugin-PrimitivesGenerator
+Creating filelist for Plugin-Print
+Creating filelist for Plugin-PropertyVis
+Creating filelist for Plugin-Remesher
+Creating filelist for Plugin-Ruler
+Creating filelist for Plugin-Scripting
+Creating filelist for Plugin-SimpleSmoother
+Creating filelist for Plugin-SkeletalAnimation
+Creating filelist for Plugin-SkeletonEditing
+Creating filelist for Plugin-Slice
+Creating filelist for Plugin-Smoother
+Creating filelist for Plugin-SplatCloudRenderingControl
+Creating filelist for Plugin-Subdivider
+Creating filelist for Plugin-Test
+Creating filelist for Plugin-TextureControl
+Creating filelist for Plugin-Topology
+Creating filelist for Plugin-VSI
+Creating filelist for Plugin-ViewControl
+Creating filelist for PluginCollection-FilePlugins
+Creating filelist for PluginCollection-PostProcessors
+Creating filelist for PluginCollection-Renderers
+Creating filelist for PluginCollection-Selection
+Creating filelist for PluginCollection-TypePlugins
+Adding /servers/krag/ssd-home1/moebius/projects/OpenFlipper-Free/./Readme.md to top_dir
+Creating filelist for Scripts
+Creating filelist for cmake
+Adding /servers/krag/ssd-home1/moebius/projects/OpenFlipper-Free/./cppcheck.log to top_dir
+Creating filelist for debian
+Creating filelist for libs
+Creating filelist for libs_required
+Adding /servers/krag/ssd-home1/moebius/projects/OpenFlipper-Free/./sloc.txt to top_dir
+Creating filelist for tests
+Adding /servers/krag/ssd-home1/moebius/projects/OpenFlipper-Free/./valgrind.sh to top_dir
+Creating filelist for win
+Categorizing files.
+Computing results.
+
+
+SLOC	Directory	SLOC-by-Language (Sorted)
+67923   libs_required   cpp=62041,python=3141,perl=1374,ansic=888,sh=479
+63793   ACG             cpp=63793
+33223   OpenFlipper     cpp=33021,xml=166,sh=36
+20419   ObjectTypes     cpp=20419
+11390   PluginCollection-FilePlugins cpp=11390
+10514   PluginCollection-Selection cpp=10514
+9856    Plugin-VSI      cpp=8057,xml=1799
+7606    Plugin-PropertyVis cpp=7606
+3450    Plugin-Move     cpp=3348,xml=102
+3046    PluginCollection-TypePlugins cpp=3046
+2954    PluginCollection-Renderers cpp=2954
+2942    Plugin-TextureControl cpp=2942
+2292    Plugin-PolyLine cpp=2292
+2248    Plugin-Datacontrol cpp=2248
+1764    Plugin-Remesher cpp=1764
+1622    MeshTools       cpp=1622
+1599    Plugin-SkeletonEditing cpp=1599
+1385    Plugin-InfoMeshObject cpp=1385
+1311    Plugin-MeshRepair cpp=1311
+1212    Plugin-ViewControl cpp=1212
+1135    Plugin-PrimitivesGenerator cpp=1135
+1134    Plugin-Decimater cpp=1134
+1126    Plugin-HoleFilling cpp=1109,xml=17
+917     Plugin-Scripting cpp=917
+772     Plugin-SkeletalAnimation cpp=772
+659     Plugin-SplatCloudRenderingControl cpp=659
+624     Plugin-Backup   cpp=603,xml=21
+611     Plugin-Topology cpp=611
+586     PluginCollection-PostProcessors cpp=586
+577     Plugin-IsotropicRemesher cpp=577
+526     Plugin-MeshCompare cpp=526
+472     Plugin-MaterialPicker cpp=472
+448     Plugin-Color    cpp=389,xml=59
+417     Plugin-Subdivider cpp=270,xml=147
+404     Plugin-Ruler    cpp=404
+395     Plugin-Components cpp=395
+365     Math_Tools      cpp=365
+349     Plugin-InfoSkeleton cpp=349
+315     Plugin-Smoother cpp=315
+202     Plugin-INI      cpp=202
+185     Plugin-InfoVolumeMeshObject cpp=185
+180     Plugin-Slice    cpp=180
+171     Plugin-AlignMeshes cpp=171
+169     Plugin-SimpleSmoother cpp=169
+164     Plugin-DeserializeScreenshotMetadata cpp=164
+161     tests           cpp=112,sh=35,python=14
+141     Plugin-Laplace  cpp=141
+134     CI              sh=134
+124     Plugin-MeanCurvature cpp=124
+118     Plugin-GaussCurvature cpp=118
+105     Plugin-MemInfo  cpp=105
+85      Arch            sh=85
+84      Plugin-Print    cpp=84
+46      debian          sh=46
+37      Plugin-Test     cpp=37
+1       top_dir         sh=1
+0       License         (none)
+0       Scripts         (none)
+0       cmake           (none)
+0       libs            (none)
+0       win             (none)
+
+
+Totals grouped by language (dominant language first):
+cpp:         255944 (96.77%)
+python:        3155 (1.19%)
+xml:           2311 (0.87%)
+perl:          1374 (0.52%)
+ansic:          888 (0.34%)
+sh:             816 (0.31%)
+
+
+
+
+Total Physical Source Lines of Code (SLOC)                = 264,488
+Development Effort Estimate, Person-Years (Person-Months) = 69.91 (838.95)
+ (Basic COCOMO model, Person-Months = 2.4 * (KSLOC**1.05))
+Schedule Estimate, Years (Months)                         = 2.69 (32.28)
+ (Basic COCOMO model, Months = 2.5 * (person-months**0.38))
+Estimated Average Number of Developers (Effort/Schedule)  = 25.99
+Total Estimated Cost to Develop                           = $ 9,444,259
+ (average salary = $56,286/year, overhead = 2.40).
+SLOCCount, Copyright (C) 2001-2004 David A. Wheeler
+SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.
+SLOCCount comes with ABSOLUTELY NO WARRANTY, and you are welcome to
+redistribute it under certain conditions as specified by the GNU GPL license;
+see the documentation for details.
+Please credit this data as "generated using David A. Wheeler's 'SLOCCount'."

@@ -260,7 +260,7 @@ public:
   std::vector<int> attributeStoredPerHalfedge_;
 
 
-  size_t getNumFaces() const { return mesh_.n_faces(); }
+  int getNumFaces() const { return mesh_.n_faces(); }
 
   // compute number of indices later automatically
   int getNumIndices() const { return 0; };

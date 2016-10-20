@@ -3690,7 +3690,7 @@ const int* MeshCompiler::mapToOriginalFaceIDPtr() const
 
 
 
-int MeshCompiler::mapToOriginalVertexID( const int _i, int& _faceID, int& _cornerID ) const
+int MeshCompiler::mapToOriginalVertexID( const size_t _i, int& _faceID, int& _cornerID ) const
 {
   int positionID = -1;
 

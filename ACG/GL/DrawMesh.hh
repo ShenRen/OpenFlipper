@@ -385,7 +385,7 @@ private:
    * @param _hh corresponding halfedge handle of this vertex
    * @param _fh corresponding face handle of this vertex
    */
-  void readVertex(unsigned int                    _vertex,
+  void readVertex(size_t                              _vertex,
                   const typename Mesh::VertexHandle   _vh,
                   const typename Mesh::HalfedgeHandle _hh,
                   const typename Mesh::FaceHandle     _fh);
@@ -1103,7 +1103,7 @@ private:
       return normal;
   }
 
-  typename Mesh::HalfedgeHandle mapToHalfedgeHandle(int _vertexId);
+  typename Mesh::HalfedgeHandle mapToHalfedgeHandle(size_t _vertexId);
 
 };
 

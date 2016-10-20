@@ -513,7 +513,7 @@ DrawMeshT<Mesh>::rebuild()
         #pragma omp parallel for
       #endif
     #endif
-    for (unsigned int i = 0; i < numVerts_; ++i)
+    for (size_t i = 0; i < numVerts_; ++i)
     {
       // just pick one face, srews up face colors here so color updates need a full rebuild
       const typename Mesh::HalfedgeHandle hh = mapToHalfedgeHandle(i);
@@ -752,7 +752,7 @@ DrawMeshT<Mesh>::rebuild()
 
 template <class Mesh>
 void
-DrawMeshT<Mesh>::readVertex(unsigned int _vertex,
+DrawMeshT<Mesh>::readVertex(size_t _vertex,
                             const typename Mesh::VertexHandle _vh,
                             const typename Mesh::HalfedgeHandle _hh,
                             const typename Mesh::FaceHandle _fh)
@@ -2452,7 +2452,7 @@ VertexDeclaration* ACG::DrawMeshT<Mesh>::getVertexDeclaration()
 
 
 template<class Mesh>
-typename Mesh::HalfedgeHandle ACG::DrawMeshT<Mesh>::mapToHalfedgeHandle(int _vertexId)
+typename Mesh::HalfedgeHandle ACG::DrawMeshT<Mesh>::mapToHalfedgeHandle(size_t _vertexId)
 {
   int faceId = -1, cornerId = -1;
 

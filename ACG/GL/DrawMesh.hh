@@ -559,7 +559,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first edge
    */
-  void drawPickingEdges_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingEdges_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized face picking is supported
@@ -628,7 +628,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first face
    */
-  void drawPickingFaces_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingFaces_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized face picking is supported
@@ -734,7 +734,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first element
    */
-  void drawPickingAny_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingAny_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
   /**  \brief Check if optimized any picking is supported
    *

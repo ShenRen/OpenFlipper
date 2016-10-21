@@ -144,7 +144,7 @@ class DLLEXPORT RenderManager {
      *
      * @return number of available renderers
      */
-    unsigned int available();
+    size_t available();
 
     /** \brief set the active renderer
      *
@@ -255,7 +255,7 @@ class DLLEXPORT PostProcessorManager {
     *
     * @return number of available post processor
     */
-    unsigned int available();
+    size_t available();
 
     /** \brief set the active post processor for viewer
     *

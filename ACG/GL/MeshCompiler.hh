@@ -636,7 +636,7 @@ public:
    * @param _cornerID [out] Corner of face corresponding to vertex.
    * @return Position ID in input buffer
   */
-  int mapToOriginalVertexID(const int _i, int& _faceID, int& _cornerID) const;
+  int mapToOriginalVertexID(const size_t _i, int& _faceID, int& _cornerID) const;
 
   /** Mapping from draw tri id -> input face id
    *

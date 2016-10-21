@@ -797,7 +797,7 @@ TextureBuffer::~TextureBuffer() {
 }
 
 void TextureBuffer::setBufferData(
-        int _size, const void* _data, GLenum _internalFormat, GLenum _usage) {
+        size_t _size, const void* _data, GLenum _internalFormat, GLenum _usage) {
 #if defined(GL_ARB_texture_buffer_object)
   if (supportsTextureBuffer()) {
     // setup buffer object
@@ -805,7 +805,7 @@ void TextureBuffer::setBufferData(
         glGenBuffers(1, &buffer_);
 
     glBindBuffer(GL_TEXTURE_BUFFER, buffer_);
-    glBufferData(GL_TEXTURE_BUFFER, _size, _data, _usage);
+    glBufferData(GL_TEXTURE_BUFFER, static_cast<GLsizei>(_size), _data, _usage);
 
     usage_ = _usage;
     fmt_ = _internalFormat;

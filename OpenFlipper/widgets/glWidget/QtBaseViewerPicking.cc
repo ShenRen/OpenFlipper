@@ -270,7 +270,7 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
   rgba[2] = pixels[hit][2];
   rgba[3] = pixels[hit][3];
 
-  std::vector<unsigned int> rv = properties_.glState().pick_color_to_stack (rgba);
+  std::vector<size_t> rv = properties_.glState().pick_color_to_stack (rgba);
 
   // something wrong with the color stack ?
   if (rv.size () < 2)
@@ -394,7 +394,7 @@ int glViewer::pickFromCache( ACG::SceneGraph::PickTarget _pickTarget,
   rgba[2] = pixels[hit][2];
   rgba[3] = pixels[hit][3];
 
-  std::vector<unsigned int> rv = properties_.glState().pick_color_to_stack (rgba);
+  std::vector<size_t> rv = properties_.glState().pick_color_to_stack (rgba);
 
   // something wrong with the color stack ?
   if (rv.size () < 2)
@@ -561,7 +561,7 @@ bool glViewer::pick_region( ACG::SceneGraph::PickTarget                _pickTarg
           rgba[2] = buffer[bPos + 2];
           rgba[3] = buffer[bPos + 3];
 
-          std::vector<unsigned int> rv = properties_.glState().pick_color_to_stack (rgba);
+          std::vector<size_t> rv = properties_.glState().pick_color_to_stack (rgba);
           if (rv.size () < 2)
             continue;
 

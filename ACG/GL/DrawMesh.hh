@@ -474,7 +474,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first vertex
    */
-  void drawPickingVertices_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingVertices_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized vertex picking is supported

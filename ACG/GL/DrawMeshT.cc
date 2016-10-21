@@ -1689,7 +1689,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingVertices_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 

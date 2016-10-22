@@ -1095,7 +1095,7 @@ public:
    * If you create picking for your nodes, the values set with pick_set_name have to be between zero and
    * this value.
    */
-  bool pick_set_maximum (unsigned int _idx);
+  bool pick_set_maximum (size_t _idx);
 
   /** \brief sets the current name/color (like glLoadName(_idx))
    *
@@ -1107,25 +1107,25 @@ public:
    * If you perform the picking and click on the second component, the returned index will be 1 as set in
    * the node.
    */
-  void pick_set_name (unsigned int _idx);
+  void pick_set_name (size_t _idx);
 
   /// returns the color that will be used for index _idx during color picking if this index will be set
   /// with pick_set_name. This can be used to generate color arrays instead of using direct gl calls
   /// for each primitive
-  Vec4uc pick_get_name_color (unsigned int _idx);
+  Vec4uc pick_get_name_color (size_t _idx);
 
   /// creates a new name the stack (like glPushName())
-  void pick_push_name (unsigned int _idx);
+  void pick_push_name (size_t _idx);
 
   /// pops the current name from the stack (like glPopName())
   void pick_pop_name ();
 
   /// converts the given color to index values on the stack (only used in color picking)
   /// This can be compared to the results of the selection buffer results
-  std::vector<unsigned int> pick_color_to_stack (Vec4uc _rgba) const;
+  std::vector<size_t> pick_color_to_stack (Vec4uc _rgba) const;
 
   /// returns the number of still available colors during color picking
-  unsigned int pick_free_indicies () const;
+  size_t pick_free_indicies () const;
 
   /// Did an error occur during picking (only used in color picking)
   /// Mostly to small color depth or wrong handling of pick_set_maximum
@@ -1140,7 +1140,7 @@ public:
    * of the object), not the name of the primitives/components in the object!
    *
    */
-  unsigned int pick_current_index () const;
+  size_t pick_current_index () const;
 
   /// Is color picking active?
   bool color_picking () const;

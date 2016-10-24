@@ -385,22 +385,22 @@ private:
    * @param _hh corresponding halfedge handle of this vertex
    * @param _fh corresponding face handle of this vertex
    */
-  void readVertex(size_t                              _vertex,
-                  const typename Mesh::VertexHandle   _vh,
-                  const typename Mesh::HalfedgeHandle _hh,
-                  const typename Mesh::FaceHandle     _fh);
+  void readVertex(size_t                               _vertex,
+                  const typename Mesh::VertexHandle&   _vh,
+                  const typename Mesh::HalfedgeHandle& _hh,
+                  const typename Mesh::FaceHandle&     _fh);
 
   /** \brief return a vertex color from mesh
    *
    * @param _vh mesh vertex handle
    */
-  unsigned int getVertexColor(const typename Mesh::VertexHandle   _vh);
+  unsigned int getVertexColor(const typename Mesh::VertexHandle&   _vh);
 
   /** \brief return a face color from mesh
    *
    * @param _fh mesh face handle
    */
-  unsigned int getFaceColor(const typename Mesh::FaceHandle   _fh);
+  unsigned int getFaceColor(const typename Mesh::FaceHandle&   _fh);
 
   /** \brief  eventually update vertex and index buffers
    *

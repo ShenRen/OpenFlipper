@@ -182,12 +182,12 @@ void OVMPropertyModel<MeshT>::mouseEvent(QMouseEvent* _event)
 
     if (_event->type() == QEvent::MouseButtonPress)
     {
-        unsigned int   node_idx;
+        size_t         node_idx;
         ACG::Vec3d     hit_point;
 
 
         OVMPropertyVisualizer<MeshT>* viz = dynamic_cast<OVMPropertyVisualizer<MeshT>*>(propertyVisualizers[currentlySelectedIndices.first().row()]);
-        unsigned int entityId = 0;
+        size_t entityId = 0;
 
         ACG::SceneGraph::PickTarget pickTarget;
         if (viz->getPropertyInfo().isCellProp())

@@ -211,7 +211,7 @@ void InfoSkeletonObjectPlugin::slotInformationRequested(const QPoint _clickedPoi
 
     ACG::SceneGraph::PickTarget target = ACG::SceneGraph::PICK_ANYTHING;
 
-    unsigned int   node_idx, target_idx;
+    size_t         node_idx, target_idx;
     ACG::Vec3d     hit_point;
 
     if (PluginFunctions::scenegraphPick(target, _clickedPoint, node_idx, target_idx, &hit_point)) {

@@ -863,7 +863,7 @@ void MovePlugin::ManipulatorPositionChanged(QtTranslationManipulatorNode* _node 
  * @param _snap   Snap manipulator to nearest geometry primitive?
  */
 void MovePlugin::placeManip(QMouseEvent * _event, bool _snap) {
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     OpenMesh::Vec3d hitPoint;
     BaseObjectData* object;
 

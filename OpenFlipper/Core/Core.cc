@@ -743,7 +743,7 @@ Core::slotMouseEventIdentify( QMouseEvent* _event )
   PluginFunctions::setActiveExaminer( examinerId );
 
   // Do picking
-  unsigned int   node_idx, target_idx;
+  size_t   node_idx, target_idx;
   ACG::Vec3d     hit_point;
 
   if(PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_ANYTHING, _event->pos(), node_idx, target_idx, &hit_point)) {

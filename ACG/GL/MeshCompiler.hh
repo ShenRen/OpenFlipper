@@ -971,10 +971,10 @@ private:
   // final buffers used for drawing
 
   /// # vertices in vbo
-  int numDrawVerts_;
+  size_t numDrawVerts_;
 
   /// # isolated vertices
-  int numIsolatedVerts_;
+  size_t numIsolatedVerts_;
 
   /// index buffer
   std::vector<int>  indices_;

@@ -193,7 +193,7 @@ public:
 
     void set(GLint _size, GLenum _type, GLsizei _stride, const GLvoid* _ptr)
     {
-      size = _size; type = _type; stride = _stride, pointer = _ptr;
+      size = _size; type = _type; stride = _stride; pointer = _ptr;
     }
   };
 

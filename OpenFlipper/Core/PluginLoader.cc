@@ -389,7 +389,7 @@ void Core::loadPlugins()
 
       loadedPlugins.push_back(loader);
 
-      if ( OpenFlipper::Options::gui() && OpenFlipperSettings().value("Core/Gui/splash",true).toBool() ) {
+      if (splash_) {
         splashMessage_ = tr("Loading Plugin %1/%2").arg(loadedPlugins.size()).arg(pluginlist.size()) ;
         splash_->showMessage( splashMessage_ , Qt::AlignBottom | Qt::AlignLeft , Qt::white);
       }
@@ -411,7 +411,7 @@ void Core::loadPlugins()
   for (std::vector<QPluginLoader*>::iterator it = loadedPlugins.begin();
           it != loadedPlugins.end(); ++it) {
 
-      if ( OpenFlipper::Options::gui() && OpenFlipperSettings().value("Core/Gui/splash",true).toBool() ) {
+      if (splash_) {
         splashMessage_ = tr("Initializing Plugin %1/%2")
                 .arg(std::distance(loadedPlugins.begin(), it) + 1)
                 .arg(loadedPlugins.size());
@@ -770,7 +770,7 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
 
     emit log(LOGOUT,tr("Found Plugin : \t %1").arg(basePlugin->name()) );
 
-    if ( OpenFlipper::Options::gui() && OpenFlipperSettings().value("Core/Gui/splash",true).toBool() ) {
+    if (splash_) {
       splashMessage_ = splashMessage_ + " " + basePlugin->name() ;
       splash_->showMessage( splashMessage_ , Qt::AlignBottom | Qt::AlignLeft , Qt::white);
     }

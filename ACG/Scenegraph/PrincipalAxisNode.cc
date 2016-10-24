@@ -586,18 +586,15 @@ void
 PrincipalAxisNode::
 draw_arrow( const Vec3d& _axis, double _r)
 {
-  double base_radius = _r;
-  double top_radius  = _r;
   double size        = _axis.norm();
 
   if( size > 1e-10)
   {
     glPushMatrix();
 
-    unsigned int slices(8);
 
-    Vec3d direction = _axis;
-    Vec3d z_axis(0,0,1);
+    const Vec3d direction = _axis;
+    const Vec3d z_axis(0,0,1);
     Vec3d rot_normal;
     double rot_angle;
 

@@ -1278,7 +1278,7 @@ void SelectionBasePlugin::slotMouseLassoSelection(QMouseEvent* _event) {
     // Ignore context menu for lasso selection
     if (_event->button() == Qt::RightButton) return;
    
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     int y = PluginFunctions::viewerProperties().glState().context_height() - _event->pos().y();
@@ -1345,7 +1345,7 @@ void SelectionBasePlugin::slotMouseVolumeLassoSelection(QMouseEvent* _event) {
     // Ignore context menu for volume lasso selection
     if (_event->button() == Qt::RightButton) return;
    
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     int y = PluginFunctions::viewerProperties().glState().context_height() - _event->pos().y();
@@ -1421,7 +1421,7 @@ void SelectionBasePlugin::slotMouseSphereSelection(QMouseEvent* _event) {
     if (_event->button() == Qt::RightButton) return;
     
     // Do rendering of mouse tool...
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     // Hide sphere node in order to avoid self picking

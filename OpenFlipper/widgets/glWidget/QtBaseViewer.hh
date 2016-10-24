@@ -794,10 +794,10 @@ private:
      * @return Successful?
      */
     bool pick( ACG::SceneGraph::PickTarget _pickTarget,
-               const QPoint& _mousePos,
-               unsigned int& _nodeIdx,
-               unsigned int& _targetIdx,
-               ACG::Vec3d*   _hitPointPtr=0 );
+               const QPoint&               _mousePos,
+               size_t&                     _nodeIdx,
+               size_t&                     _targetIdx,
+               ACG::Vec3d*                 _hitPointPtr=0 );
 
   /**  \brief Perform picking action n a whole region.
      *
@@ -814,7 +814,7 @@ private:
      */
     bool pick_region( ACG::SceneGraph::PickTarget                _pickTarget,
                       const QRegion&                             _region,
-                      QList<QPair<unsigned int, unsigned int> >& _list,
+                      QList<QPair<size_t,size_t> >&              _list,
                       QVector<float>*                            _depths = 0,
                       QVector<ACG::Vec3d>*                       _points = 0);
 
@@ -836,15 +836,15 @@ private:
     /// pick using colors
     int pickColor( ACG::SceneGraph::PickTarget _pickTarget,
                    const QPoint& _mousePos,
-                   unsigned int& _nodeIdx,
-                   unsigned int& _targetIdx,
+                   size_t& _nodeIdx,
+                   size_t& _targetIdx,
                    ACG::Vec3d*   _hitPointPtr=0 );
 
     /// pick from cache
     int pickFromCache( ACG::SceneGraph::PickTarget _pickTarget,
                        const QPoint& _mousePos,
-                       unsigned int& _nodeIdx,
-                       unsigned int& _targetIdx,
+                       size_t& _nodeIdx,
+                       size_t& _targetIdx,
                        ACG::Vec3d*   _hitPointPtr=0 );
 
   private:

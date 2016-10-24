@@ -260,7 +260,7 @@ void setSceneGraphRootNodeGlobal( SeparatorNode* _root_node ) {
    PluginFunctions::sceneGraphRootNodeGlobal_ = _root_node;
 }
 
-bool getPickedObject(const unsigned int _node_idx , BaseObjectData*& _object) {
+bool getPickedObject(const size_t _node_idx , BaseObjectData*& _object) {
   for ( ObjectIterator o_it(PluginFunctions::ALL_OBJECTS) ; o_it != PluginFunctions::objectsEnd(); ++o_it) {
     if ( o_it->picked( _node_idx ) ) {
       _object = *o_it;
@@ -479,13 +479,13 @@ void viewingRay(int _x, int _y,
 }
 
 // Pick returning node index
-bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, unsigned int &_nodeIdx, unsigned int &_targetIdx, ACG::Vec3d *_hitPointPtr=0 ) {
+bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, size_t &_nodeIdx, size_t &_targetIdx, ACG::Vec3d *_hitPointPtr=0 ) {
 
    return examiner_widgets_[activeExaminer_]->pick( _pickTarget,_mousePos,_nodeIdx,_targetIdx,_hitPointPtr );
 }
 
 // Pick returning node index
-bool scenegraphPick( const unsigned int _examiner, ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, unsigned int &_nodeIdx, unsigned int &_targetIdx, ACG::Vec3d *_hitPointPtr=0 ) {
+bool scenegraphPick( const unsigned int _examiner, ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, size_t &_nodeIdx, size_t &_targetIdx, ACG::Vec3d *_hitPointPtr=0 ) {
 
   if ( _examiner >= examiner_widgets_.size() ) {
     std::cerr << "Wrong examiner id" << std::endl;
@@ -500,13 +500,13 @@ bool scenegraphPick( const unsigned int          _examiner ,
                      ACG::SceneGraph::PickTarget _pickTarget,
                      const QPoint &              _mousePos,
                      BaseObjectData*&            _object,
-                     unsigned int &              _targetIdx,
+                     size_t &                    _targetIdx,
                      const bool                  _refine,
                      ACG::Vec3d *                _hitPointPtr ) {
 
-  unsigned int nodeIdx = 0;
+  size_t nodeIdx = 0;
 
-  bool ok = scenegraphPick(_examiner,_pickTarget,_mousePos,nodeIdx,_targetIdx,_hitPointPtr);
+  bool ok = scenegraphPick(_examiner,_pickTarget,_mousePos, nodeIdx,_targetIdx,_hitPointPtr);
 
   // If successfully picked and object is found
   if ( ok && PluginFunctions::getPickedObject(nodeIdx, _object) ) {
@@ -535,7 +535,7 @@ bool scenegraphPick( const unsigned int          _examiner ,
 bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget,
                      const QPoint &              _mousePos,
                      BaseObjectData*&            _object,
-                     unsigned int &              _targetIdx,
+                     size_t &                    _targetIdx,
                      const bool                  _refine,
                      ACG::Vec3d *                _hitPointPtr ) {
 
@@ -548,7 +548,7 @@ bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget,
 
 bool scenegraphRegionPick( ACG::SceneGraph::PickTarget                _pickTarget,
                            const QRegion&                             _region,
-                           QList<QPair<unsigned int, unsigned int> >& _list,
+                           QList<QPair<size_t, size_t> >&             _list,
                            QVector<float>*                            _depths,
                            QVector<ACG::Vec3d>*                       _points)
 {
@@ -558,7 +558,7 @@ bool scenegraphRegionPick( ACG::SceneGraph::PickTarget                _pickTarge
 bool scenegraphRegionPick( const unsigned int                         _examiner,
                            ACG::SceneGraph::PickTarget                _pickTarget,
                            const QRegion&                             _region,
-                           QList<QPair<unsigned int, unsigned int> >& _list,
+                           QList<QPair<size_t, size_t> >&             _list,
                            QVector<float>*                            _depths,
                            QVector<ACG::Vec3d>*                       _points)
 {

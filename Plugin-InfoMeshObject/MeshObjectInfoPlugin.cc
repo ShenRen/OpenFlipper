@@ -697,7 +697,7 @@ InfoMeshObjectPlugin::
 
     ACG::SceneGraph::PickTarget target = ACG::SceneGraph::PICK_FACE;
 
-    unsigned int   node_idx, target_idx;
+    size_t         node_idx, target_idx;
     ACG::Vec3d     hit_point;
 
     if (info_->isHidden())

@@ -321,7 +321,7 @@ void BSplineSurfaceSelectionPlugin::slotToggleSelection(QMouseEvent* _event, Sel
     
     if (_currentType & controlPointType_) {
 
-        unsigned int node_idx, target_idx;
+        size_t       node_idx, target_idx;
         ACG::Vec3d   hit_point;
 
         if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_VERTEX, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -358,7 +358,7 @@ void BSplineSurfaceSelectionPlugin::slotToggleSelection(QMouseEvent* _event, Sel
     
     if (_currentType & knotType_) {
 
-        unsigned int node_idx, target_idx;
+        size_t       node_idx, target_idx;
         ACG::Vec3d   hit_point;
 
         if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_SPLINE, _event->pos(),node_idx, target_idx, &hit_point)) {

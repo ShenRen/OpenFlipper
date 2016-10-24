@@ -626,7 +626,7 @@ DrawMeshT<Mesh>::rebuild()
 
         if (baseProp)
         {
-          int numAttribs = baseProp->n_elements();
+          size_t numAttribs = baseProp->n_elements();
           const void* attribData = propDesc->propDataPtr_; 
 
           meshComp_->setAttribVec( propDesc->declElementID_, numAttribs, attribData );

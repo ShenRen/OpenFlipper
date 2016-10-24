@@ -2431,8 +2431,8 @@ void glViewer::updateCursorPosition (QPointF _scenePos)
 
   ACG::Vec3d tmp;
 
-  unsigned int nodeIdx   = 0;
-  unsigned int targetIdx = 0;
+  size_t nodeIdx   = 0;
+  size_t targetIdx = 0;
 
 
   // ignore cursor if we are outside of our window

@@ -166,15 +166,15 @@ public:
   void show_tensor_component(unsigned int _i, unsigned char _show);
 
   // number of tensors to display
-  unsigned int size() {return pc_.size();}
+  size_t size() {return pc_.size();}
 
-  void resize( unsigned int _n);
+  void resize( size_t _n);
 
 	void clear() { pc_.clear(); invalidateInstanceData_ = true; }
 
   // enable/disable drawing the _i'th PC
-  void enable ( unsigned int _i);
-  void disable( unsigned int _i);
+  void enable ( size_t _i);
+  void disable( size_t _i);
   void disable_all();
 
   // set properties of Principal component
@@ -182,8 +182,8 @@ public:
   void set_vector( unsigned int _i, const Vec3d _p, const VectorT& _v);
   template<class MatrixT>
   void set_matrix( unsigned int _i, const Vec3d _p, const MatrixT& _m);
-  void set( unsigned int _i, const PrincipalComponent& _pc);
-  void get( unsigned int _i,       PrincipalComponent& _pc);
+  void set( size_t _i, const PrincipalComponent& _pc);
+  void get( size_t _i,       PrincipalComponent& _pc);
   void add( const PrincipalComponent& _pc, bool _enable = true);
   // enable automatic range clamping
   void set_auto_range( bool _b);

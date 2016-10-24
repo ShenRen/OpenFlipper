@@ -111,35 +111,64 @@
 #ifdef WIN32
 
   void attachConsole()
-  {
-	  //try to attach the console of the parent process
-	  if (AttachConsole(-1))
-	  {
-		  //if the console was attached change stdinput and output
-		  freopen("CONIN$", "r", stdin);
-		  freopen("CONOUT$", "w", stdout);
-		  freopen("CONOUT$", "w", stderr);
-	  }
-	  else
-	  {
-		  //create and attach a new console if needed
-#ifndef NDEBUG
-		  //always open a console in debug mode
-		  AllocConsole();
-		  freopen("CONIN$", "r", stdin);
-		  freopen("CONOUT$", "w", stdout);
-		  freopen("CONOUT$", "w", stderr);
-		  return;
-#endif
-		  if (OpenFlipper::Options::logToConsole())
-		  {
-			  AllocConsole();
-			  freopen("CONIN$", "r", stdin);
-			  freopen("CONOUT$", "w", stdout);
-			  freopen("CONOUT$", "w", stderr);
-		  }
-	  }
-  }
+   {
+     //try to attach the console of the parent process
+     if (AttachConsole(-1))
+     {
+       //if the console was attached change stdinput and output
+       FILE* check = freopen("CONIN$", "r", stdin);
+       if (check) {
+         std::cerr << "Error reopening stdin" << std::endl;
+       }
+       check = freopen("CONOUT$", "w", stdout);
+       if (check) {
+         std::cerr << "Error reopening stdout" << std::endl;
+       }
+       check = freopen("CONOUT$", "w", stderr);
+       if (check) {
+         std::cerr << "Error reopening stderr" << std::endl;
+       }
+     }
+     else
+     {
+       //create and attach a new console if needed
+ #ifndef NDEBUG
+       //always open a console in debug mode
+       AllocConsole();
+
+       FILE* check = freopen("CONIN$", "r", stdin);
+       if (check) {
+         std::cerr << "Error reopening stdin" << std::endl;
+       }
+       ckeck = freopen("CONOUT$", "w", stdout);
+       if (check) {
+         std::cerr << "Error reopening stdout" << std::endl;
+       }
+       check = freopen("CONOUT$", "w", stderr);
+       if (check) {
+         std::cerr << "Error reopening stderr" << std::endl;
+       }
+       return;
+ #endif
+       if (OpenFlipper::Options::logToConsole())
+       {
+         AllocConsole();
+
+         FILE* check = freopen("CONIN$", "r", stdin);
+         if (check) {
+           std::cerr << "Error reopening stdin" << std::endl;
+         }
+         check = freopen("CONOUT$", "w", stdout);
+         if (check) {
+           std::cerr << "Error reopening stdout" << std::endl;
+         }
+         check = freopen("CONOUT$", "w", stderr);
+         if (check) {
+           std::cerr << "Error reopening stderr" << std::endl;
+         }
+       }
+     }
+   }
 
 #endif
 

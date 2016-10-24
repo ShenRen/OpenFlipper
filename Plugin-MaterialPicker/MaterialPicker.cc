@@ -269,7 +269,7 @@ void MaterialPicker::slotMouseEvent(QMouseEvent* _event) {
     return;
 
   if (_event->type() == QEvent::MouseButtonPress) {
-    unsigned int node_idx, target_idx;
+    size_t          node_idx, target_idx;
     OpenMesh::Vec3d hitPoint;
 
     // Get picked object's identifier by picking in scenegraph

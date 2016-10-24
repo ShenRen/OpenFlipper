@@ -1225,7 +1225,7 @@ void MeshObjectSelectionPlugin::slotToggleSelection(QMouseEvent* _event, Selecti
     // Return if none of the currently active types is handled by this plugin
     if((_currentType & allSupportedTypes_) == 0) return;
     
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     // First of all, pick anything to find all possible objects
@@ -1321,7 +1321,7 @@ void MeshObjectSelectionPlugin::slotSphereSelection(QMouseEvent* _event, double 
     // Return if none of the currently active types is handled by this plugin
     if((_currentType & allSupportedTypes_) == 0) return;
     
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
     
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -1348,7 +1348,7 @@ void MeshObjectSelectionPlugin::slotClosestBoundarySelection(QMouseEvent* _event
     // Return if none of the currently active types is handled by this plugin
     if((_currentType & allSupportedTypes_) == 0) return;
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     if(PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos() ,node_idx, target_idx, &hit_point)) {
@@ -1388,7 +1388,7 @@ void MeshObjectSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event, doub
     // Return if none of the currently active types is handled by this plugin
     if((_currentType & allSupportedTypes_) == 0) return;
     
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     // pick Anything to find all possible objects
@@ -1447,7 +1447,7 @@ void MeshObjectSelectionPlugin::slotComponentsSelection(QMouseEvent* _event, Sel
     // Return if none of the currently active types is handled by this plugin
     if((_currentType & allSupportedTypes_) == 0) return;
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     // First of all, pick anything to find all possible objects
@@ -1860,7 +1860,7 @@ void MeshObjectSelectionPlugin::lassoSelect(QRegion&      _region,
                                             bool          _deselection) {
 
     // <object id, primitive id>
-    QList <QPair<unsigned int, unsigned int> > list;
+    QList <QPair<size_t, size_t> > list;
     
     if(_primitiveType & vertexType_) {
         PluginFunctions::scenegraphRegionPick(ACG::SceneGraph::PICK_FRONT_VERTEX, _region, list);

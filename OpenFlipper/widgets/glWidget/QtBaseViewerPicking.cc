@@ -76,8 +76,8 @@
 
 bool glViewer::pick( ACG::SceneGraph::PickTarget _pickTarget,
                      const QPoint&               _mousePos,
-                     unsigned int&               _nodeIdx,
-                     unsigned int&               _targetIdx,
+                     size_t&                     _nodeIdx,
+                     size_t&                     _targetIdx,
                      ACG::Vec3d*                 _hitPointPtr )
 {
   if (sceneGraphRoot_)
@@ -106,8 +106,8 @@ bool glViewer::pick( ACG::SceneGraph::PickTarget _pickTarget,
 
 int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
                          const QPoint&               _mousePos,
-                         unsigned int&               _nodeIdx,
-                         unsigned int&               _targetIdx,
+                         size_t&                     _nodeIdx,
+                         size_t&                     _targetIdx,
                          ACG::Vec3d*                 _hitPointPtr )
 {
   GLint         w = glWidth(),
@@ -306,8 +306,8 @@ int glViewer::pickColor( ACG::SceneGraph::PickTarget _pickTarget,
 
 int glViewer::pickFromCache( ACG::SceneGraph::PickTarget _pickTarget,
                              const QPoint&               _mousePos,
-                             unsigned int&               _nodeIdx,
-                             unsigned int&               _targetIdx,
+                             size_t&                     _nodeIdx,
+                             size_t&                     _targetIdx,
                              ACG::Vec3d*                 _hitPointPtr )
 {
   // do we need an update?
@@ -416,7 +416,7 @@ int glViewer::pickFromCache( ACG::SceneGraph::PickTarget _pickTarget,
 
 bool glViewer::pick_region( ACG::SceneGraph::PickTarget                _pickTarget,
                             const QRegion&                             _region,
-                            QList<QPair<unsigned int, unsigned int> >& _list,
+                            QList<QPair<size_t, size_t> >&             _list,
                             QVector<float>*                            _depths,
                             QVector<ACG::Vec3d>*                       _points)
 {
@@ -565,7 +565,7 @@ bool glViewer::pick_region( ACG::SceneGraph::PickTarget                _pickTarg
           if (rv.size () < 2)
             continue;
 
-          QPair<unsigned int, unsigned int> curr(rv[1], rv[0]);
+          QPair<size_t, size_t> curr(rv[1], rv[0]);
           
           // added a new (targetidx/nodeidx) pair
           if( !_list.contains(curr))

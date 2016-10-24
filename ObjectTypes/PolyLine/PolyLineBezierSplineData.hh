@@ -69,7 +69,7 @@ public:
 	std::vector<InterpolatePoint> points_;
 	std::vector<ACG::Vec3d>       handles_;
     /// Index of the corresponding mesh
-	unsigned int meshIndex_;
+	size_t meshIndex_;
 
 public:
 

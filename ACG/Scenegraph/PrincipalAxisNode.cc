@@ -102,9 +102,9 @@ PrincipalAxisNode::PrincipalAxisNode( BaseNode*         _parent,
     updateVBO_(true) {
 
   static const Vec4f default_cols[3] = {
-          Vec4f(0.91, 0.11, 0.09, 1.0),
-          Vec4f(0.0, .43, 1.0, 1.0),
-          Vec4f(0.0, 0.70, 0.0, 1.0)
+               Vec4f(0.91f, 0.11f, 0.09f, 1.0f),
+               Vec4f(0.0f,   .43f, 1.0f , 1.0f),
+               Vec4f(0.0f,  0.70f, 0.0f , 1.0f)
   };
   for (int i = 0; i < 3; ++i) {
       for (int j = 0; j < 4; ++j) {
@@ -172,15 +172,15 @@ show_tensor_component(unsigned int _i, unsigned char _show)
 
 void
 PrincipalAxisNode::
-resize(unsigned int _n)
+resize(size_t _n)
 {
-  unsigned int old_n = pc_.size();
+  size_t old_n = pc_.size();
 
   pc_.resize(_n);
   draw_pc_.resize(_n);
 
   // initialize new draw_pc_ values
-  for(unsigned int i=old_n; i<_n; ++i)
+  for(size_t i=old_n; i<_n; ++i)
     draw_pc_[i] = false;
 
   auto_update_range();
@@ -192,7 +192,7 @@ resize(unsigned int _n)
 
 void 
 PrincipalAxisNode::
-enable ( unsigned int _i)
+enable ( size_t _i)
 {
   if(_i < draw_pc_.size())
   {
@@ -211,7 +211,7 @@ enable ( unsigned int _i)
 
 void
 PrincipalAxisNode::
-disable ( unsigned int _i)
+disable ( size_t _i)
 {
   if(_i < draw_pc_.size())
   {
@@ -232,7 +232,7 @@ void
 PrincipalAxisNode::
 disable_all()
 {
-  for(unsigned int i=0; i<pc_.size(); ++i)
+  for(size_t i=0; i<pc_.size(); ++i)
     disable(i);
 }
 
@@ -242,7 +242,7 @@ disable_all()
 
 void 
 PrincipalAxisNode::
-set(unsigned int _i, const PrincipalComponent& _pc)
+set(size_t _i, const PrincipalComponent& _pc)
 {
   if( _i < pc_.size())
   {
@@ -269,7 +269,7 @@ set(unsigned int _i, const PrincipalComponent& _pc)
 
 void 
 PrincipalAxisNode::
-get(unsigned int _i, PrincipalComponent& _pc)
+get(size_t _i, PrincipalComponent& _pc)
 {
   if( _i < pc_.size())
   {
@@ -379,9 +379,9 @@ auto_update_range()
   min_abs_value_ = std::numeric_limits<double>::max();
   max_abs_value_ = 0.0;
 
-  for(unsigned int i=0; i<pc_.size(); ++i)
+  for(size_t i=0; i<pc_.size(); ++i)
     if(draw_pc_[i])
-      for(unsigned j=0; j<3; ++j)
+      for(size_t j=0; j<3; ++j)
 	if(show_tensor_component_[j])
 	{
 	  max_abs_value_ = std::max( max_abs_value_, pc_[i].a[j].norm() );
@@ -404,7 +404,7 @@ update_bounding_box()
   bbMin_ = Vec3d( FLT_MAX, FLT_MAX, FLT_MAX);
   bbMax_ = Vec3d(-FLT_MAX,-FLT_MAX,-FLT_MAX);
 
-  for(unsigned int i=0; i<pc_.size(); ++i)
+  for(size_t i=0; i<pc_.size(); ++i)
   {
     Vec3d lmin = (pc_[i].p) - Vec3d(1,1,1)*max_draw_radius_;
     Vec3d lmax = (pc_[i].p) + Vec3d(1,1,1)*max_draw_radius_;
@@ -413,14 +413,14 @@ update_bounding_box()
     {
       if(uninitialized)
       {
-	bbMin_ = lmin;
-	bbMax_ = lmax;
-	uninitialized = false;
+        bbMin_ = lmin;
+        bbMax_ = lmax;
+        uninitialized = false;
       }
       else
       {
-	bbMin_.minimize(lmin);
-	bbMax_.maximize(lmax);
+        bbMin_.minimize(lmin);
+        bbMax_.maximize(lmax);
       }
     }
 
@@ -494,7 +494,7 @@ draw_principal_component(const PrincipalComponent& _pc)
   glTranslated( _pc.p[0], _pc.p[1], _pc.p[2]);
 
   //  for(unsigned int i=0; i<1; ++i)
-  for(unsigned int i=0; i<3; ++i)
+  for(size_t i=0; i<3; ++i)
   {
     if( ! show_tensor_component_[i]) continue;
 
@@ -586,15 +586,12 @@ void
 PrincipalAxisNode::
 draw_arrow( const Vec3d& _axis, double _r)
 {
-  double base_radius = _r;
-  double top_radius  = _r;
   double size        = _axis.norm();
 
   if( size > 1e-10)
   {
     glPushMatrix();
 
-    unsigned int slices(8);
 
     Vec3d direction = _axis;
     Vec3d z_axis(0,0,1);
@@ -640,7 +637,7 @@ draw_line( const Vec3d& _axis, double _w)
   glLineWidth(_w);
 
   glBegin(GL_LINES);
-  glVertex3f(0,0,0);
+  glVertex3f(0.0f,0.0f,0.0f);
   glVertex3f(_axis[0], _axis[1], _axis[2]);
   glEnd();
 }
@@ -676,8 +673,8 @@ pick(GLState& /*_state*/, PickTarget _target)
 
 
 void PrincipalAxisNode::set_axes_colors(const Vec4f colors[3]) {
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 4; ++j) {
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 4; ++j) {
             axes_colors[i][j] = colors[i][j];
         }
     }
@@ -687,8 +684,8 @@ void PrincipalAxisNode::set_axes_colors(const Vec4f colors[3]) {
 }
 
 void PrincipalAxisNode::get_axes_colors(Vec4f out_colors[3]) const {
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 4; ++j) {
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 4; ++j) {
             out_colors[i][j] = axes_colors[i][j];
         }
     }
@@ -854,7 +851,7 @@ void PrincipalAxisNode::getRenderObjects(IRenderer* _renderer, GLState& _state,
       int numInstances = 0;
 
       int visibleTensors = 0;
-      for (unsigned int k = 0; k < 3; ++k)
+      for (size_t k = 0; k < 3; ++k)
       {
         if (show_tensor_component_[k]) 
           ++visibleTensors;
@@ -1120,7 +1117,7 @@ void PrincipalAxisNode::emitIndividualRenderobjects(IRenderer* _renderer, GLStat
   }
 
 
-  for (unsigned int i = 0; i < pc_.size(); ++i)
+  for (size_t i = 0; i < pc_.size(); ++i)
   {
     if (draw_pc_[i])
     {

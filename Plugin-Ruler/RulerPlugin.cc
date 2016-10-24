@@ -106,7 +106,7 @@ void RulerPlugin::slotMouseEvent(QMouseEvent* _event)
 //set one of the points, depending on the hit state (first, second or modifying)
   if (_event->type() == QEvent::MouseButtonRelease )
   {
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     OpenMesh::Vec3d hitPoint;
 
     // Get picked object's identifier by picking in scenegraph
@@ -165,7 +165,7 @@ void RulerPlugin::slotMouseEvent(QMouseEvent* _event)
     {
       //decides which point is the nearest one, so
       //it can be dragged
-      unsigned int node_idx, target_idx;
+      size_t node_idx, target_idx;
       OpenMesh::Vec3d hitPoint;
 
       // Get picked object's identifier by picking in scenegraph
@@ -181,7 +181,7 @@ void RulerPlugin::slotMouseEvent(QMouseEvent* _event)
   else if (_event->type() == QEvent::MouseMove && dragModeActive())
   {//mouse moved and drag mode is enabled
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     OpenMesh::Vec3d hitPoint;
     ACG::Vec3d hitPoints[2];
     std::copy(currentRuler_->points(),currentRuler_->points()+2,hitPoints);

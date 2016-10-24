@@ -120,7 +120,7 @@
        if (check) {
          std::cerr << "Error reopening stdin" << std::endl;
        }
-       ckeck = freopen("CONOUT$", "w", stdout);
+       check = freopen("CONOUT$", "w", stdout);
        if (check) {
          std::cerr << "Error reopening stdout" << std::endl;
        }
@@ -158,7 +158,7 @@
          if (check) {
            std::cerr << "Error reopening stdin" << std::endl;
          }
-         ckeck = freopen("CONOUT$", "w", stdout);
+         check = freopen("CONOUT$", "w", stdout);
          if (check) {
            std::cerr << "Error reopening stdout" << std::endl;
          }

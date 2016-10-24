@@ -593,8 +593,8 @@ draw_arrow( const Vec3d& _axis, double _r)
     glPushMatrix();
 
 
-    const Vec3d direction = _axis;
-    const Vec3d z_axis(0,0,1);
+    Vec3d direction = _axis;
+    Vec3d z_axis(0,0,1);
     Vec3d rot_normal;
     double rot_angle;
 

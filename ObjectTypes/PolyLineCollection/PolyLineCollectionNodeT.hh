@@ -71,11 +71,9 @@ namespace SceneGraph {
 
 
 
-/** \class PolyLineNodeT PolyLineNodeT.hh <ACG/.../PolyLineNodeT.hh>
+/** \class PolyLineNodeT PolyLineCollectionNodeT.hh <ACG/.../PolyLineCollectionNodeT.hh>
 
-    Brief Description.
-
-    A more elaborate description follows.
+    This Node provides support for rendering polyline collections.
 */
 
 template <class PolyLineCollection>
@@ -121,11 +119,6 @@ public:
   /// Trigger an update of the vbo
   void update() { updateVBO_ = true; };
 
-  void reset_vbo(){
-      offsets_.clear();
-      updateVBO_ = true;
-  }
-
 private:
 
   /// Copy constructor (not used)
@@ -139,7 +132,7 @@ private:
 
   /** \brief Trigger an update of the vbo
    *
-   * If the polyLine is changed, you have to call this function to update the buffers.
+   * If the polyLineCollection is changed, you have to call this function to update the buffers.
    *
    */
   void updateVBO();
@@ -153,7 +146,7 @@ private:
 
 private:
 
-  /// The associated poly line
+  /// The associated poly line collection
   PolyLineCollection& polyline_collection_;
 
   /// VBO used to render the poly line
@@ -165,9 +158,9 @@ private:
   /// Sphere for VertexSphere DrawMode
   GLSphere* sphere_;
 
-  std::vector<std::pair<int, int> > offsets_;
+  std::vector<std::pair<size_t, size_t> > offsets_;
 
-  int total_vertex_count_;
+  size_t total_vertex_count_;
 };
 
 

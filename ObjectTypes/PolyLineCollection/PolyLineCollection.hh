@@ -54,17 +54,16 @@
 //=============================================================================
 
 /**
- * \file PolyLine.hh
- * This File contains all required includes for using Poly Line Collections
+ * \file PolyLineCollection.hh
+ * This File contains all required includes for using PolyLine Collections
 */
 
-#ifndef POLYLINE_COLLECTION_INCLUDE_HH
-#define POLYLINE_COLLECTION_INCLUDE_HH
+#pragma once
 
 
 //== INCLUDES =================================================================
 
-/** \def DATA_POLY_LINE
+/** \def DATA_POLY_LINE_COLLECTION
  * Use this macro to reference polygonal lines
  */
 #define DATA_POLY_LINE_COLLECTION typeId("PolyLineCollection")
@@ -75,4 +74,3 @@
 #include "PolyLineCollectionObject.hh"
 
 
-#endif // POLYLINE_COLLECTION_INCLUDE_HH

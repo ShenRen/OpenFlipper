@@ -88,7 +88,8 @@ PolyLineCollectionNodeT<PolyLineCollection>::PolyLineCollectionNodeT(PolyLineCol
         polyline_collection_(_pl),
         vbo_(0),
         updateVBO_(true),
-        sphere_(0)
+        sphere_(0),
+        total_vertex_count_(0)
 
 {
   // Initial default draw mode
@@ -172,7 +173,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
         float point_size_old = _state.point_size();
         _state.set_point_size(point_size_old+4.0f);
 
-        _state.set_color( Vec4f(1,0,0,1) );
+        _state.set_color( Vec4f(1.0f,0.0f,0.0f,1.0f) );
 
         // Draw selected polylines
         for(typename PolyLineCollection::index_iterator it = polyline_collection_.selected_iter(); it; ++it){
@@ -234,7 +235,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 
             if(polyline){
                 int offset = offsets_[it.idx()].first;
-                for(int i = 0; i < int(polyline->n_vertices()); ++i){
+                for(size_t i = 0; i < polyline->n_vertices(); ++i){
                     if(!polyline->is_closed() && i == polyline->n_vertices() - 1){
                         continue;
                     }
@@ -267,7 +268,7 @@ void
 PolyLineCollectionNodeT<PolyLineCollection>::
 pick(GLState& _state, PickTarget _target)
 {
-    // TODO
+
   if (  polyline_collection_.n_polylines() == 0 )
     return;
 
@@ -331,39 +332,9 @@ void
 PolyLineCollectionNodeT<PolyLineCollection>::
 updateVBO() {
 
-  // register custom properties defined in polyline
-
-  /*for (unsigned int i = 0; i < polyline_.get_num_custom_properties(); ++i) {
-
-    typename PolyLine::CustomPropertyHandle proph = polyline_.enumerate_custom_property_handles(i);
-
-    const void* propDataBuf = polyline_.get_custom_property_buffer(proph);
-
-    typename std::map< typename PolyLine::CustomPropertyHandle, int >::iterator mapEntry = polylinePropMap_.find(proph);
-
-    // insert newly defined properties
-    if (mapEntry == polylinePropMap_.end()) {
-
-      // setup element description
-      ACG::VertexElement desc;
-
-      unsigned int propSize = 0;
-      polyline_.get_custom_property_shader_binding(proph, &propSize, &desc.shaderInputName_, &desc.type_);
-
-      // assume aligned memory without byte padding
-      desc.numElements_ = propSize / VertexDeclaration::getGLTypeSize(desc.type_);
-      desc.pointer_ = 0;
-
-      polylinePropMap_[proph] = addCustomBuffer(desc, propDataBuf);
-    }
-    else // otherwise update pointer of property data buffer
-      setCustomBuffer(mapEntry->second, propDataBuf);
-  }*/
-
-
     bool lines_did_change = false;
 
-    if(int(offsets_.size()) != polyline_collection_.n_polylines() ){
+    if( offsets_.size() != polyline_collection_.n_polylines() ){
         offsets_.resize(polyline_collection_.n_polylines());
         lines_did_change = true;
     }
@@ -371,10 +342,10 @@ updateVBO() {
     int offset = 0;
     total_vertex_count_ = 0;
     for(typename PolyLineCollection::iterator it = polyline_collection_.iter(); it; ++it){
-        std::pair<int, int> current_offset;
+        std::pair<size_t, size_t> current_offset;
         current_offset.first = offset;
         if(*it){
-            current_offset.second = int(it->n_vertices()) + 1;
+            current_offset.second = it->n_vertices() + 1;
         }else{
             current_offset.second = 0;
         }
@@ -398,48 +369,15 @@ updateVBO() {
         vertexDecl_.addElement(GL_FLOAT, 3, ACG::VERTEX_USAGE_POSITION);
         vertexDecl_.addElement(GL_UNSIGNED_BYTE, 4, ACG::VERTEX_USAGE_COLOR);
 
-    //    vertexDecl_.setVertexStride(3*sizeof(float) + 4);
-
-        // Use the normals if available
-        //if ( polyline_.vertex_normals_available() )
-        //  vertexDecl_.addElement(GL_FLOAT, 3 , ACG::VERTEX_USAGE_NORMAL);
-
-        // Add custom vertex elements to declaration
-        /*for (size_t i = 0; i < customBuffers_.size(); ++i) {
-        ACG::VertexElement tmp = customBuffers_[i].first;
-        tmp.pointer_ = 0;
-        tmp.usage_ = ACG::VERTEX_USAGE_SHADER_INPUT;
-        vertexDecl_.addElement(&tmp);
-      }*/
-
         // create vbo if it does not exist
         if (!vbo_)
             GLState::genBuffersARB(1, &vbo_);
-
-       /* int vertex_count = 0;
-        for(typename PolyLineCollection::iterator it = polyline_collection_.iter(); it; ++it){
-            typename PolyLineCollection::PolyLine* polyline = *it;
-
-            if(polyline->n_vertices() > 0){
-                vertex_count += polyline->n_vertices()+1;
-            }
-        }*/
-
-      //  std::cout << "Stride: " << vertexDecl_.getVertexStride() << std::endl;
 
         // size in bytes of vbo,  create additional vertex for closed loop indexing
         unsigned int bufferSize = vertexDecl_.getVertexStride() * offset;
 
         // Create the required array
         char* vboData_ = new char[bufferSize];
-
-        /*// Index buffer for selected vertices
-      selectedVertexIndexBuffer_.clear();
-
-      // Index buffer for selected vertices
-      selectedEdgeIndexBuffer_.clear();*/
-
-   //     int offset = 0;
 
         for(typename PolyLineCollection::iterator it = polyline_collection_.iter(); it; ++it){
             typename PolyLineCollection::PolyLine* polyline = *it;
@@ -527,7 +465,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
   // Viewport size
   ACG::Vec2f screenSize(float(_state.viewport_width()), float(_state.viewport_height()));
 
-  for (unsigned int i = 0; i < _drawMode.getNumLayers(); ++i) {
+  for (size_t i = 0; i < _drawMode.getNumLayers(); ++i) {
     ACG::SceneGraph::Material localMaterial = *_mat;
 
     const ACG::SceneGraph::DrawModes::DrawModeProperties* props = _drawMode.getLayer(i);
@@ -551,15 +489,6 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
 
         // Point Size geometry shader
         ro.setupPointRendering(_mat->pointSize(), screenSize);
-
-      /*  if (!selectedVertexIndexBuffer_.empty())
-        {
-          ro.glDrawElements(GL_POINTS, selectedVertexIndexBuffer_.size(), GL_UNSIGNED_INT, &(selectedVertexIndexBuffer_[0]));
-          // apply user settings
-          applyRenderObjectSettings(props->primitive(), &ro);
-
-          _renderer->addRenderObject(&ro);
-        }*/
 
         // Render all vertices (ignore selection here!)
         ro.debugName = "polylinecollection.Points";
@@ -588,16 +517,6 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
 
         // Line Width geometry shader
         ro.setupLineRendering(_state.line_width(), screenSize);
-
-      /*  if (!selectedEdgeIndexBuffer_.empty())
-        {
-          ro.glDrawElements(GL_LINES, selectedEdgeIndexBuffer_.size(), GL_UNSIGNED_INT, &(selectedEdgeIndexBuffer_[0]));
-
-          // apply user settings
-          applyRenderObjectSettings(props->primitive(), &ro);
-
-          _renderer->addRenderObject(&ro);
-        }*/
 
         ro.debugName = "polylinecollection.Wireframe";
         localMaterial.baseColor(defaultColor);
@@ -629,37 +548,6 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
   }
 
 }
-
-//----------------------------------------------------------------------------
-
-/*template <class PolyLine>
-int
-PolyLineNodeT<PolyLine>::
-addCustomBuffer( const ACG::VertexElement& _desc, const void* _buffer) {
-
-  if (_buffer) {
-    customBuffers_.push_back( std::pair<ACG::VertexElement, const void*>(_desc, _buffer) );
-    update();
-
-    return int(customBuffers_.size()-1);
-  }
-  else
-  {
-    std::cerr << "PolyLineNodeT::addCustomBuffer - null pointer buffer" << std::endl;
-    return -1;
-  }
-}*/
-
-//----------------------------------------------------------------------------
-
-/*template <class PolyLine>
-void
-PolyLineNodeT<PolyLine>::
-setCustomBuffer( int _id, const void* _buffer) {
-
-  customBuffers_[_id].second = _buffer;
-  update();
-}*/
 
 //=============================================================================
 } // namespace SceneGraph

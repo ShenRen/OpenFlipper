@@ -58,8 +58,7 @@
  * This File contains the required types and typedefs for using Poly Line Collections
  */
 
-#ifndef POLYLINE_COLLECTION_TYPES_HH
-#define POLYLINE_COLLECTION_TYPES_HH
+#pragma once
 
 
 //== INCLUDES =================================================================
@@ -72,5 +71,3 @@ typedef PolyLineCollectionT<ACG::Vec3d> PolyLineCollection;
 
 //== TYPEDEFS FOR SCENEGRAPH ===============================================
 
-
-#endif // POLYLINE_COLLECTION_TYPES_HH

@@ -58,9 +58,7 @@
  * This File contains the PolyLine Object
  */
 
-
-#ifndef POLYLINE_COLLECTION_OBJECT_HH
-#define POLYLINE_COLLECTION_OBJECT_HH
+#pragma once
 
 
 
@@ -77,7 +75,7 @@
 
 //== CLASS DEFINITION =========================================================
 
-/** This class provides the functionality for all kind of meshes for the framework
+/** This class provides the functionality for all kind of polyline collections for the framework
  */
 class DLLEXPORT PolyLineCollectionObject : public BaseObjectData {
   public:
@@ -104,14 +102,9 @@ class DLLEXPORT PolyLineCollectionObject : public BaseObjectData {
      */
     BaseObject* copy();
 
-    void reset_vbo(){
-        collectionNode()->reset_vbo();
-    }
-
-
   protected:
 
-    /// Initialise current object, including all related nodes.
+    /// Initialize current object, including all related nodes.
     virtual void init(PolyLineCollection* _collection = 0);
 
   //===========================================================================
@@ -197,11 +190,9 @@ class DLLEXPORT PolyLineCollectionObject : public BaseObjectData {
                                  const ACG::Vec3d _hitPoint,
                                  const ACG::Vec3d _start ,
                                  const ACG::Vec3d _dir,
-                                 const unsigned int _targetIdx );
+                                 const size_t _targetIdx );
 
   /** @} */
 
 };
 
-
-#endif // POLYLINE_COLLECTION_OBJECT_HH

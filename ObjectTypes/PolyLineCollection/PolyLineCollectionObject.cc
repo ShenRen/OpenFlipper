@@ -67,11 +67,11 @@
 
 //== CLASS DEFINITION =========================================================
 
-/** Constructor for PolyLine Objects. This object class gets a Separator Node giving
-*  the root node to which it should be connected. The line is generated internally
+/** Constructor for PolyLine Collection Objects. This object class gets a Separator Node giving
+*  the root node to which it should be connected. The collection is generated internally
 *  and all nodes for visualization will be added below the scenegraph node.\n
-*  You dont need to create an object of this type manually. Use
-*  PluginFunctions::addPolyLine instead. ( see Types.hh::DataType )
+*  You don't need to create an object of this type manually. Use
+*  PluginFunctions::addPolyLineCollection instead. ( see Types.hh::DataType )
 */
 PolyLineCollectionObject::PolyLineCollectionObject() :
   BaseObjectData( ),
@@ -96,8 +96,8 @@ PolyLineCollectionObject::PolyLineCollectionObject(const PolyLineCollectionObjec
     setName( name() );
 }
 
-/** Destructor for PolyLine Objects. The destructor deletes the Line and all
-*  Scenegraph nodes associated with the Line or the object.
+/** Destructor for PolyLineCollection Objects. The destructor deletes the Collection and all
+*  Scenegraph nodes associated with the Collection or the object.
 */
 PolyLineCollectionObject::~PolyLineCollectionObject()
 {
@@ -108,7 +108,7 @@ PolyLineCollectionObject::~PolyLineCollectionObject()
   // perObjectData.
   deleteData();
 
-  // Delete the Mesh only, if this object contains a mesh
+  // Delete the collection only, if this object contains a collection
   if ( collection_ != NULL)  {
     delete collection_;
     collection_ = NULL;
@@ -116,15 +116,16 @@ PolyLineCollectionObject::~PolyLineCollectionObject()
     std::cerr << "Destructor error : Line Collection already deleted" << std::endl;
   }
 
-  // No need to delete the scenegraph Nodes as this will be managed by baseplugin
+  // No need to delete the scenegraph Nodes as this will be managed by BasePlugin
   collectionNode_    = NULL;
 }
 
-/** Cleanup Function for Line Objects. Deletes the contents of the whole object and
-* calls PolyLineObject::init afterwards.
+/** Cleanup Function for Collection Objects. Deletes the contents of the whole object and
+* calls PolyLineCollection::init afterwards.
 */
 void PolyLineCollectionObject::cleanup() {
-  // Delete the Line only, if this object contains a line
+
+  // Delete the Collection only, if this object contains a Collection
   if ( collection_ != NULL)  {
     delete collection_;
     collection_ = NULL;
@@ -150,8 +151,8 @@ BaseObject* PolyLineCollectionObject::copy() {
     return dynamic_cast< BaseObject* >(object);
 }
 
-/** This function initalizes the line object. It creates the scenegraph nodes,
-*  the line.
+/** This function initializes the Collection object. It creates the scenegraph nodes,
+*  the Collection.
 */
 void PolyLineCollectionObject::init(PolyLineCollection* _collection) {
 
@@ -165,7 +166,7 @@ void PolyLineCollectionObject::init(PolyLineCollection* _collection) {
   if ( materialNode() == NULL)
     std::cerr << "Error when creating Line Object! materialNode is NULL!" << std::endl;
 
-  collectionNode_    = new ACG::SceneGraph::PolyLineCollectionNodeT< PolyLineCollection >(*collection_, materialNode() , "NEW LineNodeCollection");
+  collectionNode_    = new ACG::SceneGraph::PolyLineCollectionNodeT< PolyLineCollection >(*collection_, materialNode() , "NEW PolyLineCollection");
 
   // Set default material of the polyLine
   materialNode()->set_random_color();
@@ -185,7 +186,7 @@ void PolyLineCollectionObject::init(PolyLineCollection* _collection) {
 void PolyLineCollectionObject::setName( QString _name ) {
   BaseObjectData::setName(_name);
 
-  std::string nodename = std::string("LineCollectionNode for LineCollection "     + _name.toUtf8() );
+  std::string nodename = std::string("PolyLineCollectionNode for PolyLineCollection "     + _name.toUtf8() );
   collectionNode_->name( nodename );
 }
 
@@ -193,8 +194,8 @@ void PolyLineCollectionObject::setName( QString _name ) {
 // Content
 // ===============================================================================
 
-/** Get a pointer to the objects line.
-* @return Pointer to the line
+/** Get a pointer to the objects Collection.
+* @return Pointer to the Collection
 */
 PolyLineCollection* PolyLineCollectionObject::collection() {
   return collection_;
@@ -232,11 +233,6 @@ QString PolyLineCollectionObject::getObjectinfo() {
     output += "Object Contains PolyLineCollection : ";
 
   output += QString::number( collection()->n_polylines() ) + " polylines, ";
-  /*output += QString::number( line()->n_edges() ) += " edges and is ";
-  if ( line()->is_closed() )
-    output += "closed.\n";
-  else
-    output += "open.\n";*/
 
   output += "========================================================================\n";
   return output;
@@ -264,57 +260,13 @@ bool PolyLineCollectionObject::pickingEnabled() {
   return collectionNode_->pickingEnabled();
 }
 
-/// Refine picking on triangle meshes
+/// Refine picking on poly line collections (!TODO)
 ACG::Vec3d PolyLineCollectionObject::refinePick(ACG::SceneGraph::PickTarget _pickTarget,
-                             const ACG::Vec3d _hitPoint,
-                             const ACG::Vec3d _start ,
-                             const ACG::Vec3d _dir,
-                             const unsigned int _targetIdx )
+                                                const ACG::Vec3d _hitPoint,
+                                                const ACG::Vec3d _start ,
+                                                const ACG::Vec3d _dir,
+                                                const size_t _targetIdx )
 {
-  if ( _pickTarget == ACG::SceneGraph::PICK_FACE) {
-    //don't refine polyLine faces
-    return _hitPoint;
-  }
-
-  if ( _pickTarget == ACG::SceneGraph::PICK_EDGE) {
-
-      // TODO
-
-    // get picked edge handle
-
-   /* int eh;
-
-      eh = _targetIdx;
-
-
-    if(eh >= 0 && eh < (int)line()->n_edges())
-    {
-      //get vertices of the edge
-      ACG::Vec3d edgeStart = line()->point((eh+1)%line()->n_vertices());
-      ACG::Vec3d edgeEnd = line()->point(eh);
-
-      //retrieve the point on the edge that is closest to the backprojected hitpoint
-      ACG::Vec3d hitPointNew;
-      ACG::Geometry::distPointLineSquared(_hitPoint,edgeStart,edgeEnd,&hitPointNew);
-    }*/
-
-    return _hitPoint;
-  }
-
-  if ( _pickTarget == ACG::SceneGraph::PICK_VERTEX) {
-    // get picked vertex handle
-    /*int vh = _targetIdx;
-    if(vh>=0 && vh < (int)line()->n_vertices())
-    {
-      ACG::Vec3d hitpointNew = line()->point(vh);
-
-      //just return the vertex position
-      return hitpointNew;
-    }*/
-
-    return _hitPoint;
-  }
-
   return _hitPoint;
 }
 

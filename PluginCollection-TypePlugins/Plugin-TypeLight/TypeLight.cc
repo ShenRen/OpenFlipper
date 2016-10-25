@@ -523,8 +523,8 @@ void TypeLightPlugin::slotMouseEventLight(QMouseEvent* _event) {
                     
                     QPoint p(_event->x(), _event->y());
                     
-                    unsigned int id = 0;
-                    unsigned int t = 0;
+                    size_t id = 0;
+                    size_t t = 0;
                     ACG::Vec3d v;
                     PluginFunctions::scenegraphPick(PluginFunctions::activeExaminer(), ACG::SceneGraph::PICK_ANYTHING, p, id, t, &v);
                     

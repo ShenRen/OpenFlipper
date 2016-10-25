@@ -120,7 +120,7 @@ public:
   *
   * @return success true or false
   */
-  bool success() const { return !status_; }
+  bool success() const { return ok_; }
 
 
 private:
@@ -169,12 +169,12 @@ private:
   void addEar(RingVertex* _earTip);
 
 
-  const int polySize_;
-  int numRemaningVertices_;
-  int numTris_;
-  int numReflexVertices_;
+  const size_t polySize_;
+  size_t numRemaningVertices_;
+  size_t numTris_;
+  size_t numReflexVertices_;
 
-  int status_;
+  bool ok_;
   bool convex_;
 
 

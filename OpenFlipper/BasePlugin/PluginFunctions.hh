@@ -93,7 +93,7 @@ namespace PluginFunctions {
  * @return true if mesh was found, false if picked object is not a mesh or not found
  */
 DLLEXPORT
-bool getPickedObject(const unsigned int _node_idx , BaseObjectData*& _object);
+bool getPickedObject(const size_t _node_idx , BaseObjectData*& _object);
 
 /** @} */
 
@@ -250,14 +250,14 @@ void setSceneCenter(const ACG::Vec3d& _center, int _viewer );
  * set by the last mouse event from the core
  */
 DLLEXPORT
-bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, unsigned int &_nodeIdx, unsigned int &_targetIdx, ACG::Vec3d *_hitPointPtr );
+bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, size_t &_nodeIdx, size_t &_targetIdx, ACG::Vec3d *_hitPointPtr );
 
 /** \brief Execute picking operation on scenegraph
  *
  * This picking function will pick in the specified examiner context
  */
 DLLEXPORT
-bool scenegraphPick( const unsigned int _examiner ,ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, unsigned int &_nodeIdx, unsigned int &_targetIdx, ACG::Vec3d *_hitPointPtr );
+bool scenegraphPick( const unsigned int _examiner ,ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, size_t &_nodeIdx, size_t &_targetIdx, ACG::Vec3d *_hitPointPtr );
 
 /** \brief Execute picking operation on scenegraph and return object
  *
@@ -266,7 +266,7 @@ bool scenegraphPick( const unsigned int _examiner ,ACG::SceneGraph::PickTarget _
  * the picked object will be called in order to achieve higher picking accuracy
  */
 DLLEXPORT
-bool scenegraphPick( const unsigned int _examiner ,ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, BaseObjectData*& _object, unsigned int &_targetIdx, const bool _refine ,ACG::Vec3d *_hitPointPtr );
+bool scenegraphPick( const unsigned int _examiner ,ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, BaseObjectData*& _object, size_t &_targetIdx, const bool _refine ,ACG::Vec3d *_hitPointPtr );
 
 /** \brief Execute picking operation on scenegraph and return object
  *
@@ -275,7 +275,7 @@ bool scenegraphPick( const unsigned int _examiner ,ACG::SceneGraph::PickTarget _
  * the picked object will be called in order to achieve higher picking accuracy
  */
 DLLEXPORT
-bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, BaseObjectData*& _object, unsigned int &_targetIdx, const bool _refine, ACG::Vec3d *_hitPointPtr );
+bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mousePos, BaseObjectData*& _object, size_t &_targetIdx, const bool _refine, ACG::Vec3d *_hitPointPtr );
 
 
 /** Execute picking operation on scenegraph
@@ -285,7 +285,7 @@ bool scenegraphPick( ACG::SceneGraph::PickTarget _pickTarget, const QPoint &_mou
 DLLEXPORT
 bool scenegraphRegionPick( ACG::SceneGraph::PickTarget                _pickTarget,
                            const QRegion&                             _region,
-                           QList<QPair<unsigned int, unsigned int> >& _list,
+                           QList<QPair<size_t, size_t> >&             _list,
                            QVector<float>*                            _depths = 0,
                            QVector<ACG::Vec3d>*                       _points = 0);
 
@@ -296,7 +296,7 @@ DLLEXPORT
 bool scenegraphRegionPick( const unsigned int                         _examiner,
                            ACG::SceneGraph::PickTarget                _pickTarget,
                            const QRegion&                             _region,
-                           QList<QPair<unsigned int, unsigned int> >& _list,
+                           QList<QPair<size_t, size_t> >&             _list,
                            QVector<float>*                            _depths = 0,
                            QVector<ACG::Vec3d>*                       _points = 0);
 

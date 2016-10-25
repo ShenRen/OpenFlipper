@@ -299,8 +299,8 @@ void TranslationManipulatorNode::updateTargetColors ()
     element_[Origin].inactive_target_color_ = colors[0][5];
     for (unsigned int i = 1; i < NumElements - 3; i++)
     {
-      element_[i].active_target_color_ = (colors[0][2] * 0.5) + (colors[((i-1)%3) + 1][2] * 0.5);
-      element_[i].inactive_target_color_ = (colors[0][5] * 0.5) + (colors[((i-1)%3) + 1][5] * 0.5);
+      element_[i].active_target_color_ = (colors[0][2] * static_cast<float>(0.5) ) + (colors[((i-1)%3) + 1][2] * static_cast<float>(0.5));
+      element_[i].inactive_target_color_ = (colors[0][5] * static_cast<float>(0.5)) + (colors[((i-1)%3) + 1][5] * static_cast<float>(0.5) );
     }
     return;
   } else if(element_[Origin].over_){
@@ -308,8 +308,8 @@ void TranslationManipulatorNode::updateTargetColors ()
     element_[Origin].inactive_target_color_ = colors[0][4];
     for (unsigned int i = 1; i < NumElements - 3; i++)
     {
-      element_[i].active_target_color_ = (colors[0][1] * 0.5) + (colors[((i-1)%3) + 1][1] * 0.5);
-      element_[i].inactive_target_color_ = (colors[0][4] * 0.5) + (colors[((i-1)%3) + 1][4] * 0.5);
+      element_[i].active_target_color_ = (colors[0][1] * static_cast<float>(0.5)) + (colors[((i-1)%3) + 1][1] * static_cast<float>(0.5));
+      element_[i].inactive_target_color_ = (colors[0][4] * static_cast<float>(0.5)) + (colors[((i-1)%3) + 1][4] * static_cast<float>(0.5));
     }
     return;
   }

@@ -95,20 +95,23 @@ public:
   ~ColorTranslator() {};
 
   
-  /// init (takes current GL context)
+  /// init (takes current GL context to get the component sizes)
+  /// Can't use constructor as we might not have a context at this point.
   void initialize();
+
   /// has it been initialized?
   bool initialized() const { return initialized_; }
 
 
   /// index -> color (one buffer)
-  Vec4uc index2color(unsigned int _idx) const;
+  Vec4uc index2color(const size_t _idx) const;
+
   /// color -> index (one buffer)
-  int color2index(Vec4uc _rgba) const;
+  size_t color2index(const Vec4uc _rgba) const;
 
 
-  /// returns maximal convertable index
-  unsigned int max_index() const;
+  /// returns maximal convertible index
+  size_t max_index() const;
   
   
 private:

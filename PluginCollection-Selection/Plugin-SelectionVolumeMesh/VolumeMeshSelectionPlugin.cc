@@ -360,7 +360,7 @@ void VolumeMeshSelectionPlugin::slotToggleSelection(QMouseEvent* _event,
     if(_event->button() != Qt::LeftButton)
         return;
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     BaseObjectData* object = 0;
@@ -494,7 +494,7 @@ void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
     if ((_currentType & floodFillSupportedTypes_) == 0)
         return;
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     // pick Anything to find all possible objects
@@ -619,7 +619,7 @@ void VolumeMeshSelectionPlugin::slotCustomSelection(QMouseEvent *_event, Primiti
             BaseObjectData* object = 0;
 
             // Perform picking
-            unsigned int node_idx, target_idx;
+            size_t node_idx, target_idx;
             bool successfullyPicked = PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),
                                                                       node_idx, target_idx, &hit_point)
                     && PluginFunctions::getPickedObject(node_idx, object);
@@ -667,7 +667,7 @@ void VolumeMeshSelectionPlugin::slotCustomSelection(QMouseEvent *_event, Primiti
             ACG::Vec3d hit_point;
 
             // Perform picking
-            unsigned int node_idx, target_idx;
+            size_t node_idx, target_idx;
             bool successfullyPicked = PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),
                                                                       node_idx, target_idx, &hit_point)
                     && PluginFunctions::getPickedObject(node_idx, object);

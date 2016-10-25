@@ -101,7 +101,7 @@ ACG::Vec3uc ColorCoder::color(float _v) const
     c = color_signed(_v);
   else
     c = color_unsigned(_v);
-  return (ACG::Vec3uc(c[0], c[1], c[2]) / 255.f);
+  return ( ACG::Vec3uc(c[0], c[1], c[2]) );
 }
 
 /// color coding

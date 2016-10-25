@@ -256,23 +256,23 @@ void MeshCompiler::computeAdjacency(bool _forceRecompute)
 }
 
 
-void MeshCompiler::setVertices( int _num, const void* _data, int _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize )
+void MeshCompiler::setVertices( size_t _num, const void* _data, size_t _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize )
 {
   setAttribVec(inputIDPos_, _num, _data, _stride, _internalCopy, _fmt, _elementSize);
 }
 
-void MeshCompiler::setNormals( int _num, const void* _data, int _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize )
+void MeshCompiler::setNormals( size_t _num, const void* _data, size_t _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize )
 {
   setAttribVec(inputIDNorm_, _num, _data, _stride, _internalCopy, _fmt, _elementSize);
 }
 
-void MeshCompiler::setTexCoords( int _num, const void* _data, int _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize )
+void MeshCompiler::setTexCoords( size_t _num, const void* _data, size_t _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize )
 {
   setAttribVec(inputIDTexC_, _num, _data, _stride, _internalCopy, _fmt, _elementSize);
 }
 
 
-void MeshCompiler::setAttribVec(int _attrIdx, int _num, const void* _data, int _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize)
+void MeshCompiler::setAttribVec(int _attrIdx, size_t _num, const void* _data, size_t _stride, bool _internalCopy /*= false*/, GLuint _fmt, int _elementSize)
 {
   // sets vertex data for each attribute individually
   // Example:
@@ -307,7 +307,7 @@ void MeshCompiler::setAttribVec(int _attrIdx, int _num, const void* _data, int _
     if (_data)
     {
       // copy elementwise because of striding
-      for (int i = 0; i < _num; ++i)
+      for (size_t i = 0; i < _num; ++i)
       {
         memcpy(inbuf->internalBuf + (size_t)(size * i),
           (const char*)_data + (size_t)(_stride * i),
@@ -3690,7 +3690,7 @@ const int* MeshCompiler::mapToOriginalFaceIDPtr() const
 
 
 
-int MeshCompiler::mapToOriginalVertexID( const int _i, int& _faceID, int& _cornerID ) const
+int MeshCompiler::mapToOriginalVertexID( const size_t _i, int& _faceID, int& _cornerID ) const
 {
   int positionID = -1;
 

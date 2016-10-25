@@ -530,9 +530,9 @@ public:
   // _data  buffer data
   // _internalFormat format of buffer - http://www.opengl.org/sdk/docs/man3/xhtml/glTexBuffer.xml
   // _usage buffer usage hint - https://www.opengl.org/sdk/docs/man3/xhtml/glBufferData.xml
-  void setBufferData(int _size, const void* _data, GLenum _internalFormat, GLenum _usage = GL_STATIC_DRAW);
+  void setBufferData(size_t _size, const void* _data, GLenum _internalFormat, GLenum _usage = GL_STATIC_DRAW);
 
-  int getBufferSize() const {return bufferSize_;}
+  size_t getBufferSize() const {return bufferSize_;}
 
   GLuint getBufferId() const {return buffer_;}
 
@@ -547,7 +547,7 @@ public:
 
 private:
 
-  int bufferSize_;
+  size_t bufferSize_;
   GLuint buffer_;
   GLenum usage_;
   GLenum fmt_;

@@ -1180,7 +1180,7 @@ void MeshCompiler::setInputIndexSplit( const int _face, const int _corner, const
   const int offset = getInputIndexOffset(_face, _corner);
 
   // keep track of number of vertices after splitting process
-  if (_val >= numDrawVerts_)
+  if ( static_cast<size_t>(_val) >= numDrawVerts_)
     numDrawVerts_ = _val + 1;
 
   faceBufSplit_[offset] = _val;
@@ -1486,7 +1486,7 @@ void MeshCompiler::triangulate()
         // concave polygon
         // enforcing an unshared vertex gets ugly now
 
-        for (int i = 0; i < tris.numTriangles(); ++i)
+        for (size_t i = 0; i < tris.numTriangles(); ++i)
         {
           triToSortFaceMap_[triCounter++] = sortFaceID;
           for (int k = 0; k < 3; ++k)
@@ -2578,7 +2578,7 @@ void MeshCompiler::dbgdumpObj(const char* _filename) const
 
   if (file.is_open())
   {
-    for (int i = 0; i < numDrawVerts_; ++i)
+    for (size_t i = 0; i < numDrawVerts_; ++i)
     {
       float vertex[64];
 
@@ -3075,7 +3075,7 @@ void MeshCompiler::createVertexMap(bool _keepIsolatedVerts)
   if (_keepIsolatedVerts)
   {
     // add isolated verts to end of map
-    for (int i = 0; i < numIsolatedVerts_; ++i)
+    for ( size_t i = 0; i < numIsolatedVerts_; ++i)
     {
       assert(vertexMapFace_[offsetIso + i] < 0);
       vertexMapFace_[offsetIso + i] = isolatedVertices_[i];
@@ -3218,7 +3218,7 @@ void MeshCompiler::getVertexBuffer( void* _dst, const int _offset /*= 0*/, const
   int batchSize = _range;
 
   // clamp batch size
-  if ((_range < 0) || (_offset + batchSize > numDrawVerts_))
+  if ((_range < 0) || ( static_cast<size_t>(_offset + batchSize) > numDrawVerts_) )
     batchSize = numDrawVerts_ - _offset;
 
   char* bdst = (char*)_dst;

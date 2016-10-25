@@ -7,6 +7,10 @@
 #include <algorithm>
 #include <cmath>
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#define constexpr
+#endif
+
 namespace ACG {
 
 /**
@@ -244,6 +248,10 @@ class Matrix3x3T {
 typedef Matrix3x3T<float> Matrix3x3f;
 typedef Matrix3x3T<double> Matrix3x3d;
 
-}
+} /* namespace ACG */
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#undef constexpr
+#endif
 
 #endif /* ACG_MATH_MATRIX3X3T_HH_ */

@@ -42,7 +42,6 @@
 
 
 #include "TypePolyLineCollection.hh"
-
 #include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 
 TypePolyLineCollectionPlugin::TypePolyLineCollectionPlugin() {

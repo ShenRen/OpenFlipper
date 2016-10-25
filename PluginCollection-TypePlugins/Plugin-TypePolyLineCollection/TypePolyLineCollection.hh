@@ -47,8 +47,7 @@
  *                                                                           *
 \*===========================================================================*/
 
-#ifndef TYPE_POLYLINE_COLLECTION_HH
-#define TYPE_POLYLINE_COLLECTION_HH
+#pragma once
 
 #include <QObject>
 
@@ -104,5 +103,3 @@ class TypePolyLineCollectionPlugin : public QObject, BaseInterface, LoadSaveInte
 
 };
 
-
-#endif // TYPE_POLYLINE_COLLECTION_HH

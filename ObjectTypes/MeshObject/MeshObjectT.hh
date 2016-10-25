@@ -142,6 +142,7 @@ class DLLEXPORTONLY MeshObject : public BaseObjectData {
     /// Set the name of the Object
     void setName( QString _name );
 
+    /** @} */
 
   //===========================================================================
   /** @name Content

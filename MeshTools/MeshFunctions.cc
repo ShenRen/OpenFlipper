@@ -160,8 +160,8 @@ void smooth_boundary(MeshT& _mesh,
 
 template < typename MeshT >
 bool neighbour(const MeshT& _mesh , 
-                         const typename MeshT::FaceHandle _fh1 , 
-                         const typename MeshT::FaceHandle _fh2 )
+               const typename MeshT::FaceHandle& _fh1 ,
+               const typename MeshT::FaceHandle& _fh2 )
 {
   for ( typename MeshT::FaceFaceIter ff_it(_mesh,_fh1) ; ff_it ; ++ff_it)
      if (*ff_it == _fh2)
@@ -213,7 +213,7 @@ calc_area( const MeshT& _mesh)
 
 template < typename MeshT >
 double 
-calc_angle_around( const MeshT& _mesh , const typename MeshT::VertexHandle _vh) 
+calc_angle_around( const MeshT& _mesh , const typename MeshT::VertexHandle& _vh)
 {
     double angle = 0.0;
     

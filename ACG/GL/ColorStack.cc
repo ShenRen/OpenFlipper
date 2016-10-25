@@ -103,7 +103,7 @@ void ColorStack::initialize ()
 
 //----------------------------------------------------------------------------
 
-bool ColorStack::setMaximumIndex (unsigned int _idx)
+bool ColorStack::setMaximumIndex (size_t _idx)
 {
   if (initialized_)
   {
@@ -117,7 +117,7 @@ bool ColorStack::setMaximumIndex (unsigned int _idx)
 
 //----------------------------------------------------------------------------
 
-void ColorStack::setIndex (unsigned int _idx)
+void ColorStack::setIndex (size_t _idx)
 {
   if (initialized_)
   {
@@ -128,7 +128,7 @@ void ColorStack::setIndex (unsigned int _idx)
 
 //----------------------------------------------------------------------------
 
-Vec4uc ColorStack::getIndexColor (unsigned int _idx)
+Vec4uc ColorStack::getIndexColor (size_t _idx)
 {
   if (initialized_)
   {
@@ -144,7 +144,7 @@ Vec4uc ColorStack::getIndexColor (unsigned int _idx)
 
 //----------------------------------------------------------------------------
 
-void ColorStack::pushIndex (unsigned int _idx)
+void ColorStack::pushIndex (size_t _idx)
 {
   if (initialized_)
     currentNode_ = currentNode_->pushIndex (_idx);
@@ -160,12 +160,12 @@ void ColorStack::popIndex ()
 
 //----------------------------------------------------------------------------
 
-std::vector<unsigned int> ColorStack::colorToStack (Vec4uc _rgba) const
+std::vector<size_t> ColorStack::colorToStack (Vec4uc _rgba) const
 {
-  std::vector<unsigned int> rv(0);
+  std::vector<size_t> rv(0);
   if (initialized_ && !error_)
   {
-    unsigned int idx = translator_.color2index (_rgba);
+    const size_t idx = translator_.color2index (_rgba);
     if (idx >= root_->startIndex () && idx < root_->endIndex ())
       root_->colorToStack (rv, idx);
   }
@@ -174,7 +174,7 @@ std::vector<unsigned int> ColorStack::colorToStack (Vec4uc _rgba) const
 
 //----------------------------------------------------------------------------
 
-unsigned int ColorStack::freeIndicies() const
+size_t ColorStack::freeIndicies() const
 {
   if (initialized_)
   {
@@ -186,7 +186,7 @@ unsigned int ColorStack::freeIndicies() const
 
 //----------------------------------------------------------------------------
 
-unsigned int ColorStack::currentIndex () const
+size_t ColorStack::currentIndex () const
 {
   if (initialized_)
   {
@@ -198,7 +198,7 @@ unsigned int ColorStack::currentIndex () const
 
 //----------------------------------------------------------------------------
 
-ColorStack::Node::Node (unsigned int _idx, Node *_parent, ColorTranslator *_ct) :
+ColorStack::Node::Node (size_t _idx, Node *_parent, ColorTranslator *_ct) :
   parent_(_parent),
   index_(_idx),
   translator_(_ct),
@@ -221,7 +221,7 @@ ColorStack::Node::~Node ()
 
 //----------------------------------------------------------------------------
 
-bool ColorStack::Node::setMaximumIndex (unsigned int _idx)
+bool ColorStack::Node::setMaximumIndex (size_t _idx)
 {
   if (_idx == 0)
     _idx = 1;
@@ -237,7 +237,7 @@ bool ColorStack::Node::setMaximumIndex (unsigned int _idx)
 
 //----------------------------------------------------------------------------
 
-bool ColorStack::Node::setIndex (unsigned int _idx) const
+bool ColorStack::Node::setIndex (size_t _idx) const
 {
   if (colorStartIdx_ && colorStartIdx_ + _idx < colorEndIdx_)
   {
@@ -249,7 +249,7 @@ bool ColorStack::Node::setIndex (unsigned int _idx) const
 
 //----------------------------------------------------------------------------
 
-bool ColorStack::Node::getIndexColor (unsigned int _idx, Vec4uc &_rgba) const
+bool ColorStack::Node::getIndexColor (size_t _idx, Vec4uc &_rgba) const
 {
   if (colorStartIdx_ && colorStartIdx_ + _idx < colorEndIdx_)
   {
@@ -261,7 +261,7 @@ bool ColorStack::Node::getIndexColor (unsigned int _idx, Vec4uc &_rgba) const
 
 //----------------------------------------------------------------------------
 
-ColorStack::Node * ColorStack::Node::pushIndex (unsigned int _idx)
+ColorStack::Node * ColorStack::Node::pushIndex (size_t _idx)
 {
   ColorStack::Node *n = new ColorStack::Node (_idx, this, translator_);
   nodes_.push_back (n);
@@ -278,7 +278,7 @@ ColorStack::Node * ColorStack::Node::popIndex ()
 
 //----------------------------------------------------------------------------
 
-void ColorStack::Node::colorToStack (std::vector<unsigned int> &_stack, unsigned int _index)
+void ColorStack::Node::colorToStack (std::vector<size_t> &_stack, size_t _index)
 {
   if (_index >= colorStartIdx_ && _index < colorEndIdx_)
   {

@@ -95,31 +95,31 @@ public:
   bool initialized() const { return initialized_; }
 
   /// sets the maximum index number used in current node 
-  bool setMaximumIndex (unsigned int _idx);
+  bool setMaximumIndex (size_t _idx);
 
   /// sets the current color the given index (like glLoadName)
-  void setIndex (unsigned int _idx);
+  void setIndex (size_t _idx);
 
   /// gets the color instead of setting it directly
-  Vec4uc getIndexColor (unsigned int _idx);
+  Vec4uc getIndexColor (size_t _idx);
 
   /// creates a new node the stack (like glPushName)
-  void pushIndex (unsigned int _idx);
+  void pushIndex (size_t _idx);
 
   /// pops the current node from the stack (like glPopName)
   void popIndex ();
 
   /// converts the given color to index values on the stack
-  std::vector<unsigned int> colorToStack (Vec4uc _rgba) const;
+  std::vector<size_t> colorToStack (Vec4uc _rgba) const;
 
   /// returns maximal available index count
-  unsigned int freeIndicies () const;
+  size_t freeIndicies () const;
 
   /// Did an error occur during picking
   bool error () const { return error_ && initialized_; };
 
   /// returns the current color index
-  unsigned int currentIndex () const;
+  size_t currentIndex () const;
 
 private:
 
@@ -127,40 +127,40 @@ private:
 
   class Node {
     public:
-      Node (unsigned int _idx, Node *_parent, ColorTranslator *_ct);
+      Node (size_t _idx, Node *_parent, ColorTranslator *_ct);
       ~Node ();
 
       /// sets the maximum index number used in current node 
-      bool setMaximumIndex (unsigned int _idx);
+      bool setMaximumIndex (size_t _idx);
 
       /// sets the current color the given index (like glLoadName)
-      bool setIndex (unsigned int _idx) const;
+      bool setIndex (size_t _idx) const;
 
       /// gets the color instead of setting it directly
-      bool getIndexColor (unsigned int _idx, Vec4uc &_rgba) const;
+      bool getIndexColor (size_t _idx, Vec4uc &_rgba) const;
 
       /// creates a new node the stack (like glPushName)
-      Node * pushIndex (unsigned int _idx);
+      Node * pushIndex (size_t _idx);
 
       /// pops the current node from the stack (like glPopName)
       Node * popIndex ();
 
-      void colorToStack (std::vector<unsigned int> &_stack, unsigned int _index);
+      void colorToStack (std::vector<size_t> &_stack, size_t size_t);
 
-      unsigned int startIndex () { return startIdx_; };
-      unsigned int endIndex () { return endIdx_; };
-      unsigned int colorIndex () { return colorStartIdx_; };
+      size_t startIndex () const { return startIdx_; };
+      size_t endIndex ()   const { return endIdx_; };
+      size_t colorIndex () const { return colorStartIdx_; };
 
     private:
       Node                *parent_;
-      unsigned int        index_;
+      size_t              index_;
       ColorTranslator     *translator_;
       std::vector<Node *> nodes_;
 
-      unsigned int startIdx_;
-      unsigned int endIdx_;
-      unsigned int colorStartIdx_;
-      unsigned int colorEndIdx_;
+      size_t startIdx_;
+      size_t endIdx_;
+      size_t colorStartIdx_;
+      size_t colorEndIdx_;
 
   };
 

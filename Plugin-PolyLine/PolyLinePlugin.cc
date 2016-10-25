@@ -960,22 +960,23 @@ PolyLinePlugin::
 me_insert( QMouseEvent* _event )
 {
     if (_event->type() == QEvent::MouseMove) {
-        if (create_point_ref_) {
-            // Pick position
-            unsigned int node_idx, target_idx;
-            ACG::Vec3d hit_point;
-            if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), node_idx, target_idx, &hit_point)) {
-                *create_point_ref_ = (PolyLine::Point) hit_point;
 
-                // update
-                emit updatedObject(cur_insert_id_, UPDATE_GEOMETRY);
-            }
+        if (create_point_ref_) {
+          // Pick position
+          size_t node_idx, target_idx;
+          ACG::Vec3d hit_point;
+          if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), node_idx, target_idx, &hit_point)) {
+            *create_point_ref_ = (PolyLine::Point) hit_point;
+
+            // update
+            emit updatedObject(cur_insert_id_, UPDATE_GEOMETRY);
+          }
         }
         return;
     }
 
   // Pick position
-  unsigned int node_idx, target_idx;
+  size_t node_idx, target_idx;
   ACG::Vec3d hit_point;
   if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), node_idx, target_idx, &hit_point)) {
 
@@ -1363,7 +1364,7 @@ me_delete( QMouseEvent* _event )
   // MousePress ?
   if (_event->type() == QEvent::MouseButtonPress) {
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
     // pick
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_ANYTHING, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -1386,19 +1387,19 @@ me_delete( QMouseEvent* _event )
 
 namespace {
 
-bool me_GetMeshHit(QMouseEvent* _event, ACG::SceneGraph::GlutPrimitiveNode* moveCircle_SelNode_, ACG::Vec3d& _hit_point, unsigned int& _node_idx, unsigned int& _targetIdx)
+bool me_GetMeshHit(QMouseEvent* _event, ACG::SceneGraph::GlutPrimitiveNode* moveCircle_SelNode_, ACG::Vec3d& _hit_point, size_t& _node_idx, size_t& _targetIdx)
 {
-    unsigned int ndx;
-    if(moveCircle_SelNode_)
-        moveCircle_SelNode_->enablePicking(false);
-    bool hasHit = PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), ndx, _targetIdx, &_hit_point);
-    if(moveCircle_SelNode_)
-        moveCircle_SelNode_->enablePicking(true);
-    BaseObjectData* obj;
-    //if there is no current mesh use the newly found
-    if(hasHit && PluginFunctions::getPickedObject(ndx, obj) && _node_idx == std::numeric_limits<unsigned int>::max())
-        _node_idx = obj->id();
-    return hasHit;
+  size_t ndx;
+  if(moveCircle_SelNode_)
+    moveCircle_SelNode_->enablePicking(false);
+  bool hasHit = PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), ndx, _targetIdx, &_hit_point);
+  if(moveCircle_SelNode_)
+    moveCircle_SelNode_->enablePicking(true);
+  BaseObjectData* obj;
+  //if there is no current mesh use the newly found
+  if(hasHit && PluginFunctions::getPickedObject(ndx, obj) && _node_idx == std::numeric_limits<unsigned int>::max())
+    _node_idx = obj->id();
+  return hasHit;
 }
 
 void me_UpdateCircleData(ACG::Vec3d _hit_point, ACG::Vec3d _onPlane, ACG::Vec3d _nor, ACG::SceneGraph::GlutPrimitiveNode* _moveCircle_SelNode_, PolyLineCircleData* _lineData, bool _isShift)
@@ -1447,7 +1448,7 @@ me_move( QMouseEvent* _event )
   // MousePress ? -> get reference point
   if (_event->type() == QEvent::MouseButtonPress) {
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
     // this is for picking the handles on a circle or spline
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_ANYTHING, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -1497,7 +1498,7 @@ me_move( QMouseEvent* _event )
             return;
         PolyLineCircleData* lineData = dynamic_cast<PolyLineCircleData*>(lineObject->objectData(CIRCLE_DATA));
         ACG::Vec3d hit_point;
-        unsigned int target_idx;
+        size_t target_idx;
         bool hasHit = me_GetMeshHit(_event, moveCircle_SelNode_, hit_point, lineData->circleMeshIndex_, target_idx);
         if(lineData->circleMeshIndex_ == std::numeric_limits<unsigned int>::max()) return;
         if(!moveCircle_IsLocked && hasHit) {
@@ -1546,7 +1547,7 @@ me_move( QMouseEvent* _event )
           return;
       PolyLineBezierSplineData* lineData = dynamic_cast<PolyLineBezierSplineData*>(lineObject->objectData(BEZSPLINE_DATA));
       ACG::Vec3d hit_point;
-      unsigned int target_idx;
+      size_t target_idx;
       bool hasHit = me_GetMeshHit(_event, moveBezSpline_SelNode_, hit_point, lineData->meshIndex_, target_idx);
       if(lineData->meshIndex_ == std::numeric_limits<unsigned int>::max())
           return;
@@ -1607,8 +1608,8 @@ me_move( QMouseEvent* _event )
       updatePolyBezierSpline(lineObject, tool_->sb_SplineSegNum->value());
     }
     else if (move_point_ref_ != 0) {
-        ACG::Vec3d hit_point;
-        unsigned int node_idx, target_idx;
+      ACG::Vec3d hit_point;
+      size_t node_idx, target_idx;
       if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), node_idx, target_idx, &hit_point)) {
         (*move_point_ref_) = (PolyLine::Point) hit_point;
         // update
@@ -1650,7 +1651,7 @@ me_split( QMouseEvent* _event )
     // release old references
     move_point_ref_ = 0;
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
     // pick
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_VERTEX, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -1722,7 +1723,7 @@ me_split( QMouseEvent* _event )
   if (_event->type() == QEvent::MouseMove)
     if (move_point_ref_ != 0) {
 
-      unsigned int node_idx, target_idx;
+      size_t node_idx, target_idx;
       ACG::Vec3d hit_point;
       // pick
       if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -1759,7 +1760,7 @@ me_merge( QMouseEvent* _event )
     move_point_ref_ = 0;
     cur_merge_id_ = -1;
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
     // pick
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_VERTEX, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -1796,7 +1797,7 @@ me_merge( QMouseEvent* _event )
   // Move ? -> move reference point
   if (_event->type() == QEvent::MouseMove && cur_merge_id_ != -1)
     if (move_point_ref_ != 0) {
-      unsigned int node_idx, target_idx;
+      size_t node_idx, target_idx;
       ACG::Vec3d hit_point;
       // pick
       if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -1828,7 +1829,7 @@ me_merge( QMouseEvent* _event )
       move_point_ref_ = 0;
     }
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     // pick
@@ -1978,7 +1979,7 @@ me_smart_move( QMouseEvent* _event )
   // MousePress ? -> select vertex and start timer
   if (_event->type() == QEvent::MouseButtonPress) {
 
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
     // pick
@@ -2156,7 +2157,7 @@ pick_triangle_mesh( QPoint mPos,
   _fh = TriMesh::FaceHandle  (-1);
   _vh = TriMesh::VertexHandle(-1);
 
-  unsigned int target_idx = 0, node_idx = 0;
+  size_t target_idx = 0, node_idx = 0;
   ACG::Vec3d hit_point;
 
 
@@ -2225,7 +2226,7 @@ me_copyPasteMouse(QMouseEvent* _event)
         copyPaste_ObjectId_ = copyPaste_ActionType_ - 1;
     }
     //determine the world pos
-    unsigned int target_idx = 0, node_idx = 0;
+    size_t target_idx = 0, node_idx = 0;
     ACG::Vec3d hit_point;
     if( PluginFunctions::scenegraphPick( ACG::SceneGraph::PICK_ANYTHING, _event->pos(), node_idx, target_idx, &hit_point ) ) {
         if(copyPaste_ActionType_ == 1) {//duplicate
@@ -2296,7 +2297,7 @@ slot_duplicate()
     if(copyPaste_ObjectId_ == -1 || !PluginFunctions::getObject(copyPaste_ObjectId_, obj))
         return;
     //set mode for mouse move event
-    unsigned int target_idx = 0, node_idx = 0;
+    size_t target_idx = 0, node_idx = 0;
     ACG::Vec3d hit_point;
     //determine the world coordinate of the mouse
     QPoint mPos = copyPaste_LastMouse;

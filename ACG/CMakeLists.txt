@@ -8,21 +8,10 @@ if ( ${PROJECT_NAME} MATCHES "OpenFlipper")
 endif()
 
 
-
-if (NOT FORCE_QT4)
-  # try to use QT5 if possible otherwise stick to QT4
-  acg_qt5 ()  
-else()
-  set (QT_MAX_VERSION 4.9.9)
-  set (QT5_FOUND false)
-endif()
-
+acg_qt5 ()  
 
 if (NOT QT5_FOUND)
-  message(STATUS "Using QT4 for ACG")
-  acg_qt4 (REQUIRED 4.5)
-else ()
-  message(STATUS "Using QT5 for ACG")
+  message(FATAL ERROR "Qt5 not found")
 endif ()
 
 acg_openmp ()
@@ -66,7 +55,7 @@ if (QJSON_FOUND)
 endif ()
 
 # use Qwt6 for QT5
-if (NOT FORCE_QT4 AND QT5_FOUND)
+if (QT5_FOUND)
   find_package(Qwt6)
 
   if (QWT6_FOUND)
@@ -74,14 +63,7 @@ if (NOT FORCE_QT4 AND QT5_FOUND)
     set(ADDITIONAL_LINK_LIBRARIES ${ADDITIONAL_LINK_LIBRARIES} ${QWT6_LIBRARIES})
     set(ADDITIONAL_BUILD_DIRS "QwtWidgets" )
   endif()
-else()
-  find_package(Qwt5)
 
-  if(Qwt5_Qt4_FOUND)
-    set(INCLUDE_DIRS ${INCLUDE_DIRS} ${Qwt5_INCLUDE_DIR} )
-    set(ADDITIONAL_LINK_LIBRARIES ${ADDITIONAL_LINK_LIBRARIES} ${Qwt5_Qt4_LIBRARY})
-    set(ADDITIONAL_BUILD_DIRS "QwtWidgets" )
-  endif()
 endif()
 
 include_directories (
@@ -135,18 +117,13 @@ if (QT5_FOUND)
   acg_qt5_autouic (uic_targets ${ui})
   acg_qt5_automoc (moc_targets ${headers})
   acg_qt5_autoqrc (qrc_targets ${qrc})
-elseif (QT4_FOUND)
-  acg_qt4_autouic (uic_targets ${ui})
-  acg_qt4_automoc (moc_targets ${headers})
-  acg_qt4_autoqrc (qrc_targets ${qrc})
 endif()
 
 
 if (QT5_FOUND)
   acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets})
-elseif (QT4_FOUND)
-  acg_add_library (ACG SHARED ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets})
 endif()
+
 if ( NOT WIN32 )
   set_target_properties (ACG PROPERTIES VERSION ${ACG_VERSION_MAJOR}.${ACG_VERSION_MINOR}
                                       SOVERSION ${ACG_VERSION_MAJOR}.${ACG_VERSION_MINOR})

@@ -61,6 +61,7 @@
 
 #include "ColorTranslator.hh"
 #include <iostream>
+#include <limits>
 
 
 //== NAMESPACES ===============================================================
@@ -81,20 +82,24 @@ initialize()
   glGetIntegerv( GL_BLUE_BITS,  &blue_bits_  );
   glGetIntegerv( GL_ALPHA_BITS,  &alpha_bits_ );
 
+  // We currently only support up to 8 bits per channel (
   if (red_bits_   > 8)  red_bits_   = 8;
   if (green_bits_ > 8)  green_bits_ = 8;
   if (blue_bits_  > 8)  blue_bits_  = 8;
   if (alpha_bits_ > 8)  alpha_bits_ = 8;
 
+  // Compute the mask to extract the component
   red_mask_    = ((1 << red_bits_)   - 1);
   green_mask_  = ((1 << green_bits_) - 1);
   blue_mask_   = ((1 << blue_bits_)  - 1);
   alpha_mask_  = ((1 << alpha_bits_) - 1);
 
+  // Shift required to move the component to the lowest bits
   red_shift_   = 8 - red_bits_;
   green_shift_ = 8 - green_bits_;
   blue_shift_  = 8 - blue_bits_;
   alpha_shift_ = 8 - alpha_bits_;
+
 
   red_round_   = 1 << (red_shift_   - 1);
   green_round_ = 1 << (green_shift_ - 1);
@@ -110,12 +115,19 @@ initialize()
 
 Vec4uc
 ColorTranslator::
-index2color(unsigned int _idx) const 
+index2color(const size_t _idx) const
 {
   assert(initialized());
   unsigned char  r, g, b, a;
-  unsigned int   idx(_idx+1);
   
+  // Make sure that the number fits
+  if ( _idx > std::numeric_limits<unsigned int>::max() ) {
+    std::cerr << "Can't convert index " << _idx << " to RGBA. Number too large for unsigned int \n";
+    return Vec4uc(0, 0, 0, 0);
+  }
+
+  unsigned int idx = ( static_cast<unsigned int>(_idx) + 1);
+
   b = ((idx & blue_mask_)  << blue_shift_)  | blue_round_;  
   idx >>= blue_bits_;
   g = ((idx & green_mask_) << green_shift_) | green_round_;  
@@ -139,13 +151,18 @@ index2color(unsigned int _idx) const
 //-----------------------------------------------------------------------------
 
 
-int
+size_t
 ColorTranslator::
-color2index(Vec4uc _rgba) const
+color2index(const Vec4uc _rgba) const
 {
+
+
   assert(initialized());
+
+  // Work internally with#include <iostream> unsigned int for now
   unsigned int result;
 
+  // Combine the single unsigned chars according to masks
   result =   _rgba[3] >> alpha_shift_;
   result <<= red_bits_;
   result =   _rgba[0] >> red_shift_;
@@ -154,14 +171,15 @@ color2index(Vec4uc _rgba) const
   result <<= blue_bits_;
   result |=  _rgba[2] >> blue_shift_;    
 
-  return (result-1);
+  // Return size_t Here
+  return ( static_cast<size_t>(result-1) );
 }
 
 
 //-----------------------------------------------------------------------------
 
 
-unsigned int
+size_t
 ColorTranslator::max_index() const 
 {
   assert(initialized());

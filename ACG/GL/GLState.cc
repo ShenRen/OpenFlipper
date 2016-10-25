@@ -1044,7 +1044,7 @@ void GLState::pick_init (bool _color)
 
 //-----------------------------------------------------------------------------
 
-bool GLState::pick_set_maximum (unsigned int _idx)
+bool GLState::pick_set_maximum (size_t _idx)
 {
   bool rv = colorStack_.setMaximumIndex (_idx);
   if (colorPicking_)
@@ -1054,14 +1054,14 @@ bool GLState::pick_set_maximum (unsigned int _idx)
 
 //-----------------------------------------------------------------------------
 
-void GLState::pick_set_name (unsigned int _idx)
+void GLState::pick_set_name (size_t _idx)
 {
   colorStack_.setIndex (_idx);
 }
 
 //-----------------------------------------------------------------------------
 
-Vec4uc GLState::pick_get_name_color (unsigned int _idx)
+Vec4uc GLState::pick_get_name_color (size_t _idx)
 {
   if (colorPicking_)
     return colorStack_.getIndexColor (_idx);
@@ -1070,7 +1070,7 @@ Vec4uc GLState::pick_get_name_color (unsigned int _idx)
 
 //-----------------------------------------------------------------------------
 
-void GLState::pick_push_name (unsigned int _idx)
+void GLState::pick_push_name (size_t _idx)
 {
   colorStack_.pushIndex (_idx);
 }
@@ -1084,16 +1084,16 @@ void GLState::pick_pop_name ()
 
 //-----------------------------------------------------------------------------
 
-std::vector<unsigned int> GLState::pick_color_to_stack (Vec4uc _rgba) const
+std::vector<size_t> GLState::pick_color_to_stack (Vec4uc _rgba) const
 {
   if (colorPicking_ && colorStack_.initialized ())
     return colorStack_.colorToStack (_rgba);
-  return std::vector<unsigned int> ();
+  return std::vector<size_t> ();
 }
 
 //-----------------------------------------------------------------------------
 
-unsigned int GLState::pick_free_indicies () const
+size_t GLState::pick_free_indicies () const
 {
   if (colorPicking_ && colorStack_.initialized ())
     return colorStack_.freeIndicies ();
@@ -1111,7 +1111,7 @@ bool GLState::pick_error () const
 
 //-----------------------------------------------------------------------------
 
-unsigned int GLState::pick_current_index () const
+size_t GLState::pick_current_index () const
 {
   if (colorPicking_)
     return colorStack_.currentIndex ();

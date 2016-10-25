@@ -59,7 +59,7 @@ echo "CPPCHECK Summary"
 echo "=============================================================================="
 echo -e "${NC}"
 
-if [ $COUNT -gt 54 ]; then
+if [ $COUNT -gt 45 ]; then
   echo -e ${WARNING}
   echo "Total CPPCHECK error Count is $COUNT, which is too High! CPPCHECK Run failed";
   echo -e "${NC}"

@@ -100,7 +100,7 @@ void CoreWidget::startDrag ( QMouseEvent* _event )
   int objectId = -1;
 
   // Do picking in the gl area to find an object
-  unsigned int    node_idx, target_idx;
+  size_t          node_idx, target_idx;
   ACG::Vec3d      hit_point;
   BaseObjectData* object;
   if ( PluginFunctions::scenegraphPick ( ACG::SceneGraph::PICK_ANYTHING,

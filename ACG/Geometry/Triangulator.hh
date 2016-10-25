@@ -80,7 +80,7 @@ public:
   /** \brief Get number of triangles
    * @return number of triangles after triangulation
   */
-  int numTriangles() const { return numTris_; }
+  size_t numTriangles() const { return numTris_; }
 
   /** \brief Get local vertex index 
    *
@@ -106,7 +106,7 @@ public:
   * A reflex vertex is a vertex with an inner angle larger than 180 deg.
   * @return number of reflex vertices
   */
-  int numReflexVertices() const { return numReflexVertices_; }
+  size_t numReflexVertices() const { return numReflexVertices_; }
 
   /** \brief Check if a vertex is reflex
   *
@@ -134,8 +134,8 @@ private:
   int earClippingN3();
 
 
-  // disable assignment operator
-  Triangulator& operator=(const Triangulator&){ return *this;  }
+  // disable implicit assignment operator
+  Triangulator& operator=(const Triangulator&) = delete;
 
 
   float triangleAreaSign(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2) const;

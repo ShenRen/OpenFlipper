@@ -55,7 +55,7 @@
 
 //=============================================================================
 //
-//  Plugin Functions for PolyLines
+//  Plugin Functions for Polyline Collections
 //
 //=============================================================================
 
@@ -147,9 +147,6 @@ PolyLineCollectionObject* polyLineCollectionObject( BaseObjectData* _object ) {
 }
 
 PolyLineCollectionObject* polyLineCollectionObject( int _objectId ) {
-
- // if  (_objectId == BaseObject::NOOBJECT)
- //   return 0;
 
   // Get object by using the map accelerated plugin function
   BaseObjectData* object = 0;

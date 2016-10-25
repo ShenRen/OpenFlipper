@@ -60,12 +60,11 @@
 //=============================================================================
 
 /**
- * \file PluginFunctionsPolyLine.hh
- * This file contains functions which can be used by plugins to access polylines in the framework.
+ * \file PluginFunctionsPolyLineCollection.hh
+ * This file contains functions which can be used by plugins to access Polyline Collections in the framework.
  */
 
-#ifndef PLUGIN_FUNCTIONS_POLYLINE_COLLECTION_HH
-#define PLUGIN_FUNCTIONS_POLYLINE_COLLECTION_HH
+#pragma once
 
 #include <OpenFlipper/common/Types.hh>
 #include "PolyLineCollectionTypes.hh"
@@ -75,54 +74,54 @@
 namespace PluginFunctions {
 
 
-/** \brief Get a pointer to every Polyline which is marked as a source.
+/** \brief Get a pointer to every Polyline Collection which is marked as a source.
  *
- * @param _polylines ( vector returning the source polylines )
- * @return false, if no polyline is selected as source
+ * @param _polylines ( vector returning the source Polyline Collections )
+ * @return false, if no PolylineCollection is selected as source
 */
 
 DLLEXPORT
 bool getSourcePolylineCollections( std::vector<PolyLineCollection*>& _polylines  );
 
-/** \brief Get a pointer to every Polyline which is marked as a target.
+/** \brief Get a pointer to every Polyline Collection which is marked as a target.
  *
- * @param _polylines ( vector returning the target polylines )
- * @return false, if no polyline is selected as target
+ * @param _polylines ( vector returning the target Polyline Collections )
+ * @return false, if no PolylineCollection is selected as target
 */
 
 DLLEXPORT
 bool getTargetPolylineCollections( std::vector<PolyLineCollection*>& _polylines  );
 
 
-/** This functions returns the object with the given id if it is a PolyLineObject.
+/** This functions returns the object with the given id if it is a Polyline Collection.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
 
 DLLEXPORT
 bool getObject(  int _identifier , PolyLineCollectionObject*& _object );
 
-/** \brief Get a poly Line from an object.
+/** \brief Get a polyLine Collection from an object.
  *
- * @param _object The object should be of type BaseDataObject. If the content is a poly Line, a
- *                poly line will be returned. Otherwise a NULL pointer is returned.
+ * @param _object The object should be of type BaseDataObject. If the content is a Polyline Collection, a
+ *                Polyline Collection will be returned. Otherwise a NULL pointer is returned.
  */
 
 DLLEXPORT
 PolyLineCollection* polyLineCollection( BaseObjectData* _object );
 
-/** \brief Cast an BaseObject to a PolyLineObject if possible
+/** \brief Cast an BaseObject to a Polyline Collection Object if possible
  *
- * @param _object The object should be of type BaseDataObject. If the content is a polyLine, a
- *                a PolyLineObject is returned. Otherwise a NULL pointer is returned.
+ * @param _object The object should be of type BaseDataObject. If the content is a Polyline Collection, a
+ *                a Polyline Collection Object is returned. Otherwise a NULL pointer is returned.
  */
 
 DLLEXPORT
 PolyLineCollectionObject* polyLineCollectionObject( BaseObjectData* _object );
 
-/** \brief Get an PolyLineObject from the given id If possible
+/** \brief Get an Polyline Collection Object from the given id If possible
 *
-* @param _objectId Id of the requested Object. If the content is a volume, a
-*                  a PolyLineObject is returned. Otherwise a NULL pointer is returned.
+* @param _objectId Id of the requested Object. If the content is a Polyline Collection,
+*                  a Polyline Collection Object is returned. Otherwise a NULL pointer is returned.
 */
 
 DLLEXPORT
@@ -130,5 +129,3 @@ PolyLineCollectionObject* polyLineCollectionObject( int _objectId );
 
 }
 
-
-#endif // PLUGIN_FUNCTIONS_POLYLINE_COLLECTION_HH

@@ -115,6 +115,32 @@ void FloatingSubtreeNode::setModelViewOverride(GLMatrixd modelview_override) {
    modelview_override_inv_.invert();
 }
 
+void FloatingSubtreeNode::boundingBox(Vec3d &_bbMin, Vec3d &_bbMax) {
+    if (enable_modelview_override_) {
+        if (status() != BaseNode::HideChildren) {
+            BoundingBoxAction action;
+            BaseNode::ChildIter cIt, cEnd(childrenEnd());
+
+            // Process all children which are not second pass
+            for (cIt = childrenBegin(); cIt != cEnd; ++cIt)
+                if (~(*cIt)->traverseMode() & BaseNode::SecondPass)
+                    traverse(*cIt, action);
+
+            // Process all children which are second pass
+            for (cIt = childrenBegin(); cIt != cEnd; ++cIt)
+                if ((*cIt)->traverseMode() & BaseNode::SecondPass)
+                    traverse(*cIt, action);
+
+            // Transform bounding box to view space
+            Vec3d minVS = modelview_override_.transform_point(action.bbMin());
+            Vec3d maxVS = modelview_override_.transform_point(action.bbMax());
+
+            _bbMin.minimize(minVS);
+            _bbMax.maximize(maxVS);
+        }
+    }
+}
+
 } /* namespace Scenegraph */
 } /* namespace ACG */
 

@@ -753,9 +753,9 @@ DrawMeshT<Mesh>::rebuild()
 template <class Mesh>
 void
 DrawMeshT<Mesh>::readVertex(size_t _vertex,
-                            const typename Mesh::VertexHandle _vh,
-                            const typename Mesh::HalfedgeHandle _hh,
-                            const typename Mesh::FaceHandle _fh)
+                            const typename Mesh::VertexHandle&   _vh,
+                            const typename Mesh::HalfedgeHandle& _hh,
+                            const typename Mesh::FaceHandle&     _fh)
 {
   static const typename Mesh::HalfedgeHandle invalidHEH(-1);
   static const typename Mesh::FaceHandle     invalidFH(-1);
@@ -831,7 +831,7 @@ DrawMeshT<Mesh>::readVertex(size_t _vertex,
 
 template <class Mesh>
 unsigned int
-DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle _vh)
+DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle& _vh)
 {
   static const typename Mesh::VertexHandle     invalidVH(-1);
 
@@ -853,7 +853,7 @@ DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle _vh)
 
 template <class Mesh>
 unsigned int
-DrawMeshT<Mesh>::getFaceColor(const typename Mesh::FaceHandle _fh)
+DrawMeshT<Mesh>::getFaceColor(const typename Mesh::FaceHandle& _fh)
 {
   static const typename Mesh::FaceHandle     invalidFH(-1);
 

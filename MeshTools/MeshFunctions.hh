@@ -120,8 +120,8 @@ void smooth_boundary(MeshT& _mesh ,
 */
 template < typename MeshT >
 bool neighbour(const MeshT& _mesh , 
-                         const typename MeshT::FaceHandle _fh1 , 
-                         const typename MeshT::FaceHandle _fh2 );
+               const typename MeshT::FaceHandle& _fh1 ,
+               const typename MeshT::FaceHandle& _fh2 );
 
 /**
    Checks if plane cuts the face
@@ -153,7 +153,7 @@ calc_area( const MeshT& _mesh);
     */
 template < typename MeshT >
 double 
-calc_angle_around( const MeshT& _mesh , const typename MeshT::VertexHandle _vh);
+calc_angle_around( const MeshT& _mesh , const typename MeshT::VertexHandle& _vh);
 
 /**
  * Transform geometry of the mesh using the specified

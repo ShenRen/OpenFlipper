@@ -217,7 +217,7 @@ public:
   
   /// drawing the primitive
   void draw(GLState& _state, const DrawModes::DrawMode& _drawMode);
-  void draw_obj(int _idx) const;
+  void draw_obj(size_t _idx) const;
   
   /// picking
   void pick(GLState& _state, PickTarget _target);

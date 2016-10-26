@@ -1,7 +1,7 @@
 /*===========================================================================*\
  *                                                                           *
  *                              OpenFlipper                                  *
- *           Copyright (c) 2001-2016, RWTH-Aachen University                 *
+ *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
  *                            www.openflipper.org                            *
@@ -39,92 +39,51 @@
  *                                                                           *
 \*===========================================================================*/
 
-#ifndef ACG_SCENEGRAPH_FLOATINGSUBTREENODE_HH_
-#define ACG_SCENEGRAPH_FLOATINGSUBTREENODE_HH_
 
-/*
- * This class is available on C++11 compilers only.
- */
-#if (defined(_MSC_VER) && (_MSC_VER >= 1900)) || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__)
 
-#include <ACG/Math/GLMatrixT.hh>
-#include <ACG/Scenegraph/BaseNode.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
+#include "TypePolyLineCollection.hh"
+#include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 
-namespace ACG {
-namespace SceneGraph {
+TypePolyLineCollectionPlugin::TypePolyLineCollectionPlugin() {
 
-/**
- * Nodes in the subtree rooted at an instance of this class will float over
- * the scene.
- *
- * More precisely, a fixed model view matrix is set for the entire subtree,
- * (i.e. the transformation of the subtree will be independent of the viewport)
- * and the (assuming a modern IRenderer based renderer is used) the overlay
- * flag of all render objects emitted by the subtree is set (i.e. any render
- * objects of the subtree will be rendered in a second pass unaffected by
- * the z-buffer of non-overlayed render objects).
- */
-class ACGDLLEXPORT FloatingSubtreeNode : public BaseNode {
-    public:
-        ACG_CLASSNAME(FloatingSubtreeNode);
+}
 
-        FloatingSubtreeNode(GLMatrixd modelview_override,
-                BaseNode *_parent = 0,
-                const std::string &_name = "<ModelViewOverrideNode>");
+bool TypePolyLineCollectionPlugin::registerType() {
+  addDataType("PolyLineCollection",tr("PolyLineCollection"));
+  setTypeIcon( "PolyLineCollection", "PolyLineCollectionType.png");
+  return true;
+}
 
-        virtual ~FloatingSubtreeNode();
+int TypePolyLineCollectionPlugin::addEmpty(){
 
-        void setModelViewOverride(GLMatrixd modelview_override);
+  // new object data struct
+  PolyLineCollectionObject * object = new PolyLineCollectionObject();
 
-        const GLMatrixd &modelViewOverride() const {
-            return modelview_override_;
-        }
+  if ( PluginFunctions::objectCount() == 1 )
+    object->target(true);
 
-        void enableModelViewOverride(bool value) {
-            enable_modelview_override_ = value;
-        }
+  if (PluginFunctions::targetCount() == 0 )
+    object->target(true);
 
-        bool isModelViewOverrideEnabled() {
-            return enable_modelview_override_;
-        }
+  QString name = tr("New PolyLineCollection %1.pol").arg( object->id() );
 
-        void enableOverlay(bool value) {
-            enable_overlay_ = value;
-        }
+  // call the local function to update names
+  QFileInfo f(name);
+  object->setName( f.fileName() );
 
-        bool isOverlayEnabled() {
-            return enable_overlay_;
-        }
+  object->update();
 
-        void enter(GLState &_state,
-                const DrawModes::DrawMode &_drawMode) override;
+  object->show();
 
-        void enter(IRenderer* _renderer, GLState& _state,
-                const DrawModes::DrawMode& _drawMode) override;
+  emit log(LOGINFO, object->getObjectinfo());
 
-        void leave(GLState &_state,
-                const DrawModes::DrawMode &_drawMode) override;
+  emit emptyObjectAdded (object->id() );
 
-        void leave(IRenderer* _renderer, GLState& _state,
-                const DrawModes::DrawMode& _drawMode) override;
+  return object->id();
+}
 
-        void enterPick(GLState &_state, PickTarget _target,
-                const DrawModes::DrawMode &_drawMode) override;
+#if QT_VERSION < 0x050000
+  Q_EXPORT_PLUGIN2( typepolylinecollectionplugin , TypePolyLineCollectionPlugin );
+#endif
 
-        void leavePick(GLState &_state, PickTarget _target,
-                const DrawModes::DrawMode &_drawMode) override;
 
-        void boundingBox(Vec3d &_bbMin, Vec3d &_bbMax) override;
-
-    private:
-        GLMatrixd modelview_override_, modelview_override_inv_;
-        bool enable_modelview_override_, enable_overlay_;
-};
-
-} /* namespace Scenegraph */
-} /* namespace ACG */
-
-#endif /* C++11 */
-
-#endif /* ACG_SCENEGRAPH_FLOATINGSUBTREENODE_HH_ */

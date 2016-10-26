@@ -118,6 +118,7 @@ public:
 
   /// Trigger an update of the vbo
   void update() { updateVBO_ = true; };
+  void resetVBO() {offsets_.clear();}
 
 private:
 

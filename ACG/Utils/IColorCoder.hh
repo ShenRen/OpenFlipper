@@ -7,7 +7,7 @@
 
 namespace ACG {
 
-class IColorCoder {
+class ACGDLLEXPORT IColorCoder {
 public:
     virtual ~IColorCoder() = default;
 

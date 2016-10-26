@@ -84,7 +84,7 @@ protected:
 // the biggest integer type already, we should to fall back to double anyways.
 
 template<typename T>
-class HistogramT : public Histogram {
+class ACGDLLEXPORT HistogramT : public Histogram {
 public:
     HistogramT(const std::vector<int> &histogram,
                const std::vector<T> &bin_boundaries,

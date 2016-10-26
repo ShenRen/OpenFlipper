@@ -5,7 +5,7 @@
 
 namespace ACG {
 
-class LinearTwoColorCoder : public IColorCoder {
+class ACGDLLEXPORT LinearTwoColorCoder : public IColorCoder {
 public:
     LinearTwoColorCoder(ACG::Vec4f minColor, ACG::Vec4f maxColor)
         : minColor_(minColor),

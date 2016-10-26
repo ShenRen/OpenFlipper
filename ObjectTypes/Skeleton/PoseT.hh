@@ -135,7 +135,7 @@ public:
    * @param _index The new joint is inserted at this position. Insert new joints at the end by passing
    *               SkeletonT<>::jointCount() as parameter.
    */
-  virtual void insertJointAt(unsigned int _index);
+  virtual void insertJointAt(size_t _index);
 
   /**
    * \brief Called by the skeleton/animation as a joint is removed
@@ -148,7 +148,7 @@ public:
    * @param _index The new joint is inserted at this position. Insert new joints at the end by passing
    *         SkeletonT<>::jointCount() as parameter.
    */
-  virtual void removeJointAt(unsigned int _index);
+  virtual void removeJointAt(size_t _index);
 
   /** @} */
 
@@ -161,8 +161,8 @@ protected:
     * @{ */
   // =======================================================================================
 
-  void updateFromLocal(unsigned int _joint, bool _keepChildPositions=true);
-  void updateFromGlobal(unsigned int _joint, bool _keepChildPositions=true);
+  void updateFromLocal(size_t _joint, bool _keepChildPositions=true);
+  void updateFromGlobal(size_t _joint, bool _keepChildPositions=true);
 
   /** @} */
   
@@ -175,9 +175,9 @@ public:
     * @{ */
   // =======================================================================================
 
-  inline const Matrix&         unifiedMatrix(unsigned int _joint);
-  inline const Quaternion&     unifiedRotation(unsigned int _joint);
-  inline const DualQuaternion& unifiedDualQuaternion(unsigned int _joint);
+  inline const Matrix&         unifiedMatrix(size_t _joint);
+  inline const Quaternion&     unifiedRotation(size_t _joint);
+  inline const DualQuaternion& unifiedDualQuaternion(size_t _joint);
 
   /** @} */
 

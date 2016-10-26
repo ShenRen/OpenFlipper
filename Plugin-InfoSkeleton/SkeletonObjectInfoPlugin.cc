@@ -109,7 +109,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
   // ID
   info_->id->setText( locale.toString(_objectId) );
   // Joints
-  info_->joints->setText( locale.toString( _skeleton->jointCount() ) );
+  info_->joints->setText( QString::number( _skeleton->jointCount() ) );
 
 
   // animation list with animation names and the frame count
@@ -117,7 +117,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
   QString animationInfo;
   unsigned int aniCount = _skeleton->animationCount();
 
-  for (unsigned int i = 0; i < aniCount; ++i) {
+  for (size_t i = 0; i < aniCount; ++i) {
     std::string aniName = _skeleton->animationName(i);
     animationInfo = "Name: " + QString(aniName.c_str())
                      + " : Frames: " + locale.toString(_skeleton->animation(aniName)->frameCount());

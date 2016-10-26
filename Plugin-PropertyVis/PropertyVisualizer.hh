@@ -181,11 +181,10 @@ public:
 
 protected:
     virtual ACG::IColorCoder *buildColorCoder();
-#ifdef ENABLE_PROPVIS_HISTOGRAMS
+
     template<typename PropType, typename Iterable>
     void showHistogramT(ACG::QtWidgets::QtHistogramWidget *widget,
                        Iterable data);
-#endif
 
     PropertyInfo propertyInfo;
 
@@ -193,7 +192,6 @@ public:
     QWidget* widget;
 };
 
-#ifdef ENABLE_PROPVIS_HISTOGRAMS
 template<typename PropType, typename Iterable>
 void PropertyVisualizer::showHistogramT(
         ACG::QtWidgets::QtHistogramWidget *widget,
@@ -205,6 +203,5 @@ void PropertyVisualizer::showHistogramT(
     ACG::Histogram *hist = new ACG::HistogramT<PropType>(data.begin(), data.end(), max_bins);
     widget->setHistogram(hist);
 }
-#endif
 
 #endif /* PROPERTY_VISUALIZER_HH */

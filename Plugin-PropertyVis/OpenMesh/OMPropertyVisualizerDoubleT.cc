@@ -60,10 +60,9 @@ OMPropertyVisualizerDouble<MeshT>::OMPropertyVisualizerDouble(MeshT* _mesh, Prop
     DoubleWidget* w = new DoubleWidget();
     w->paramDouble->setTitle(QString("Double Parameters of ").append(PropertyVisualizer::propertyInfo.propName().c_str()));
     PropertyVisualizer::widget = w;
-#ifdef ENABLE_PROPVIS_HISTOGRAMS
+
     this->connect(w->computeHistogramButton, &QPushButton::clicked,
                   [this, w](){this->template showHistogram<double>(w->histogram);});
-#endif
 }
 
 template <typename MeshT>

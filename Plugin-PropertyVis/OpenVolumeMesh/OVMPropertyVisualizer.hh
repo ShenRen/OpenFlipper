@@ -99,11 +99,9 @@ public:
     /// Returns the ID of the closest primitive.
     unsigned int getClosestPrimitiveId(unsigned int _face, ACG::Vec3d &_hitPoint);
 
-#ifdef ENABLE_PROPVIS_HISTOGRAMS
 protected slots:
     template <typename Type>
     void showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget);
-#endif
 
 protected:
     MeshT* mesh;

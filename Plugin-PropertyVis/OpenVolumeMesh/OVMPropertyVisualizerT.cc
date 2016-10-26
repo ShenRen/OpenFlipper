@@ -409,8 +409,6 @@ void OVMPropertyVisualizer<MeshT>::setVertexPropertyFromText(unsigned int /*inde
     emit log(LOGERR, "Setting VertexProp not implemented for this property type");
 }
 
-#ifdef ENABLE_PROPVIS_HISTOGRAMS
-
 template<typename MeshT>
 template<typename Type>
 void OVMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget) {
@@ -452,6 +450,5 @@ void OVMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidg
         assert(false);
     }
 }
-#endif
 
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

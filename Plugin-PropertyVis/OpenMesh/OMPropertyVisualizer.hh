@@ -140,10 +140,8 @@ protected:
     template <typename InnerType >
     QString getPropertyText_(unsigned int index);
 
-#ifdef ENABLE_PROPVIS_HISTOGRAMS
     template<typename Type>
     void showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget);
-#endif
 
 private:
     template<typename PropHandleT>

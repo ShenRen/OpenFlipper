@@ -27,9 +27,4 @@ if(OPENVOLUMEMESH_FOUND)
   endif()
 endif()
 
-find_package(CXX11)
-if(CXX11_FLAG_DETECTED)
-    add_definitions (-DENABLE_PROPVIS_HISTOGRAMS)
-endif()
-
 openflipper_plugin (INSTALLDATA Icons DIRS OpenMesh OpenVolumeMesh Widgets DEPS OpenMesh OpenVolumeMesh)

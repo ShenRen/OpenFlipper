@@ -425,8 +425,6 @@ void OMPropertyVisualizer<MeshT>::setVertexPropertyFromText(unsigned int index, 
 }
 
 
-#ifdef ENABLE_PROPVIS_HISTOGRAMS
-
 template<typename MeshT>
 template<typename Type>
 void OMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget) {
@@ -476,6 +474,3 @@ void OMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidge
         assert(false);
     }
 }
-#endif
-
-

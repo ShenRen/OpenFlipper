@@ -49,6 +49,7 @@
 #include <memory>
 #include <exception>
 #include <algorithm>
+#include <type_traits>
 
 #include <QString>
 
@@ -103,9 +104,8 @@ public:
     template<typename IterT>
     HistogramT(IterT begin, IterT end, size_t max_bins)
     {
-#if __cplusplus > 201103L
-        static_assert(std::is_same<T, typename IterT::value_type>::value, "Iter and T are incompatible");
-#endif
+        static_assert(std::is_same<T, typename IterT::value_type>::value, "IterT incompatible with T.");
+        static_assert(std::is_floating_point<typename IterT::value_type>::value, "HistogramT currently only supports floating point values.");
         assert(max_bins > 0);
         const size_t n = std::distance(begin, end);
         if (n == 0) return;
@@ -122,10 +122,10 @@ public:
         T last_boundary = min;
         bin_boundaries_.push_back(min);
         for (size_t i = 1; i < n_bins_max; ++i) {
-            // adding range/n_bins to a accumulator might seem more efficient/elegant,
-            // but might cause numeric issues if the bins are very small
+            // Adding range/n_bins to a accumulator might seem more efficient/elegant,
+            // but might cause numeric issues.
 
-            // this multiplication order is bad for huge ranges that cause overflows,
+            // This multiplication order is bad for huge ranges that cause overflows,
             // however I assume tiny ranges are more common than huge values and more
             // important to get right. If you disagree, add a case distinction or something better.
 
@@ -137,7 +137,7 @@ public:
             }
             last_boundary = boundary;
         }
-        bin_boundaries_.push_back(max); // avoid rounding issues etc.
+        bin_boundaries_.push_back(max); // avoid rounding issues etc by explicitly picking max.
         bin_widths_.push_back(max - last_boundary);
 
         bin_boundaries_.shrink_to_fit();
@@ -148,11 +148,6 @@ public:
         // if we handle integral types (relative size difference worst case: bin width 1 vs 2).
         // Be careful to select the right bin.
         std::for_each(begin, end, [&](const T &val) {
-            //size_t bin = n_bins * (static_cast<double>(val) - min_dbl) / max;
-            //assert (bin >= 0 && bin < n_bins);
-            //assert (val >= bin_boundaries_[bin] && (val < bin_boundaries_[bin+1] || val == max));
-            //++bins_[bin];
-
             auto it = std::upper_bound(bin_boundaries_.begin(), bin_boundaries_.end(), val);
             if (it == bin_boundaries_.end()) --it; // the last value is exactly max!
             size_t idx = std::distance(bin_boundaries_.begin(), it);

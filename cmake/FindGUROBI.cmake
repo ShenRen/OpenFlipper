@@ -33,14 +33,15 @@ find_path(GUROBI_INCLUDE_DIR
 
 find_library( GUROBI_LIBRARY 
               NAMES gurobi
+                    gurobi70
                     gurobi65
-	            gurobi60
+                    gurobi60
                     gurobi56
                     gurobi55
                     gurobi51
                     gurobi50 
-        		    gurobi46
-				    gurobi45
+                    gurobi46
+                    gurobi45
 
               PATHS "$ENV{GUROBI_HOME}/lib" 
                     "/Library/gurobi562/mac64/lib"

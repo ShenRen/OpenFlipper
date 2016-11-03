@@ -45,3 +45,11 @@ VS2013-Qt-5.5.1-x64:
   artifacts:
     paths:
       - rel/*.exe
+
+Mac-C++11:
+  script: "CI/ci-mac.sh"
+  tags:
+    - Apple
+  artifacts:
+    paths:
+       build-release/*.dmg

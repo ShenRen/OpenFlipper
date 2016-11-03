@@ -65,7 +65,7 @@
 
 #if defined(ARCH_DARWIN)
 
-  #include <gl/glew.h>
+  #include <GL/glew.h>
 
 #elif defined(WIN32)
 

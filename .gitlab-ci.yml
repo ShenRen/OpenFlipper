@@ -52,4 +52,4 @@ Mac-Cpp11:
     - Apple
   artifacts:
     paths:
-       build-release/*.dmg
+      - build-release/*.dmg

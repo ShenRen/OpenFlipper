@@ -48,6 +48,9 @@ VS2013-Qt-5.5.1-x64:
 
 Mac-Cpp11:
   script: "CI/ci-mac.sh"
+  cache:
+    paths:
+      - build-release/
   tags:
     - Apple
   artifacts:

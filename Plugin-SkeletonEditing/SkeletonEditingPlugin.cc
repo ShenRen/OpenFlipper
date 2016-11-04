@@ -298,7 +298,7 @@ bool SkeletonEditingPlugin::canModify(QMouseEvent* _event)
 		return true;
 
 	// try to select a joint from which the insertion should be started
-	unsigned int    node_idx, target_idx;
+	size_t          node_idx, target_idx;
 	ACG::Vec3d      hitPoint;
 	BaseObjectData* object;
 
@@ -537,7 +537,7 @@ void SkeletonEditingPlugin::slotRotateManipulator(bool _toggled)
  * @param _event  mouseEvent that occured
  */
 void SkeletonEditingPlugin::placeManip(QMouseEvent * _event) {
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     OpenMesh::Vec3d hitPoint;
     BaseObjectData* object;
 
@@ -902,7 +902,7 @@ void SkeletonEditingPlugin::deleteJoint(QMouseEvent* _event)
 {
   if ( (_event->type() == QEvent::MouseButtonPress) || (_event->type() == QEvent::MouseButtonRelease) ){
     // only select the joint on mousePress
-    unsigned int    node_idx, target_idx;
+    size_t          node_idx, target_idx;
     ACG::Vec3d      hitPoint;
     BaseObjectData* object;
 
@@ -994,7 +994,7 @@ void SkeletonEditingPlugin::splitJoint(QMouseEvent* _event)
 			return;
 
 		// try to select a joint from which the insertion should be started
-		unsigned int    node_idx, target_idx;
+		size_t          node_idx, target_idx;
 		ACG::Vec3d      hitPoint;
 		BaseObjectData* object;
 
@@ -1039,7 +1039,7 @@ void SkeletonEditingPlugin::insertJoint(QMouseEvent* _event)
 
     // try to select a joint from which the insertion should be started
     //
-    unsigned int    node_idx, target_idx;
+    size_t          node_idx, target_idx;
     ACG::Vec3d      hitPoint;
     BaseObjectData* object;
 
@@ -1086,7 +1086,7 @@ void SkeletonEditingPlugin::insertJoint(QMouseEvent* _event)
     }
 
     // add a new skeleton at this position
-    unsigned int    node_idx, target_idx;
+    size_t          node_idx, target_idx;
     ACG::Vec3d      lastHitPoint(0.0, 0.0, 0.0);
 
     // first try to pick something
@@ -1173,7 +1173,7 @@ void SkeletonEditingPlugin::insertJoint(QMouseEvent* _event)
       // CASE 1 : this is a release on a joint from which the insertion should be started
       if ( !jointPreview_ ){
         // in
-        unsigned int    node_idx, target_idx;
+        size_t          node_idx, target_idx;
         ACG::Vec3d      hitPoint;
         BaseObjectData* object;
 
@@ -1377,7 +1377,7 @@ void SkeletonEditingPlugin::selectJoint(QMouseEvent* _event)
 
   if ( _event->type() == QEvent::MouseButtonRelease ){
 
-    unsigned int    node_idx, target_idx;
+    size_t          node_idx, target_idx;
     ACG::Vec3d      hitPoint;
     BaseObjectData* object;
 

@@ -64,7 +64,7 @@ public:
 	ACG::Vec3d      circleSideAxis_;
 	double          circleMainRadius_;
 	double          circleSideRadius_;
-	unsigned int    circleMeshIndex_;
+	size_t          circleMeshIndex_;
 
 public:
 	PolyLineCircleData(ACG::Vec3d center, ACG::Vec3d normal, ACG::Vec3d mainAxis, ACG::Vec3d sideAxis, double mainR, double sideR, unsigned int mesh);

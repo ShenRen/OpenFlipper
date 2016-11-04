@@ -249,7 +249,7 @@ void TopologyPlugin::add_face(QMouseEvent* _event) {
   if (( _event->type() != QEvent::MouseButtonPress) && (_event->type() != QEvent::MouseButtonDblClick))
     return;
 
-  unsigned int        node_idx, target_idx;
+  size_t           node_idx, target_idx;
   ACG::Vec3d       hit_point;
 
   if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),node_idx, target_idx, &hit_point)) {
@@ -489,7 +489,7 @@ void TopologyPlugin::split_face(QMouseEvent* _event) {
    if ( _event->type() != QEvent::MouseButtonPress )
       return;
 
-   unsigned int     target_idx;
+   size_t           target_idx;
    ACG::Vec3d       hit_point;
 
    BaseObjectData* object = 0;
@@ -548,7 +548,7 @@ void TopologyPlugin::delete_face(QMouseEvent* _event) {
    if ( _event->type() != QEvent::MouseButtonPress )
       return;
 
-   unsigned int        node_idx, target_idx;
+   size_t           node_idx, target_idx;
    ACG::Vec3d       hit_point;
 
    if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),node_idx, target_idx, &hit_point)) {
@@ -597,7 +597,7 @@ void TopologyPlugin::flip_edge(QMouseEvent* _event) {
    if ( _event->type() != QEvent::MouseButtonPress )
       return;
 
-   unsigned int        node_idx, target_idx;
+   size_t           node_idx, target_idx;
    ACG::Vec3d       hit_point;
 
    if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),node_idx, target_idx, &hit_point)) {
@@ -662,7 +662,7 @@ void TopologyPlugin::collapse_edge(QMouseEvent* _event) {
    if ( _event->type() != QEvent::MouseButtonPress )
       return;
 
-   unsigned int        node_idx, target_idx;
+   size_t           node_idx, target_idx;
    ACG::Vec3d       hit_point;
 
    if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),node_idx, target_idx, &hit_point)) {
@@ -775,7 +775,7 @@ void TopologyPlugin::split_edge(QMouseEvent* _event) {
    if ( _event->type() != QEvent::MouseButtonPress )
       return;
 
-   unsigned int        node_idx, target_idx;
+   size_t           node_idx, target_idx;
    ACG::Vec3d       hit_point;
 
    if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),node_idx, target_idx, &hit_point)) {

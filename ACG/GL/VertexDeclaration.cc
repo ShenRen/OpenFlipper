@@ -307,9 +307,9 @@ unsigned int VertexDeclaration::getNumElements() const
 }
 
 
-unsigned int VertexDeclaration::getGLTypeSize(unsigned int _type)
+size_t VertexDeclaration::getGLTypeSize(unsigned int _type)
 {
-  unsigned int size = 0;
+  size_t size = 0;
 
   switch (_type)
   {
@@ -341,7 +341,7 @@ unsigned int VertexDeclaration::getGLTypeSize(unsigned int _type)
 
 
 
-unsigned int VertexDeclaration::getElementSize(const VertexElement* _pElement)
+size_t VertexDeclaration::getElementSize(const VertexElement* _pElement)
 {
   return _pElement ? getGLTypeSize(_pElement->type_) * _pElement->numElements_ : 0;
 }

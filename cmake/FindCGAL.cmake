@@ -40,6 +40,11 @@ ENDIF( NOT APPLE )
 
 MARK_AS_ADVANCED(CGAL_INCLUDE_DIR)
 
+if ("${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}" MATCHES ".*clang.*")
+    SET(CXX_IS_CLANG true)
+else()
+    SET(CXX_IS_CLANG false)
+endif()
 
 # Copy the results to the output variables.
 IF(CGAL_INCLUDE_DIR )
@@ -73,8 +78,10 @@ IF(CGAL_INCLUDE_DIR )
                 DOC "Directory containing the CGAL library"
                ) 
     list ( APPEND CGAL_LIBRARIES CGAL CGAL_Core CGAL_ImageIO mpfr )
-    set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frounding-math")
-    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -frounding-math")
+    if (NOT CXX_IS_CLANG)
+        set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frounding-math")
+        set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -frounding-math")
+    endif()
 
   ELSE( WIN32 )
     find_path(CGAL_LIBRARY_DIR
@@ -83,8 +90,9 @@ IF(CGAL_INCLUDE_DIR )
               DOC "Directory containing the CGAL library"
              )
     list ( APPEND CGAL_LIBRARIES CGAL CGAL_Core CGAL_ImageIO) 
-    set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frounding-math")
-    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -frounding-math")
+    if (NOT CXX_IS_CLANG)
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frounding-math")
+    endif()
 
 
     # This is needed to link correctly against lapack

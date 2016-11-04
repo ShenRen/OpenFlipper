@@ -183,7 +183,7 @@ void ObjectPickDialog::activated(const QModelIndex & _index)
 
 void ObjectPickDialog::slotMouseEventClick(QMouseEvent * _event, bool /*_double*/)
 {
-  unsigned int nodeIdx, targetIdx;
+  size_t nodeIdx, targetIdx;
 
 
   if (viewer_->viewer()->pick(ACG::SceneGraph::PICK_ANYTHING, _event->pos(), nodeIdx, targetIdx))

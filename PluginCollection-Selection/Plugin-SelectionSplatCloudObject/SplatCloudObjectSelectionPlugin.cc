@@ -281,7 +281,7 @@ void SplatCloudObjectSelectionPlugin::slotToggleSelection( QMouseEvent *_event, 
   if( (_currentType & allSupportedTypes_) == 0 )
     return;
 
-  unsigned int node_idx, target_idx;
+  size_t node_idx, target_idx;
   ACG::Vec3d hit_point;
 
   // First of all, pick anything to find all possible objects
@@ -319,7 +319,7 @@ void SplatCloudObjectSelectionPlugin::slotSphereSelection( QMouseEvent *_event, 
   if( (_currentType & allSupportedTypes_) == 0 )
     return;
 
-  unsigned int node_idx, target_idx;
+  size_t node_idx, target_idx;
   ACG::Vec3d hit_point;
 
   if( PluginFunctions::scenegraphPick( ACG::SceneGraph::PICK_VERTEX, _event->pos(), node_idx, target_idx, &hit_point) )
@@ -638,7 +638,7 @@ void SplatCloudObjectSelectionPlugin::slotKeyShortcutEvent( int _key, Qt::Keyboa
 void SplatCloudObjectSelectionPlugin::lassoSelect( QRegion &_region, PrimitiveType _primitiveType, bool _deselection )
 {
   // <object id, primitive id>
-  QList< QPair<unsigned int,unsigned int> > list;
+  QList< QPair<size_t,size_t> > list;
 
   if( _primitiveType & vertexType_)
   {

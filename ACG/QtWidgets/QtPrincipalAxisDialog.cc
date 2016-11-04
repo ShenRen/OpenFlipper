@@ -213,7 +213,7 @@ const QtPrincipalAxisDialog::ColorScheme &QtPrincipalAxisDialog::getSelectedColo
 
 void QtPrincipalAxisDialog::setColorScheme(ColorScheme cs) {
     float best_match = std::numeric_limits<float>::infinity();
-    int best_match_i = -1;
+    size_t best_match_i = std::numeric_limits<size_t>::max();
 
     for (size_t i = 0; i < N_COLOR_SCHEMES; ++i) {
         float match = colorSchemeDistance(cs, color_schemes_[i]);

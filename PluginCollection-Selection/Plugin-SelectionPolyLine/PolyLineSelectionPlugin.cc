@@ -278,7 +278,7 @@ void PolyLineSelectionPlugin::slotToggleSelection(QMouseEvent* _event, Selection
     // Return if mouse event is not a left-button click
     if(_event->button() != Qt::LeftButton) return;
      
-    unsigned int node_idx, target_idx;
+    size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
     
     BaseObjectData* object = 0;

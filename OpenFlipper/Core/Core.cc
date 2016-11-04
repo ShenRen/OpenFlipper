@@ -114,7 +114,8 @@ Core() :
   nextBackupId_(0),
   nextBackupGroupId_(0),
   objectRoot_(0),
-  coreWidget_(0)
+  coreWidget_(0),
+  splash_(0)
 {
 
   //init logFile
@@ -608,7 +609,7 @@ Core::init() {
   QStringList optionFiles = OpenFlipper::Options::optionFiles();
   for ( int i = 0 ; i < (int)optionFiles.size(); ++i) {
 
-    if ( OpenFlipper::Options::gui() && OpenFlipperSettings().value("Core/Gui/splash",true).toBool() ) {
+    if (splash_) {
       splash_->showMessage(tr("Loading Configuration File %1/%2").arg(i+1).arg(optionFiles.size()),
                            Qt::AlignBottom | Qt::AlignLeft , Qt::white);
     }
@@ -621,7 +622,7 @@ Core::init() {
     openIniFile( optionFiles[i] ,false,true,false);
   }
 
-  if ( OpenFlipper::Options::gui() && OpenFlipperSettings().value("Core/Gui/splash",true).toBool() )
+  if (splash_)
       splash_->clearMessage();
 
   // ===============================================================================================
@@ -674,7 +675,7 @@ Core::init() {
 
     }
 
-    if ( OpenFlipperSettings().value("Core/Gui/splash",true).toBool() ) {
+    if ( splash_ ) {
         splash_->raise();
         splash_->showMessage(tr("Ready."), Qt::AlignBottom | Qt::AlignLeft , Qt::white);
         finishSplash();
@@ -742,7 +743,7 @@ Core::slotMouseEventIdentify( QMouseEvent* _event )
   PluginFunctions::setActiveExaminer( examinerId );
 
   // Do picking
-  unsigned int   node_idx, target_idx;
+  size_t   node_idx, target_idx;
   ACG::Vec3d     hit_point;
 
   if(PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_ANYTHING, _event->pos(), node_idx, target_idx, &hit_point)) {
@@ -2041,7 +2042,7 @@ void Core::showReducedMenuBar(bool reduced) {
 }
 
 void Core::finishSplash() {
-    splash_->finish(coreWidget_);
+    if (splash_) splash_->finish(coreWidget_);
 }
 
 

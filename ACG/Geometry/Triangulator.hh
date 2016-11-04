@@ -80,7 +80,7 @@ public:
   /** \brief Get number of triangles
    * @return number of triangles after triangulation
   */
-  int numTriangles() const { return numTris_; }
+  size_t numTriangles() const { return numTris_; }
 
   /** \brief Get local vertex index 
    *
@@ -106,7 +106,7 @@ public:
   * A reflex vertex is a vertex with an inner angle larger than 180 deg.
   * @return number of reflex vertices
   */
-  int numReflexVertices() const { return numReflexVertices_; }
+  size_t numReflexVertices() const { return numReflexVertices_; }
 
   /** \brief Check if a vertex is reflex
   *
@@ -120,7 +120,7 @@ public:
   *
   * @return success true or false
   */
-  bool success() const { return !status_; }
+  bool success() const { return ok_; }
 
 
 private:
@@ -134,8 +134,8 @@ private:
   int earClippingN3();
 
 
-  // disable assignment operator
-  Triangulator& operator=(const Triangulator&){ return *this;  }
+  // disable implicit assignment operator
+  Triangulator& operator=(const Triangulator&) = delete;
 
 
   float triangleAreaSign(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2) const;
@@ -169,12 +169,12 @@ private:
   void addEar(RingVertex* _earTip);
 
 
-  const int polySize_;
-  int numRemaningVertices_;
-  int numTris_;
-  int numReflexVertices_;
+  const size_t polySize_;
+  size_t numRemaningVertices_;
+  size_t numTris_;
+  size_t numReflexVertices_;
 
-  int status_;
+  bool ok_;
   bool convex_;
 
 

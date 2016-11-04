@@ -454,7 +454,7 @@ DrawMeshT<Mesh>::rebuild()
     // read all vertices
     for (size_t i = 0; i < numVerts_; ++i)
       readVertex(i,
-                 mesh_.vertex_handle(i), 
+                 mesh_.vertex_handle(static_cast<unsigned int>(i)),
                  (typename Mesh::HalfedgeHandle)(-1), 
                  (typename Mesh::FaceHandle)(-1));
 
@@ -513,7 +513,7 @@ DrawMeshT<Mesh>::rebuild()
         #pragma omp parallel for
       #endif
     #endif
-    for (unsigned int i = 0; i < numVerts_; ++i)
+    for (size_t i = 0; i < numVerts_; ++i)
     {
       // just pick one face, srews up face colors here so color updates need a full rebuild
       const typename Mesh::HalfedgeHandle hh = mapToHalfedgeHandle(i);
@@ -626,7 +626,7 @@ DrawMeshT<Mesh>::rebuild()
 
         if (baseProp)
         {
-          int numAttribs = baseProp->n_elements();
+          size_t numAttribs = baseProp->n_elements();
           const void* attribData = propDesc->propDataPtr_; 
 
           meshComp_->setAttribVec( propDesc->declElementID_, numAttribs, attribData );
@@ -752,10 +752,10 @@ DrawMeshT<Mesh>::rebuild()
 
 template <class Mesh>
 void
-DrawMeshT<Mesh>::readVertex(unsigned int _vertex,
-                            const typename Mesh::VertexHandle _vh,
-                            const typename Mesh::HalfedgeHandle _hh,
-                            const typename Mesh::FaceHandle _fh)
+DrawMeshT<Mesh>::readVertex(size_t _vertex,
+                            const typename Mesh::VertexHandle&   _vh,
+                            const typename Mesh::HalfedgeHandle& _hh,
+                            const typename Mesh::FaceHandle&     _fh)
 {
   static const typename Mesh::HalfedgeHandle invalidHEH(-1);
   static const typename Mesh::FaceHandle     invalidFH(-1);
@@ -831,7 +831,7 @@ DrawMeshT<Mesh>::readVertex(unsigned int _vertex,
 
 template <class Mesh>
 unsigned int
-DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle _vh)
+DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle& _vh)
 {
   static const typename Mesh::VertexHandle     invalidVH(-1);
 
@@ -853,7 +853,7 @@ DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle _vh)
 
 template <class Mesh>
 unsigned int
-DrawMeshT<Mesh>::getFaceColor(const typename Mesh::FaceHandle _fh)
+DrawMeshT<Mesh>::getFaceColor(const typename Mesh::FaceHandle& _fh)
 {
   static const typename Mesh::FaceHandle     invalidFH(-1);
 
@@ -1389,18 +1389,18 @@ void DrawMeshT<Mesh>::draw(std::map< int, GLuint>* _textureMap, bool _nonindexed
           ACG::GLState::bindTexture(GL_TEXTURE_2D, (*_textureMap)[sub->id]);
 
         if (!_nonindexed)
-          glDrawElements(GL_TRIANGLES, sub->numTris * 3, indexType_,
+          glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sub->numTris * 3), indexType_,
             (GLvoid*)( (size_t)sub->startIndex * (indexType_ == GL_UNSIGNED_INT ? 4 : 2))); // offset in bytes
         else
-          glDrawArrays(GL_TRIANGLES, sub->startIndex, sub->numTris * 3);
+          glDrawArrays(GL_TRIANGLES, sub->startIndex, static_cast<GLsizei>(sub->numTris * 3));
       }
     }
     else
     {
       if (!_nonindexed)
-        glDrawElements(GL_TRIANGLES, numTris_ * 3, indexType_, 0);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numTris_ * 3), indexType_, 0);
       else
-        glDrawArrays(GL_TRIANGLES, 0, numTris_ * 3);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(numTris_ * 3));
     }
   }
 
@@ -1460,10 +1460,10 @@ void ACG::DrawMeshT<Mesh>::addTriRenderObjects(IRenderer* _renderer, const Rende
         
 
         if (!_nonindexed)
-          ro.glDrawElements(GL_TRIANGLES, sub->numTris * 3, indexType_, 
+          ro.glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sub->numTris * 3), indexType_,
             (GLvoid*)((size_t)sub->startIndex * (indexType_ == GL_UNSIGNED_INT ? 4 : 2))); // offset in bytes
         else
-          ro.glDrawArrays(GL_TRIANGLES, sub->startIndex, sub->numTris * 3);
+          ro.glDrawArrays(GL_TRIANGLES, sub->startIndex, static_cast<GLsizei>(sub->numTris * 3) );
         
         _renderer->addRenderObject(&ro);
       }
@@ -1471,9 +1471,9 @@ void ACG::DrawMeshT<Mesh>::addTriRenderObjects(IRenderer* _renderer, const Rende
     else
     {
       if (!_nonindexed)
-        ro.glDrawElements(GL_TRIANGLES, numTris_ * 3, indexType_, 0);
+        ro.glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(numTris_ * 3), indexType_, 0);
       else
-        ro.glDrawArrays(GL_TRIANGLES,0,  numTris_ * 3);
+        ro.glDrawArrays(GL_TRIANGLES,0,  static_cast<GLsizei>(numTris_ * 3));
       _renderer->addRenderObject(&ro);
     }
   }
@@ -1489,7 +1489,7 @@ void DrawMeshT<Mesh>::drawLines()
   {
     ACG::GLState::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, lineIBO_);
 
-    glDrawElements(GL_LINES, mesh_.n_edges() * 2, indexType_, 0);
+    glDrawElements(GL_LINES, static_cast<GLsizei>(mesh_.n_edges() * 2), indexType_, 0);
   }
 
   unbindBuffers();
@@ -1505,7 +1505,7 @@ void DrawMeshT<Mesh>::addLineRenderObjects(IRenderer* _renderer, const RenderObj
   if (mesh_.n_edges())
   {
     ro.indexBuffer = lineIBO_;
-    ro.glDrawElements(GL_LINES, mesh_.n_edges() * 2, indexType_, 0);
+    ro.glDrawElements(GL_LINES, static_cast<GLsizei>(mesh_.n_edges() * 2), indexType_, 0);
     
     _renderer->addRenderObject(&ro);
   }
@@ -1518,7 +1518,7 @@ void DrawMeshT<Mesh>::drawVertices()
   bindBuffers();
 
   if (numVerts_)
-    glDrawArrays(GL_POINTS, 0, numVerts_);
+    glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(numVerts_));
 
   unbindBuffers();
 }
@@ -1531,7 +1531,7 @@ void DrawMeshT<Mesh>::addPointRenderObjects(IRenderer* _renderer, const RenderOb
 
   if (numVerts_)
   {
-    ro.glDrawArrays(GL_POINTS, 0, numVerts_);
+    ro.glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(numVerts_));
 
     _renderer->addRenderObject(&ro);
   }
@@ -1689,7 +1689,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingVertices_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 
@@ -1724,7 +1724,7 @@ void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, int _
   pickVertexShader_->use();
   getVertexDeclaration()->activateShaderPipeline(pickVertexShader_);
 
-  pickVertexShader_->setUniform("pickVertexOffset", _pickOffset);
+  pickVertexShader_->setUniform("pickVertexOffset", static_cast<GLint>(_pickOffset) );
 
   if (pickVertexMethod_ == 0)
   {
@@ -1738,13 +1738,13 @@ void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, int _
 
   // draw call
   if (pickVertexMethod_ == 0)
-    glDrawArrays(GL_POINTS, 0, getNumVerts());
+    glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(getNumVerts()));
   else
   {
     if (pickVertexIBO_opt() && invVertexMap_)
-      glDrawElements(GL_POINTS, mesh_.n_vertices(), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_POINTS, static_cast<GLsizei>(mesh_.n_vertices()), GL_UNSIGNED_INT, 0);
     else
-      glDrawArrays(GL_POINTS, 0, mesh_.n_vertices());
+      glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(mesh_.n_vertices()));
   }
 
   // restore gl state      
@@ -1960,7 +1960,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingEdges_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingEdges_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingEdges_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 
@@ -1988,11 +1988,11 @@ void ACG::DrawMeshT<Mesh>::drawPickingEdges_opt( const GLMatrixf& _mvp, int _pic
   pickEdgeShader_->use();
   getVertexDeclaration()->activateShaderPipeline(pickEdgeShader_);
 
-  pickEdgeShader_->setUniform("pickVertexOffset", _pickOffset);
+  pickEdgeShader_->setUniform("pickVertexOffset", static_cast<GLint>(_pickOffset) );
   pickEdgeShader_->setUniform("mWVP", _mvp);
 
   // draw call
-  glDrawElements(GL_LINES, mesh_.n_edges() * 2, indexType_, 0);
+  glDrawElements(GL_LINES, static_cast<GLsizei>(mesh_.n_edges() * 2), indexType_, 0);
 
   // restore gl state      
   getVertexDeclaration()->deactivateShaderPipeline(pickEdgeShader_);
@@ -2091,7 +2091,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingFaces_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingFaces_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingFaces_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 
@@ -2137,7 +2137,7 @@ void ACG::DrawMeshT<Mesh>::drawPickingFaces_opt( const GLMatrixf& _mvp, int _pic
   pickFaceShader_->use();
   getVertexDeclaration()->activateShaderPipeline(pickFaceShader_);
 
-  pickFaceShader_->setUniform("pickFaceOffset", _pickOffset);
+  pickFaceShader_->setUniform("pickFaceOffset", static_cast<GLint>(_pickOffset));
   pickFaceShader_->setUniform("triToFaceMap", 0);
 
 #ifdef GL_ARB_texture_buffer_object
@@ -2147,7 +2147,7 @@ void ACG::DrawMeshT<Mesh>::drawPickingFaces_opt( const GLMatrixf& _mvp, int _pic
   pickFaceShader_->setUniform("mWVP", _mvp);
 
   // draw call
-  glDrawElements(GL_TRIANGLES, getNumTris() * 3, getIndexType(), 0);
+  glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(getNumTris() * 3), getIndexType(), 0);
 
   // restore gl state      
   getVertexDeclaration()->deactivateShaderPipeline(pickFaceShader_);
@@ -2255,7 +2255,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingAny_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingAny_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingAny_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 
@@ -2452,7 +2452,7 @@ VertexDeclaration* ACG::DrawMeshT<Mesh>::getVertexDeclaration()
 
 
 template<class Mesh>
-typename Mesh::HalfedgeHandle ACG::DrawMeshT<Mesh>::mapToHalfedgeHandle(int _vertexId)
+typename Mesh::HalfedgeHandle ACG::DrawMeshT<Mesh>::mapToHalfedgeHandle(size_t _vertexId)
 {
   int faceId = -1, cornerId = -1;
 
@@ -2477,10 +2477,10 @@ typename Mesh::HalfedgeHandle ACG::DrawMeshT<Mesh>::mapToHalfedgeHandle(int _ver
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeVertexElement( void* _dstBuf, unsigned int _vertex, unsigned int _stride, unsigned int _elementOffset, unsigned int _elementSize, const void* _elementData )
+void ACG::DrawMeshT<Mesh>::writeVertexElement( void* _dstBuf, size_t _vertex, size_t _stride, size_t _elementOffset, size_t _elementSize, const void* _elementData )
 {
   // byte offset
-  unsigned int offset = _vertex * _stride + _elementOffset;
+  size_t offset = _vertex * _stride + _elementOffset;
 
   // write address
   char* dst = static_cast<char*>(_dstBuf) + offset;
@@ -2490,7 +2490,7 @@ void ACG::DrawMeshT<Mesh>::writeVertexElement( void* _dstBuf, unsigned int _vert
 }
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writePosition( unsigned int _vertex, const ACG::Vec3d& _n )
+void ACG::DrawMeshT<Mesh>::writePosition( size_t _vertex, const ACG::Vec3d& _n )
 {
   // store float3 position
   float f3[3] = {float(_n[0]), float(_n[1]), float(_n[2])};
@@ -2499,7 +2499,7 @@ void ACG::DrawMeshT<Mesh>::writePosition( unsigned int _vertex, const ACG::Vec3d
 }
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeNormal( unsigned int _vertex, const ACG::Vec3d& _n )
+void ACG::DrawMeshT<Mesh>::writeNormal( size_t _vertex, const ACG::Vec3d& _n )
 {
   // store float3 normal
   float f3[3] = {float(_n[0]), float(_n[1]), float(_n[2])};
@@ -2509,22 +2509,22 @@ void ACG::DrawMeshT<Mesh>::writeNormal( unsigned int _vertex, const ACG::Vec3d& 
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeTexcoord( unsigned int _vertex, const ACG::Vec2f& _uv )
+void ACG::DrawMeshT<Mesh>::writeTexcoord( size_t _vertex, const ACG::Vec2f& _uv )
 {
   writeVertexElement(&vertices_[0], _vertex, vertexDecl_->getVertexStride(), offsetTexc_, 8, _uv.data());
 }
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeColor( unsigned int _vertex, unsigned int _color )
+void ACG::DrawMeshT<Mesh>::writeColor( size_t _vertex, unsigned int _color )
 {
   writeVertexElement(&vertices_[0], _vertex, vertexDecl_->getVertexStride(), offsetColor_, 4, &_color);
 }
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::writeVertexProperty( unsigned int _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf )
+void ACG::DrawMeshT<Mesh>::writeVertexProperty( size_t _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf )
 {
-  unsigned int elementSize = VertexDeclaration::getElementSize(_elementDesc);
+  const size_t elementSize = VertexDeclaration::getElementSize(_elementDesc);
 
   writeVertexElement(&vertices_[0], _vertex, vertexDecl_->getVertexStride(), _elementDesc->getByteOffset(), elementSize, _propf.data());
 }

@@ -1461,8 +1461,8 @@ void IRenderer::renderLineThicknessGL42()
     Texture2D* lineColorImg2D = 0;
     TextureBuffer* lineColorImgBuf = 0;
 
-    GLsizei w = prevViewport_[2], h = prevViewport_[3];
-    GLsizei lineBPP = useIntegerTexture ? 4 : 16; // bytes per pixel
+    size_t w = static_cast<size_t>(prevViewport_[2]), h = static_cast<size_t>(prevViewport_[3]);
+    size_t lineBPP = static_cast<size_t>(useIntegerTexture ? 4 : 16); // bytes per pixel
 
 
     if (useBufferTexture)
@@ -1491,7 +1491,7 @@ void IRenderer::renderLineThicknessGL42()
       }
 
       // resize
-      if (lineColorImg2D->getWidth() != w || lineColorImg2D->getHeight() != h)
+      if (lineColorImg2D->getWidth() != static_cast<int>(w) || lineColorImg2D->getHeight() != static_cast<int>(h))
         lineColorImg2D->setData(0,
           useIntegerTexture ? GL_R32UI : GL_RGBA32F,
           w, h, 

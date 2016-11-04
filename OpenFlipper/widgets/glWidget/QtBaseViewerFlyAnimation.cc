@@ -72,7 +72,7 @@ void glViewer::flyTo(const QPoint& _pos, bool _moveBack)
 {
   makeCurrent();
 
-  unsigned int nodeIdx, targetIdx;
+  size_t nodeIdx, targetIdx;
   ACG::Vec3d hitPoint;
 
   if (pick( ACG::SceneGraph::PICK_ANYTHING, _pos, nodeIdx, targetIdx, &hitPoint))

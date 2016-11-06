@@ -183,7 +183,7 @@ public:
   
   /** \brief get the internal mesh
   */
-  Mesh& mesh() const { return mesh_; }
+  const Mesh& mesh() const { return mesh_; }
   
 private:  
   /// The mesh this node works on

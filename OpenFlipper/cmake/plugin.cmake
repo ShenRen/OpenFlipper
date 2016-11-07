@@ -576,8 +576,6 @@ function (_build_openflipper_plugin plugin)
     acg_append_files (ui "*.ui" ${directories})
     acg_append_files (qrc "*.qrc" ${directories})
 
-    target_sources(_qtcreator_add_files PUBLIC ${sources} ${headers})
-
     # remove template cc files from source file list
     acg_drop_templates (sources)
 

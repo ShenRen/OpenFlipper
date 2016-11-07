@@ -146,7 +146,7 @@ RendererInfo* RenderManager::operator[](unsigned int _id) {
 
 }
 
-unsigned int RenderManager::available() {
+size_t RenderManager::available() {
   return availableRenderers_.size();
 }
 
@@ -280,7 +280,7 @@ PostProcessorInfo* PostProcessorManager::operator[](unsigned int _id ) {
 
 }
 
-unsigned int PostProcessorManager::available() {
+size_t PostProcessorManager::available() {
   return availablePostProcessors_.size();
 }
 

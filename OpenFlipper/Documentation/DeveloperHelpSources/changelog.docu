@@ -2,6 +2,8 @@
 
 
 - <b>OpenFlipper 4.0 ( ?/?/? )</b>
+     - <b>Breaking changes</b>
+         - Picking functions use size_t instead of unsigned int now (Required to get rid of a lot of warnings during compilation)
      - <b>Build System</b>
          - Enable C++-11 by default
          - Drop support for Qt 4

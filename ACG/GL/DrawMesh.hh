@@ -385,22 +385,22 @@ private:
    * @param _hh corresponding halfedge handle of this vertex
    * @param _fh corresponding face handle of this vertex
    */
-  void readVertex(size_t                              _vertex,
-                  const typename Mesh::VertexHandle   _vh,
-                  const typename Mesh::HalfedgeHandle _hh,
-                  const typename Mesh::FaceHandle     _fh);
+  void readVertex(size_t                               _vertex,
+                  const typename Mesh::VertexHandle&   _vh,
+                  const typename Mesh::HalfedgeHandle& _hh,
+                  const typename Mesh::FaceHandle&     _fh);
 
   /** \brief return a vertex color from mesh
    *
    * @param _vh mesh vertex handle
    */
-  unsigned int getVertexColor(const typename Mesh::VertexHandle   _vh);
+  unsigned int getVertexColor(const typename Mesh::VertexHandle&   _vh);
 
   /** \brief return a face color from mesh
    *
    * @param _fh mesh face handle
    */
-  unsigned int getFaceColor(const typename Mesh::FaceHandle   _fh);
+  unsigned int getFaceColor(const typename Mesh::FaceHandle&   _fh);
 
   /** \brief  eventually update vertex and index buffers
    *
@@ -474,7 +474,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first vertex
    */
-  void drawPickingVertices_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingVertices_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized vertex picking is supported
@@ -559,7 +559,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first edge
    */
-  void drawPickingEdges_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingEdges_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized face picking is supported
@@ -628,7 +628,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first face
    */
-  void drawPickingFaces_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingFaces_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized face picking is supported
@@ -734,7 +734,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first element
    */
-  void drawPickingAny_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingAny_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
   /**  \brief Check if optimized any picking is supported
    *

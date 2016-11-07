@@ -454,7 +454,7 @@ DrawMeshT<Mesh>::rebuild()
     // read all vertices
     for (size_t i = 0; i < numVerts_; ++i)
       readVertex(i,
-                 mesh_.vertex_handle(i), 
+                 mesh_.vertex_handle(static_cast<unsigned int>(i)),
                  (typename Mesh::HalfedgeHandle)(-1), 
                  (typename Mesh::FaceHandle)(-1));
 
@@ -626,7 +626,7 @@ DrawMeshT<Mesh>::rebuild()
 
         if (baseProp)
         {
-          int numAttribs = baseProp->n_elements();
+          size_t numAttribs = baseProp->n_elements();
           const void* attribData = propDesc->propDataPtr_; 
 
           meshComp_->setAttribVec( propDesc->declElementID_, numAttribs, attribData );
@@ -753,9 +753,9 @@ DrawMeshT<Mesh>::rebuild()
 template <class Mesh>
 void
 DrawMeshT<Mesh>::readVertex(size_t _vertex,
-                            const typename Mesh::VertexHandle _vh,
-                            const typename Mesh::HalfedgeHandle _hh,
-                            const typename Mesh::FaceHandle _fh)
+                            const typename Mesh::VertexHandle&   _vh,
+                            const typename Mesh::HalfedgeHandle& _hh,
+                            const typename Mesh::FaceHandle&     _fh)
 {
   static const typename Mesh::HalfedgeHandle invalidHEH(-1);
   static const typename Mesh::FaceHandle     invalidFH(-1);
@@ -831,7 +831,7 @@ DrawMeshT<Mesh>::readVertex(size_t _vertex,
 
 template <class Mesh>
 unsigned int
-DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle _vh)
+DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle& _vh)
 {
   static const typename Mesh::VertexHandle     invalidVH(-1);
 
@@ -853,7 +853,7 @@ DrawMeshT<Mesh>::getVertexColor(const typename Mesh::VertexHandle _vh)
 
 template <class Mesh>
 unsigned int
-DrawMeshT<Mesh>::getFaceColor(const typename Mesh::FaceHandle _fh)
+DrawMeshT<Mesh>::getFaceColor(const typename Mesh::FaceHandle& _fh)
 {
   static const typename Mesh::FaceHandle     invalidFH(-1);
 
@@ -1689,7 +1689,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingVertices_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 
@@ -1724,7 +1724,7 @@ void ACG::DrawMeshT<Mesh>::drawPickingVertices_opt( const GLMatrixf& _mvp, int _
   pickVertexShader_->use();
   getVertexDeclaration()->activateShaderPipeline(pickVertexShader_);
 
-  pickVertexShader_->setUniform("pickVertexOffset", _pickOffset);
+  pickVertexShader_->setUniform("pickVertexOffset", static_cast<GLint>(_pickOffset) );
 
   if (pickVertexMethod_ == 0)
   {
@@ -1960,7 +1960,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingEdges_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingEdges_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingEdges_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 
@@ -1988,7 +1988,7 @@ void ACG::DrawMeshT<Mesh>::drawPickingEdges_opt( const GLMatrixf& _mvp, int _pic
   pickEdgeShader_->use();
   getVertexDeclaration()->activateShaderPipeline(pickEdgeShader_);
 
-  pickEdgeShader_->setUniform("pickVertexOffset", _pickOffset);
+  pickEdgeShader_->setUniform("pickVertexOffset", static_cast<GLint>(_pickOffset) );
   pickEdgeShader_->setUniform("mWVP", _mvp);
 
   // draw call
@@ -2091,7 +2091,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingFaces_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingFaces_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingFaces_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 
@@ -2137,7 +2137,7 @@ void ACG::DrawMeshT<Mesh>::drawPickingFaces_opt( const GLMatrixf& _mvp, int _pic
   pickFaceShader_->use();
   getVertexDeclaration()->activateShaderPipeline(pickFaceShader_);
 
-  pickFaceShader_->setUniform("pickFaceOffset", _pickOffset);
+  pickFaceShader_->setUniform("pickFaceOffset", static_cast<GLint>(_pickOffset));
   pickFaceShader_->setUniform("triToFaceMap", 0);
 
 #ifdef GL_ARB_texture_buffer_object
@@ -2255,7 +2255,7 @@ bool ACG::DrawMeshT<Mesh>::supportsPickingAny_opt()
 
 
 template <class Mesh>
-void ACG::DrawMeshT<Mesh>::drawPickingAny_opt( const GLMatrixf& _mvp, int _pickOffset )
+void ACG::DrawMeshT<Mesh>::drawPickingAny_opt( const GLMatrixf& _mvp, size_t _pickOffset )
 {
   // optimized version which computes picking ids in the shader
 

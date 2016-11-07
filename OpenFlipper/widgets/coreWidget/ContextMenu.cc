@@ -679,7 +679,7 @@ void CoreWidget::updatePopupMenu(const QPoint& _point) {
   } context = BACKGROUNDCONTEXT;
 
   // Do picking in the gl area to find an object
-  unsigned int               node_idx, target_idx;
+  size_t                     node_idx, target_idx;
   ACG::Vec3d                 hit_point;
   BaseObjectData*            object = 0;
   ACG::SceneGraph::BaseNode* node   = 0;

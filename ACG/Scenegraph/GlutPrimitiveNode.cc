@@ -438,7 +438,7 @@ getRenderObjects(IRenderer* _renderer, GLState&  _state , const DrawModes::DrawM
       //localMaterial.color(primitives_[i].color);
       //localMaterial.ambientColor(primitives_[i].color);
       localMaterial.diffuseColor(primitives_[i].color);
-      localMaterial.baseColor(primitives_[i].color * .5);
+      localMaterial.baseColor(primitives_[i].color * .5f);
     }
 
     ro.setMaterial(&localMaterial);

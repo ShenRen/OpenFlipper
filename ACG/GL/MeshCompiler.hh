@@ -265,7 +265,7 @@ public:
    * @param _fmt data format of one element (must be set if input data does not match vertex declaration)
    * @param _elementSize number of elements per attribute (i.e. 3 for vec3 ..,  -1 if unknown)
   */
-  void setVertices(int _num, const void* _data, int _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
+  void setVertices(size_t _num, const void* _data, size_t _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
 
   /** set input normals
    *
@@ -276,7 +276,7 @@ public:
    * @param _fmt data format of one element (must be set if input data does not match vertex declaration)
    * @param _elementSize number of elements per attribute (i.e. 3 for vec3 ..,  -1 if unknown)
   */
-  void setNormals(int _num, const void* _data, int _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
+  void setNormals(size_t _num, const void* _data, size_t _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
 
   /** set input texture coords
    *
@@ -287,7 +287,7 @@ public:
    * @param _fmt data format of one element (must be set if input data does not match vertex declaration)
    * @param _elementSize number of elements per attribute (i.e. 3 for vec3 ..,  -1 if unknown)
   */
-  void setTexCoords(int _num, const void* _data, int _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
+  void setTexCoords(size_t _num, const void* _data, size_t _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
 
   /** Set custom input attribute.
   *
@@ -300,7 +300,7 @@ public:
   * @param _fmt data format of one element (must be set if input data does not match vertex declaration)
   * @param _elementSize number of elements per attribute (i.e. 3 for vec3 ..,  -1 if unknown)
   */
-  void setAttribVec(int _attrIdx, int _num, const void* _data, int _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
+  void setAttribVec(int _attrIdx, size_t _num, const void* _data, size_t _stride = 0, bool _internalCopy = false, GLuint _fmt = 0, int _elementSize = -1);
 
   /** Set single custom input attributes.
   *
@@ -971,10 +971,10 @@ private:
   // final buffers used for drawing
 
   /// # vertices in vbo
-  int numDrawVerts_;
+  size_t numDrawVerts_;
 
   /// # isolated vertices
-  int numIsolatedVerts_;
+  size_t numIsolatedVerts_;
 
   /// index buffer
   std::vector<int>  indices_;

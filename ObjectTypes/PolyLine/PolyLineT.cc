@@ -2276,7 +2276,7 @@ void PolyLineT<PointT>::
     unsigned int offset = p->prop_size * _i;
 
     // check out of range
-    if (offset + p->prop_size >= p->prop_data.size()) {
+    if (offset + p->prop_size > p->prop_data.size()) {
       std::cerr << "PolyLineT::get_custom_property - out of range access" << std::endl;
       return;
     }

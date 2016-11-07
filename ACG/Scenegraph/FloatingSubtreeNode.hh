@@ -115,6 +115,7 @@ class ACGDLLEXPORT FloatingSubtreeNode : public BaseNode {
         void leavePick(GLState &_state, PickTarget _target,
                 const DrawModes::DrawMode &_drawMode) override;
 
+        void boundingBox(Vec3d &_bbMin, Vec3d &_bbMax) override;
 
     private:
         GLMatrixd modelview_override_, modelview_override_inv_;

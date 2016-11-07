@@ -382,21 +382,21 @@ void OMPropertyModel<MeshT>::mouseEvent(QMouseEvent* _event)
 
     if (_event->type() == QEvent::MouseButtonPress)
     {
-        unsigned int   node_idx, face_idx;
-        ACG::Vec3d     hit_point;
+      size_t         node_idx, face_idx;
+      ACG::Vec3d     hit_point;
 
-        if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),node_idx, face_idx, &hit_point)) {
-            BaseObjectData* object;
-            PluginFunctions::getPickedObject(node_idx, object);
+      if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE, _event->pos(),node_idx, face_idx, &hit_point)) {
+        BaseObjectData* object;
+        PluginFunctions::getPickedObject(node_idx, object);
 
-            if (object->id() == objectID_)
-            {
-                OMPropertyVisualizer<MeshT>* viz = dynamic_cast<OMPropertyVisualizer<MeshT>*>(propertyVisualizers[currentlySelectedIndices.first().row()] );
-                unsigned int primitiveId = viz->getClosestPrimitiveId(face_idx, hit_point);
-                mPickWidget.pickedHandle->setText(tr("%1").arg(primitiveId));
-                mPickWidget.pickedValue->setText(viz->getPropertyText(primitiveId));
-            }
+        if (object->id() == objectID_)
+        {
+          OMPropertyVisualizer<MeshT>* viz = dynamic_cast<OMPropertyVisualizer<MeshT>*>(propertyVisualizers[currentlySelectedIndices.first().row()] );
+          unsigned int primitiveId = viz->getClosestPrimitiveId(face_idx, hit_point);
+          mPickWidget.pickedHandle->setText(tr("%1").arg(primitiveId));
+          mPickWidget.pickedValue->setText(viz->getPropertyText(primitiveId));
         }
+      }
     }
 }
 

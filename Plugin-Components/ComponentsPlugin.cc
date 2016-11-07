@@ -166,7 +166,7 @@ void ComponentsPlugin::splitComponents(QMouseEvent * _event)
 {
   if (_event->type() == QEvent::MouseButtonPress )
   {
-    unsigned int     node_idx, target_idx;
+    size_t           node_idx, target_idx;
     ACG::Vec3d*      sourcePoint3D = 0;
 
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE,
@@ -193,7 +193,7 @@ void ComponentsPlugin::biggestComponent(QMouseEvent* _event)
 {
   if (_event->type() == QEvent::MouseButtonPress )
   {
-    unsigned int     node_idx, target_idx;
+    size_t           node_idx, target_idx;
     ACG::Vec3d*      sourcePoint3D = 0;
 
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE,

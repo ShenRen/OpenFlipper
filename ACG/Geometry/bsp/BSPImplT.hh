@@ -144,7 +144,21 @@ public: //---------------------------------------------------------------------
    * @param _r Ray direction
    * @return   Collision information
    */
-	RayCollision nearestRaycollision(const Point& _p, const Point& _r) const;
+  RayCollision nearestRaycollision(const Point& _p, const Point& _r) const;
+
+  /** \brief intersect mesh with open ball
+   *
+   * All triangles that have at least one vertex (!) inside the ball are given to the Callback,
+   * triangles which have no vertex inside the ball but intersect it MAY be returned. (TODO)
+   * Each triangle can be returned up to three times, make sure to handle this, e.g.
+   * by putting the values into an std::(unordered_)set.
+   *
+   * @param _c Center of the ball
+   * @param _r Radius of the ball
+   * @param _callback Callable that accepts Handle or const Handle&, e.g. (const Handle &h) -> void
+   */
+  template<class Callback>
+  void intersectBall(const Point & _c, Scalar _r, Callback _callback) const;
 
 private: //---------------------------------------------------------------------
 
@@ -188,7 +202,10 @@ private: //---------------------------------------------------------------------
    */
   void _raycollision_directional(Node* _node, RayCollisionData& _data) const;
 
-	void _raycollision_nearest_directional(Node* _node, RayCollisionData& _data) const;
+  void _raycollision_nearest_directional(Node* _node, RayCollisionData& _data) const;
+
+  template<class Callback>
+  void _intersect_ball(const Node& _node, const Point & _c, Scalar _r, Callback _callback) const;
 
   template<typename T,typename U>
   struct less_pair_second: public std::binary_function<T,U,bool> {

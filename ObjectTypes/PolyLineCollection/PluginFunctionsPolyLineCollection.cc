@@ -40,44 +40,126 @@
  * ========================================================================= */
 
 /*===========================================================================*\
-*                                                                            *
-*   $Revision: 13620 $                                                       *
-*   $LastChangedBy: moebius $                                                *
-*   $Date: 2012-02-01 14:51:25 +0100 (Mi, 01 Feb 2012) $                     *
-*                                                                            *
+ *
+ *   $Revision$
+ *   $Date$
+ *
 \*===========================================================================*/
 
 
-//=============================================================================
-//  overload some GL functions
-//=============================================================================
 
 
-#ifndef ACG_GLEW_HH
-#define ACG_GLEW_HH
 
 
-//== INCLUDES =================================================================
-
-#include <cstdlib>
-#include <sstream>
-
-
-#if defined(ARCH_DARWIN)
-
-  #include <GL/glew.h>
-
-#elif defined(WIN32)
-
-  #include <gl/glew.h>
-
-#else // Unix
-
-    #include <GL/glew.h>
-
-#endif
 
 
 //=============================================================================
-#endif // ACG_GLEW_HH defined
+//
+//  Plugin Functions for Polyline Collections
+//
 //=============================================================================
+
+#include <OpenFlipper/common/Types.hh>
+#include "PolyLineCollection.hh"
+
+#include "PluginFunctionsPolyLineCollection.hh"
+#include <OpenFlipper/BasePlugin/PluginFunctions.hh>
+
+namespace PluginFunctions {
+
+// ===============================================================================
+// Get source polylines
+// ===============================================================================
+
+
+bool getSourcePolylineCollections( std::vector<PolyLineCollection*>& _polylines  )
+{
+  _polylines.clear();
+
+  for ( ObjectIterator o_it(PluginFunctions::SOURCE_OBJECTS,DATA_POLY_LINE_COLLECTION ) ;
+    o_it != PluginFunctions::objectsEnd(); ++o_it) {
+    _polylines.push_back ( PluginFunctions::polyLineCollection( *o_it ) );
+    if( _polylines.back() == 0)
+      std::cerr << "ERROR: Polyine get_source_polyline_collections fatal error\n";
+  }
+
+  return ( !_polylines.empty() );
+}
+
+
+// ===============================================================================
+// Get target polylines
+// ===============================================================================
+
+
+bool getTargetPolylines( std::vector<PolyLineCollection*>& _polylines  )
+{
+  _polylines.clear();
+
+  for ( ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,DATA_POLY_LINE_COLLECTION ) ;
+    o_it != PluginFunctions::objectsEnd(); ++o_it) {
+    _polylines.push_back ( PluginFunctions::polyLineCollection( *o_it ) );
+    if( _polylines.back() == 0)
+      std::cerr << "ERROR: Polyine getTargetPolylines fatal error\n";
+  }
+
+  return ( !_polylines.empty() );
+}
+
+
+// ===============================================================================
+// Get objects
+// ===============================================================================
+
+bool getObject(  int _identifier , PolyLineCollectionObject*& _object ) {
+
+  /*if ( _identifier == BaseObject::NOOBJECT ) {
+    _object = 0;
+    return false;
+  }*/
+
+  // Get object by using the map accelerated plugin function
+  BaseObjectData* object = 0;
+  PluginFunctions::getObject(_identifier,object);
+
+  _object = dynamic_cast< PolyLineCollectionObject* >(object);
+  return ( _object != 0 );
+}
+
+
+// ===============================================================================
+// Getting data from objects and casting between them
+// ===============================================================================
+
+PolyLineCollection* polyLineCollection( BaseObjectData* _object ) {
+  if ( _object->dataType(DATA_POLY_LINE_COLLECTION) ) {
+    PolyLineCollectionObject* object = dynamic_cast< PolyLineCollectionObject* >(_object);
+    return object->collection();
+  } else
+    return 0;
+}
+
+
+PolyLineCollectionObject* polyLineCollectionObject( BaseObjectData* _object ) {
+  if ( ! _object->dataType(DATA_POLY_LINE_COLLECTION) )
+    return 0;
+  return dynamic_cast< PolyLineCollectionObject* >( _object );
+}
+
+PolyLineCollectionObject* polyLineCollectionObject( int _objectId ) {
+
+  // Get object by using the map accelerated plugin function
+  BaseObjectData* object = 0;
+  PluginFunctions::getObject(_objectId,object);
+
+  if ( object == 0 )
+    return 0;
+
+  PolyLineCollectionObject* meshObject = dynamic_cast< PolyLineCollectionObject* >(object);
+
+  return meshObject;
+}
+
+
+}
+

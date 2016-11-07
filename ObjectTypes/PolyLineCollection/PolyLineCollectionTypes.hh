@@ -1,6 +1,6 @@
-/* ========================================================================= *
- *                                                                           *
- *                               OpenFlipper                                 *
+/*===========================================================================*\
+*                                                                            *
+*                              OpenFlipper                                   *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,48 +36,38 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
- *                                                                           *
- * ========================================================================= */
-
-/*===========================================================================*\
-*                                                                            *
-*   $Revision: 13620 $                                                       *
-*   $LastChangedBy: moebius $                                                *
-*   $Date: 2012-02-01 14:51:25 +0100 (Mi, 01 Feb 2012) $                     *
 *                                                                            *
 \*===========================================================================*/
 
+/*===========================================================================*\
+*                                                                            *
+*   $Revision$                                                       *
+*   $LastChangedBy$                                                *
+*   $Date$                     *
+*                                                                            *
+\*===========================================================================*/
 
 //=============================================================================
-//  overload some GL functions
+//
+//  PolyMeshTypes
+//
 //=============================================================================
 
+/**
+ * \file PolyLineCollectionTypes.hh
+ * This File contains the required types and typedefs for using Poly Line Collections
+ */
 
-#ifndef ACG_GLEW_HH
-#define ACG_GLEW_HH
+#pragma once
 
 
 //== INCLUDES =================================================================
 
-#include <cstdlib>
-#include <sstream>
+#include "PolyLineCollectionT.hh"
 
+//== TYPEDEFS =================================================================
 
-#if defined(ARCH_DARWIN)
+typedef PolyLineCollectionT<ACG::Vec3d> PolyLineCollection;
 
-  #include <GL/glew.h>
+//== TYPEDEFS FOR SCENEGRAPH ===============================================
 
-#elif defined(WIN32)
-
-  #include <gl/glew.h>
-
-#else // Unix
-
-    #include <GL/glew.h>
-
-#endif
-
-
-//=============================================================================
-#endif // ACG_GLEW_HH defined
-//=============================================================================

@@ -40,44 +40,92 @@
  * ========================================================================= */
 
 /*===========================================================================*\
-*                                                                            *
-*   $Revision: 13620 $                                                       *
-*   $LastChangedBy: moebius $                                                *
-*   $Date: 2012-02-01 14:51:25 +0100 (Mi, 01 Feb 2012) $                     *
-*                                                                            *
+ *
+ *   $Revision$
+ *   $Date$
+ *
 \*===========================================================================*/
 
 
-//=============================================================================
-//  overload some GL functions
-//=============================================================================
 
 
-#ifndef ACG_GLEW_HH
-#define ACG_GLEW_HH
 
 
-//== INCLUDES =================================================================
-
-#include <cstdlib>
-#include <sstream>
-
-
-#if defined(ARCH_DARWIN)
-
-  #include <GL/glew.h>
-
-#elif defined(WIN32)
-
-  #include <gl/glew.h>
-
-#else // Unix
-
-    #include <GL/glew.h>
-
-#endif
 
 
 //=============================================================================
-#endif // ACG_GLEW_HH defined
+//
+//  Standard Functions
+//
 //=============================================================================
+
+/**
+ * \file PluginFunctionsPolyLineCollection.hh
+ * This file contains functions which can be used by plugins to access Polyline Collections in the framework.
+ */
+
+#pragma once
+
+#include <OpenFlipper/common/Types.hh>
+#include "PolyLineCollectionTypes.hh"
+#include "PolyLineCollectionObject.hh"
+
+/** The Namespace PluginFunctions contains functions for all plugins. */
+namespace PluginFunctions {
+
+
+/** \brief Get a pointer to every Polyline Collection which is marked as a source.
+ *
+ * @param _polylines ( vector returning the source Polyline Collections )
+ * @return false, if no PolylineCollection is selected as source
+*/
+
+DLLEXPORT
+bool getSourcePolylineCollections( std::vector<PolyLineCollection*>& _polylines  );
+
+/** \brief Get a pointer to every Polyline Collection which is marked as a target.
+ *
+ * @param _polylines ( vector returning the target Polyline Collections )
+ * @return false, if no PolylineCollection is selected as target
+*/
+
+DLLEXPORT
+bool getTargetPolylineCollections( std::vector<PolyLineCollection*>& _polylines  );
+
+
+/** This functions returns the object with the given id if it is a Polyline Collection.
+ * See get_object(  int _identifier , BaseObject*& _object ) for more details.
+ */
+
+DLLEXPORT
+bool getObject(  int _identifier , PolyLineCollectionObject*& _object );
+
+/** \brief Get a polyLine Collection from an object.
+ *
+ * @param _object The object should be of type BaseDataObject. If the content is a Polyline Collection, a
+ *                Polyline Collection will be returned. Otherwise a NULL pointer is returned.
+ */
+
+DLLEXPORT
+PolyLineCollection* polyLineCollection( BaseObjectData* _object );
+
+/** \brief Cast an BaseObject to a Polyline Collection Object if possible
+ *
+ * @param _object The object should be of type BaseDataObject. If the content is a Polyline Collection, a
+ *                a Polyline Collection Object is returned. Otherwise a NULL pointer is returned.
+ */
+
+DLLEXPORT
+PolyLineCollectionObject* polyLineCollectionObject( BaseObjectData* _object );
+
+/** \brief Get an Polyline Collection Object from the given id If possible
+*
+* @param _objectId Id of the requested Object. If the content is a Polyline Collection,
+*                  a Polyline Collection Object is returned. Otherwise a NULL pointer is returned.
+*/
+
+DLLEXPORT
+PolyLineCollectionObject* polyLineCollectionObject( int _objectId );
+
+}
+

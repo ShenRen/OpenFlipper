@@ -61,6 +61,8 @@
 #include <vector>
 #include <iostream>
 
+#include "../Math/Matrix3x3T.hh"
+
 
 namespace ACG {
 namespace Geometry {
@@ -631,7 +633,72 @@ roundness( const VectorT<Scalar, N>& _v0,
            const VectorT<Scalar, N>& _v1,
            const VectorT<Scalar, N>& _v2 );
 
-/** @} */              
+/** @} */
+
+template<typename Vector>
+Vector closestPointLineSegment(Vector x, Vector p1, Vector p2) {
+    const auto delta = ((p2-p1)|(x-p1)) / (p2-p1).sqrnorm();
+    //std::cout << "\x1b[32mdelta = " << delta << "\x1b[0m" << std::endl;
+    if (delta <= 0) {
+        //std::cout << "\x1b[43mdelta <= 0\x1b[0m" << std::endl;
+        return p1;
+    } else if (delta >= 1) {
+        //std::cout << "\x1b[43mdelta >= 1\x1b[0m" << std::endl;
+        return p2;
+    } else if (delta != delta) { // p1 = p2 or x = p1
+        //std::cout << "\x1b[43mdelta != delta\x1b[0m" << std::endl;
+        return (x-p1).sqrnorm() < (x-p2).sqrnorm() ? p1 : p2;
+    } else {
+        //std::cout << "\x1b[43mdelta \\in [0, 1]\x1b[0m" << std::endl;
+        return (1 - delta) * p1 + delta * p2;
+    }
+};
+
+template<typename Vector>
+Vector closestPointTri(Vector p, Vector a, Vector b, Vector c) {
+    constexpr double thresh = 1e-8;
+
+    const auto n = ((b - a) % (c - a)); // normalization unnecessary
+
+    if ((b-a).sqrnorm() < thresh || (c-a).sqrnorm() < thresh || n.sqrnorm() < thresh) {
+        //std::cout << "\x1b[42mDegenerate case.\x1b[0m" << std::endl;
+        // Degenerate triangle. Find distance to longest segment.
+        std::array<ACG::Vec3d, 2> max_segment = {a, b};
+        double max_len = (b-a).sqrnorm();
+        if ((c-a).sqrnorm() > max_len)
+            max_segment = {a, c};
+        if ((c-b).sqrnorm() > max_len)
+            max_segment = {b, c};
+
+        // closestPointLineSegment is stable, even if the segment is super short
+        return closestPointLineSegment(p, max_segment[0], max_segment[1]);
+    }
+
+    const auto abd = Matrix3x3d::fromColumns(a-c, b-c, n).inverse() * (p - c);
+    const bool alpha = (abd[0] >= 0.0),
+            beta = (abd[1] >= 0.0),
+            gamma = (1.0-abd[0]-abd[1] >= 0.0);
+
+    if (alpha && beta && gamma) {
+        //std::cout << "\x1b[42mInside case.\x1b[0m" << std::endl;
+        // Inside triangle.
+        return abd[0] * a + abd[1] * b + (1.0 - abd[0] - abd[1]) * c;
+    } else if (!alpha) {
+        //std::cout << "\x1b[42m!alpha case.\x1b[0m" << std::endl;
+        // Closest to line segment (b, c).
+        return closestPointLineSegment(p, b, c);
+    } else if (!beta) {
+        //std::cout << "\x1b[42m!beta case.\x1b[0m" << std::endl;
+        // Closest to line segment (a, c).
+        return closestPointLineSegment(p, a, c);
+    } else if (!gamma) {
+        //std::cout << "\x1b[42m!gamma case.\x1b[0m" << std::endl;
+        // Closest to line segment (a, b).
+        return closestPointLineSegment(p, a, b);
+    } else {
+        throw std::logic_error("This cannot happen.");
+    }
+}
 
 //=============================================================================
 } // namespace Geometry

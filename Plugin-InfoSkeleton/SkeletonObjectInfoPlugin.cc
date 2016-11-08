@@ -132,7 +132,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
 
   // Check if we have a parent joint
   if ( _skeleton->joint(_index)->parent() !=0 ) {
-    adjacentHandles = adjacentHandles + "Parent: " + locale.toString( _skeleton->joint(_index)->parent()->id()  ) + " ;";
+    adjacentHandles = adjacentHandles + "Parent: " + QString::number( _skeleton->joint(_index)->parent()->id()  ) + " ;";
   }
 
   // Check for children
@@ -143,7 +143,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
     for ( Skeleton::Joint::ChildIter it = _skeleton->joint(_index)->begin(); it != _skeleton->joint(_index)->end(); ++it) {
         Skeleton::Joint *joint = *it;
 
-        adjacentHandles = adjacentHandles + " " + locale.toString(joint->id());
+        adjacentHandles = adjacentHandles + " " + QString::number(joint->id());
       }
   }
 

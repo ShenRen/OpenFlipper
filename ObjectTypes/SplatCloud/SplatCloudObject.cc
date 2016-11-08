@@ -267,6 +267,8 @@ void SplatCloudObject::reloadShaders()
  */
 void SplatCloudObject::enableBackfaceCulling( bool _enable )
 {
+  splatCloudNode_->setBackfaceCulling(_enable);
+
   // get drawmodes
   ACG::SceneGraph::DrawModes::DrawMode splatsDrawMode = ACG::SceneGraph::DrawModes::getDrawMode( "Splats" );
   ACG::SceneGraph::DrawModes::DrawMode dotsDrawMode   = ACG::SceneGraph::DrawModes::getDrawMode( "Dots"   );
@@ -346,6 +348,8 @@ void SplatCloudObject::enableBackfaceCulling( bool _enable )
  */
 void SplatCloudObject::setPointsizeScale( float _scale )
 {
+  splatCloudNode_->setPointsizeScale(_scale);
+
   // get drawmodes
   ACG::SceneGraph::DrawModes::DrawMode splatsDrawMode = ACG::SceneGraph::DrawModes::getDrawMode( "Splats" );
   ACG::SceneGraph::DrawModes::DrawMode dotsDrawMode   = ACG::SceneGraph::DrawModes::getDrawMode( "Dots"   );

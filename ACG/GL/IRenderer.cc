@@ -132,6 +132,12 @@ void IRenderer::addRenderObject(ACG::RenderObject* _renderObject)
         !_renderObject->colorWriteMask[2] && !_renderObject->colorWriteMask[3])
         std::cout << "warning: depth write and color write disabled in renderobject: " << _renderObject->debugName << std::endl;
 
+      // Why is gl_PointSize not working in shader?
+#ifndef GL_PROGRAM_POINT_SIZE
+      if (_renderObject->programPointSize)
+        std::cout << "warning: GL_PROGRAM_POINT_SIZE requested but missing in opengl headers!" << std::endl;
+#endif
+
       if (errorDetectionLevel_ > 1 && _renderObject->shaderDesc.shadeMode == SG_SHADE_UNLIT)
       {
         if (_renderObject->emissive.max() < 1e-3f)
@@ -716,6 +722,8 @@ void IRenderer::finishRenderingPipeline(bool _drawOverlay)
   for (int i = 0; i < maxClipDistances_; ++i)
     glDisable(GL_CLIP_DISTANCE0 + i);
 
+  glDisable(GL_PROGRAM_POINT_SIZE);
+
   glDepthMask(1);
   glColorMask(1,1,1,1);
 
@@ -1045,6 +1053,15 @@ void IRenderer::bindObjectRenderStates(ACG::RenderObject* _obj)
     else
       glDisable(GL_CLIP_DISTANCE0 + i);
   }
+
+#ifdef GL_PROGRAM_POINT_SIZE
+  if (_obj->programPointSize)
+    glEnable(GL_PROGRAM_POINT_SIZE);
+  else
+    glDisable(GL_PROGRAM_POINT_SIZE);
+#endif
+
+  glPointSize(_obj->pointSize);
 }
 
 void IRenderer::drawObject(ACG::RenderObject* _obj)

@@ -75,6 +75,7 @@
 
 #include <ACG/GL/gl.hh>
 
+#include <ACG/GL/VertexDeclaration.hh>
 
 //== NAMESPACES ==================================================
 
@@ -126,6 +127,9 @@ public:
   /// draw the SplatCloud
   void draw( GLState &_state, const DrawModes::DrawMode &_drawMode );
 
+  /// create render objects
+  void getRenderObjects( IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode, const Material* _mat );
+
   /// picking
   void pick( GLState &_state, PickTarget _target );
 
@@ -173,6 +177,12 @@ public:
   inline const Index     &getIndex    ( int _idx ) const { return splatCloud_.hasIndices()    ? splatCloud_.indices   ( _idx ) : DEFAULT_INDEX;     }
   inline const Viewlist  &getViewlist ( int _idx ) const { return splatCloud_.hasViewlists()  ? splatCloud_.viewlists ( _idx ) : DEFAULT_VIEWLIST;  }
   inline const Selection &getSelection( int _idx ) const { return splatCloud_.hasSelections() ? splatCloud_.selections( _idx ) : DEFAULT_SELECTION; }
+
+
+  // ---- render object params ----
+
+  inline void setPointsizeScale(float _scale) { pointsizeScale_ = _scale; }
+  inline void setBackfaceCulling(bool _enable) { backfaceCulling_ = _enable; }
 
   //----------------------------------------------------------------
 
@@ -229,6 +239,7 @@ private:
   GLuint        vboGlId_;
   unsigned int  vboNumSplats_;
   unsigned char *vboData_;
+  unsigned int  vboStride_;
 
   /// offsets relative to vboData_ or -1 if *not* present in VBO
   int vboPositionsOffset_;
@@ -237,6 +248,8 @@ private:
   int vboPointsizesOffset_;
   int vboSelectionsOffset_;
   int vboPickColorsOffset_;
+
+  ACG::VertexDeclaration vboDecl_;
 
   /// returns true iff the internal block structure of the VBO has to be changed
   inline bool vboStructureModified() const
@@ -264,6 +277,11 @@ private:
   static const Index     DEFAULT_INDEX;
   static const Viewlist  DEFAULT_VIEWLIST;
   static const Selection DEFAULT_SELECTION;
+
+  // ---- rendering params ----
+
+  float pointsizeScale_;
+  bool  backfaceCulling_;
 };
 
 

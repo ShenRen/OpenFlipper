@@ -372,7 +372,7 @@ void LineNode::pick(GLState&  _state , PickTarget _target)
   ACG::GLState::vertexPointer( &(points_)[0] );
   ACG::GLState::enableClientState(GL_VERTEX_ARRAY);
 
-  const unsigned int n_edges = n_points() - 1;
+  const size_t n_edges = n_points() - 1;
 
   switch (_target)
   {
@@ -414,25 +414,25 @@ void LineNode::pick_edges(GLState& _state, unsigned int _offset)
 
   if (line_mode_ == PolygonMode)
   {
-    const unsigned int n_edges = n_points() - 1;
-    for (unsigned int i = 0; i < n_edges; ++i)
+    const size_t n_edges = n_points() - 1;
+    for (size_t i = 0; i < n_edges; ++i)
     {
       _state.pick_set_name(i + _offset);
       glBegin(GL_LINES);
-      glArrayElement(i);
-      glArrayElement(i + 1);
+      glArrayElement(static_cast<GLint>(i));
+      glArrayElement(static_cast<GLint>(i + 1));
       glEnd();
     }
   }
   else if (line_mode_ == LineSegmentsMode)
   {
-    const unsigned int n_edges = n_points() / 2;
-    for (unsigned int i = 0; i < n_edges; ++i)
+    const size_t n_edges = n_points() / 2;
+    for (size_t i = 0; i < n_edges; ++i)
     {
       _state.pick_set_name(i + _offset);
       glBegin(GL_LINES);
-      glArrayElement(2*i);
-      glArrayElement(2*i + 1);
+      glArrayElement(static_cast<GLint>(2*i));
+      glArrayElement(static_cast<GLint>(2*i + 1));
       glEnd();
     }
   }

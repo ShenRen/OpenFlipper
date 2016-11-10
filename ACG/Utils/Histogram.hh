@@ -104,7 +104,7 @@ public:
     template<typename IterT>
     HistogramT(IterT begin, IterT end, size_t max_bins)
     {
-        static_assert(std::is_same<T, typename IterT::value_type>::value, "IterT incompatible with T.");
+        static_assert(std::is_assignable<T&, typename IterT::value_type>::value, "IterT incompatible with T.");
         static_assert(std::is_floating_point<typename IterT::value_type>::value, "HistogramT currently only supports floating point values.");
         assert(max_bins > 0);
         const size_t n = std::distance(begin, end);

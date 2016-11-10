@@ -203,6 +203,10 @@ PolyLineCollection* PolyLineCollectionObject::collection() {
 
 
 void PolyLineCollectionObject::update(UpdateType _type) {
+  if(_type == UPDATE_COLOR || _type == UPDATE_ALL){
+      collectionNode_->resetVBO();
+  }
+
   collectionNode_->update();
 }
 

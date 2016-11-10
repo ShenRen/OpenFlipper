@@ -44,6 +44,8 @@
 
 // Based on ValenceHistogramWidget by hc
 
+#include <memory>
+
 #include <QWidget>
 #include "../Config/ACGDefines.hh"
 #include "../Utils/Histogram.hh"
@@ -62,29 +64,18 @@ class ACGDLLEXPORT QtHistogramWidget : public QWidget {
         QtHistogramWidget(const QtHistogramWidget &other) = delete;
         QtHistogramWidget& operator=(const QtHistogramWidget &other) = delete;
 
-        /**
-         * @brief setHistogram
-         * @param histogram: This widget takes ownership of the Histogram
-         * and deletes it.
-         */
-        void setHistogram(Histogram* histogram);
-
-        /**
-         * @brief setColorCoder
-         * @param color_coder: This widget takes ownership of the IColorCoder
-         * and deletes it.
-         */
-        void setColorCoder(IColorCoder *color_coder);
+        void setHistogram(std::unique_ptr<Histogram> histogram);
+        void setColorCoder(std::unique_ptr<IColorCoder> color_coder);
 
     protected:
         void paintEvent(QPaintEvent *event);
         QColor getColor(double val); // val in [0..1]
 
-        Histogram *histogram_ = 0;
+        std::unique_ptr<Histogram> histogram_ = nullptr;
         double label_distance_ = 100;
 
         QColor color_; // ignored if we have a color coder
-        IColorCoder *color_coder_ = 0;
+        std::unique_ptr<IColorCoder> color_coder_ = nullptr;
 
 };
 

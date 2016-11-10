@@ -7,6 +7,7 @@
 
 #include "ValenceHistogramDialog.hh"
 
+#include <ACG/Utils/SmartPointer.hh>
 
 ValenceHistogramDialog::ValenceHistogramDialog(TriMesh &mesh, QWidget *parent)
     : QDialog(parent) {
@@ -105,7 +106,7 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
         }
         vertex_valence_hist[valence] += 1;
     }
-    vertexValenceChart_wdgt->setHistogram(new ValenceHistogram(vertex_valence_hist));
+    vertexValenceChart_wdgt->setHistogram(ptr::make_unique<ValenceHistogram>(vertex_valence_hist));
     fillHistogramTable(vertex_valence_hist, *vertexValence_tw);
 
     /*
@@ -122,6 +123,6 @@ void ValenceHistogramDialog::init(MeshT &mesh) {
         face_valence_hist[valence] += 1;
     }
 
-    faceValenceChart_wdgt->setHistogram(new ValenceHistogram(face_valence_hist));
+    faceValenceChart_wdgt->setHistogram(ptr::make_unique<ValenceHistogram>(face_valence_hist));
     fillHistogramTable(face_valence_hist, *faceValence_tw);
 }

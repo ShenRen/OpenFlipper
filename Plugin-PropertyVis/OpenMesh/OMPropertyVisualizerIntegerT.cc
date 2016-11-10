@@ -81,7 +81,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeFaceProp(bool _setDrawMode)
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
 
     typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
+    auto cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 
@@ -146,7 +146,6 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeFaceProp(bool _setDrawMode)
             OMPropertyVisualizer<MeshT>::mesh->set_color(*f_it, color);
         }
     }
-    delete cc;
 
     if (_setDrawMode)
         PluginFunctions::setDrawMode(ACG::SceneGraph::DrawModes::SOLID_FACES_COLORED);
@@ -158,7 +157,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeEdgeProp(bool _setDrawMode)
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
 
     typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
+    auto cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 
@@ -235,7 +234,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeHalfedgeProp(bool _setDrawM
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
 
     typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
+    auto cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 
@@ -311,7 +310,7 @@ void OMPropertyVisualizerInteger<MeshT, T>::visualizeVertexProp(bool _setDrawMod
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
 
     typename MeshT::Color colorMin = ACG::to_Vec4f(integerWidget->intMin->color());
-    ACG::IColorCoder *cc = integerWidget->buildColorCoder(); // color coder in [0,1]
+    auto cc = integerWidget->buildColorCoder(); // color coder in [0,1]
 
     std::map< int, typename MeshT::Color> randomColor;
 

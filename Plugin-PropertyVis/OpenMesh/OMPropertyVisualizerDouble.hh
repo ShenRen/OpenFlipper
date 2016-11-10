@@ -58,8 +58,7 @@
 
 #include <ACG/Utils/ColorCoder.hh>
 
-
-
+#include <memory>
 #include <iostream>
 
 template <typename MeshT>
@@ -85,7 +84,7 @@ protected:
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
 
-    ACG::IColorCoder *buildColorCoder() override;
+    std::unique_ptr<ACG::IColorCoder> buildColorCoder() override;
 };
 
 

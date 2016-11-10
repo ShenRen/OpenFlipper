@@ -55,6 +55,7 @@
 #include "ACG/Utils/IColorCoder.hh"
 #include "ACG/Utils/LinearTwoColorCoder.hh"
 #include <ACG/Utils/ColorConversion.hh>
+#include <ACG/Utils/SmartPointer.hh>
 
 #if QT_VERSION >= 0x050000 
   #include <QtWidgets>
@@ -76,15 +77,14 @@ public:
 
   /**
    * @brief Builds a color coder according to UI settings
-   * @return Pointer to an IColorCoder for parameters in [0..1]
-   * @note Caller is responsible for deleting the returned object.
+   * @return unique_ptr to an IColorCoder for parameters in [0..1]
    */
-  ACG::IColorCoder *buildColorCoder()
+  std::unique_ptr<ACG::IColorCoder> buildColorCoder()
   {
       if (doubleColorCoder->isChecked()) {
-          return new ACG::ColorCoder();
+          return ptr::make_unique<ACG::ColorCoder>();
       } else {
-          return new ACG::LinearTwoColorCoder(
+          return ptr::make_unique<ACG::LinearTwoColorCoder>(
                       ACG::to_Vec4f(doubleMin->color()),
                       ACG::to_Vec4f(doubleMax->color()));
       }

@@ -112,7 +112,7 @@ void OVMPropertyVisualizerInteger<MeshT, T>::visualizeProp(PropType prop, Entity
         integerWidget->intFixedRangeMax->setValue(max);
     }
 
-    ACG::IColorCoder *cc = integerWidget->buildColorCoder();
+    auto cc = integerWidget->buildColorCoder();
 
     unsigned int range = max - min;
     VolumeMeshObject<MeshT>* object;
@@ -145,7 +145,6 @@ void OVMPropertyVisualizerInteger<MeshT, T>::visualizeProp(PropType prop, Entity
             object->colors()[*e_it] = color;
         }
     }
-    delete cc;
 }
 #define KOMMA ,
 CALLS_TO_VISUALIZE_PROP(OVMPropertyVisualizerInteger<MeshT KOMMA T>, typename MeshT KOMMA typename T, T)
@@ -266,7 +265,7 @@ void OVMPropertyVisualizerInteger<MeshT, T>::setVertexPropertyFromText(unsigned 
 }
 
 template <typename MeshT, typename T>
-ACG::IColorCoder *OVMPropertyVisualizerInteger<MeshT, T>::buildColorCoder()
+std::unique_ptr<ACG::IColorCoder> OVMPropertyVisualizerInteger<MeshT, T>::buildColorCoder()
 {
     IntegerWidget* integerWidget = static_cast<IntegerWidget*>(PropertyVisualizer::widget);
     return integerWidget->buildColorCoder();

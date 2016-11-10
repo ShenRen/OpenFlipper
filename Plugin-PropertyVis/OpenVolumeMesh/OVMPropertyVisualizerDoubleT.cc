@@ -82,7 +82,7 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
     DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
     ACG::Vec4f colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
 
-    ACG::IColorCoder *cc = doubleWidget->buildColorCoder();
+    auto cc = doubleWidget->buildColorCoder();
     double min, max;
 
     if ( doubleWidget->doubleAbsolute->isChecked() ){
@@ -149,7 +149,6 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
             object->colors()[*e_it] = color;
         }
     }
-    delete cc;
 }
 CALLS_TO_VISUALIZE_PROP(OVMPropertyVisualizerDouble<MeshT>, typename MeshT, double)
 
@@ -268,7 +267,7 @@ void OVMPropertyVisualizerDouble<MeshT>::setVertexPropertyFromText(unsigned int 
 }
 
 template <typename MeshT>
-ACG::IColorCoder *OVMPropertyVisualizerDouble<MeshT>::buildColorCoder()
+std::unique_ptr<ACG::IColorCoder> OVMPropertyVisualizerDouble<MeshT>::buildColorCoder()
 {
     DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
     return doubleWidget->buildColorCoder();

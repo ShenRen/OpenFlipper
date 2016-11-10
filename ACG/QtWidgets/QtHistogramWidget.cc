@@ -53,21 +53,15 @@ QtHistogramWidget::QtHistogramWidget(QWidget *parent)
       color_(QColor::fromRgbF(0.518, 0.573, 0.643, 1.0))
 {}
 
-QtHistogramWidget::~QtHistogramWidget()
-{
-    delete histogram_;
-    delete color_coder_;
-}
+QtHistogramWidget::~QtHistogramWidget() = default;
 
-void QtHistogramWidget::setHistogram(Histogram *histogram) {
-    delete histogram_;
-    histogram_ = histogram;
+void QtHistogramWidget::setHistogram(std::unique_ptr<Histogram> histogram) {
+    histogram_ = std::move(histogram);
     this->update();
 }
 
-void QtHistogramWidget::setColorCoder(IColorCoder *color_coder) {
-    delete color_coder_;
-    color_coder_ = color_coder;
+void QtHistogramWidget::setColorCoder(std::unique_ptr<IColorCoder> color_coder) {
+    color_coder_ = std::move(color_coder);
     this->update();
 }
 

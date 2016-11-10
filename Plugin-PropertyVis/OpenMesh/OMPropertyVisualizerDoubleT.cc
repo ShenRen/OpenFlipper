@@ -73,7 +73,7 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeFaceProp(bool _setDrawMode)
     typename MeshT::Color colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
 
     // color coder in [0,1]
-    ACG::IColorCoder *cc = doubleWidget->buildColorCoder();
+    auto cc = doubleWidget->buildColorCoder();
 
     OpenMesh::FPropHandleT< double > prop;
 
@@ -140,7 +140,6 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeFaceProp(bool _setDrawMode)
             OMPropertyVisualizer<MeshT>::mesh->set_color(*f_it, color);
         }
     }
-    delete cc;
 
     if (_setDrawMode)
         PluginFunctions::setDrawMode(ACG::SceneGraph::DrawModes::SOLID_FACES_COLORED);
@@ -155,7 +154,7 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeEdgeProp(bool _setDrawMode)
     colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
 
     // color coder in [0,1]
-    ACG::IColorCoder *cc = doubleWidget->buildColorCoder();
+    auto cc = doubleWidget->buildColorCoder();
 
     //TODO check if this also works if the property is Vec3d
     OpenMesh::EPropHandleT< double > prop;
@@ -224,7 +223,6 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeEdgeProp(bool _setDrawMode)
             OMPropertyVisualizer<MeshT>::mesh->set_color(*e_it, color);
         }
     }
-    delete cc;
 
     if (_setDrawMode)
         PluginFunctions::setDrawMode(ACG::SceneGraph::DrawModes::EDGES_COLORED);
@@ -239,7 +237,7 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeHalfedgeProp(bool _setDrawMode)
     typename MeshT::Color colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
 
     // color coder in [0,1]
-    ACG::IColorCoder *cc = doubleWidget->buildColorCoder();
+    auto cc = doubleWidget->buildColorCoder();
 
     //TODO check if this also works if the property is Vec3d
     OpenMesh::HPropHandleT< double > prop;
@@ -319,7 +317,7 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeVertexProp(bool _setDrawMode)
     typename MeshT::Color colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
 
     // color coder in [0,1]
-    ACG::IColorCoder *cc = doubleWidget->buildColorCoder();
+    auto cc = doubleWidget->buildColorCoder();
 
     //TODO check if this also works if the property is Vec3d
     OpenMesh::VPropHandleT< double > prop;
@@ -453,7 +451,7 @@ void OMPropertyVisualizerDouble<MeshT>::setVertexPropertyFromText(unsigned int i
 }
 
 template<typename MeshT>
-ACG::IColorCoder *OMPropertyVisualizerDouble<MeshT>::buildColorCoder()
+std::unique_ptr<ACG::IColorCoder> OMPropertyVisualizerDouble<MeshT>::buildColorCoder()
 {
     DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
     return doubleWidget->buildColorCoder();

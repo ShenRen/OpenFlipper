@@ -50,6 +50,7 @@
 #define OM_PROPERTY_VISUALIZER_BOOLEAN_CC
 
 #include "OMPropertyVisualizerBoolean.hh"
+#include <ACG/Utils/ColorConversion.hh>
 
 template <typename MeshT>
 OMPropertyVisualizerBoolean<MeshT>::OMPropertyVisualizerBoolean(MeshT* _mesh, PropertyInfo _propertyInfo)
@@ -74,8 +75,8 @@ void OMPropertyVisualizerBoolean<MeshT>::visualizeFaceProp(bool _setDrawMode)
     MeshT* mesh = OMPropertyVisualizer<MeshT>::mesh;
     typename MeshT::Color colorTrue, colorFalse;
 
-    colorTrue  = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorTrue->color());
-    colorFalse = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorFalse->color());
+    colorTrue  = ACG::to_Vec4f(booleanWidget->colorTrue->color());
+    colorFalse = ACG::to_Vec4f(booleanWidget->colorFalse->color());
 
     OpenMesh::FPropHandleT< bool > prop;
 
@@ -103,8 +104,8 @@ void OMPropertyVisualizerBoolean<MeshT>::visualizeEdgeProp(bool _setDrawMode)
     MeshT* mesh = OMPropertyVisualizer<MeshT>::mesh;
     typename MeshT::Color colorTrue, colorFalse;
 
-    colorTrue  = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorTrue->color());
-    colorFalse = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorFalse->color());
+    colorTrue  = ACG::to_Vec4f(booleanWidget->colorTrue->color());
+    colorFalse = ACG::to_Vec4f(booleanWidget->colorFalse->color());
 
     OpenMesh::EPropHandleT< bool > prop;
 
@@ -131,8 +132,8 @@ void OMPropertyVisualizerBoolean<MeshT>::visualizeHalfedgeProp(bool _setDrawMode
     MeshT* mesh = OMPropertyVisualizer<MeshT>::mesh;
     typename MeshT::Color colorTrue, colorFalse;
 
-    colorTrue  = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorTrue->color());
-    colorFalse = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorFalse->color());
+    colorTrue  = ACG::to_Vec4f(booleanWidget->colorTrue->color());
+    colorFalse = ACG::to_Vec4f(booleanWidget->colorFalse->color());
 
     OpenMesh::HPropHandleT< bool > prop;
 
@@ -160,8 +161,8 @@ void OMPropertyVisualizerBoolean<MeshT>::visualizeVertexProp(bool _setDrawMode)
     MeshT* mesh = OMPropertyVisualizer<MeshT>::mesh;
     typename MeshT::Color colorTrue, colorFalse;
 
-    colorTrue  = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorTrue->color());
-    colorFalse = OMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorFalse->color());
+    colorTrue  = ACG::to_Vec4f(booleanWidget->colorTrue->color());
+    colorFalse = ACG::to_Vec4f(booleanWidget->colorFalse->color());
 
     OpenMesh::VPropHandleT< bool > prop;
 

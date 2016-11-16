@@ -1,6 +1,6 @@
 /*===========================================================================*\
-*                                                                            *
-*                              OpenFlipper                                   *
+ *                                                                           *
+ *                              OpenFlipper                                  *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,33 +36,53 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                            *
+ *                                                                           *
 \*===========================================================================*/
 
-/*
- * ValenceHistogramWidget.hh
- *
- *  Created on: Jan 27, 2016
- *      Author: hc
- */
+#ifndef QTHISTOGRAM_HH
+#define QTHISTOGRAM_HH
 
-#ifndef PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMWIDGET_HH_
-#define PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMWIDGET_HH_
+// Based on ValenceHistogramWidget by hc
+
+#include <memory>
 
 #include <QWidget>
+#include "../Config/ACGDefines.hh"
+#include "../Utils/Histogram.hh"
+#include "../Utils/ColorCoder.hh"
 
-class ValenceHistogramWidget: public QWidget {
+namespace ACG {
+namespace QtWidgets {
+
+class ACGDLLEXPORT QtHistogramWidget : public QWidget {
     Q_OBJECT
 
     public:
-        ValenceHistogramWidget(QWidget *parent);
+        explicit QtHistogramWidget(QWidget *parent);
+        ~QtHistogramWidget();
 
-        void setHistogram(std::vector<size_t> *histogram);
+        QtHistogramWidget(const QtHistogramWidget &other) = delete;
+        QtHistogramWidget& operator=(const QtHistogramWidget &other) = delete;
+
+        void setHistogram(std::unique_ptr<Histogram> histogram);
+        void setColorCoder(std::unique_ptr<IColorCoder> color_coder);
 
     protected:
         void paintEvent(QPaintEvent *event);
+        QColor getColor(double val); // val in [0..1]
 
-        std::vector<size_t> *histogram_;
+        std::unique_ptr<Histogram> histogram_ = nullptr;
+        double label_distance_ = 100;
+
+        QColor color_; // ignored if we have a color coder
+        std::unique_ptr<IColorCoder> color_coder_ = nullptr;
+
 };
 
-#endif /* PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMWIDGET_HH_ */
+
+} // namespace QtWidgets
+} // namespace ACG
+
+
+
+#endif // QTHISTOGRAM_HH

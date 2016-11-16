@@ -58,8 +58,7 @@
 
 #include <ACG/Utils/ColorCoder.hh>
 
-
-
+#include <memory>
 #include <iostream>
 
 template <typename MeshT>
@@ -70,7 +69,6 @@ public:
     virtual ~OMPropertyVisualizerDouble(){}
 
 protected:
-
     virtual void visualizeFaceProp(bool _setDrawMode = true);
     virtual void visualizeEdgeProp(bool _setDrawMode = true);
     virtual void visualizeHalfedgeProp(bool _setDrawMode = true);
@@ -85,6 +83,8 @@ protected:
     virtual void setEdgePropertyFromText(unsigned int index, QString text);
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
+
+    std::unique_ptr<ACG::IColorCoder> buildColorCoder() override;
 };
 
 

@@ -1001,10 +1001,12 @@ void glViewer::initializeGL()
   ACG::GLState::enable(GL_DEPTH_TEST);
 
   if (glstate_->compatibilityProfile())
+  {
     ACG::GLState::enable(GL_LIGHTING);
+    ACG::GLState::shadeModel(GL_FLAT);
+  }
 
   ACG::GLState::disable(GL_DITHER);
-  ACG::GLState::shadeModel( GL_FLAT );
 
 
   projectionMode(   projectionMode_   );
@@ -1089,10 +1091,11 @@ void glViewer::paintGL(double _aspect)
 
 
       normalsMode(normalsMode_);
+
+      ACG::GLState::shadeModel(GL_FLAT);
     }
 
     ACG::GLState::disable(GL_DITHER);
-    ACG::GLState::shadeModel(GL_FLAT);
 
 
     applyProperties();

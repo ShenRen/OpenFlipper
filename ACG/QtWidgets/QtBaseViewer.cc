@@ -1142,7 +1142,9 @@ void QtBaseViewer::initializeGL()
   ACG::GLState::enable(GL_DEPTH_TEST);
   ACG::GLState::enable(GL_LIGHTING);
   ACG::GLState::disable(GL_DITHER);
-  ACG::GLState::shadeModel( GL_FLAT );
+
+  if (glstate_->compatibilityProfile())
+    ACG::GLState::shadeModel( GL_FLAT );
 
 
   projectionMode(   projectionMode_   );
@@ -1291,7 +1293,9 @@ void QtBaseViewer::paintGL()
     ACG::GLState::enable(GL_DEPTH_TEST);
     ACG::GLState::enable(GL_LIGHTING);
     ACG::GLState::disable(GL_DITHER);
-    ACG::GLState::shadeModel( GL_FLAT );
+
+    if (glstate_->compatibilityProfile())
+      ACG::GLState::shadeModel( GL_FLAT );
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();

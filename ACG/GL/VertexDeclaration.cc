@@ -423,8 +423,6 @@ void VertexDeclaration::deactivateFixedFunction() const
 
 void VertexDeclaration::activateShaderPipeline(GLSL::Program* _prog) const
 {
-  assert(_prog);
-
   // setup correct attribute locations as specified
 
   unsigned int numElements = getNumElements();
@@ -435,7 +433,7 @@ void VertexDeclaration::activateShaderPipeline(GLSL::Program* _prog) const
 
     const VertexElement* pElem = &elements_[i];
 
-    int loc = _prog->getAttributeLocation(pElem->shaderInputName_);
+    int loc = _prog ? _prog->getAttributeLocation(pElem->shaderInputName_) : i;
 
     if (loc != -1)
     {
@@ -475,15 +473,13 @@ void VertexDeclaration::activateShaderPipeline(GLSL::Program* _prog) const
 
 void VertexDeclaration::deactivateShaderPipeline( GLSL::Program* _prog ) const
 {
-  assert(_prog);
-
   unsigned int numElements = getNumElements();
 
   for (unsigned int i = 0; i < numElements; ++i)
   {
     const VertexElement* pElem = &elements_[i];
 
-    int loc = _prog->getAttributeLocation(pElem->shaderInputName_);
+    int loc = _prog ? _prog->getAttributeLocation(pElem->shaderInputName_) : i;
 
     if (loc != -1)
     {

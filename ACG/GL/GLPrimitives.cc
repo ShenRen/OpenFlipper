@@ -229,6 +229,25 @@ void GLPrimitive::draw_primitive()
 
 //------------------------------------------------------------------------
 
+void GLPrimitive::draw_primitive(GLSL::Program* _program)
+{
+  if (checkVBO())
+  {
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    vertexDecl_.activateShaderPipeline(_program);
+
+    if (numTris_)
+      glDrawArrays(GL_TRIANGLES, 0, numTris_ * 3);
+    else
+      glDrawArrays(GL_LINES, 0, numLines_ * 2);
+
+    vertexDecl_.deactivateShaderPipeline(_program);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+}
+
+//------------------------------------------------------------------------
+
 void GLPrimitive::addToRenderer_primitive( class IRenderer* _renderer, RenderObject* _ro )
 {
   if (checkVBO())

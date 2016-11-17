@@ -267,7 +267,7 @@ CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
     GLMatrixf mWVP = _state.projection() * _state.modelview();
     mWVP.scale(sphereRadius, sphereRadius, sphereRadius);
     _pickShader->setUniform("mWVP", mWVP);
-    sphere_->draw_primitive();
+    sphere_->draw_primitive(_pickShader);
   }
   else
   {
@@ -290,8 +290,10 @@ CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
     // set transform matrix
     GLMatrixf mWVP = _state.projection() * _state.modelview();
     _pickShader->setUniform("mWVP", mWVP);
+    cylinder_->draw_primitive(_pickShader);
   }
-  cylinder_->draw_primitive();
+  else
+    cylinder_->draw_primitive();
   _state.pop_modelview_matrix();
   _state.translate ( 0, 0, -arrowLength );
   _state.scale(1.0, 1.0, arrowLength);
@@ -300,8 +302,10 @@ CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
     // set transform matrix
     GLMatrixf mWVP = _state.projection() * _state.modelview();
     _pickShader->setUniform("mWVP", mWVP);
+    cone_->draw_primitive(_pickShader);
   }
-  cone_->draw_primitive();
+  else
+    cone_->draw_primitive();
   _state.pop_modelview_matrix ();
 
 
@@ -320,8 +324,10 @@ CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
     // set transform matrix
     GLMatrixf mWVP = _state.projection() * _state.modelview();
     _pickShader->setUniform("mWVP", mWVP);
+    cylinder_->draw_primitive(_pickShader);
   }
-  cylinder_->draw_primitive();
+  else
+    cylinder_->draw_primitive();
   _state.pop_modelview_matrix();
   _state.translate(0, 0, -arrowLength);
   _state.scale(1.0, 1.0, arrowLength);
@@ -330,8 +336,10 @@ CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
     // set transform matrix
     GLMatrixf mWVP = _state.projection() * _state.modelview();
     _pickShader->setUniform("mWVP", mWVP);
+    cone_->draw_primitive(_pickShader);
   }
-  cone_->draw_primitive();
+  else
+    cone_->draw_primitive();
   _state.pop_modelview_matrix ();
 
   // Z-Axis
@@ -349,8 +357,10 @@ CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
     // set transform matrix
     GLMatrixf mWVP = _state.projection() * _state.modelview();
     _pickShader->setUniform("mWVP", mWVP);
+    cylinder_->draw_primitive(_pickShader);
   }
-  cylinder_->draw_primitive();
+  else
+    cylinder_->draw_primitive();
   _state.pop_modelview_matrix();
   _state.translate(0, 0, -arrowLength);
   _state.scale(1.0, 1.0, arrowLength);
@@ -359,10 +369,11 @@ CoordsysNode::drawCoordsysPick( GLState&  _state, GLSL::Program* _pickShader) {
     // set transform matrix
     GLMatrixf mWVP = _state.projection() * _state.modelview();
     _pickShader->setUniform("mWVP", mWVP);
+    cone_->draw_primitive(_pickShader);
   }
-  cone_->draw_primitive();
+  else
+    cone_->draw_primitive();
   _state.pop_modelview_matrix ();
-
 }
 
 
@@ -940,7 +951,7 @@ void CoordsysNode::clearPickArea(GLState&  _state, bool _draw, GLfloat _depth, G
   // 10% more to ensure everything is in
   disk_->setInnerRadius(0.0f);
   disk_->setOuterRadius(radius * 1.1f);
-  disk_->draw_primitive();
+  disk_->draw_primitive(_pickShader);
 
   ACG::GLState::depthFunc (prev_depth);
   _state.pop_modelview_matrix();

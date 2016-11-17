@@ -277,9 +277,10 @@ void GLState::clearBuffers ()
 
   GLState::disable(GL_DEPTH_TEST);
   GLState::disable(GL_DITHER);
-  glShadeModel( GL_FLAT );
 
   if ( compatibilityProfile_ ) {
+    glShadeModel(GL_FLAT);
+
     GLState::disable(GL_LIGHTING);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();

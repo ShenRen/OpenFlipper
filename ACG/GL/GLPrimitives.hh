@@ -80,8 +80,16 @@ public:
   GLPrimitive();
   virtual ~GLPrimitive();
 
-  // bind vbo + gl draw call
+  // bind vbo + gl draw call (fixed function mode)
+  // use this function in compatibility profile
   void draw_primitive();
+
+  // activate vertex declaration + gl draw call  (shader mode)
+  // _program may be nullptr, in that case the attribute locations are as follows.
+  //  0 : float3 position
+  //  1 : float3 normal
+  //  2 : float2 texcoord
+  void draw_primitive(GLSL::Program* _program);
 
   // add to deferred draw call to renderer
   void addToRenderer_primitive(class IRenderer* _renderer, struct RenderObject* _ro);

@@ -208,7 +208,7 @@ void PlaneNode::drawPlanePick( ACG::GLState&  _state) {
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     vertexDecl_.activateShaderPipeline(pickShader);
 
-    glDrawArrays(GL_QUADS, 0, 8);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 8);
 
     vertexDecl_.deactivateShaderPipeline(pickShader);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -388,22 +388,33 @@ void PlaneNode::updateVBO()
   // Interleaved with normals
   // 8 vertices with (3 float for position + 3 float for normal)
   const size_t vboSize = 8 * (3+3);
-  float vboData[vboSize] = { 0.0,0.0,0.0,
-      (float)normal[0],(float)normal[1],(float)normal[2],
-      (float)plane_.xDirection[0],(float)plane_.xDirection[1],(float)plane_.xDirection[2],
-      (float)normal[0],(float)normal[1],(float)normal[2],
-      (float)xy[0],(float)xy[1],(float)xy[2],
-      (float)normal[0],(float)normal[1],(float)normal[2],
+  float vboData[vboSize] = 
+  {
       (float)plane_.yDirection[0],(float)plane_.yDirection[1],(float)plane_.yDirection[2],
       (float)normal[0],(float)normal[1],(float)normal[2],
-      (float)plane_.yDirection[0],(float)plane_.yDirection[1],(float)plane_.yDirection[2],
-      (float)-normal[0],(float)-normal[1],(float)-normal[2],
-      (float)xy[0],(float)xy[1],(float)xy[2],
-      (float)-normal[0],(float)-normal[1],(float)-normal[2],
-      (float)plane_.xDirection[0],(float)plane_.xDirection[1],(float)plane_.xDirection[2],
-      (float)-normal[0],(float)-normal[1],(float)-normal[2],
+
       0.0,0.0,0.0,
-      (float)-normal[0],(float)-normal[1],(float)-normal[2]};
+      (float)normal[0],(float)normal[1],(float)normal[2],
+
+      (float)xy[0],(float)xy[1],(float)xy[2],
+      (float)normal[0],(float)normal[1],(float)normal[2],
+
+      (float)plane_.xDirection[0],(float)plane_.xDirection[1],(float)plane_.xDirection[2],
+      (float)normal[0],(float)normal[1],(float)normal[2],
+
+
+      (float)plane_.yDirection[0],(float)plane_.yDirection[1],(float)plane_.yDirection[2],
+      (float)-normal[0],(float)-normal[1],(float)-normal[2],
+
+      (float)xy[0],(float)xy[1],(float)xy[2],
+      (float)-normal[0],(float)-normal[1],(float)-normal[2],
+
+      0.0,0.0,0.0,
+      (float)-normal[0],(float)-normal[1],(float)-normal[2],
+
+      (float)plane_.xDirection[0],(float)plane_.xDirection[1],(float)plane_.xDirection[2],
+      (float)-normal[0],(float)-normal[1],(float)-normal[2],
+  };
 
 
   // Bind buffer
@@ -511,7 +522,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         localMaterial.diffuseColor(ACG::Vec4f(0.6f, 0.15f, 0.2f, 0.5f ));
         localMaterial.specularColor(ACG::Vec4f(0.6f, 0.15f, 0.2f, 0.5f ));
         ro.setMaterial(&localMaterial);
-        ro.glDrawArrays(GL_QUADS, 0, 4);
+        ro.glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         _renderer->addRenderObject(&ro);
 
         //---------------------------------------------------
@@ -522,7 +533,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         localMaterial.diffuseColor( ACG::Vec4f(0.1f, 0.8f, 0.2f, 0.5f ));
         localMaterial.specularColor(ACG::Vec4f(0.1f, 0.8f, 0.2f, 0.5f ));
         ro.setMaterial(&localMaterial);
-        ro.glDrawArrays(GL_QUADS, 4, 4);
+        ro.glDrawArrays(GL_TRIANGLE_STRIP, 4, 4);
         _renderer->addRenderObject(&ro);
 
         break;

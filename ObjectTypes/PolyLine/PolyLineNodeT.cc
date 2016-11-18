@@ -61,10 +61,13 @@
 //== INCLUDES =================================================================
 
 #include "PolyLineNodeT.hh"
+#include <OpenMesh/Core/Utils/vector_cast.hh>
+
 #include <ACG/GL/gl.hh>
 #include <ACG/GL/ShaderCache.hh>
 #include <ACG/Utils/VSToolsT.hh>
 #include <vector>
+
 
 //== NAMESPACES ===============================================================
 
@@ -373,11 +376,6 @@ pick(GLState& _state, PickTarget _target)
   if (  polyline_.n_vertices() == 0 ) 
     return;
   
-  // Bind the vertex array
-  ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-  ACG::GLState::vertexPointer( &(polyline_.points())[0] );   
-  ACG::GLState::enableClientState(GL_VERTEX_ARRAY);
-  
   unsigned int n_end = polyline_.n_edges()+1;
   if( !polyline_.is_closed()) --n_end;
   
@@ -433,9 +431,6 @@ pick(GLState& _state, PickTarget _target)
    
   //see above
   // glDepthRange(0.0,1.0)
-  
-  //Disable the vertex array
-  ACG::GLState::disableClientState(GL_VERTEX_ARRAY);
   
 }
 
@@ -515,12 +510,39 @@ pick_spheres( GLState& _state )
   if(!sphere_)
     sphere_ = new GLSphere(10,10);
 
-  _state.pick_set_name(0);
-
   for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
   {
-    _state.pick_set_name (i);
-    sphere_->draw(_state, _state.point_size(), (Vec3f)polyline_.point(i));
+    Vec3f p = OpenMesh::vector_cast<Vec3f, PolyLine::Point>(polyline_.point(i));
+    float r = _state.point_size();
+
+    if (_state.compatibilityProfile())
+    {
+      _state.pick_set_name(i);
+      sphere_->draw(_state, r, p);
+    }
+    else
+    {
+      // use shader in core profile
+      GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/single_color_fs.glsl");
+
+      if (pickShader)
+      {
+        ACG::Vec4f pickColor = _state.pick_get_name_color_norm(i);
+
+        ACG::GLMatrixf mWVP = _state.projection() * _state.modelview();
+        mWVP.translate(p);
+        mWVP.scale(r, r, r);
+
+        pickShader->use();
+
+        pickShader->setUniform("mWVP", mWVP);
+        pickShader->setUniform("color", pickColor);
+
+        sphere_->draw_primitive(pickShader);
+
+        pickShader->disable();
+      }
+    }
   }
 }
 
@@ -535,18 +557,44 @@ pick_spheres_screen( GLState& _state )
   if(!sphere_)
     sphere_ = new GLSphere(10,10);
 
-  _state.pick_set_name(0);
-
   // precompute desired radius of projected sphere
-  double r = 0.5*_state.point_size()/double(_state.viewport_height())*2.0*tan(0.5*_state.fovy());
+  float r = 0.5f*_state.point_size()/float(_state.viewport_height())*2.0f*tanf(0.5f*float(_state.fovy()));
 
   for(unsigned int i=0; i<polyline_.n_vertices(); ++i)
   {
-    _state.pick_set_name (i);
     // compute radius in 3D
-    const Vec3d p = (Vec3d)polyline_.point(i) - _state.eye();
-    double l = (p|_state.viewing_direction());
-    sphere_->draw(_state, r*l, (Vec3f)polyline_.point(i));
+    Vec3f p = OpenMesh::vector_cast<Vec3f, PolyLine::Point>(polyline_.point(i));
+    Vec3f u = p - OpenMesh::vector_cast<Vec3f, Vec3d>(_state.eye());
+    float l = (u | OpenMesh::vector_cast<Vec3f, Vec3d>(_state.viewing_direction()));
+
+    if (_state.compatibilityProfile())
+    {
+      _state.pick_set_name(i);
+      sphere_->draw(_state, r*l, p);
+    }
+    else
+    {
+      // use shader in core profile
+      GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/single_color_fs.glsl");
+
+      if (pickShader)
+      {
+        ACG::Vec4f pickColor = _state.pick_get_name_color_norm(i);
+
+        ACG::GLMatrixf mWVP = _state.projection() * _state.modelview();
+        mWVP.translate(p);
+        mWVP.scale(r*l, r*l, r*l);
+
+        pickShader->use();
+
+        pickShader->setUniform("mWVP", mWVP);
+        pickShader->setUniform("color", pickColor);
+
+        sphere_->draw_primitive(pickShader);
+
+        pickShader->disable();
+      }
+    }
 
 //    ToFix: _state does still not provide the near_plane in picking mode!!!
 //    std::cerr << "radius in picking: " << r*l << std::endl;

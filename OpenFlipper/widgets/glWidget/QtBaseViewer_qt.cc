@@ -126,6 +126,10 @@ void glViewer::processGLDebugMessage(const QOpenGLDebugMessage& msg)
 {
   if (msg.severity() & QOpenGLDebugMessage::HighSeverity)
     std::cerr << msg.message().toStdString() << std::endl;
+
+  // also catch deprecated function calls in core profile
+  else if (!glstate_->compatibilityProfile() && msg.type() == QOpenGLDebugMessage::DeprecatedBehaviorType)
+    std::cerr << msg.message().toStdString() << std::endl; 
 }
 
 #endif

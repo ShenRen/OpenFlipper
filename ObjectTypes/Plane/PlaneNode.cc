@@ -49,6 +49,8 @@
 
 #include <ACG/GL/acg_glew.hh>
 
+#include <ACG/GL/ShaderCache.hh>
+
 #include "PlaneNode.hh"
 
 //== IMPLEMENTATION ==========================================================
@@ -185,38 +187,73 @@ void PlaneNode::drawPlane( ACG::GLState&  _state) {
 void PlaneNode::drawPlanePick( ACG::GLState&  _state) {
 
   _state.pick_set_maximum(1);
-  _state.pick_set_name(0);
 
-  const ACG::Vec3d xy = plane_.xDirection + plane_.yDirection;
 
-  // Array of coordinates for the plane
-  float vboData_[4* 3 ] = { 0.0,0.0,0.0,
-                            (float)plane_.xDirection[0],(float)plane_.xDirection[1],(float)plane_.xDirection[2],
-                            (float)xy[0],(float)xy[1],(float)xy[2],
-                            (float)plane_.yDirection[0],(float)plane_.yDirection[1],(float)plane_.yDirection[2] };
+  GLSL::Program* pickShader = ACG::ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/single_color_fs.glsl");
 
-   // Enable the arrays
-  _state.enableClientState(GL_VERTEX_ARRAY);
-  _state.vertexPointer(3,GL_FLOAT,0,&vboData_[0]);
+  if (pickShader && pickShader->isLinked())
+  {
+    ACG::GLMatrixf mWVP = _state.projection() * _state.modelview();
+    ACG::Vec4f pickColor = _state.pick_get_name_color_norm(0);
 
-  glDrawArrays(GL_QUADS,0,4);
+    // setup shader
 
-  // deactivate vertex arrays after drawing
-  _state.disableClientState(GL_VERTEX_ARRAY);
+    pickShader->use();
+    pickShader->setUniform("mWVP", mWVP);
+    pickShader->setUniform("color", pickColor);
 
+    // bind vbo
+    updateVBO();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    vertexDecl_.activateShaderPipeline(pickShader);
+
+    glDrawArrays(GL_QUADS, 0, 8);
+
+    vertexDecl_.deactivateShaderPipeline(pickShader);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    pickShader->disable();
+  }
+  else if (_state.compatibilityProfile())
+  {
+    // fallback to fixed function
+
+    const ACG::Vec3d xy = plane_.xDirection + plane_.yDirection;
+
+    // Array of coordinates for the plane
+    float vboData_[4 * 3] = { 0.0,0.0,0.0,
+      (float)plane_.xDirection[0],(float)plane_.xDirection[1],(float)plane_.xDirection[2],
+      (float)xy[0],(float)xy[1],(float)xy[2],
+      (float)plane_.yDirection[0],(float)plane_.yDirection[1],(float)plane_.yDirection[2] };
+
+    _state.pick_set_name(0);
+
+    // Enable the arrays
+    _state.enableClientState(GL_VERTEX_ARRAY);
+    _state.vertexPointer(3, GL_FLOAT, 0, &vboData_[0]);
+
+    glDrawArrays(GL_QUADS, 0, 4);
+
+    // deactivate vertex arrays after drawing
+    _state.disableClientState(GL_VERTEX_ARRAY);
+  }
 }
 
 //----------------------------------------------------------------
 
 void PlaneNode::draw(ACG::GLState&  _state  , const ACG::SceneGraph::DrawModes::DrawMode& /*_drawMode*/)
 {
-
   _state.push_modelview_matrix();
-  glPushAttrib(GL_COLOR_BUFFER_BIT);
-  glPushAttrib(GL_LIGHTING_BIT);
 
-  glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ) ;
-  ACG::GLState::enable(GL_COLOR_MATERIAL);
+  if (_state.compatibilityProfile())
+  {
+    glPushAttrib(GL_COLOR_BUFFER_BIT);
+    glPushAttrib(GL_LIGHTING_BIT);
+
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    ACG::GLState::enable(GL_COLOR_MATERIAL);
+  }
 
   // plane_.position represents the center of the plane.
   // Compute the corner position
@@ -228,8 +265,11 @@ void PlaneNode::draw(ACG::GLState&  _state  , const ACG::SceneGraph::DrawModes::
   // draw the plane
   drawPlane(_state);
 
-  glPopAttrib();
-  glPopAttrib();
+  if (_state.compatibilityProfile())
+  {
+    glPopAttrib();
+    glPopAttrib();
+  }
   _state.pop_modelview_matrix();
 }
 
@@ -239,17 +279,17 @@ void PlaneNode::draw(ACG::GLState&  _state  , const ACG::SceneGraph::DrawModes::
 void
 PlaneNode::pick(ACG::GLState& _state, ACG::SceneGraph::PickTarget _target)
 {
-  if (_target == ACG::SceneGraph::PICK_ANYTHING) {
+  if (_target == ACG::SceneGraph::PICK_ANYTHING) 
+  {
+    _state.push_modelview_matrix();
 
-	  _state.push_modelview_matrix();
-	  
-	  ACG::Vec3d pos = plane_.position - plane_.xDirection*0.5 - plane_.yDirection*0.5;
+    ACG::Vec3d pos = plane_.position - plane_.xDirection*0.5 - plane_.yDirection*0.5;
 
-	  _state.translate(pos[0], pos[1], pos[2]);
-	  
-	  drawPlanePick(_state);
-	  
-	  _state.pop_modelview_matrix();
+    _state.translate(pos[0], pos[1], pos[2]);
+
+    drawPlanePick(_state);
+
+    _state.pop_modelview_matrix();
   }
 }
 

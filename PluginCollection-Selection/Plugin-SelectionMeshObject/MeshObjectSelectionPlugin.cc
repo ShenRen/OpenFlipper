@@ -120,7 +120,9 @@ conversionDialog_(0),
 colorButtonSelection_(0),
 colorButtonArea_(0),
 colorButtonHandle_(0),
-colorButtonFeature_(0){
+colorButtonFeature_(0),
+dihedral_angle_threshold_(0.0)
+{
 }
       
 MeshObjectSelectionPlugin::~MeshObjectSelectionPlugin() {
@@ -1915,7 +1917,7 @@ void MeshObjectSelectionPlugin::lassoSelect(QRegion&      _region,
                     }
                 }
                 if (!_deselection)
-                  selectEdges(bod->id(), elements);
+                  selectEdges(bod->id(), elements, dihedral_angle_threshold_);
                 else
                   unselectEdges(bod->id(), elements);
                 alreadySelectedObjects.insert(list[i].first);
@@ -1951,7 +1953,8 @@ void MeshObjectSelectionPlugin::lassoSelect(QRegion&      _region,
                 if (!_deselection)
                 {
                   //on selection: select picked edges, convert to halfedge selection
-                  selectEdges(bod->id(), elements);
+                  update_dihedral_angle_threshold_from_ui();
+                  selectEdges(bod->id(), elements, dihedral_angle_threshold_);
                 }
                 else
                 {
@@ -2251,6 +2254,20 @@ void MeshObjectSelectionPlugin::addedEmptyObject(int _id )
 
 }
 
+void MeshObjectSelectionPlugin::set_dihedral_angle_threshold(const double _a)
+{
+  dihedral_angle_threshold_ = _a;
+}
+
+double MeshObjectSelectionPlugin::get_dihedral_angle_threshold()
+{
+  return dihedral_angle_threshold_;
+}
+
+void MeshObjectSelectionPlugin::update_dihedral_angle_threshold_from_ui()
+{
+  dihedral_angle_threshold_ = OpenFlipperQSettings().value("SelectionBasePlugin/MinDihedralAngle", double()).toDouble();
+}
 
 #if QT_VERSION < 0x050000
   Q_EXPORT_PLUGIN2(meshobjectselectionplugin, MeshObjectSelectionPlugin);

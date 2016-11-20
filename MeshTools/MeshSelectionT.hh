@@ -261,7 +261,7 @@ std::vector< int > getArea(MeshT* _mesh, unsigned int _type , bool& _invert);
 /// Select given edges of a mesh
 template< typename MeshT >
 inline
-void selectEdges(MeshT* _mesh, const std::vector< int >& _edges);
+void selectEdges(MeshT* _mesh, const std::vector< int >& _edges, const double _dihedral_angle_threshold = 0.0);
 
 /// Unselect given edges of a mesh
 template< typename MeshT >

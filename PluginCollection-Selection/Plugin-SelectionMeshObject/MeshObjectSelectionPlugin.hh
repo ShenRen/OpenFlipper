@@ -358,10 +358,10 @@ public slots:
     //==========================================
 
     /// Select given Edges
-    void selectEdges(int objectId, IdList _vertexList);
+    void selectEdges(int objectId, IdList _edgeList, const double _dihedral_angle_threshold = 0.0);
 
     /// Unselect given Edges
-    void unselectEdges(int objectId, IdList _vertexList);
+    void unselectEdges(int objectId, IdList _edgeList);
 
     /// Select all Edges
     void selectAllEdges(int objectId);
@@ -481,6 +481,16 @@ public slots:
     /// Convert the selection on all target objects
     void conversion(const QString& _from, const QString& _to, bool _deselect);
 
+
+public:
+    /// set dihedral angle threshold for edge selection
+    void   set_dihedral_angle_threshold(const double _a);
+    /// get dihedral angle threshold for edge selection
+    double get_dihedral_angle_threshold();
+
+private:
+    void update_dihedral_angle_threshold_from_ui();
+
     /** @} */
 
     //===========================================================================
@@ -589,6 +599,8 @@ private:
     ACG::Vec4f areaColor_;
     ACG::Vec4f handleColor_;
     ACG::Vec4f featureColor_;
+
+    double dihedral_angle_threshold_;
 
     /** @} */
 

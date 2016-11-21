@@ -86,6 +86,7 @@ set (directories
   Geometry
   Config
   Geometry/Types
+  Geometry/bsp
   GL
   Glut
   IO

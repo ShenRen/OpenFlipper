@@ -66,7 +66,6 @@ public:
     virtual ~OMPropertyVisualizerInteger(){}
 
 protected:
-
     virtual void visualizeFaceProp(bool _setDrawMode = true);
     virtual void visualizeEdgeProp(bool _setDrawMode = true);
     virtual void visualizeHalfedgeProp(bool _setDrawMode = true);

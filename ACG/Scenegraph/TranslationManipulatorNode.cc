@@ -818,6 +818,8 @@ void TranslationManipulatorNode::getRenderObjects(IRenderer* _renderer,
     ro.blending = false;
     ro.depthFunc = GL_LEQUAL;
     ro.depthWrite = true;
+    ro.alpha = 1.0f;
+
     addManipulatorToRenderer(_renderer, &ro, true);
   }
 }
@@ -871,12 +873,14 @@ void TranslationManipulatorNode::addManipulatorToRenderer (IRenderer* _renderer,
   //================================================================================================
   // gluCylinder draws into z direction so z-Axis first
 
+  _baseRO->debugName = "TranslationManipulatorNode.z";
   addAxisToRenderer(_renderer, _baseRO, _active, ZAxis);
 
   //================================================================================================
   // Y-Axis
   //================================================================================================
 
+  _baseRO->debugName = "TranslationManipulatorNode.y";
   _baseRO->modelview.rotate(-90, 1.0, 0.0, 0.0);
   addAxisToRenderer(_renderer, _baseRO, _active, YAxis);
 
@@ -884,12 +888,15 @@ void TranslationManipulatorNode::addManipulatorToRenderer (IRenderer* _renderer,
   // X-Axis
   //================================================================================================
 
+  _baseRO->debugName = "TranslationManipulatorNode.x";
   _baseRO->modelview.rotate(90, 0.0, 1.0, 0.0);
   addAxisToRenderer(_renderer, _baseRO, _active, XAxis);
 
   //=================================================================================================
   // Sphere
   //=================================================================================================
+
+  _baseRO->debugName = "TranslationManipulatorNode.sphere";
 
   for (int i = 0; i < 3; ++i)
     _baseRO->emissive[i] = _active ? (element_[Origin].active_current_color_[i]) : (element_[Origin].inactive_current_color_[i]);
@@ -908,6 +915,8 @@ void TranslationManipulatorNode::addManipulatorToRenderer (IRenderer* _renderer,
 
   if ( activeRotations_ & X_AXIS) 
   {
+    _baseRO->name = "TranslationManipulatorNode.x_ring";
+
     for (int i = 0; i < 3; ++i)
       _baseRO->emissive[i] = _active ? (element_[XRing].active_current_color_[i]) : (element_[XRing].inactive_current_color_[i]);
 
@@ -918,6 +927,8 @@ void TranslationManipulatorNode::addManipulatorToRenderer (IRenderer* _renderer,
   _baseRO->modelview.rotate(90, 0.0, 1.0, 0.0);
   if ( activeRotations_ & Y_AXIS) 
   {
+    _baseRO->debugName = "TranslationManipulatorNode.y_ring";
+
     for (int i = 0; i < 3; ++i)
       _baseRO->emissive[i] = _active ? (element_[YRing].active_current_color_[i]) : (element_[YRing].inactive_current_color_[i]);
     circle_->addToRenderer_primitive(_renderer, _baseRO);
@@ -926,6 +937,8 @@ void TranslationManipulatorNode::addManipulatorToRenderer (IRenderer* _renderer,
   _baseRO->modelview.rotate(90, 1.0, 0.0, 0.0);
   if ( activeRotations_ & Z_AXIS) 
   {
+    _baseRO->debugName = "TranslationManipulatorNode.z_ring";
+
     for (int i = 0; i < 3; ++i)
       _baseRO->emissive[i] = _active ? (element_[ZRing].active_current_color_[i]) : (element_[ZRing].inactive_current_color_[i]);
     circle_->addToRenderer_primitive(_renderer, _baseRO);

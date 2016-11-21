@@ -738,7 +738,7 @@ void SkeletalAnimationPlugin::UpdateUI()
 
     while ( animations ) {
       AnimationHandle anim = *animations;
-      pToolbox_->cbAnimation->addItem(skeleton->animationName(anim.animationIndex()).c_str(),QVariant(anim.animationIndex()));
+      pToolbox_->cbAnimation->addItem(skeleton->animationName(anim.animationIndex()).c_str(),QVariant::fromValue(anim.animationIndex()));
       ++animations;
     }
 

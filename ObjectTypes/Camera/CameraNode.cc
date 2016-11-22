@@ -61,7 +61,11 @@
 //== INCLUDES =================================================================
 #include "CameraNode.hh"
 
+#include <OpenMesh/Core/Utils/vector_cast.hh>
+
 #include <ACG/GL/IRenderer.hh>
+#include <ACG/GL/ShaderCache.hh>
+#include <ACG/ShaderUtils/GLSLShader.hh>
 
 //== NAMESPACES ===============================================================
 
@@ -79,6 +83,7 @@ CameraNode::CameraNode(BaseNode* _parent, std::string _name) :
     bbmax_(FLT_MIN,FLT_MIN,FLT_MIN),
     cylinder_(0),
     cone_(0),
+    update_vbo_(true),
     showFrustum_(false) {
 
     modelView_.identity();
@@ -87,14 +92,6 @@ CameraNode::CameraNode(BaseNode* _parent, std::string _name) :
     // Setup a standard projection ( Full fovy 90, aspect 1.0, near 1.0, far 2.0 )
     projection_.perspective(45 ,1.0,1.0,2.0);
 
-    far_ = 2.0;
-    near_ = 1.0;
-
-
-    width_  = 500;
-    height_ = 500;
-
-    updateBoundingBoxes(modelView_);
 
     cylinder_ = new GLCylinder(8, 4, 1.0f, false, false);
     cone_ = new GLCone(8, 1, 1.0f, 0.0f, true, false);
@@ -109,8 +106,8 @@ CameraNode::~CameraNode() {
 }
 
 void CameraNode::boundingBox(Vec3d& _bbMin, Vec3d& _bbMax) {
-    _bbMin.minimize(bbmin_);
-    _bbMax.maximize(bbmax_);
+  _bbMin.minimize(bbmin_);
+  _bbMax.maximize(bbmax_);
 }
 
 //----------------------------------------------------------------------------
@@ -139,25 +136,17 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
     Vec4f lastDiffuseColor  = _state.diffuse_color();
     Vec4f lastSpecularColor = _state.specular_color();
 
-    // Set modelview matrix such that it matches
-    // the remote settings (+ the local transformation).
-    // This is performed by multiplying the local
-    // modelview matrix by the inverse remote
-    // modelview matrix: M_l' = M_l * M^{-1}_r
-    ACG::GLMatrixd modelview = _state.modelview();
-    _state.set_modelview(modelview * modelView_);
-    
-    // Update bounding box data and clipped_ flag
-    updateBoundingBoxes(modelview);
-
     _state.set_base_color(ACG::Vec4f(1.0f, 1.0f, 1.0f, 1.0f));
     _state.set_diffuse_color(ACG::Vec4f(1.0f, 1.0f, 1.0f, 1.0f));
     _state.set_specular_color(ACG::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));
 
+    _state.set_modelview(_state.modelview() * modelViewInv_);
+
     // Draw camera box
-    
+/*
     glPushAttrib(GL_LIGHTING_BIT);
     ACG::GLState::disable(GL_LIGHTING); // Disable lighting
+
     glBegin(GL_LINES);
     glVertex3f(0.0f, 0.0f, 0.0f);
     glVertex3f(-half_width_, -half_height_, -near_);
@@ -184,7 +173,7 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
     glVertex3f(-half_width_, half_height_, -near_);
     glEnd();
     glPopAttrib();
-
+*/
     // Render frustum
     if(showFrustum_) {
 
@@ -194,7 +183,7 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
         ACG::GLState::disable(GL_LIGHTING); // Disable lighting
         
         glColor4f(0.0f, 0.5f, 0.0f, 1.0f);
-        
+/*
         glBegin(GL_LINES);
         
         // Top plane
@@ -300,7 +289,7 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
         glVertex3f(-far_half_width_, -far_half_height_, -far_);
 
         glEnd();
-        
+*/
 
         glPopAttrib(); // LIGHTING
     }
@@ -338,7 +327,7 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
     _state.translate(0.0, 0.0, -axis_length );
 
     // Draw viewing direction vector
-    _state.rotate(90, 0.0, 1.0, 0.0);
+    _state.rotate(-90, 0.0, 1.0, 0.0);
 
     _state.set_base_color(ACG::Vec4f(0.0f, 0.0f, 1.0f, 1.0f));
     _state.set_diffuse_color(ACG::Vec4f(0.0f, 0.0f, 1.0f, 1.0f));
@@ -367,70 +356,7 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
 
 void CameraNode::getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode, const Material* _mat)
 {
-  if (!vbo_.is_valid())
-  {
-    // cube in clip space
-    float data[] = 
-    {
-      // float4 pos    float2 coeff
-      -1, -1, 1, 1,     1, 0, //0  frustum vertices..
-      -1, -1, -1, 1,    1, 0, //1
-      1, -1, -1, 1,     1, 0, //2
-      1, -1, 1, 1,      1, 0, //3
-      -1, 1, 1, 1,      1, 0, //4
-      1, 1, 1, 1,       1, 0, //5
-      1, 1, -1, 1,      1, 0, //6
-      -1, 1, -1, 1,     1, 0, //7
-
-      0, 0, 0, 0,       0, 1, //8 cam origin vertex
-    };
-
-    vbo_.upload(sizeof(data), data, GL_STATIC_DRAW);
-
-    vdecl_.clear();
-    vdecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_POSITION);
-    vdecl_.addElement(GL_FLOAT, 2, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inCamOriginCoeff");
-  }
-
-  if (!ibo_.is_valid())
-  {
-    int data[] = 
-    {
-      // frustum triangles
-      3,2,6 , 6,5,3 , // right
-      1,0,4 , 4,7,1 , // left
-      4,5,6 , 6,7,4 , // top
-      0,1,2 , 2,3,0 , // bottom
-      0,3,5 , 5,4,0 , // back
-//      2,1,7 , 7,6,2 , // front
-
-      // frustum lines
-      3,2, 2,6, 6,5, 5,3, // right
-      1,0, 0,4, 4,7, 7,1, // left
-      4,5, 5,6, 6,7, 7,4, // top
-      0,1, 1,2, 2,3, 3,0, // bottom
-      0,3, 3,5, 5,4, 4,0, // back
-      2,1, 1,7, 7,6, 6,2, // front
-
-      // cam origin to near plane lines
-      8,1, 8,2, 8,6, 8,7
-    };
-
-    ibo_.upload(sizeof(data), data, GL_STATIC_DRAW);
-  }
-
-  GLMatrixf camWorldToClip = projection_ * modelView_;
-
-  GLMatrixf camClipToWorld(camWorldToClip);
-  camClipToWorld.invert();
-
-  GLMatrixf camViewToWorld = modelView_;
-  camViewToWorld.invert();
-
-  Vec4f camOriginWS(camViewToWorld(0, 3),
-    camViewToWorld(1, 3),
-    camViewToWorld(2, 3),
-    1.0f);
+  updateVBO();
 
   RenderObject obj;
   obj.initFromState(&_state);
@@ -442,51 +368,244 @@ void CameraNode::getRenderObjects(IRenderer* _renderer, GLState& _state, const D
   obj.indexBuffer = ibo_.id();
   obj.vertexDecl = &vdecl_;
 
-
-  obj.shaderDesc.vertexTemplateFile = "Camera/vertex.glsl";
-
-  obj.setUniform("clipSpaceToWorld", camClipToWorld);
-  obj.setUniform("camOriginWS", camOriginWS);
-
   bool hasOrigin = projection_.isPerspective();
 
-  GLsizei lineOffset = 5 * 6;
+  GLsizei lineOffset = offsetLines_;
 
   if (showFrustum_)
   {
-    obj.blending = true;
-    obj.emissive = Vec3f(0.0f, 1.0f, 0.0f);
-    obj.alpha = 0.01f;
-    obj.glDrawElements(GL_TRIANGLES, lineOffset, GL_UNSIGNED_INT, 0);
-//    _renderer->addRenderObject(&obj);
+    // tris
+    obj.debugName = "CameraNode.frustum_tris";
+    obj.emissive = Vec3f(0.66f, 0.66f, 0.66f);
+    obj.glDrawElements(GL_TRIANGLES, lineOffset, GL_UNSIGNED_INT, (GLvoid*)(offsetTris_ * sizeof(int)));
 
+    obj.depthRange = Vec2f(0.01f, 1.0f);
+    _renderer->addRenderObject(&obj);
+
+
+    // lines
     GLsizei lineCount = hasOrigin ? 4 * 7 : 4 * 6;
 
-    obj.emissive = Vec3f(0.0f, 0.5f, 0.0f);
-    obj.alpha = 1.0f;
-    obj.blending = false;
+    obj.debugName = "CameraNode.frustum_lines";
+    obj.emissive = Vec3f(0.0f, 0.0f, 0.0f);
+
+    obj.depthRange = Vec2f(0.0f, 1.0f);
+
+    obj.setupLineRendering(_state.line_width(), Vec2f(_state.viewport_width(), _state.viewport_height()));
+
     obj.glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(lineOffset * sizeof(int)));
     _renderer->addRenderObject(&obj);
+
+    obj.resetLineRendering();
   }
   else
   {
-    obj.emissive = Vec3f(0.0f, 0.5f, 0.0f);
+    obj.debugName = "CameraNode.frustum_lines";
+    obj.emissive = Vec3f(0.0f, 0.0f, 0.0f);
 
     // only front plane
-    GLsizei lineCount = hasOrigin ? 4 * 1 : 4 * 2;
-    lineOffset += 4 * 5;
+    GLsizei lineCount = hasOrigin ? 4 * 2 : 4 * 1;
 
-    obj.glDrawElements(GL_LINES, lineCount, GL_UNSIGNED_INT, (GLvoid*)(lineOffset * sizeof(int)));
+    obj.setupLineRendering(_state.line_width(), Vec2f(_state.viewport_width(), _state.viewport_height()));
+
+    obj.glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(offsetFront_ * sizeof(int)));
     _renderer->addRenderObject(&obj);
+    obj.resetLineRendering();
   }
+
+
+  obj.vertexBuffer = 0;
+  obj.indexBuffer = 0;
+  obj.vertexDecl = 0;
+
+
+  // draw coordinate axis
+  cylinder_->setBottomRadius(axis_length/20.0f);
+  cylinder_->setTopRadius(axis_length/20.0f);
+
+  cone_->setBottomRadius(axis_length/5.0f);
+  cone_->setTopRadius(0.0f);
+
+  GLMatrixd matView = obj.modelview * modelViewInv_;
+
+  // right vec
+  obj.debugName = "CameraNode.right_vec";
+  obj.emissive = Vec3f(1.0f, 0.0f, 0.0f);
+  obj.diffuse = Vec3f(1.0f, 0.0f, 0.0f);
+  obj.ambient = Vec3f(1.0f, 0.0f, 0.0f);
+  obj.specular = Vec3f(1.0f, 0.4f, 0.4f);
+
+  obj.modelview = matView;
+  obj.modelview.rotateY(90.0);
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length));
+  cylinder_->addToRenderer_primitive(_renderer, &obj);
+
+  // right top
+  obj.debugName = "CameraNode.right_top";
+  obj.modelview = matView;
+  obj.modelview.rotateY(90.0);
+  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+  cone_->addToRenderer_primitive(_renderer, &obj);
+
+
+  // up vec
+  obj.debugName = "CameraNode.up_vec";
+  obj.emissive = Vec3f(0.0f, 1.0f, 0.0f);
+  obj.diffuse = Vec3f(0.0f, 1.0f, 0.0f);
+  obj.ambient = Vec3f(0.0f, 1.0f, 0.0f);
+  obj.specular = Vec3f(0.4f, 1.0f, 0.4f);
+
+  obj.modelview = matView;
+  obj.modelview.rotateX(-90.0);
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length));
+  cylinder_->addToRenderer_primitive(_renderer, &obj);
+
+  // up top
+  obj.debugName = "CameraNode.up_top";
+  obj.modelview = matView;
+  obj.modelview.rotateX(-90.0);
+  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+  cone_->addToRenderer_primitive(_renderer, &obj);
+
+
+
+  // Draw viewing direction vector
+  obj.debugName = "CameraNode.view_vec";
+  obj.emissive = Vec3f(0.0f, 0.0f, 1.0f);
+  obj.diffuse = Vec3f(0.0f, 0.0f, 1.0f);
+  obj.ambient = Vec3f(0.0f, 0.0f, 1.0f);
+  obj.specular = Vec3f(0.4f, 0.4f, 1.0f);
+
+  obj.modelview = matView;
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length));
+  cylinder_->addToRenderer_primitive(_renderer, &obj);
+
+  // top
+  obj.debugName = "CameraNode.view_top";
+  obj.modelview = matView;
+  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+  cone_->addToRenderer_primitive(_renderer, &obj);
 }
 
 //----------------------------------------------------------------------------
 
-void CameraNode::pick(GLState& _state, PickTarget /*_target*/) {
+void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
+{
+  _state.pick_set_maximum(2);
 
-    _state.pick_set_maximum(2);
+  updateVBO();
 
+  vbo_.bind();
+  ibo_.bind();
+
+
+  GLSL::Program* pickShader = ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/single_color_fs.glsl");
+
+  if (pickShader && pickShader->isLinked())
+  {
+    pickShader->use();
+
+    // world view projection matrix
+    GLMatrixf mat = _state.projection() * _state.modelview();
+    pickShader->setUniform("mWVP", mat);
+
+    Vec4f pickColor = OpenMesh::vector_cast<Vec4f, Vec4uc>(_state.pick_get_name_color(0)) / 255.0f;
+    pickShader->setUniform("color", pickColor);
+
+
+
+    // pick frustum
+
+    vdecl_.activateShaderPipeline(pickShader);
+
+    GLsizei lineOffset = offsetLines_;
+
+    if (showFrustum_)
+      glDrawElements(GL_TRIANGLES, lineOffset, GL_UNSIGNED_INT, (GLvoid*)(offsetTris_ * sizeof(int)));
+    else
+    {
+      bool hasOrigin = projection_.isPerspective();
+      GLsizei lineCount = hasOrigin ? 4 * 2 : 4 * 1;
+
+      glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(offsetFront_ * sizeof(int)));
+    }
+
+
+    vdecl_.deactivateShaderPipeline(pickShader);
+
+
+    // pick coordinate axis
+#if 0
+    pickColor = OpenMesh::vector_cast<Vec4f, Vec4uc>(_state.pick_get_name_color(1)) / 255.0f;
+    pickShader->setUniform("color", pickColor);
+
+
+    cylinder_->setBottomRadius(axis_length/20.0f);
+    cylinder_->setTopRadius(axis_length/20.0f);
+
+    cone_->setBottomRadius(axis_length/5.0f);
+    cone_->setTopRadius(0.0f);
+
+
+    GLMatrixf matView = obj.modelview * modelViewInv_;
+    GLMatrixf mat;
+
+    // right vec
+    mat = matView;
+    mat.rotateY(90.0);
+    mat.scale(Vec3d(1.0, 1.0, axis_length));
+    pickShader->setUniform("mWVP", mat);
+    cylinder_->draw_primitive(pickShader);
+
+    // right top
+    mat = matView;
+    mat.rotateY(90.0);
+    mat.translate(Vec3d(0.0, 0.0, axis_length));
+    mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+    pickShader->setUniform("mWVP", mat);
+    cone_->draw_primitive(pickShader);
+
+
+    // up vec
+    mat = matView;
+    mat.rotateX(-90.0);
+    mat.scale(Vec3d(1.0, 1.0, axis_length));
+    pickShader->setUniform("mWVP", mat);
+    cylinder_->draw_primitive(pickShader);
+
+    // up top
+    mat = matView;
+    mat.rotateX(-90.0);
+    mat.translate(Vec3d(0.0, 0.0, axis_length));
+    mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+    pickShader->setUniform("mWVP", mat);
+    cone_->draw_primitive(pickShader);
+
+
+
+    // Draw viewing direction vector
+    mat = matView;
+    mat.scale(Vec3d(1.0, 1.0, axis_length));
+    pickShader->setUniform("mWVP", mat);
+    cylinder_->draw_primitive(pickShader);
+
+    // top
+    mat = matView;
+    mat.translate(Vec3d(0.0, 0.0, axis_length));
+    mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+    pickShader->setUniform("mWVP", mat);
+    cone_->draw_primitive(pickShader);
+
+#endif
+
+
+    pickShader->disable();
+  }
+  else
+  {
     _state.pick_set_name(0);
 
     // Store modelview matrix
@@ -497,13 +616,10 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/) {
     // This is performed by multiplying the local
     // modelview matrix by the inverse remote
     // modelview matrix: M_l' = M_l * M^{-1}_r
-    ACG::GLMatrixd modelview = _state.modelview();
-    _state.set_modelview(modelview * modelView_);
-    
-    // Update bounding box data and clipped_ flag
-    updateBoundingBoxes(modelview);
+    _state.set_modelview(_state.modelview() * modelViewInv_);
 
     // Draw camera box
+/*
     glBegin(GL_LINES);
     glVertex3f(0.0f, 0.0f, 0.0f);
     glVertex3f(-half_width_, -half_height_, -near_);
@@ -529,7 +645,7 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/) {
     glVertex3f(half_width_, half_height_, -near_);
     glVertex3f(-half_width_, half_height_, -near_);
     glEnd();
-
+*/
 
     _state.pick_set_name(1);
 
@@ -558,7 +674,7 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/) {
     _state.translate(0.0, 0.0, -axis_length );
 
     // Draw viewing direction vector
-    _state.rotate(90, 0.0, 1.0, 0.0);
+    _state.rotate(-90, 0.0, 1.0, 0.0);
 
     cylinder_->draw(_state, axis_length);
 
@@ -569,35 +685,124 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/) {
 
     // Reset to previous modelview
     _state.pop_modelview_matrix();
+  }
+
+  vbo_.unbind();
+  ibo_.unbind();
 }
 
 //----------------------------------------------------------------------------
 
-void CameraNode::updateBoundingBoxes(GLMatrixd& _modelview) {
+void CameraNode::updateVBO()
+{
+  if (update_vbo_)
+  {
+    updateFrustumWS();
 
-    // Get fovy of remote projection
-    fovy_ = atan(1/projection_(1,1)) * 2;
+    vbo_.upload(sizeof(Vec4f) * vboData_.size(), &vboData_[0], GL_STATIC_DRAW);
 
-    // Set bounding box of camera to be of sufficient
-    // size to cover any camera rotation.
-    // Note: 1.41421 = sqrt(2)
+    vdecl_.clear();
+    vdecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_POSITION);
 
-    aspectRatio_ = (double)width_ / (double)height_;
+    update_vbo_ = false;
 
-    half_height_ = height_/2.0;
-    half_width_ = aspectRatio_ * half_height_;
+    updateBoundingBoxes();
+  }
 
-    if(showFrustum_) {
-        far_half_height_ = tan(fovy_/2) * far_;
-        far_half_width_ = far_half_height_ * aspectRatio_;
-    }
-    
-    OpenMesh::Vec3d e = OpenMesh::Vec3d(modelView_(0,3), modelView_(1,3), modelView_(2,3));
-  
-    OpenMesh::Vec3d tmp(std::max(1.41421, half_width_), std::max(1.41421, half_height_), 1.41421);
+  if (!ibo_.is_valid())
+  {
+    int data[] =
+    {
+      // frustum triangles
+      3,2,6 , 6,5,3 , // right
+      1,0,4 , 4,7,1 , // left
+      4,5,6 , 6,7,4 , // top
+      0,1,2 , 2,3,0 , // bottom
+      0,3,5 , 5,4,0 , // back
+//      2,1,7 , 7,6,2 , // front
 
-    bbmin_ = e - tmp;
-    bbmax_ = e + tmp;
+      // frustum lines
+      3,2, 2,6, 6,5, 5,3, // right
+      1,0, 0,4, 4,7, 7,1, // left
+      4,5, 5,6, 6,7, 7,4, // top
+      0,1, 1,2, 2,3, 3,0, // bottom
+      0,3, 3,5, 5,4, 4,0, // back
+      2,1, 1,7, 7,6, 6,2, // front
+
+      // cam origin to near plane lines
+      8,1, 8,2, 8,6, 8,7
+    };
+
+    offsetTris_ = 0;
+    offsetLines_ = 6*5;
+    offsetFront_ = offsetLines_ + 8*5;
+
+    ibo_.upload(sizeof(data), data, GL_STATIC_DRAW);
+  }
+}
+
+//----------------------------------------------------------------------------
+
+void CameraNode::updateBoundingBoxes()
+{
+  bbmin_ = Vec3d(DBL_MAX, DBL_MAX, DBL_MAX);
+  bbmax_ = Vec3d(-DBL_MAX, -DBL_MAX, -DBL_MAX);
+
+  if (update_vbo_ || vboData_.empty())
+    updateFrustumWS();
+
+  for (size_t i = 0; i < vboData_.size(); ++i)
+  {
+    Vec3d v = OpenMesh::vector_cast<Vec3d, Vec4f>(vboData_[i]);
+
+    bbmin_.minimize(v);
+    bbmax_.maximize(v);
+  }
+
+  bbmin_ -= Vec3d(axis_length * 2.0);
+  bbmax_ += Vec3d(axis_length * 2.0);
+}
+
+//----------------------------------------------------------------------------
+
+void CameraNode::updateFrustumWS()
+{
+  vboData_.resize(9);
+
+  // frustum vertices in clip space
+  Vec4f posCS[8] =
+  {
+    Vec4f(-1, -1, 1, 1),  //0  frustum vertices..
+    Vec4f(-1, -1, -1, 1), //1
+    Vec4f(1, -1, -1, 1),  //2
+    Vec4f(1, -1, 1, 1),   //3
+    Vec4f(-1, 1, 1, 1),   //4
+    Vec4f(1, 1, 1, 1),    //5
+    Vec4f(1, 1, -1, 1),   //6
+    Vec4f(-1, 1, -1, 1),  //7
+  };
+
+  // transform to world space
+
+  GLMatrixf camWorldToClip = projection_ * modelView_;
+
+  GLMatrixf camClipToWorld(camWorldToClip);
+  camClipToWorld.invert();
+
+  for (int i= 0; i < 8; ++i)
+  {
+    Vec4f posWS = camClipToWorld * posCS[i];
+    posWS /= posWS[3];
+    vboData_[i] = posWS;
+  }
+
+  // camera position in world space
+  Vec4f camOriginWS(modelViewInv_(0, 3),
+    modelViewInv_(1, 3),
+    modelViewInv_(2, 3),
+    1.0f);
+
+  vboData_[8] = camOriginWS;
 }
 
 

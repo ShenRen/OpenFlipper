@@ -115,25 +115,25 @@ public:
     void pick(GLState& _state, PickTarget _target);
 
     /// set model view matrix
-    void setModelView(ACG::GLMatrixd _modelView) { modelView_ = _modelView; };
+    void setModelView(ACG::GLMatrixd _modelView) { modelView_ = _modelView; modelViewInv_ = _modelView; modelViewInv_.invert(); update_vbo_ = true; }
 
     /// Set projection Matrix ( used to calculate frustum ... )
-    void setProjection(ACG::GLMatrixd _projection) { projection_ = _projection; };
+    void setProjection(ACG::GLMatrixd _projection) { projection_ = _projection; update_vbo_ = true; }
 
     /// Set viewport size ( This will be used to compute the aspect ratio )
-    void setSize(int _w, int _h) { width_ = _w; height_ = _h; aspectRatio_ = (double)width_ / (double)height_; }
+    void setSize(int _w, int _h) { /*obsolete*/ }
 
     /// Return encoded view string
-    void setEncodedView(QString _encodedView) { encodedView_ = _encodedView; };
+    void setEncodedView(QString _encodedView) { encodedView_ = _encodedView; }
 
     /// Set distance to far plane ( e.g. scene radius )
-    void setFarPlane(double _far) { far_ = _far; };
+    void setFarPlane(double _far) { /*obsolete*/ }
 
     /// Set distance to near plane
-    void setNearPlane(double _near) { near_ = _near; };
+    void setNearPlane(double _near) { /*obsolete*/ }
 
     /// Return encoded view string
-    QString getEncodedView() { return encodedView_; };
+    QString getEncodedView() { return encodedView_; }
 
     /// Set if viewing frustum should be shown or not
     void showFrustum(bool _showFrustum) { showFrustum_ = _showFrustum; }
@@ -143,34 +143,31 @@ public:
 
 private:
 
-    void updateBoundingBoxes(GLMatrixd& _modelview);
+    void updateVBO();
+
+    void updateBoundingBoxes();
+
+    // recalculate frustum positions in world space
+    void updateFrustumWS();
 
     OpenMesh::Vec3d bbmin_;
     OpenMesh::Vec3d bbmax_;
 
     ACG::GLMatrixd modelView_;
+    ACG::GLMatrixd modelViewInv_;
     ACG::GLMatrixd projection_;
-
-    int width_, height_;
-
-    double fovy_;
-
-    double half_height_;
-    double half_width_;
-
-    double far_half_height_;
-    double far_half_width_;
-
-    double aspectRatio_;
-    double near_;
-    double far_;
 
     GLCylinder* cylinder_;
     GLCone* cone_;
 
-    GeometryBuffer    vbo_;
-    IndexBuffer       ibo_;
-    VertexDeclaration vdecl_;
+    GeometryBuffer      vbo_;
+    IndexBuffer         ibo_;
+    VertexDeclaration   vdecl_;
+    bool                update_vbo_;
+    std::vector<Vec4f>  vboData_; // 8 frustum vertices + camera position
+    int                 offsetTris_; // offsets into index buffer
+    int                 offsetLines_;
+    int                 offsetFront_;
 
     QString encodedView_;
 

@@ -66,6 +66,7 @@
 #include <ACG/Scenegraph/BaseNode.hh>
 #include <ACG/Scenegraph/DrawModes.hh>
 #include <ACG/GL/GLPrimitives.hh>
+#include <ACG/GL/globjects.hh>
 #include <string>
 #include <vector>
 
@@ -106,6 +107,9 @@ public:
 
     /// drawing
     void draw(GLState& _state, const DrawModes::DrawMode& _drawMode);
+
+    /// create render objects
+    void getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode, const Material* _mat);
 
     /// picking
     void pick(GLState& _state, PickTarget _target);
@@ -164,6 +168,9 @@ private:
     GLCylinder* cylinder_;
     GLCone* cone_;
 
+    GeometryBuffer    vbo_;
+    IndexBuffer       ibo_;
+    VertexDeclaration vdecl_;
 
     QString encodedView_;
 

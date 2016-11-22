@@ -61,6 +61,8 @@
 //== INCLUDES =================================================================
 #include "CameraNode.hh"
 
+#include <ACG/GL/IRenderer.hh>
+
 //== NAMESPACES ===============================================================
 
 namespace ACG {
@@ -359,6 +361,124 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
 
     glPopAttrib(); // GL_ENABLE_BIT
     glPopAttrib(); // LIGHTING
+}
+
+//----------------------------------------------------------------------------
+
+void CameraNode::getRenderObjects(IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode, const Material* _mat)
+{
+  if (!vbo_.is_valid())
+  {
+    // cube in clip space
+    float data[] = 
+    {
+      // float4 pos    float2 coeff
+      -1, -1, 1, 1,     1, 0, //0  frustum vertices..
+      -1, -1, -1, 1,    1, 0, //1
+      1, -1, -1, 1,     1, 0, //2
+      1, -1, 1, 1,      1, 0, //3
+      -1, 1, 1, 1,      1, 0, //4
+      1, 1, 1, 1,       1, 0, //5
+      1, 1, -1, 1,      1, 0, //6
+      -1, 1, -1, 1,     1, 0, //7
+
+      0, 0, 0, 0,       0, 1, //8 cam origin vertex
+    };
+
+    vbo_.upload(sizeof(data), data, GL_STATIC_DRAW);
+
+    vdecl_.clear();
+    vdecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_POSITION);
+    vdecl_.addElement(GL_FLOAT, 2, VERTEX_USAGE_SHADER_INPUT, size_t(0), "inCamOriginCoeff");
+  }
+
+  if (!ibo_.is_valid())
+  {
+    int data[] = 
+    {
+      // frustum triangles
+      3,2,6 , 6,5,3 , // right
+      1,0,4 , 4,7,1 , // left
+      4,5,6 , 6,7,4 , // top
+      0,1,2 , 2,3,0 , // bottom
+      0,3,5 , 5,4,0 , // back
+//      2,1,7 , 7,6,2 , // front
+
+      // frustum lines
+      3,2, 2,6, 6,5, 5,3, // right
+      1,0, 0,4, 4,7, 7,1, // left
+      4,5, 5,6, 6,7, 7,4, // top
+      0,1, 1,2, 2,3, 3,0, // bottom
+      0,3, 3,5, 5,4, 4,0, // back
+      2,1, 1,7, 7,6, 6,2, // front
+
+      // cam origin to near plane lines
+      8,1, 8,2, 8,6, 8,7
+    };
+
+    ibo_.upload(sizeof(data), data, GL_STATIC_DRAW);
+  }
+
+  GLMatrixf camWorldToClip = projection_ * modelView_;
+
+  GLMatrixf camClipToWorld(camWorldToClip);
+  camClipToWorld.invert();
+
+  GLMatrixf camViewToWorld = modelView_;
+  camViewToWorld.invert();
+
+  Vec4f camOriginWS(camViewToWorld(0, 3),
+    camViewToWorld(1, 3),
+    camViewToWorld(2, 3),
+    1.0f);
+
+  RenderObject obj;
+  obj.initFromState(&_state);
+  obj.depthTest = true;
+  obj.shaderDesc.shadeMode = SG_SHADE_UNLIT;
+
+
+  obj.vertexBuffer = vbo_.id();
+  obj.indexBuffer = ibo_.id();
+  obj.vertexDecl = &vdecl_;
+
+
+  obj.shaderDesc.vertexTemplateFile = "Camera/vertex.glsl";
+
+  obj.setUniform("clipSpaceToWorld", camClipToWorld);
+  obj.setUniform("camOriginWS", camOriginWS);
+
+  bool hasOrigin = projection_.isPerspective();
+
+  GLsizei lineOffset = 5 * 6;
+
+  if (showFrustum_)
+  {
+    obj.blending = true;
+    obj.emissive = Vec3f(0.0f, 1.0f, 0.0f);
+    obj.alpha = 0.01f;
+    obj.glDrawElements(GL_TRIANGLES, lineOffset, GL_UNSIGNED_INT, 0);
+//    _renderer->addRenderObject(&obj);
+
+    GLsizei lineCount = hasOrigin ? 4 * 7 : 4 * 6;
+
+    obj.emissive = Vec3f(0.0f, 0.5f, 0.0f);
+    obj.alpha = 1.0f;
+    obj.blending = false;
+    obj.glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(lineOffset * sizeof(int)));
+    _renderer->addRenderObject(&obj);
+  }
+  else
+  {
+    obj.emissive = Vec3f(0.0f, 0.5f, 0.0f);
+
+    // only front plane
+    GLsizei lineCount = hasOrigin ? 4 * 1 : 4 * 2;
+    lineOffset += 4 * 5;
+
+    obj.glDrawElements(GL_LINES, lineCount, GL_UNSIGNED_INT, (GLvoid*)(lineOffset * sizeof(int)));
+    _renderer->addRenderObject(&obj);
+  }
 }
 
 //----------------------------------------------------------------------------

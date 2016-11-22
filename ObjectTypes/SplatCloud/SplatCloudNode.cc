@@ -433,8 +433,12 @@ void SplatCloudNode::getRenderObjects( IRenderer* _renderer, GLState& _state, co
 
     // setup shader
     obj.shaderDesc.shadeMode = SG_SHADE_UNLIT;
-    obj.shaderDesc.vertexTemplateFile = "SplatCloud_Splats/Vertex_shadergen.glsl";
-    obj.shaderDesc.fragmentTemplateFile = "SplatCloud_Splats/Fragment_shadergen.glsl";
+//     obj.shaderDesc.vertexTemplateFile = "SplatCloud_Splats/Vertex_shadergen.glsl";
+//     obj.shaderDesc.fragmentTemplateFile = "SplatCloud_Splats/Fragment_shadergen.glsl";
+
+    obj.shaderDesc.vertexTemplateFile = "SplatCloud_ShaderGen/splat_vs.glsl";
+    obj.shaderDesc.geometryTemplateFile = "SplatCloud_ShaderGen/splat_gs.glsl";
+    obj.shaderDesc.fragmentTemplateFile = "SplatCloud_ShaderGen/splat_fs.glsl";
 
     // setup uniforms
     /*

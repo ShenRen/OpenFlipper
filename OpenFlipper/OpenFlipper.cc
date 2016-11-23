@@ -311,7 +311,7 @@ bool parseCommandLineOptions(CSimpleOpt& args){
 #ifndef __APPLE__
   //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1 on Linux
   int QtVersionMajor, QtVersionMinor, QtVersionPatch;
-  if(sscanf(qVersion(),"%d.%d.%d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
+  if(sscanf(qVersion(),"%1d.%1d.%1d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
   {
     if(QtVersionMajor == 5 && QtVersionMinor >= 7)
     {

@@ -264,7 +264,7 @@ CSimpleOpt::SOption g_rgOptions[] = {
 };
 
 void showHelp() {
-  std::cerr << "OpenFlipper [Options] <filenames> " << std::endl << std::endl;;
+  std::cerr << "OpenFlipper [Option__APPLE__s] <filenames> " << std::endl << std::endl;;
   std::cerr << "Possible Options : " << std::endl;
   std::cerr << std::endl;
 
@@ -307,13 +307,15 @@ bool parseCommandLineOptions(CSimpleOpt& args){
 
   QString port;  
 
-  //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1
+#ifndef WIN32
+#ifndef __APPLE__
+  //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1 on Linux
   int QtVersionMajor, QtVersionMinor, QtVersionPatch;
   if(sscanf(qVersion(),"%d.%d.%d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
   {
     if(QtVersionMajor == 5 && QtVersionMinor >= 7)
     {
-      if(QtVersionPatch <= 2)
+      if(QtVersionPatch < 2)
       {
         std::cerr << "The used Qt Version does not support stereo mode. Disabling stereo mode." << std::endl;
         OpenFlipper::Options::stereo(false);
@@ -322,6 +324,8 @@ bool parseCommandLineOptions(CSimpleOpt& args){
         std::cerr << "Stereo Mode has not been tested for the used Qt Version." << std::endl;
     }
   }
+#endif
+#endif
 
   // while there are arguments left to process
   while (args.Next()) {

@@ -72,8 +72,6 @@
 namespace ACG {
 namespace SceneGraph {
 
-const float axis_length = 0.1f;
-
 //== IMPLEMENTATION ==========================================================
 
 /// Default constructor.
@@ -83,6 +81,7 @@ CameraNode::CameraNode(BaseNode* _parent, std::string _name) :
     bbmax_(FLT_MIN,FLT_MIN,FLT_MIN),
     cylinder_(0),
     cone_(0),
+    axis_length_(0.1f),
     update_vbo_(true),
     showFrustum_(false) {
 
@@ -301,16 +300,16 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
     _state.set_diffuse_color(ACG::Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
     _state.set_specular_color(ACG::Vec4f(1.0f, 0.4f, 0.4f, 1.0f));
 
-    cylinder_->setBottomRadius(axis_length/20.0f);
-    cylinder_->setTopRadius(axis_length/20.0f);
-    cylinder_->draw(_state, axis_length);
+    cylinder_->setBottomRadius(axis_length_/20.0f);
+    cylinder_->setTopRadius(axis_length_/20.0f);
+    cylinder_->draw(_state, axis_length_);
 
     // Draw top
-    _state.translate(0.0, 0.0, axis_length );
-    cone_->setBottomRadius(axis_length/5.0f);
+    _state.translate(0.0, 0.0, axis_length_ );
+    cone_->setBottomRadius(axis_length_/5.0f);
     cone_->setTopRadius(0.0f);
-    cone_->draw(_state, axis_length/2.0f);
-    _state.translate(0.0, 0.0, -axis_length );
+    cone_->draw(_state, axis_length_/2.0f);
+    _state.translate(0.0, 0.0, -axis_length_ );
 
     // Draw up vector
     _state.rotate(-90, 1.0, 0.0, 0.0);
@@ -319,12 +318,12 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
     _state.set_diffuse_color(ACG::Vec4f(0.0f, 1.0f, 0.0f, 1.0f));
     _state.set_specular_color(ACG::Vec4f(0.4f, 1.0f, 0.4f, 1.0f));
 
-    cylinder_->draw(_state, axis_length);
+    cylinder_->draw(_state, axis_length_);
 
     // Draw top
-    _state.translate(0.0, 0.0, axis_length );
-    cone_->draw(_state, axis_length/2.0f);
-    _state.translate(0.0, 0.0, -axis_length );
+    _state.translate(0.0, 0.0, axis_length_ );
+    cone_->draw(_state, axis_length_/2.0f);
+    _state.translate(0.0, 0.0, -axis_length_ );
 
     // Draw viewing direction vector
     _state.rotate(-90, 0.0, 1.0, 0.0);
@@ -333,12 +332,12 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
     _state.set_diffuse_color(ACG::Vec4f(0.0f, 0.0f, 1.0f, 1.0f));
     _state.set_specular_color(ACG::Vec4f(0.4f, 0.4f, 1.0f, 1.0f));
 
-    cylinder_->draw(_state, axis_length);
+    cylinder_->draw(_state, axis_length_);
 
     // Draw top
-    _state.translate(0.0, 0.0, axis_length );
-    cone_->draw(_state, axis_length/2.0f);
-    _state.translate(0.0, 0.0, -axis_length );
+    _state.translate(0.0, 0.0, axis_length_ );
+    cone_->draw(_state, axis_length_/2.0f);
+    _state.translate(0.0, 0.0, -axis_length_ );
 
 
     // Reset to previous modelview
@@ -420,10 +419,10 @@ void CameraNode::getRenderObjects(IRenderer* _renderer, GLState& _state, const D
 
 
   // draw coordinate axis
-  cylinder_->setBottomRadius(axis_length/20.0f);
-  cylinder_->setTopRadius(axis_length/20.0f);
+  cylinder_->setBottomRadius(axis_length_/20.0f);
+  cylinder_->setTopRadius(axis_length_/20.0f);
 
-  cone_->setBottomRadius(axis_length/5.0f);
+  cone_->setBottomRadius(axis_length_/5.0f);
   cone_->setTopRadius(0.0f);
 
   GLMatrixd matView = obj.modelview * modelViewInv_;
@@ -437,15 +436,15 @@ void CameraNode::getRenderObjects(IRenderer* _renderer, GLState& _state, const D
 
   obj.modelview = matView;
   obj.modelview.rotateY(90.0);
-  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length_));
   cylinder_->addToRenderer_primitive(_renderer, &obj);
 
   // right top
   obj.debugName = "CameraNode.right_top";
   obj.modelview = matView;
   obj.modelview.rotateY(90.0);
-  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length));
-  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length_));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length_ * 0.5));
   cone_->addToRenderer_primitive(_renderer, &obj);
 
 
@@ -458,15 +457,15 @@ void CameraNode::getRenderObjects(IRenderer* _renderer, GLState& _state, const D
 
   obj.modelview = matView;
   obj.modelview.rotateX(-90.0);
-  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length_));
   cylinder_->addToRenderer_primitive(_renderer, &obj);
 
   // up top
   obj.debugName = "CameraNode.up_top";
   obj.modelview = matView;
   obj.modelview.rotateX(-90.0);
-  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length));
-  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length_));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length_ * 0.5));
   cone_->addToRenderer_primitive(_renderer, &obj);
 
 
@@ -479,14 +478,14 @@ void CameraNode::getRenderObjects(IRenderer* _renderer, GLState& _state, const D
   obj.specular = Vec3f(0.4f, 0.4f, 1.0f);
 
   obj.modelview = matView;
-  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length_));
   cylinder_->addToRenderer_primitive(_renderer, &obj);
 
   // top
   obj.debugName = "CameraNode.view_top";
   obj.modelview = matView;
-  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length));
-  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+  obj.modelview.translate(Vec3d(0.0, 0.0, axis_length_));
+  obj.modelview.scale(Vec3d(1.0, 1.0, axis_length_ * 0.5));
   cone_->addToRenderer_primitive(_renderer, &obj);
 }
 
@@ -543,10 +542,10 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
     pickShader->setUniform("color", pickColor);
 
 
-    cylinder_->setBottomRadius(axis_length/20.0f);
-    cylinder_->setTopRadius(axis_length/20.0f);
+    cylinder_->setBottomRadius(axis_length_/20.0f);
+    cylinder_->setTopRadius(axis_length_/20.0f);
 
-    cone_->setBottomRadius(axis_length/5.0f);
+    cone_->setBottomRadius(axis_length_/5.0f);
     cone_->setTopRadius(0.0f);
 
 
@@ -556,14 +555,14 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
     // right vec
     mat = matView;
     mat.rotateY(90.0);
-    mat.scale(Vec3d(1.0, 1.0, axis_length));
+    mat.scale(Vec3d(1.0, 1.0, axis_length_));
     pickShader->setUniform("mWVP", mat);
     cylinder_->draw_primitive(pickShader);
 
     // right top
     mat = matView;
     mat.rotateY(90.0);
-    mat.translate(Vec3d(0.0, 0.0, axis_length));
+    mat.translate(Vec3d(0.0, 0.0, axis_length_));
     mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
     pickShader->setUniform("mWVP", mat);
     cone_->draw_primitive(pickShader);
@@ -572,14 +571,14 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
     // up vec
     mat = matView;
     mat.rotateX(-90.0);
-    mat.scale(Vec3d(1.0, 1.0, axis_length));
+    mat.scale(Vec3d(1.0, 1.0, axis_length_));
     pickShader->setUniform("mWVP", mat);
     cylinder_->draw_primitive(pickShader);
 
     // up top
     mat = matView;
     mat.rotateX(-90.0);
-    mat.translate(Vec3d(0.0, 0.0, axis_length));
+    mat.translate(Vec3d(0.0, 0.0, axis_length_));
     mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
     pickShader->setUniform("mWVP", mat);
     cone_->draw_primitive(pickShader);
@@ -588,13 +587,13 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
 
     // Draw viewing direction vector
     mat = matView;
-    mat.scale(Vec3d(1.0, 1.0, axis_length));
+    mat.scale(Vec3d(1.0, 1.0, axis_length_));
     pickShader->setUniform("mWVP", mat);
     cylinder_->draw_primitive(pickShader);
 
     // top
     mat = matView;
-    mat.translate(Vec3d(0.0, 0.0, axis_length));
+    mat.translate(Vec3d(0.0, 0.0, axis_length_));
     mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
     pickShader->setUniform("mWVP", mat);
     cone_->draw_primitive(pickShader);
@@ -652,36 +651,36 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
     // Draw right vector
     _state.rotate(90, 0.0, 1.0, 0.0);
 
-    cylinder_->setBottomRadius(axis_length/20.0f);
-    cylinder_->setTopRadius(axis_length/20.0f);
-    cylinder_->draw(_state, axis_length);
+    cylinder_->setBottomRadius(axis_length_/20.0f);
+    cylinder_->setTopRadius(axis_length_/20.0f);
+    cylinder_->draw(_state, axis_length_);
 
     // Draw top
-    _state.translate(0.0, 0.0, axis_length );
-    cone_->setBottomRadius(axis_length/5.0f);
+    _state.translate(0.0, 0.0, axis_length_ );
+    cone_->setBottomRadius(axis_length_/5.0f);
     cone_->setTopRadius(0.0f);
-    cone_->draw(_state, axis_length/2.0f);
-    _state.translate(0.0, 0.0, -axis_length );
+    cone_->draw(_state, axis_length_/2.0f);
+    _state.translate(0.0, 0.0, -axis_length_ );
 
     // Draw up vector
     _state.rotate(-90, 1.0, 0.0, 0.0);
 
-    cylinder_->draw(_state, axis_length);
+    cylinder_->draw(_state, axis_length_);
 
     // Draw top
-    _state.translate(0.0, 0.0, axis_length );
-    cone_->draw(_state, axis_length/2.0f);
-    _state.translate(0.0, 0.0, -axis_length );
+    _state.translate(0.0, 0.0, axis_length_ );
+    cone_->draw(_state, axis_length_/2.0f);
+    _state.translate(0.0, 0.0, -axis_length_ );
 
     // Draw viewing direction vector
     _state.rotate(-90, 0.0, 1.0, 0.0);
 
-    cylinder_->draw(_state, axis_length);
+    cylinder_->draw(_state, axis_length_);
 
     // Draw top
-    _state.translate(0.0, 0.0, axis_length );
-    cone_->draw(_state, axis_length/2.0f);
-    _state.translate(0.0, 0.0, -axis_length );
+    _state.translate(0.0, 0.0, axis_length_ );
+    cone_->draw(_state, axis_length_/2.0f);
+    _state.translate(0.0, 0.0, -axis_length_ );
 
     // Reset to previous modelview
     _state.pop_modelview_matrix();
@@ -759,8 +758,8 @@ void CameraNode::updateBoundingBoxes()
     bbmax_.maximize(v);
   }
 
-  bbmin_ -= Vec3d(axis_length * 2.0);
-  bbmax_ += Vec3d(axis_length * 2.0);
+  bbmin_ -= Vec3d(axis_length_ * 2.0);
+  bbmax_ += Vec3d(axis_length_ * 2.0);
 }
 
 //----------------------------------------------------------------------------
@@ -803,6 +802,12 @@ void CameraNode::updateFrustumWS()
     1.0f);
 
   vboData_[8] = camOriginWS;
+
+
+  // make axis length relative to frustum size in world space
+  Vec3f rightVec = OpenMesh::vector_cast<Vec3f, Vec4f>(vboData_[3] - vboData_[0]);
+  Vec3f upVec = OpenMesh::vector_cast<Vec3f, Vec4f>(vboData_[7] - vboData_[1]);
+  axis_length_ = std::min(rightVec.norm(), upVec.norm()) * 0.015f;
 }
 
 

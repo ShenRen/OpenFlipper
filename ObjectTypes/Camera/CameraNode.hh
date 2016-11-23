@@ -158,7 +158,8 @@ private:
     ACG::GLMatrixd projection_;
 
     GLCylinder* cylinder_;
-    GLCone* cone_;
+    GLCone*     cone_;
+    float       axis_length_;
 
     GeometryBuffer      vbo_;
     IndexBuffer         ibo_;

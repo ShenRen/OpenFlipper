@@ -139,159 +139,60 @@ void CameraNode::draw(GLState& _state, const DrawModes::DrawMode& /*_drawMode*/)
     _state.set_diffuse_color(ACG::Vec4f(1.0f, 1.0f, 1.0f, 1.0f));
     _state.set_specular_color(ACG::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));
 
-    _state.set_modelview(_state.modelview() * modelViewInv_);
-
     // Draw camera box
-/*
+
+    updateVBO();
+
+    vbo_.bind();
+    ibo_.bind();
+
     glPushAttrib(GL_LIGHTING_BIT);
     ACG::GLState::disable(GL_LIGHTING); // Disable lighting
 
-    glBegin(GL_LINES);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(-half_width_, -half_height_, -near_);
+    vdecl_.activateFixedFunction();
 
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(half_width_, -half_height_, -near_);
 
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(-half_width_, half_height_, -near_);
+    bool hasOrigin = projection_.isPerspective();
+    GLsizei lineOffset = offsetLines_;
 
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(half_width_, half_height_, -near_);
 
-    glVertex3f(-half_width_, -half_height_, -near_);
-    glVertex3f(half_width_, -half_height_, -near_);
+    if (showFrustum_)
+    {
+      // tris
+      glColor4f(0.66f, 0.66f, 0.66f, 1.0f);
 
-    glVertex3f(-half_width_, -half_height_, -near_);
-    glVertex3f(-half_width_, half_height_, -near_);
+      glDrawElements(GL_TRIANGLES, lineOffset, GL_UNSIGNED_INT, (GLvoid*)(offsetTris_ * sizeof(int)));
 
-    glVertex3f(half_width_, half_height_, -near_);
-    glVertex3f(half_width_, -half_height_, -near_);
+      // lines
+      GLsizei lineCount = hasOrigin ? 4 * 7 : 4 * 6;
 
-    glVertex3f(half_width_, half_height_, -near_);
-    glVertex3f(-half_width_, half_height_, -near_);
-    glEnd();
-    glPopAttrib();
-*/
-    // Render frustum
-    if(showFrustum_) {
-
-        // Draw left side of frustum
-        ACG::GLState::enable (GL_BLEND);
-        glPushAttrib(GL_LIGHTING_BIT);
-        ACG::GLState::disable(GL_LIGHTING); // Disable lighting
-        
-        glColor4f(0.0f, 0.5f, 0.0f, 1.0f);
-/*
-        glBegin(GL_LINES);
-        
-        // Top plane
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-        
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        
-        
-        // Bottom plane
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        
-        // Left
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-        
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        
-        // Right
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        
-        // Far
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        
-        glEnd();
-
-        glColor4f(0.0f, 1.0f, 0.0f, 0.01f);
-
-        glBegin(GL_TRIANGLES);
-
-        // Top plane
-        glVertex3f(-half_width_, -half_height_, -1.0f);
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-        glVertex3f(-half_width_, half_height_, -1.0f);
-        glVertex3f(-half_width_, -half_height_, -1.0f);
-
-        // Bottom plane
-        glVertex3f(half_width_, -half_height_, -1.0f);
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        glVertex3f(half_width_, half_height_, -1.0f);
-        glVertex3f(half_width_, -half_height_, -1.0f);
-
-        // Left
-        glVertex3f(-half_width_, half_height_, -1.0f);
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        glVertex3f(half_width_, half_height_, -1.0f);
-        glVertex3f(-half_width_, half_height_, -1.0f);
-
-        // Right
-        glVertex3f(-half_width_, -half_height_, -1.0f);
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        glVertex3f(half_width_, -half_height_, -1.0f);
-        glVertex3f(-half_width_, -half_height_, -1.0f);
-
-        // Far
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, -far_half_height_, -far_);
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-
-        glVertex3f(far_half_width_, far_half_height_, -far_);
-        glVertex3f(-far_half_width_, far_half_height_, -far_);
-        glVertex3f(-far_half_width_, -far_half_height_, -far_);
-
-        glEnd();
-*/
-
-        glPopAttrib(); // LIGHTING
+      glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+      glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(lineOffset * sizeof(int)));
     }
+    else
+    {
+      glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+
+      // only front plane
+      GLsizei lineCount = hasOrigin ? 4 * 2 : 4 * 1;
+
+      glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(offsetFront_ * sizeof(int)));
+    }
+
+
+    vdecl_.deactivateFixedFunction();
+
+    glPopAttrib();
+
+
+    vbo_.unbind();
+    ibo_.unbind();
+
+
+    // Coordinate axes
+
+    _state.set_modelview(_state.modelview() * modelViewInv_);
+
 
     // Draw right vector
     _state.rotate(90, 0.0, 1.0, 0.0);
@@ -495,6 +396,7 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
 {
   _state.pick_set_maximum(2);
 
+
   updateVBO();
 
   vbo_.bind();
@@ -508,10 +410,10 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
     pickShader->use();
 
     // world view projection matrix
-    GLMatrixf mat = _state.projection() * _state.modelview();
-    pickShader->setUniform("mWVP", mat);
+    GLMatrixf matFrustum = _state.projection() * _state.modelview();
+    pickShader->setUniform("mWVP", matFrustum);
 
-    Vec4f pickColor = OpenMesh::vector_cast<Vec4f, Vec4uc>(_state.pick_get_name_color(0)) / 255.0f;
+    Vec4f pickColor = _state.pick_get_name_color_norm(0);
     pickShader->setUniform("color", pickColor);
 
 
@@ -537,8 +439,7 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
 
 
     // pick coordinate axis
-#if 0
-    pickColor = OpenMesh::vector_cast<Vec4f, Vec4uc>(_state.pick_get_name_color(1)) / 255.0f;
+    pickColor = _state.pick_get_name_color_norm(1);
     pickShader->setUniform("color", pickColor);
 
 
@@ -549,56 +450,56 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
     cone_->setTopRadius(0.0f);
 
 
-    GLMatrixf matView = obj.modelview * modelViewInv_;
+    GLMatrixf matVP = matFrustum * modelViewInv_;
     GLMatrixf mat;
 
     // right vec
-    mat = matView;
+    mat = matVP;
     mat.rotateY(90.0);
-    mat.scale(Vec3d(1.0, 1.0, axis_length_));
+    mat.scale(Vec3f(1.0, 1.0, axis_length_));
     pickShader->setUniform("mWVP", mat);
     cylinder_->draw_primitive(pickShader);
 
     // right top
-    mat = matView;
+    mat = matVP;
     mat.rotateY(90.0);
-    mat.translate(Vec3d(0.0, 0.0, axis_length_));
-    mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+    mat.translate(Vec3f(0.0, 0.0, axis_length_));
+    mat.scale(Vec3f(1.0, 1.0, axis_length_ * 0.5));
     pickShader->setUniform("mWVP", mat);
     cone_->draw_primitive(pickShader);
 
 
     // up vec
-    mat = matView;
+    mat = matVP;
     mat.rotateX(-90.0);
-    mat.scale(Vec3d(1.0, 1.0, axis_length_));
+    mat.scale(Vec3f(1.0, 1.0, axis_length_));
     pickShader->setUniform("mWVP", mat);
     cylinder_->draw_primitive(pickShader);
 
     // up top
-    mat = matView;
+    mat = matVP;
     mat.rotateX(-90.0);
-    mat.translate(Vec3d(0.0, 0.0, axis_length_));
-    mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+    mat.translate(Vec3f(0.0, 0.0, axis_length_));
+    mat.scale(Vec3f(1.0, 1.0, axis_length_ * 0.5));
     pickShader->setUniform("mWVP", mat);
     cone_->draw_primitive(pickShader);
 
 
 
     // Draw viewing direction vector
-    mat = matView;
-    mat.scale(Vec3d(1.0, 1.0, axis_length_));
+    mat = matVP;
+    mat.scale(Vec3f(1.0, 1.0, axis_length_));
     pickShader->setUniform("mWVP", mat);
     cylinder_->draw_primitive(pickShader);
 
     // top
-    mat = matView;
-    mat.translate(Vec3d(0.0, 0.0, axis_length_));
-    mat.scale(Vec3d(1.0, 1.0, axis_length * 0.5));
+    mat = matVP;
+    mat.translate(Vec3f(0.0, 0.0, axis_length_));
+    mat.scale(Vec3f(1.0, 1.0, axis_length_ * 0.5));
     pickShader->setUniform("mWVP", mat);
     cone_->draw_primitive(pickShader);
 
-#endif
+
 
 
     pickShader->disable();
@@ -610,41 +511,45 @@ void CameraNode::pick(GLState& _state, PickTarget /*_target*/)
     // Store modelview matrix
     _state.push_modelview_matrix();
 
+    // Draw camera box
+    bool hasOrigin = projection_.isPerspective();
+    GLsizei lineOffset = offsetLines_;
+
+
+    vbo_.bind();
+    ibo_.bind();
+
+    vdecl_.activateFixedFunction();
+
+    if (showFrustum_)
+    {
+      // tris
+      glDrawElements(GL_TRIANGLES, lineOffset, GL_UNSIGNED_INT, (GLvoid*)(offsetTris_ * sizeof(int)));
+
+      // lines
+      GLsizei lineCount = hasOrigin ? 4 * 7 : 4 * 6;
+      glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(lineOffset * sizeof(int)));
+    }
+    else
+    {
+      // only front plane
+      GLsizei lineCount = hasOrigin ? 4 * 2 : 4 * 1;
+
+      glDrawElements(GL_LINES, lineCount * 2, GL_UNSIGNED_INT, (GLvoid*)(offsetFront_ * sizeof(int)));
+    }
+
+    vdecl_.deactivateFixedFunction();
+
+    ibo_.unbind();
+    vbo_.unbind();
+
+
     // Set modelview matrix such that it matches
     // the remote settings (+ the local transformation).
     // This is performed by multiplying the local
     // modelview matrix by the inverse remote
     // modelview matrix: M_l' = M_l * M^{-1}_r
     _state.set_modelview(_state.modelview() * modelViewInv_);
-
-    // Draw camera box
-/*
-    glBegin(GL_LINES);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(-half_width_, -half_height_, -near_);
-
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(half_width_, -half_height_, -near_);
-
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(-half_width_, half_height_, -near_);
-
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(half_width_, half_height_, -near_);
-
-    glVertex3f(-half_width_, -half_height_, -near_);
-    glVertex3f(half_width_, -half_height_, -near_);
-
-    glVertex3f(-half_width_, -half_height_, -near_);
-    glVertex3f(-half_width_, half_height_, -near_);
-
-    glVertex3f(half_width_, half_height_, -near_);
-    glVertex3f(half_width_, -half_height_, -near_);
-
-    glVertex3f(half_width_, half_height_, -near_);
-    glVertex3f(-half_width_, half_height_, -near_);
-    glEnd();
-*/
 
     _state.pick_set_name(1);
 
@@ -698,7 +603,9 @@ void CameraNode::updateVBO()
   {
     updateFrustumWS();
 
+    vbo_.bind();
     vbo_.upload(sizeof(Vec4f) * vboData_.size(), &vboData_[0], GL_STATIC_DRAW);
+    vbo_.unbind();
 
     vdecl_.clear();
     vdecl_.addElement(GL_FLOAT, 4, VERTEX_USAGE_POSITION);
@@ -712,7 +619,7 @@ void CameraNode::updateVBO()
   {
     int data[] =
     {
-      // frustum triangles
+      // frustum triangles (planes facing the inside of the frustum)
       3,2,6 , 6,5,3 , // right
       1,0,4 , 4,7,1 , // left
       4,5,6 , 6,7,4 , // top
@@ -736,7 +643,9 @@ void CameraNode::updateVBO()
     offsetLines_ = 6*5;
     offsetFront_ = offsetLines_ + 8*5;
 
+    ibo_.bind();
     ibo_.upload(sizeof(data), data, GL_STATIC_DRAW);
+    ibo_.unbind();
   }
 }
 
@@ -808,6 +717,9 @@ void CameraNode::updateFrustumWS()
   Vec3f rightVec = OpenMesh::vector_cast<Vec3f, Vec4f>(vboData_[3] - vboData_[0]);
   Vec3f upVec = OpenMesh::vector_cast<Vec3f, Vec4f>(vboData_[7] - vboData_[1]);
   axis_length_ = std::min(rightVec.norm(), upVec.norm()) * 0.015f;
+
+  // minimum axis length
+  axis_length_ = std::max(axis_length_, 0.05f);
 }
 
 

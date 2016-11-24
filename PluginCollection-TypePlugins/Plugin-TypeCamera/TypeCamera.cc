@@ -100,6 +100,7 @@ void TypeCameraPlugin::contextMenuClicked(QAction* _contextAction) {
     // Set frustum flag to whether action is checked or not
     object->cameraNode()->showFrustum(_contextAction->isChecked());
 
+    emit updatedObject(objectId, UPDATE_VISIBILITY);
   }
 
 }

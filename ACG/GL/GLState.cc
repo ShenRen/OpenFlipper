@@ -1813,7 +1813,7 @@ void GLState::bindBuffer(GLenum _target, GLuint _buffer)
     if (stateStack_.back().glBufferTargetState_[idx] != _buffer)
 #endif
     {
-      glBindBufferARB(_target, _buffer);
+      glBindBuffer(_target, _buffer);
       stateStack_.back().glBufferTargetState_[idx] = _buffer;
     }
   }

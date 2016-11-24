@@ -1,6 +1,6 @@
 /*===========================================================================*\
-*                                                                            *
-*                              OpenFlipper                                   *
+ *                                                                           *
+ *                              OpenFlipper                                  *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,33 +36,26 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                            *
+ *                                                                           *
 \*===========================================================================*/
 
-/*
- * ValenceHistogramWidget.hh
- *
- *  Created on: Jan 27, 2016
- *      Author: hc
- */
+#include "LinearTwoColorCoder.hh"
 
-#ifndef PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMWIDGET_HH_
-#define PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMWIDGET_HH_
+namespace ACG {
 
-#include <QWidget>
+ACG::Vec4uc LinearTwoColorCoder::color4(float _v) const
+{
+    ACG::Vec4f c = color_float4(_v);
+    return ACG::Vec4uc(
+            static_cast<unsigned char>(c[0] * 255 + 0.5),
+            static_cast<unsigned char>(c[1] * 255 + 0.5),
+            static_cast<unsigned char>(c[2] * 255 + 0.5),
+            static_cast<unsigned char>(c[3] * 255 + 0.5));
+}
 
-class ValenceHistogramWidget: public QWidget {
-    Q_OBJECT
+ACG::Vec4f LinearTwoColorCoder::color_float4(float _v) const
+{
+    return (1 - _v) * minColor_ + _v * maxColor_;
+}
 
-    public:
-        ValenceHistogramWidget(QWidget *parent);
-
-        void setHistogram(std::vector<size_t> *histogram);
-
-    protected:
-        void paintEvent(QPaintEvent *event);
-
-        std::vector<size_t> *histogram_;
-};
-
-#endif /* PLUGIN_INFOMESHOBJECT_VALENCEHISTOGRAMWIDGET_HH_ */
+} // namespace ACG

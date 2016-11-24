@@ -305,7 +305,27 @@ bool remoteControl  = false;
 
 bool parseCommandLineOptions(CSimpleOpt& args){
 
-  QString port;
+  QString port;  
+
+#ifndef WIN32
+#ifndef __APPLE__
+  //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1 on Linux
+  int QtVersionMajor, QtVersionMinor, QtVersionPatch;
+  if(sscanf(qVersion(),"%1d.%1d.%1d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
+  {
+    if(QtVersionMajor == 5 && QtVersionMinor >= 7)
+    {
+      if(QtVersionPatch < 2)
+      {
+        std::cerr << "The used Qt Version does not support stereo mode. Disabling stereo mode." << std::endl;
+        OpenFlipper::Options::stereo(false);
+      }
+      else
+        std::cerr << "Stereo Mode has not been tested for the used Qt Version." << std::endl;
+    }
+  }
+#endif
+#endif
 
   // while there are arguments left to process
   while (args.Next()) {

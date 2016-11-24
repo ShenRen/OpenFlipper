@@ -308,7 +308,7 @@ SkeletonT<PointT>::AnimationIterator::AnimationIterator(std::vector<Animation*>&
  *
  */
 template<typename PointT>
-SkeletonT<PointT>::AnimationIterator::AnimationIterator(std::vector<Animation*>& _animations, unsigned int _animationIndex ) :
+SkeletonT<PointT>::AnimationIterator::AnimationIterator(std::vector<Animation*>& _animations, size_t _animationIndex ) :
 animations_(_animations)
 {
   currentIndex_ = _animationIndex;
@@ -493,7 +493,7 @@ SkeletonT<PointT>::~SkeletonT( )
 template<typename PointT>
 void SkeletonT<PointT>::addJoint(typename SkeletonT<PointT>::Joint *_pParent, typename SkeletonT<PointT>::Joint *_pJoint)
 {
-  unsigned int newJointID;
+  size_t newJointID;
 
   if(_pParent == 0)
   {
@@ -639,7 +639,7 @@ inline typename SkeletonT<PointT>::Joint *SkeletonT<PointT>::root()
  * @return Returns a pointer to the joint or 0 if the index does not exist.
  */
 template<typename PointT>
-inline typename SkeletonT<PointT>::Joint *SkeletonT<PointT>::joint(const unsigned int& _index)
+inline typename SkeletonT<PointT>::Joint *SkeletonT<PointT>::joint(const size_t& _index)
 {
   if(_index >= joints_.size())
     return 0;
@@ -655,7 +655,7 @@ inline typename SkeletonT<PointT>::Joint *SkeletonT<PointT>::joint(const unsigne
  * @return The parent nodes index or -1 if \e _joint is the root node
  */
 template<typename PointT>
-int SkeletonT<PointT>::parent(unsigned int _joint)
+int SkeletonT<PointT>::parent(size_t _joint)
 {
   if(joints_[_joint]->parent() == 0)
     return -1;
@@ -668,7 +668,7 @@ int SkeletonT<PointT>::parent(unsigned int _joint)
  * @brief Returns the number of children of the given node
  */
 template<typename PointT>
-unsigned int SkeletonT<PointT>::childCount(unsigned int _joint)
+size_t SkeletonT<PointT>::childCount(size_t _joint)
 {
   if ( _joint >= joints_.size() ){
     std::cerr << "SkeletonT : childCount() called with non-existing joint " << _joint << std::endl;
@@ -687,7 +687,7 @@ unsigned int SkeletonT<PointT>::childCount(unsigned int _joint)
  * @param _child An index identifying a child of that joint
  */
 template<typename PointT>
-unsigned int SkeletonT<PointT>::child(unsigned int _joint, unsigned int _child)
+size_t SkeletonT<PointT>::child(size_t _joint, size_t _child)
 {
   return joints_[_joint]->child(_child)->id();
 }
@@ -698,7 +698,7 @@ unsigned int SkeletonT<PointT>::child(unsigned int _joint, unsigned int _child)
  * @brief Returns the number of joints
  */
 template<typename PointT>
-unsigned int SkeletonT<PointT>::jointCount()
+size_t SkeletonT<PointT>::jointCount()
 {
   return joints_.size();
 }
@@ -783,11 +783,11 @@ AnimationHandle SkeletonT<PointT>::addAnimation(std::string _name, Animation *_a
   if(f == animations_.end())
   {
     // all in use, append
-    names_.insert( std::pair<std::string, unsigned int>(_name, animations_.size()) );
+    names_.insert( std::pair<std::string, size_t>(_name, animations_.size()) );
     animations_.push_back(_animation);
   }else{
     // found an empty one, use it
-    names_.insert( std::pair<std::string, unsigned int>(_name, f - animations_.begin()) );
+    names_.insert( std::pair<std::string, size_t>(_name, f - animations_.begin()) );
     *f = _animation;
   }
 
@@ -817,14 +817,14 @@ AnimationHandle SkeletonT<PointT>::cloneAnimation(std::string _name, const Anima
   if(f == animations_.end())
   {
     // all in use, append
-    names_.insert( std::pair<std::string, unsigned int>(_name, animations_.size()) );
+    names_.insert( std::pair<std::string, size_t>(_name, animations_.size()) );
     if(animation(_hAni) != 0)
       animations_.push_back((*animation(_hAni)).copy());
     else
       animations_.push_back(new FrameAnimationT<Point>(referencePose_));
   }else{
     // found an empty one, use it
-    names_.insert( std::pair<std::string, unsigned int>(_name, f - animations_.begin()) );
+    names_.insert( std::pair<std::string, size_t>(_name, f - animations_.begin()) );
     if(animation(_hAni) != 0)
       *f = (*animation(_hAni)).copy();
     else
@@ -842,7 +842,7 @@ AnimationHandle SkeletonT<PointT>::cloneAnimation(std::string _name, const Anima
 template<typename PointT>
 AnimationHandle SkeletonT<PointT>::animationHandle(std::string _name)
 {
-  std::map<std::string, unsigned int>::iterator f = names_.find(_name);
+  std::map<std::string, size_t>::iterator f = names_.find(_name);
   if(f == names_.end())
     return AnimationHandle();
 
@@ -857,7 +857,7 @@ AnimationHandle SkeletonT<PointT>::animationHandle(std::string _name)
 template<typename PointT>
 typename SkeletonT<PointT>::Animation *SkeletonT<PointT>::animation(std::string _name)
 {
-  std::map<std::string, unsigned int>::iterator f = names_.find(_name);
+  std::map<std::string, size_t>::iterator f = names_.find(_name);
   if(f == names_.end())
     return 0;
 
@@ -886,7 +886,7 @@ template<typename PointT>
 void SkeletonT<PointT>::removeAnimation(std::string _name)
 {
   // get an iterator for the animation
-  std::map<std::string, unsigned int>::iterator f = names_.find(_name);
+  std::map<std::string, size_t>::iterator f = names_.find(_name);
   if(f == names_.end())
     return;
 
@@ -910,7 +910,7 @@ void SkeletonT<PointT>::removeAnimation(const AnimationHandle &_hAni)
   animations_[_hAni.animationIndex()] = 0;
 
   // remove the name entry
-  for(typename std::map<std::string, unsigned int>::iterator it = names_.begin(); it != names_.end(); ++it)
+  for(typename std::map<std::string, size_t>::iterator it = names_.begin(); it != names_.end(); ++it)
   {
     if(it->second == _hAni.animationIndex())
     {
@@ -968,7 +968,7 @@ typename SkeletonT<PointT>::AnimationIterator SkeletonT<PointT>::animationsEnd()
  * @see animationName
  */
 template<typename PointT>
-unsigned int SkeletonT<PointT>::animationCount()
+size_t SkeletonT<PointT>::animationCount()
 {
   return names_.size();
 }
@@ -981,14 +981,12 @@ unsigned int SkeletonT<PointT>::animationCount()
  * @see animationCount
  */
 template<typename PointT>
-const std::string &SkeletonT<PointT>::animationName(unsigned int _index)
+const std::string &SkeletonT<PointT>::animationName(size_t _index)
 {
-  unsigned int i = 0;
-  std::map<std::string, unsigned int>::iterator pos = names_.begin();
+  std::map<std::string, size_t>::iterator pos = names_.begin();
 
   while(pos->second != _index && pos != names_.end())
   {
-    ++i;
     ++pos;
   }
 
@@ -1003,7 +1001,7 @@ const std::string &SkeletonT<PointT>::animationName(unsigned int _index)
  * @param _idJoint The joints index
  */
 template<typename PointT>
-void SkeletonT<PointT>::updateFromGlobal(unsigned int _idJoint)
+void SkeletonT<PointT>::updateFromGlobal(size_t _idJoint)
 {
   referencePose_.updateFromGlobal(_idJoint);
   for(typename std::vector<Animation*>::iterator it = animations_.begin(); it != animations_.end(); ++it) {
@@ -1029,7 +1027,7 @@ void SkeletonT<PointT>::insertJoint(typename SkeletonT<PointT>::Joint *_pChild, 
 	Joint* parent = _pChild->parent();
 
 	//update IDs of our joints
-	unsigned int childID = _pChild->id();
+	size_t childID = _pChild->id();
 	for(typename std::vector<Joint*>::iterator it = joints_.begin() + childID; it !=  joints_.end(); ++it)
 		(*it)->setId((*it)->id() + 1);
 

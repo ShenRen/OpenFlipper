@@ -301,9 +301,9 @@ add_primitive(GlutPrimitiveType _type, Vec3d _pos, Vec3d _axis, ACG::Vec4f _colo
 //----------------------------------------------------------------------------
 
 void
-GlutPrimitiveNode::draw_obj(int _idx) const
+GlutPrimitiveNode::draw_obj(size_t _idx) const
 {
-  if (_idx < 0 || _idx >= (int)primitives_.size()) // range check
+  if ( _idx >= primitives_.size()) // range check
     return;
 
   Vec3d axis  = primitives_[_idx].axis;
@@ -390,7 +390,7 @@ pick(GLState& _state , PickTarget _target)
     case PICK_ANYTHING:
     case PICK_FACE: 
     { 
-      for (int i = 0; i < (int)primitives_.size(); ++i)
+      for (size_t i = 0; i < primitives_.size(); ++i)
       {
         _state.pick_set_name(i);
         glPushMatrix();

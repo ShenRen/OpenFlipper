@@ -37,77 +37,53 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
  *                                                                           *
- \*===========================================================================*/
+\*===========================================================================*/
 
-/*===========================================================================*\
- *                                                                           *
- *   $Revision$                                                      *
- *   $Author$                                                      *
- *   $Date$                   *
- *                                                                           *
- \*===========================================================================*/
-
-//=============================================================================
-//
-//  CLASS ColorCoder
-//
-//=============================================================================
-
-#ifndef ACG_COLORCODER_HH
-#define ACG_COLORCODER_HH
-
-//== INCLUDES =================================================================
+#ifndef ACG_ICOLORCODER_HH
+#define ACG_ICOLORCODER_HH
 
 #include <ACG/Math/VectorT.hh>
 #include <ACG/Config/ACGDefines.hh>
 #include <QColor>
-#include "IColorCoder.hh"
-
-//== NAMESPACES ===============================================================
 
 namespace ACG {
 
-//== CLASS DEFINITION =========================================================
-
-/** \brief Class for generating nice colors for doubles
- *
- *
- */
-class ACGDLLEXPORT ColorCoder : public IColorCoder {
+class ACGDLLEXPORT IColorCoder {
 public:
+    virtual ~IColorCoder() = default;
 
-  /// Default constructor.
-  ColorCoder(float _min = 0.0, float _max = 1.0, bool _signed = false);
+    virtual ACG::Vec4uc color4(float _v) const = 0;
+    virtual ACG::Vec4f color_float4(float _v) const = 0;
 
-  /// set the color coding range for unsigned coding
-  void set_range(float _min, float _max, bool _signed);
+    /// min scalar value
+    virtual float min() const = 0;
 
-  /// color coding
-  ACG::Vec4uc color4(float _v) const override;
+    /// max scalar value
+    virtual float max() const = 0;
 
-  /// color coding
-  ACG::Vec4f color_float4(float _v) const override;
-\
-  /// min scalar value
-  float min() const override;
+    inline ACG::Vec3uc color(float _v) const {
+        ACG::Vec4uc c = color4(_v);
+        return ACG::Vec3uc(c[0], c[1], c[2]);
+    }
 
-  /// max scalar value
-  float max() const override;
+    inline ACG::Vec3f color_float(float _v) const
+    {
+        ACG::Vec4f c = color_float4(_v);
+        return ACG::Vec3f(c[0], c[1], c[2]);
+    }
 
-private:
+    inline QColor color_qcolor(float _v) const
+    {
+        ACG::Vec4uc c = color4(_v);
+        return QColor(c[0], c[1], c[2], c[3]);
+    }
 
-  ACG::Vec4uc color_unsigned(float _v) const;
-  ACG::Vec4uc color_signed(float _v) const;
-
-  float val0_, val1_, val2_, val3_, val4_;
-  bool signed_mode_;
+    // Make the color coder usable as a function operator.
+    inline ACG::Vec4f operator() (float _v) const {
+        return color_float4(_v);
+    }
 };
 
+} // namespace ACG
 
-
-//=============================================================================
-}// namespace ACG
-//=============================================================================
-#endif // ACG_COLORCODER_HH defined
-//=============================================================================
-
+#endif // ICOLORCODER_HH

@@ -120,7 +120,7 @@ public:
   class AnimationIterator {
   public:
     AnimationIterator(std::vector<Animation*>& _animations );
-    AnimationIterator(std::vector<Animation*>& _animations, unsigned int _animationIndex );
+    AnimationIterator(std::vector<Animation*>& _animations, size_t _animationIndex );
 
   public:
     AnimationIterator &operator++();
@@ -129,7 +129,7 @@ public:
     operator bool() const;
 
   private:
-    unsigned int currentIndex_;
+    size_t currentIndex_;
 
     std::vector<Animation*>& animations_;
   };
@@ -164,11 +164,11 @@ public:
     */
   ///@{
   inline Joint *root();
-  inline Joint *joint(const unsigned int &_index);
-  int parent(unsigned int _joint);
-  unsigned int childCount(unsigned int _joint);
-  unsigned int child(unsigned int _joint, unsigned int _child);
-  unsigned int jointCount();
+  inline Joint *joint(const size_t &_index);
+  int parent(size_t _joint);
+  size_t childCount(size_t _joint);
+  size_t child(size_t _joint, size_t _child);
+  size_t jointCount();
   
   /// Iterator over joints of the skeletal tree in TOP-DOWN order (from root to leafs)
   Iterator begin();
@@ -194,9 +194,9 @@ public:
   void clearAnimations();
 
   void replaceAnimationName(const std::string& _strOld, const std::string& _strNew) {
-      std::map<std::string,unsigned int>::iterator f = names_.find(_strOld);
+      std::map<std::string,size_t>::iterator f = names_.find(_strOld);
       if(f != names_.end()) {
-          unsigned int c = f->second;
+          size_t c = f->second;
           names_.erase(f);
           names_[_strNew] = c;
       }
@@ -206,14 +206,14 @@ public:
   AnimationIterator animationsBegin();
   AnimationIterator animationsEnd();
 
-  unsigned int animationCount();
-  const std::string &animationName(unsigned int _index);
+  size_t animationCount();
+  const std::string &animationName(size_t _index);
   ///@}
 
 
 protected:
   /// update the structure when parent changes for a joint
-  void updateFromGlobal(unsigned int _idJoint);
+  void updateFromGlobal(size_t _idJoint);
 
 protected:
   
@@ -221,7 +221,7 @@ protected:
   std::vector<Joint*> joints_;
 
   /// Binds a name to each animation
-  std::map<std::string, unsigned int> names_;
+  std::map<std::string, size_t> names_;
   /// Animations defined on the skeleton
   std::vector<Animation*> animations_;
 

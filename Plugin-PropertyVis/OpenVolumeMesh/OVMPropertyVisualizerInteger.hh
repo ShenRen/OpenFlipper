@@ -59,6 +59,7 @@
 #include <ACG/Utils/HuePartitioningColors.hh>
 
 #include <iostream>
+#include <memory>
 
 template <typename MeshT, typename T>
 class OVMPropertyVisualizerInteger: public OVMPropertyVisualizer<MeshT>{
@@ -68,7 +69,6 @@ public:
     virtual ~OVMPropertyVisualizerInteger(){}
 
 protected:
-
     template <typename PropType, typename EntityIterator>
     void visualizeProp(PropType prop, EntityIterator e_begin, EntityIterator e_end);
     virtual void duplicateProperty();
@@ -88,6 +88,8 @@ protected:
     virtual void setEdgePropertyFromText(unsigned int index, QString text);
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
+
+    std::unique_ptr<ACG::IColorCoder> buildColorCoder() override;
 
     T mNumericLimitMax;
     T mNumericLimitMin;

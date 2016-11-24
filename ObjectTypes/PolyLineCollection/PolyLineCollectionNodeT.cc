@@ -168,7 +168,6 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
             }
         }
 
-        glDisableClientState(GL_COLOR_ARRAY);
 
         float point_size_old = _state.point_size();
         _state.set_point_size(point_size_old+4.0f);
@@ -185,8 +184,6 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
         }
 
         _state.set_point_size(point_size_old);
-
-        glEnableClientState(GL_COLOR_ARRAY);
 
     }
 
@@ -208,7 +205,6 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
             }
         }
 
-        glDisableClientState(GL_COLOR_ARRAY);
         float line_width_old = _state.line_width();
         _state.set_color(Vec4f(1, 0, 0, 1));
         _state.set_line_width(2 * line_width_old);
@@ -253,7 +249,6 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
 
         _state.set_line_width(line_width_old);
 
-        glEnableClientState(GL_COLOR_ARRAY);
     }
 
     vertexDecl_.deactivateFixedFunction();
@@ -273,8 +268,7 @@ pick(GLState& _state, PickTarget _target)
     return;
 
   ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
-  ACG::GLState::vertexPointer(3, GL_FLOAT, vertexDecl_.getVertexStride(), 0);
-  ACG::GLState::enableClientState(GL_VERTEX_ARRAY);
+  vertexDecl_.activateFixedFunction();;
 
   _state.pick_set_maximum(2);
 
@@ -320,9 +314,8 @@ pick(GLState& _state, PickTarget _target)
   glLineWidth(line_width_old);
   glDepthRange(0.0, 1.0);
 
+  vertexDecl_.deactivateFixedFunction();
   ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-  ACG::GLState::disableClientState(GL_VERTEX_ARRAY);
-
 }
 
 //----------------------------------------------------------------------------
@@ -367,7 +360,6 @@ updateVBO() {
 
         // We always output vertex positions
         vertexDecl_.addElement(GL_FLOAT, 3, ACG::VERTEX_USAGE_POSITION);
-        vertexDecl_.addElement(GL_UNSIGNED_BYTE, 4, ACG::VERTEX_USAGE_COLOR);
 
         // create vbo if it does not exist
         if (!vbo_)
@@ -383,12 +375,13 @@ updateVBO() {
             typename PolyLineCollection::PolyLine* polyline = *it;
 
             if(polyline && polyline->n_vertices() > 0){
+                size_t offset = offsets_[it.idx()].first;
                 for (unsigned int  i = 0 ; i < polyline->n_vertices(); ++i) {
-                    writeVertex(polyline, i, vboData_ + (offsets_[it.idx()].first + i) * vertexDecl_.getVertexStride());
+                    writeVertex(polyline, i, vboData_ + (offset + i) * vertexDecl_.getVertexStride());
                 }
 
                 // First point is added to the end for a closed loop
-               writeVertex(polyline, 0, vboData_ + (offsets_[it.idx()].first+polyline->n_vertices()) * vertexDecl_.getVertexStride());
+               writeVertex(polyline, 0, vboData_ + (offset + polyline->n_vertices()) * vertexDecl_.getVertexStride());
             }
         }
 
@@ -414,10 +407,8 @@ PolyLineCollectionNodeT<PolyLineCollection>::
 writeVertex(typename PolyLineCollection::PolyLine* _polyline, unsigned int _vertex, void* _dst) {
 
   ACG::Vec3f& pos = *((ACG::Vec3f*)_dst);
-  ACG::Vec4uc& color = *((ACG::Vec4uc*)(&pos + 1));
 
   pos = OpenMesh::vector_cast<ACG::Vec3f>(_polyline->point(_vertex));
-  color = polyline_collection_.color(_polyline->edge_scalar((int(_vertex)-1+int(_polyline->n_vertices()))%int(_polyline->n_vertices())));
 }
 
 //----------------------------------------------------------------------------
@@ -499,16 +490,17 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
         for(typename PolyLineCollection::index_iterator it = polyline_collection_.visible_iter(); it; ++it){
             if(*it && (*it)->n_vertices() > 0){
                 ro.glDrawArrays(GL_POINTS, offsets_[it.idx()].first, offsets_[it.idx()].second-1);
+
+                // Point Size geometry shader
+                ro.setupPointRendering(_mat->pointSize(), screenSize);
+
+                // apply user settings
+                applyRenderObjectSettings(props->primitive(), &ro);
+
+                _renderer->addRenderObject(&ro);
             }
         }
 
-        // Point Size geometry shader
-        ro.setupPointRendering(_mat->pointSize(), screenSize);
-
-        // apply user settings
-        applyRenderObjectSettings(props->primitive(), &ro);
-
-        _renderer->addRenderObject(&ro);
     }else if(props->primitive() == ACG::SceneGraph::DrawModes::PRIMITIVE_WIREFRAME){
         // Render all edges which are selected via an index buffer
         ro.debugName = "polyline.Wireframe.selected";
@@ -534,16 +526,20 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
                 }
 
                 //offset += (*it)->n_vertices() + 1;
+
+                // Line Width geometry shader
+                ro.setupLineRendering(_state.line_width(), screenSize);
+
+                // apply user settings
+                applyRenderObjectSettings(props->primitive(), &ro);
+
+                _renderer->addRenderObject(&ro);
             }
+
+
         }
 
-        // Line Width geometry shader
-        ro.setupLineRendering(_state.line_width(), screenSize);
 
-        // apply user settings
-        applyRenderObjectSettings(props->primitive(), &ro);
-
-        _renderer->addRenderObject(&ro);
     }
   }
 

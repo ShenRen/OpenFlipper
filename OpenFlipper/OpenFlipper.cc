@@ -264,7 +264,7 @@ CSimpleOpt::SOption g_rgOptions[] = {
 };
 
 void showHelp() {
-  std::cerr << "OpenFlipper [Option__APPLE__s] <filenames> " << std::endl << std::endl;;
+  std::cerr << "OpenFlipper [Options] <filenames> " << std::endl << std::endl;;
   std::cerr << "Possible Options : " << std::endl;
   std::cerr << std::endl;
 

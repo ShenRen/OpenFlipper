@@ -121,15 +121,18 @@ public:
     void setProjection(ACG::GLMatrixd _projection) { projection_ = _projection; update_vbo_ = true; }
 
     /// Set viewport size ( This will be used to compute the aspect ratio )
+    DEPRECATED("setSize() is redundant, because it is already defined by the projection matrix.")
     void setSize(int _w, int _h) { /*obsolete*/ }
 
     /// Return encoded view string
     void setEncodedView(QString _encodedView) { encodedView_ = _encodedView; }
 
     /// Set distance to far plane ( e.g. scene radius )
+    DEPRECATED("setFarPlane() is redundant, because it is already defined by the projection matrix.")
     void setFarPlane(double _far) { /*obsolete*/ }
 
     /// Set distance to near plane
+    DEPRECATED("setNearPlane() is redundant, because it is already defined by the projection matrix.")
     void setNearPlane(double _near) { /*obsolete*/ }
 
     /// Return encoded view string

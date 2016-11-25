@@ -397,8 +397,8 @@ updateVBO() {
 
       if (curLineCount > 0) {
         polylineNodes_[0]->setupVertexDeclaration(&vertexDecl_, 0);
-        polylineNodes_[0]->setupVertexDeclaration(&vertexDecl_, 1);
-        polylineNodes_[0]->setupVertexDeclaration(&vertexDecl_, 2);
+        polylineNodes_[0]->setupVertexDeclaration(&vertexDeclVColor_, 1);
+        polylineNodes_[0]->setupVertexDeclaration(&vertexDeclEColor_, 2);
 
 
         // make sure that all polylines have the same vertex format

@@ -86,7 +86,6 @@ template <class PolyLineCollection>
 PolyLineCollectionNodeT<PolyLineCollection>::PolyLineCollectionNodeT(PolyLineCollection& _pl, BaseNode* _parent, std::string _name) :
         BaseNode(_parent, _name),
         polyline_collection_(_pl),
-        vbo_(0),
         updateVBO_(true),
         sphere_(0),
         total_vertex_count_(0)
@@ -149,7 +148,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
     ACG::GLState::disable(GL_TEXTURE_2D);
 
     // Bind the vertex array
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+    vbo_.bind();
     vertexDecl_.activateFixedFunction();
 
     ACG::Vec4f color = _state.ambient_color()  + _state.diffuse_color();
@@ -267,7 +266,7 @@ pick(GLState& _state, PickTarget _target)
   if (  polyline_collection_.n_polylines() == 0 )
     return;
 
-  ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+  vbo_.bind();
   vertexDecl_.activateFixedFunction();;
 
   _state.pick_set_maximum(2);
@@ -361,10 +360,6 @@ updateVBO() {
         // We always output vertex positions
         vertexDecl_.addElement(GL_FLOAT, 3, ACG::VERTEX_USAGE_POSITION);
 
-        // create vbo if it does not exist
-        if (!vbo_)
-            GLState::genBuffersARB(1, &vbo_);
-
         // size in bytes of vbo,  create additional vertex for closed loop indexing
         unsigned int bufferSize = vertexDecl_.getVertexStride() * offset;
 
@@ -386,9 +381,8 @@ updateVBO() {
         }
 
         // Move data to the buffer in gpu memory
-        GLState::bindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_);
-        GLState::bufferDataARB(GL_ARRAY_BUFFER_ARB, bufferSize , vboData_ , GL_STATIC_DRAW_ARB);
-        GLState::bindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        vbo_.upload(bufferSize, vboData_, GL_STATIC_DRAW);
+        vbo_.unbind();
 
         // Remove the local storage
         delete[] vboData_;
@@ -439,7 +433,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
     updateVBO();
 
   // Set to the right vbo
-  ro.vertexBuffer = vbo_;
+  ro.vertexBuffer = vbo_.id();
 
   // decl must be static or member,  renderer does not make a copy
   ro.vertexDecl = &vertexDecl_;

@@ -58,6 +58,8 @@
 #include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/IRenderer.hh>
 #include <ACG/GL/GLPrimitives.hh>
+#include <ACG/GL/globjects.hh>
+#include <ObjectTypes/PolyLine/PolyLineNodeT.hh>
 
 //== FORWARDDECLARATIONS ======================================================
 
@@ -117,7 +119,7 @@ public:
   void getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::SceneGraph::DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
 
   /// Trigger an update of the vbo
-  void update() { updateVBO_ = true; };
+  void update() { updateVBO_ = true; }
   void resetVBO() {offsets_.clear();}
 
 private:
@@ -151,7 +153,7 @@ private:
   PolyLineCollection& polyline_collection_;
 
   /// VBO used to render the poly line
-  unsigned int vbo_;
+  GeometryBuffer vbo_;
 
   /// Flag to trigger update of vbo
   bool updateVBO_;
@@ -160,6 +162,8 @@ private:
   GLSphere* sphere_;
 
   std::vector<std::pair<size_t, size_t> > offsets_;
+
+  std::vector< PolyLineNodeT<typename PolyLineCollection::PolyLine> > polylineNodes_;
 
   size_t total_vertex_count_;
 };

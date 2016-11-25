@@ -766,6 +766,7 @@ updateVBO() {
 
     // Move data to the buffer in gpu memory
     vbo_.upload(bufferSize, &vboData[0], GL_STATIC_DRAW);
+    vbo_.unbind();
   }
 
   // Index buffer for selected vertices

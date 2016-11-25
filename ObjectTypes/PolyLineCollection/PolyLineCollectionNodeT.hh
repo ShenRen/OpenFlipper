@@ -90,7 +90,7 @@ public:
   PolyLineCollectionNodeT(PolyLineCollection& _pl, BaseNode* _parent = 0, std::string _name = "<PolyLineCollectionNode>");
 
   /// Destructor
-  virtual ~PolyLineCollectionNodeT() {}
+  virtual ~PolyLineCollectionNodeT();
 
   PolyLineCollection& polyline_collection() { return polyline_collection_; }
 
@@ -131,7 +131,9 @@ private:
   PolyLineCollectionNodeT& operator=(const PolyLineCollectionNodeT& _rhs);
 
   /// Buffer organization
-  ACG::VertexDeclaration vertexDecl_;
+  ACG::VertexDeclaration vertexDecl_;       // layout without colors
+  ACG::VertexDeclaration vertexDeclVColor_; // layout with vertex colors
+  ACG::VertexDeclaration vertexDeclEColor_; // layout with edge colors
 
   /** \brief Trigger an update of the vbo
    *
@@ -139,13 +141,6 @@ private:
    *
    */
   void updateVBO();
-
-  /** \brief Write vertex data for rendering to a buffer
-   *
-   * @param _vertex index of polyline vertex
-   * @param _dst address of vertex in buffer
-   */
-  void writeVertex(typename PolyLineCollection::PolyLine* _polyline, unsigned int _vertex, void* _dst);
 
 private:
 
@@ -155,6 +150,9 @@ private:
   /// VBO used to render the poly line
   GeometryBuffer vbo_;
 
+  /// IBO used to render in line mode
+  IndexBuffer ibo_;
+
   /// Flag to trigger update of vbo
   bool updateVBO_;
 
@@ -163,7 +161,7 @@ private:
 
   std::vector<std::pair<size_t, size_t> > offsets_;
 
-  std::vector< PolyLineNodeT<typename PolyLineCollection::PolyLine> > polylineNodes_;
+  std::vector< PolyLineNodeT<typename PolyLineCollection::PolyLine>* > polylineNodes_;
 
   size_t total_vertex_count_;
 };

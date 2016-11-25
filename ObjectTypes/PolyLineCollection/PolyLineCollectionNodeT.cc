@@ -98,6 +98,15 @@ PolyLineCollectionNodeT<PolyLineCollection>::PolyLineCollectionNodeT(PolyLineCol
 //----------------------------------------------------------------------------
 
 template <class PolyLineCollection>
+PolyLineCollectionNodeT<PolyLineCollection>::~PolyLineCollectionNodeT()
+{
+  for (size_t i = 0; i < polylineNodes_.size(); ++i)
+    delete polylineNodes_[i];
+}
+
+//----------------------------------------------------------------------------
+
+template <class PolyLineCollection>
 void
 PolyLineCollectionNodeT<PolyLineCollection>::
 boundingBox(Vec3d& _bbMin, Vec3d& _bbMax)
@@ -354,56 +363,103 @@ updateVBO() {
 
     if(lines_did_change){
 
-        // Update the vertex declaration based on the input data:
-        vertexDecl_.clear();
 
-        // We always output vertex positions
-        vertexDecl_.addElement(GL_FLOAT, 3, ACG::VERTEX_USAGE_POSITION);
+      // update internal line node
+      // these are used exclusively used to fill the vertex buffer
 
-        // size in bytes of vbo,  create additional vertex for closed loop indexing
-        unsigned int bufferSize = vertexDecl_.getVertexStride() * offset;
 
-        // Create the required array
-        char* vboData_ = new char[bufferSize];
+      size_t prevLineCount = polylineNodes_.size();
+      size_t curLineCount = polyline_collection_.n_polylines();
 
-        for(typename PolyLineCollection::iterator it = polyline_collection_.iter(); it; ++it){
-            typename PolyLineCollection::PolyLine* polyline = *it;
 
-            if(polyline && polyline->n_vertices() > 0){
-                size_t offset = offsets_[it.idx()].first;
-                for (unsigned int  i = 0 ; i < polyline->n_vertices(); ++i) {
-                    writeVertex(polyline, i, vboData_ + (offset + i) * vertexDecl_.getVertexStride());
-                }
+      // free memory for removed lines
+      if (curLineCount < prevLineCount)
+      {
+        for (size_t i = curLineCount; i < prevLineCount; ++i)
+          delete polylineNodes_[i];
+      }
 
-                // First point is added to the end for a closed loop
-               writeVertex(polyline, 0, vboData_ + (offset + polyline->n_vertices()) * vertexDecl_.getVertexStride());
-            }
+      polylineNodes_.resize(curLineCount);
+
+
+      for(size_t i = 0; i < curLineCount; ++i) {
+        typename PolyLineCollection::PolyLine* polyline = polyline_collection_.polyline(i);
+        polylineNodes_[i] = new PolyLineNodeT<typename PolyLineCollection::PolyLine>(*polyline);
+      }
+
+
+
+      // Update the vertex declaration based on the input data:
+      vertexDecl_.clear();
+      vertexDeclVColor_.clear();
+      vertexDeclEColor_.clear();
+
+
+      if (curLineCount > 0) {
+        polylineNodes_[0]->setupVertexDeclaration(&vertexDecl_, 0);
+        polylineNodes_[0]->setupVertexDeclaration(&vertexDecl_, 1);
+        polylineNodes_[0]->setupVertexDeclaration(&vertexDecl_, 2);
+
+
+        // make sure that all polylines have the same vertex format
+        bool equalVertexFormat = true;
+
+        for (size_t i = 1; i < curLineCount; ++i) {
+
+          VertexDeclaration decl[3];
+
+          for (int k = 0; k < 3; ++k)
+            polylineNodes_[i]->setupVertexDeclaration(&decl[k], k);
+
+          if (decl[0] != vertexDecl_ ||
+              decl[1] != vertexDeclVColor_ ||
+              decl[2] != vertexDeclEColor_)
+            equalVertexFormat = false;
         }
 
-        // Move data to the buffer in gpu memory
-        vbo_.upload(bufferSize, vboData_, GL_STATIC_DRAW);
-        vbo_.unbind();
 
-        // Remove the local storage
-        delete[] vboData_;
+        if (!equalVertexFormat)
+          std::cerr << "PolyLineCollection error: polylines do not have the same vertex format, so the collection vbo could not be created" << std::endl;
+        else {
+
+          // size in bytes of vbo,  create additional vertex for closed loop indexing
+          size_t stride = vertexDecl_.getVertexStride();
+          size_t bufferSize = stride * offset;
+
+          if (bufferSize > 0) {
+            std::vector<char> vboData(bufferSize);
+
+
+            for(size_t i = 0; i < curLineCount; ++i) {
+              typename PolyLineCollection::PolyLine* polyline = polyline_collection_.polyline(i);
+
+
+              if (polyline && polylineNodes_[i] && polyline->n_vertices() > 0) {
+
+                size_t offset = offsets_[i].first;
+
+                polylineNodes_[i]->fillVertexBuffer(&vboData[(offset) * stride], bufferSize, true);
+
+              }
+
+            }
+
+            // Move data to the buffer in gpu memory
+            vbo_.upload(bufferSize, &vboData[0], GL_STATIC_DRAW);
+            vbo_.unbind();
+          }
+
+        }
+
+      }
     }
+
+
 
     // Update done.
     updateVBO_ = false;
 }
 
-
-//----------------------------------------------------------------------------
-
-template <class PolyLineCollection>
-void
-PolyLineCollectionNodeT<PolyLineCollection>::
-writeVertex(typename PolyLineCollection::PolyLine* _polyline, unsigned int _vertex, void* _dst) {
-
-  ACG::Vec3f& pos = *((ACG::Vec3f*)_dst);
-
-  pos = OpenMesh::vector_cast<ACG::Vec3f>(_polyline->point(_vertex));
-}
 
 //----------------------------------------------------------------------------
 

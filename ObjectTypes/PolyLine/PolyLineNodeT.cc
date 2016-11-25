@@ -727,12 +727,12 @@ fillVertexBuffer(void *_buf, size_t _bufSize, bool _addLineStripEndVertex) {
   char* data = static_cast<char*>(_buf);
   size_t bytesWritten = 0;
 
-  for (unsigned int  i = 0 ; i < polyline_.n_vertices() && bytesWritten + stride < _bufSize; ++i) {
+  for (unsigned int  i = 0 ; i < polyline_.n_vertices() && bytesWritten + stride <= _bufSize; ++i) {
     writeVertex(i, data + i * stride);
     bytesWritten += stride;
   }
 
-  if (_addLineStripEndVertex && bytesWritten + stride < _bufSize) {
+  if (_addLineStripEndVertex && bytesWritten + stride <= _bufSize) {
     // First point is added to the end for a closed loop
     writeVertex(0, data + polyline_.n_vertices() * stride);
     bytesWritten += stride;

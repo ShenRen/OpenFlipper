@@ -78,7 +78,6 @@ template <class PolyLine>
 PolyLineNodeT<PolyLine>::PolyLineNodeT(PolyLine& _pl, BaseNode* _parent, std::string _name) :
         BaseNode(_parent, _name),
         polyline_(_pl),
-        vbo_(0),
         updateVBO_(true),
         sphere_(0)
 
@@ -154,7 +153,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
   ACG::GLState::disable(GL_TEXTURE_2D);
   
   // Bind the vertex array
-  ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+  vbo_.bind();
 
   ACG::Vec4f color = _state.ambient_color()  + _state.diffuse_color();
 
@@ -263,7 +262,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
     }
 
     // Disable the big buffer and switch to in memory buffer
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    vbo_.unbind();
     ACG::GLState::vertexPointer(&ps[0]);
 
     float line_width_old = _state.line_width();
@@ -291,7 +290,7 @@ draw(GLState& _state, const DrawModes::DrawMode& _drawMode)
     _state.set_line_width(line_width_old);
   }
   
-  ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+  vbo_.unbind();
 
   //Disable the vertex array
   ACG::GLState::disableClientState(GL_VERTEX_ARRAY);
@@ -465,7 +464,7 @@ pick_vertices( GLState& _state )
       updateVBO();
 
     // Bind the vertex array
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+    vbo_.bind();
 
     int pickOffsetIndex = int(_state.pick_current_index());
 
@@ -484,7 +483,7 @@ pick_vertices( GLState& _state )
     pickShader->disable();
 
 
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    vbo_.unbind();
   }
   else
   {
@@ -577,7 +576,7 @@ pick_edges( GLState& _state, unsigned int _offset)
       updateVBO();
 
     // Bind the vertex array
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, vbo_);
+    vbo_.bind();
 
     int pickOffsetIndex = int(_state.pick_current_index());
 
@@ -596,7 +595,7 @@ pick_edges( GLState& _state, unsigned int _offset)
     vertexDecl_.deactivateShaderPipeline(pickShader);
     pickShader->disable();
 
-    ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    vbo_.unbind();
   }
   else
   {
@@ -679,9 +678,9 @@ setupVertexDeclaration(VertexDeclaration* _dst, int _colorSource) const {
 //----------------------------------------------------------------------------
 
 template <class PolyLine>
-void
+size_t
 PolyLineNodeT<PolyLine>::
-updateVBO() {
+fillVertexBuffer(void *_buf, size_t _bufSize, bool _addLineStripEndVertex) {
 
   // register custom properties defined in polyline
 
@@ -689,7 +688,7 @@ updateVBO() {
 
     typename PolyLine::CustomPropertyHandle proph = polyline_.enumerate_custom_property_handles(i);
 
-    
+
 
     const void* propDataBuf = polyline_.get_custom_property_buffer(proph);
 
@@ -720,17 +719,54 @@ updateVBO() {
   setupVertexDeclaration(&vertexDeclVCol_, 1);
   setupVertexDeclaration(&vertexDeclECol_, 2);
 
+
+  // fill buffer
+
   const unsigned int stride = vertexDecl_.getVertexStride();
 
-  // create vbo if it does not exist
-  if (!vbo_)
-    GLState::genBuffersARB(1, &vbo_);
+  char* data = static_cast<char*>(_buf);
+  size_t bytesWritten = 0;
+
+  for (unsigned int  i = 0 ; i < polyline_.n_vertices() && bytesWritten + stride < _bufSize; ++i) {
+    writeVertex(i, data + i * stride);
+    bytesWritten += stride;
+  }
+
+  if (_addLineStripEndVertex && bytesWritten + stride < _bufSize) {
+    // First point is added to the end for a closed loop
+    writeVertex(0, data + polyline_.n_vertices() * stride);
+    bytesWritten += stride;
+  }
+
+  return bytesWritten;
+}
+
+//----------------------------------------------------------------------------
+
+template <class PolyLine>
+void
+PolyLineNodeT<PolyLine>::
+updateVBO() {
+
+  setupVertexDeclaration(&vertexDecl_, 0);
+
+  const unsigned int stride = vertexDecl_.getVertexStride();
 
   // size in bytes of vbo,  create additional vertex for closed loop indexing
-  unsigned int bufferSize = stride * (polyline_.n_vertices() + 1);
+  size_t bufferSize = stride * (polyline_.n_vertices() + 1);
 
   // Create the required array
-  char* vboData_ = new char[bufferSize];
+  std::vector<char> vboData(bufferSize);
+
+  if (bufferSize > 0) {
+    size_t bytesWritten = fillVertexBuffer(&vboData[0], bufferSize, true);
+
+    if (bytesWritten != bufferSize)
+      std::cerr << "PolyLineNode: fill vertex buffer only wrote " << bytesWritten << " bytes instead of expected " << bufferSize << " bytes" << std::endl;
+
+    // Move data to the buffer in gpu memory
+    vbo_.upload(bufferSize, &vboData[0], GL_STATIC_DRAW);
+  }
 
   // Index buffer for selected vertices
   selectedVertexIndexBuffer_.clear();
@@ -739,8 +775,6 @@ updateVBO() {
   selectedEdgeIndexBuffer_.clear();
 
   for (unsigned int  i = 0 ; i < polyline_.n_vertices(); ++i) {
-
-    writeVertex(i, vboData_ + i * stride);
 
     // Create an ibo in system memory for vertex selection
     if ( polyline_.vertex_selections_available() && polyline_.vertex_selected(i) )
@@ -753,16 +787,6 @@ updateVBO() {
     }
 
   }
-
-  // First point is added to the end for a closed loop
-  writeVertex(0, vboData_ + polyline_.n_vertices() * stride);
-
-  // Move data to the buffer in gpu memory
-  GLState::bindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_);
-  GLState::bufferDataARB(GL_ARRAY_BUFFER_ARB, bufferSize , vboData_ , GL_STATIC_DRAW_ARB);
-
-  // Remove the local storage
-  delete[] vboData_;
 
   // Update done.
   updateVBO_ = false;
@@ -880,7 +904,7 @@ getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::S
     updateVBO();
 
   // Set to the right vbo
-  ro.vertexBuffer = vbo_;
+  ro.vertexBuffer = vbo_.id();
 
   // Set style
   ro.debugName = "PolyLine";

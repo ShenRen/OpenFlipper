@@ -532,11 +532,17 @@ unsigned int VertexDeclaration::getVertexStride(unsigned int i) const
   if (strideUserDefined_)
     return vertexStride_;
 
-  unsigned int vbo = getElement(i)->vbo_;
-  std::map<unsigned int, unsigned int>::const_iterator it = vertexStridesVBO_.find(vbo);
+  const VertexElement* element = getElement(i);
 
-  return (it != vertexStridesVBO_.end()) ? it->second : vertexStride_;
-//  return vertexStride_;
+  if (element)
+  {
+    unsigned int vbo = getElement(i)->vbo_;
+    std::map<unsigned int, unsigned int>::const_iterator it = vertexStridesVBO_.find(vbo);
+
+    return (it != vertexStridesVBO_.end()) ? it->second : vertexStride_;
+  }
+
+  return 0;
 }
 
 

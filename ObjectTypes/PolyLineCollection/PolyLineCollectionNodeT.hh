@@ -142,6 +142,10 @@ private:
    */
   void updateVBO();
 
+
+  void pick_vertices(GLState& _state);
+  void pick_edges(GLState& _state, unsigned int _offset = 0);
+
 private:
 
   /// The associated poly line collection
@@ -149,9 +153,6 @@ private:
 
   /// VBO used to render the poly line
   GeometryBuffer vbo_;
-
-  /// IBO used to render in line mode
-  IndexBuffer ibo_;
 
   /// Flag to trigger update of vbo
   bool updateVBO_;

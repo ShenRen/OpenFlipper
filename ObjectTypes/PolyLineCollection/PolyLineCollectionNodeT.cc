@@ -271,59 +271,239 @@ void
 PolyLineCollectionNodeT<PolyLineCollection>::
 pick(GLState& _state, PickTarget _target)
 {
+  size_t numPolyLines = polyline_collection_.n_polylines();
 
-  if (  polyline_collection_.n_polylines() == 0 )
+  if (  numPolyLines == 0 )
     return;
 
-  vbo_.bind();
-  vertexDecl_.activateFixedFunction();;
 
-  _state.pick_set_maximum(2);
+  switch (_target)
+  {
+    case PICK_VERTEX:
+    {
+      size_t numPickIDs = 0;
 
-  glDepthRange(0.0, 0.999999);
+      for (size_t i = 0; i < numPolyLines; ++i)
+      {
+        typename PolyLineCollection::PolyLine* line = polyline_collection_.polyline(i);
 
+        if (line)
+          numPickIDs += line->n_vertices();
+      }
+
+      _state.pick_set_maximum (numPickIDs);
+      pick_vertices( _state);
+      break;
+    }
+
+    case PICK_EDGE:
+    {
+      size_t numPickIDs = 0;
+
+      for (size_t i = 0; i < numPolyLines; ++i)
+      {
+        typename PolyLineCollection::PolyLine* line = polyline_collection_.polyline(i);
+
+        if (line)
+          numPickIDs += line->n_edges();
+      }
+
+      _state.pick_set_maximum (numPickIDs);
+      pick_edges(_state, 0);
+      break;
+    }
+
+    case PICK_ANYTHING:
+    {
+      size_t numPickVertices = 0;
+      size_t numPickIDs = 0;
+
+      for (size_t i = 0; i < numPolyLines; ++i)
+      {
+        typename PolyLineCollection::PolyLine* line = polyline_collection_.polyline(i);
+
+        if (line)
+        {
+          numPickIDs += line->n_vertices();
+          numPickIDs += line->n_edges();
+
+          numPickVertices += line->n_vertices();
+        }
+      }
+
+      _state.pick_set_maximum (numPickIDs);
+
+      pick_vertices( _state);
+      pick_edges( _state, static_cast<unsigned int>(numPickVertices));
+      break;
+    }
+
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------------
+
+template <class PolyLineCollection>
+void
+PolyLineCollectionNodeT<PolyLineCollection>::
+pick_vertices(GLState &_state)
+{
+  size_t numPolyLines = polyline_collection_.n_polylines();
+
+  // draw vertex pick IDs
 
   float point_size_old = _state.point_size();
   glPointSize(point_size_old+3.0f);
-  if ((drawMode() & DrawModes::POINTS) && (_target == PICK_VERTEX || _target == PICK_ANYTHING))
+
+
+  GLSL::Program* pickVertexShader = ACG::ShaderCache::getInstance()->getProgram("Picking/pick_vertices_vs.glsl", "Picking/pick_vertices_fs.glsl");
+
+  if (pickVertexShader && pickVertexShader->isLinked())
   {
-      _state.pick_set_name(0);
+    // shader needs picking ID offset and transform matrix
+    int pickVertexOffset = int(_state.pick_current_index());
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
 
-      for(typename PolyLineCollection::index_iterator it = polyline_collection_.visible_iter(); it; ++it){
-          typename PolyLineCollection::PolyLine* polyline = *it;
+    pickVertexShader->use();
 
-          if(polyline && polyline->n_vertices() > 0){
-              glDrawArrays(GL_POINTS, offsets_[it.idx()].first, offsets_[it.idx()].second-1);
-          }
+    pickVertexShader->setUniform("mWVP", mWVP);
+
+    vbo_.bind();
+
+    vertexDecl_.activateShaderPipeline(pickVertexShader);
+
+
+    for (size_t i = 0; i < numPolyLines; ++i)
+    {
+      typename PolyLineCollection::PolyLine* line = polyline_collection_.polyline(i);
+
+      if (line && line->n_vertices() > 0)
+      {
+        pickVertexShader->setUniform("pickVertexOffset", pickVertexOffset);
+
+        glDrawArrays(GL_POINTS, offsets_[i].first, offsets_[i].second-1);
+
+        pickVertexOffset += int(offsets_[i].second - 1);
       }
-  }
-  glPointSize(point_size_old);
+    }
 
+    vertexDecl_.deactivateShaderPipeline(pickVertexShader);
+
+    vbo_.unbind();
+
+    pickVertexShader->disable();
+  }
+  else
+  {
+    // fallback implementation: draw picking ids without shader
+    glBegin(GL_POINTS);
+
+    size_t curPickID = 0;
+
+    for (size_t i = 0; i < numPolyLines; ++i)
+    {
+      typename PolyLineCollection::PolyLine* line = polyline_collection_.polyline(i);
+
+      if (line && line->n_vertices() > 0)
+      {
+        for (size_t v = 0; v < line->n_vertices(); ++v)
+        {
+          _state.pick_set_name(curPickID++);
+
+          glVertex3d(line->point(v)[0], line->point(v)[1], line->point(v)[2]);
+        }
+      }
+    }
+
+    glEnd();
+  }
+
+  glPointSize(point_size_old);
+}
+
+//----------------------------------------------------------------------------
+
+template <class PolyLineCollection>
+void
+PolyLineCollectionNodeT<PolyLineCollection>::
+pick_edges(GLState &_state, unsigned int _offset)
+{
+  size_t numPolyLines = polyline_collection_.n_polylines();
+
+  // draw edge picking IDs
   float line_width_old = _state.line_width();
   glLineWidth(line_width_old+3.0f);
-  // draw line segments
-  if ((drawMode() & DrawModes::WIREFRAME) && (_target == PICK_EDGE || _target == PICK_ANYTHING)) {
 
-      _state.pick_set_name(1);
+  GLSL::Program* pickEdgeShader = ACG::ShaderCache::getInstance()->getProgram("Picking/vertex.glsl", "Picking/pick_vertices_fs2.glsl");
 
-      for(typename PolyLineCollection::index_iterator it = polyline_collection_.visible_iter(); it; ++it){
-          typename PolyLineCollection::PolyLine* polyline = *it;
+  if (pickEdgeShader && pickEdgeShader->isLinked())
+  {
+    // shader needs picking ID offset and transform matrix
+    int pickVertexOffset = int(_state.pick_current_index() + _offset);
+    GLMatrixf mWVP = _state.projection() * _state.modelview();
 
-          if(polyline && polyline->n_vertices() > 0){
-              if ( polyline->is_closed() ){
-                  glDrawArrays(GL_LINE_STRIP, offsets_[it.idx()].first, offsets_[it.idx()].second);
+    pickEdgeShader->use();
 
-              }else{
-                  glDrawArrays(GL_LINE_STRIP, offsets_[it.idx()].first, offsets_[it.idx()].second-1);
-              }
-          }
+    pickEdgeShader->setUniform("mWVP", mWVP);
+
+    vbo_.bind();
+
+    vertexDecl_.activateShaderPipeline(pickEdgeShader);
+
+    for (size_t i = 0; i < numPolyLines; ++i)
+    {
+      typename PolyLineCollection::PolyLine* line = polyline_collection_.polyline(i);
+
+      if (line && line->n_vertices() > 0)
+      {
+        pickEdgeShader->setUniform("pickVertexOffset", pickVertexOffset);
+
+        size_t numIndices = line->is_closed() ? offsets_[i].second : offsets_[i].second - 1;
+        glDrawArrays(GL_LINE_STRIP, offsets_[i].first, numIndices);
+
+        pickVertexOffset += int(line->n_edges());
       }
-  }
-  glLineWidth(line_width_old);
-  glDepthRange(0.0, 1.0);
+    }
 
-  vertexDecl_.deactivateFixedFunction();
-  ACG::GLState::bindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    vertexDecl_.deactivateShaderPipeline(pickEdgeShader);
+
+    vbo_.unbind();
+
+    pickEdgeShader->disable();
+  }
+  else
+  {
+    // fallback implementation: draw picking ids without shader
+    glBegin(GL_LINES);
+
+    size_t curPickID = _offset;
+
+    for (size_t i = 0; i < numPolyLines; ++i)
+    {
+      typename PolyLineCollection::PolyLine* line = polyline_collection_.polyline(i);
+
+      if (line)
+      {
+        size_t nv = line->n_vertices();
+
+        for (size_t v = 0; v < line->n_edges(); ++v)
+        {
+          _state.pick_set_name(curPickID++);
+
+          glVertex3d(line->point(v)[0], line->point(v)[1], line->point(v)[2]);
+
+          size_t e = (v+1)%nv;
+          glVertex3d(line->point(e)[0], line->point(e)[1], line->point(e)[2]);
+        }
+      }
+    }
+
+    glEnd();
+  }
+
+  glLineWidth(line_width_old);
 }
 
 //----------------------------------------------------------------------------
@@ -459,7 +639,6 @@ updateVBO() {
     // Update done.
     updateVBO_ = false;
 }
-
 
 //----------------------------------------------------------------------------
 

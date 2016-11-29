@@ -83,6 +83,9 @@ CameraNode::CameraNode(BaseNode* _parent, std::string _name) :
     cone_(0),
     axis_length_(0.1f),
     update_vbo_(true),
+    offsetTris_(0),
+    offsetLines_(0),
+    offsetFront_(0),
     showFrustum_(false) {
 
     modelView_.identity();

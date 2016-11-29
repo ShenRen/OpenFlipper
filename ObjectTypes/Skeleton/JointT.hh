@@ -113,7 +113,7 @@ public:
 
   /// Access the name of the joint
   inline std::string name() const;
-  inline void setName(const std::string _name);
+  inline void setName(const std::string& _name);
 
 private:
   /// An unique identifier, guaranteed to be part of a continuous sequence starting from 0

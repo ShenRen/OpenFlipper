@@ -86,7 +86,7 @@ const float    GLState::default_shininess(100.f);
 
 bool GLState::depthFuncLock_ = false;
 bool GLState::depthRangeLock_ = false;
-bool GLState::blendFuncSeparateLock_[2] = { false };
+bool GLState::blendFuncSeparateLock_[] = { false };
 bool GLState::blendEquationLock_ = false;
 bool GLState::blendColorLock_ = false;
 bool GLState::alphaFuncLock_ = false;
@@ -101,9 +101,9 @@ bool GLState::programLock_ = false;
 
 std::deque <GLStateContext> GLState::stateStack_;
 std::bitset<0xFFFF+1> GLState::glStateLock_;
-int GLState::glBufferTargetLock_[4] = {0};
-int GLState::glTextureStageLock_[16] = {0};
-bool GLState::framebufferLock_[2] = {false};
+int GLState::glBufferTargetLock_[] = {0};
+int GLState::glTextureStageLock_[] = {0};
+bool GLState::framebufferLock_[] = {false};
 int GLState::maxTextureCoords_ = 0;
 int GLState::maxCombinedTextureImageUnits_ = 0;
 int GLState::maxDrawBuffers_ = 0;
@@ -1142,7 +1142,7 @@ bool GLState::color_picking () const
 
 //-----------------------------------------------------------------------------
 
-GLenum GLState::glStateCaps[95] = {GL_ALPHA_TEST,
+GLenum GLState::glStateCaps[] = {GL_ALPHA_TEST,
 GL_AUTO_NORMAL,
 GL_MAP2_VERTEX_3,
 GL_MAP2_VERTEX_4,

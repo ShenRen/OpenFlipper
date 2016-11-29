@@ -69,7 +69,7 @@ namespace ACG {
 
 
 // static variables	      
-char Tracing::progress_[4] = { '-', '\\', '|', '/' };
+char Tracing::progress_[] = { '-', '\\', '|', '/' };
 unsigned char Tracing::idx_ = 0;
 
 

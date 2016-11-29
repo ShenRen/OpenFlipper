@@ -966,7 +966,6 @@ TranslationManipulatorNode::mouseEvent(GLState& _state, QMouseEvent* _event)
   Vec3d oldPoint3D;
   Vec2i newPoint2D(_event->pos().x(), _event->pos().y());
   Vec3d newPoint3D;
-  bool rot[3], trans[3];
   unsigned int i;
   bool lockOldPoint = false;
 
@@ -1135,6 +1134,7 @@ TranslationManipulatorNode::mouseEvent(GLState& _state, QMouseEvent* _event)
       }
 
       // set action for the different modes
+      bool rot[3], trans[3];
       switch (mode_) {
         case Rotation:
           for (i = 0; i < 3; i++) {

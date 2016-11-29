@@ -84,8 +84,9 @@ namespace GLSL {
   }
 
 
-  void UniformPool::operator =(const UniformPool& _other) {
+  UniformPool& UniformPool::operator =(const UniformPool& _other) {
     addPool(_other);
+    return *this;
   }
 
   void UniformPool::clear() {

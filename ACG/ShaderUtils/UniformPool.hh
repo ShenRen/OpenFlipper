@@ -124,7 +124,7 @@ namespace GLSL {
     /** \brief copy
      *
      */
-    void operator =(const UniformPool& _other);
+    UniformPool& operator =(const UniformPool& _other);
 
   private:
     struct UniformBase {

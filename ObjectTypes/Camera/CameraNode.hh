@@ -117,8 +117,14 @@ public:
     /// set model view matrix
     void setModelView(ACG::GLMatrixd _modelView) { modelView_ = _modelView; modelViewInv_ = _modelView; modelViewInv_.invert(); update_vbo_ = true; }
 
+    /// Returns the modelview matrix
+    const ACG::GLMatrixd& modelview() const {return modelView_;}
+
     /// Set projection Matrix ( used to calculate frustum ... )
     void setProjection(ACG::GLMatrixd _projection) { projection_ = _projection; update_vbo_ = true; }
+
+    /// Returns the projection matrix
+    const ACG::GLMatrixd& projection() const {return projection_;}
 
     /// Set viewport size ( This will be used to compute the aspect ratio )
     DEPRECATED("setSize() is redundant, because it is already defined by the projection matrix.")
@@ -143,6 +149,7 @@ public:
 
     /// Returns true if camera renders its whole frustum
     bool showFrustum() { return showFrustum_; }
+
 
 private:
 

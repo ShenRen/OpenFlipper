@@ -62,13 +62,17 @@ TypeCameraPlugin::TypeCameraPlugin() :
 void TypeCameraPlugin::pluginsInitialized() {
 
   if ( OpenFlipper::Options::gui() ){
-    contextMenu_ = new QMenu(tr("Rendering"));
+    contextMenu_ = new QMenu(tr("CameraNode"));
 
     showFrustumAction_ = contextMenu_->addAction( tr("Show viewing frustum") );
     showFrustumAction_->setCheckable(true);
     showFrustumAction_->setChecked(false);
     showFrustumAction_->setToolTip(tr("Visualize cameras viewing frustum."));
     showFrustumAction_->setStatusTip( showFrustumAction_->toolTip() );
+
+    QAction* flyAction = contextMenu_->addAction( tr("Fly to") );
+    flyAction->setToolTip(tr("Fly viewer to the camera position."));
+    flyAction->setStatusTip( flyAction->toolTip() );
 
     // Add context menu
     emit addContextMenuItem(contextMenu_->menuAction(), DATA_CAMERA, CONTEXTOBJECTMENU);
@@ -108,6 +112,22 @@ void TypeCameraPlugin::contextMenuClicked(QAction* _contextAction) {
     object->cameraNode()->showFrustum(_contextAction->isChecked());
 
     emit updatedObject(objectId, UPDATE_VISIBILITY);
+  }
+  else if (_contextAction->text() == tr("Fly to")) {
+
+    // calculate camera position and view direction in world space
+
+    ACG::GLMatrixd m = object->cameraNode()->modelview();
+    ACG::GLMatrixd mInv = m;
+    mInv.invert();
+
+    ACG::Vec3d camPosWS(mInv(0,3), mInv(1,3), mInv(2,3));
+    ACG::Vec3d camViewWS(mInv(0,2), mInv(1,2), mInv(2,2));
+
+    ACG::Vec3d camCenterWS = camPosWS - camViewWS;
+
+    // target up vector can't be specified unfortunately
+    PluginFunctions::flyTo(camPosWS, camCenterWS, 500.0);
   }
 
 }

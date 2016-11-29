@@ -54,7 +54,7 @@
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 TypeCameraPlugin::TypeCameraPlugin() :
-        contextMenu_(0)
+        contextMenu_(0), showFrustumAction_(0)
 {
 
 }
@@ -62,15 +62,17 @@ TypeCameraPlugin::TypeCameraPlugin() :
 void TypeCameraPlugin::pluginsInitialized() {
 
   if ( OpenFlipper::Options::gui() ){
-    contextMenu_ = new QMenu(tr("Rendering"));
+    contextMenu_ = new QMenu(tr("CameraNode"));
 
-    QAction* lastAction;
+    showFrustumAction_ = contextMenu_->addAction( tr("Show viewing frustum") );
+    showFrustumAction_->setCheckable(true);
+    showFrustumAction_->setChecked(false);
+    showFrustumAction_->setToolTip(tr("Visualize cameras viewing frustum."));
+    showFrustumAction_->setStatusTip( showFrustumAction_->toolTip() );
 
-    lastAction = contextMenu_->addAction( tr("Show viewing frustum") );
-    lastAction->setCheckable(true);
-    lastAction->setChecked(false);
-    lastAction->setToolTip(tr("Visualize cameras viewing frustum."));
-    lastAction->setStatusTip( lastAction->toolTip() );
+    QAction* flyAction = contextMenu_->addAction( tr("Fly to") );
+    flyAction->setToolTip(tr("Fly viewer to the camera position."));
+    flyAction->setStatusTip( flyAction->toolTip() );
 
     // Add context menu
     emit addContextMenuItem(contextMenu_->menuAction(), DATA_CAMERA, CONTEXTOBJECTMENU);
@@ -79,8 +81,17 @@ void TypeCameraPlugin::pluginsInitialized() {
   }
 }
 
-void TypeCameraPlugin::slotUpdateContextMenuObject(int _objectId) {
+void TypeCameraPlugin::slotUpdateContextMenu(int _objectId) {
 
+  if (_objectId < 0)
+    return;
+
+  CameraObject* object;
+  if (!PluginFunctions::getObject(_objectId, object))
+    return;
+
+  if (showFrustumAction_)
+    showFrustumAction_->setChecked(object->cameraNode()->showFrustum());
 }
 
 void TypeCameraPlugin::contextMenuClicked(QAction* _contextAction) {
@@ -100,6 +111,23 @@ void TypeCameraPlugin::contextMenuClicked(QAction* _contextAction) {
     // Set frustum flag to whether action is checked or not
     object->cameraNode()->showFrustum(_contextAction->isChecked());
 
+    emit updatedObject(objectId, UPDATE_VISIBILITY);
+  }
+  else if (_contextAction->text() == tr("Fly to")) {
+
+    // calculate camera position and view direction in world space
+
+    ACG::GLMatrixd m = object->cameraNode()->modelview();
+    ACG::GLMatrixd mInv = m;
+    mInv.invert();
+
+    ACG::Vec3d camPosWS(mInv(0,3), mInv(1,3), mInv(2,3));
+    ACG::Vec3d camViewWS(mInv(0,2), mInv(1,2), mInv(2,2));
+
+    ACG::Vec3d camCenterWS = camPosWS - camViewWS;
+
+    // target up vector can't be specified unfortunately
+    PluginFunctions::flyTo(camPosWS, camCenterWS, 500.0);
   }
 
 }

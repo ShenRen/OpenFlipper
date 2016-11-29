@@ -95,7 +95,7 @@ class TypeCameraPlugin : public QObject, BaseInterface, LoadSaveInterface, Loggi
     void pluginsInitialized();
 
     // ContextMenuInterface
-    void slotUpdateContextMenuObject( int _objectId );
+    void slotUpdateContextMenu( int _objectId );
 
   public :
 
@@ -122,6 +122,7 @@ class TypeCameraPlugin : public QObject, BaseInterface, LoadSaveInterface, Loggi
   private:
 
     QMenu* contextMenu_;
+    QAction* showFrustumAction_;
 
 };
 

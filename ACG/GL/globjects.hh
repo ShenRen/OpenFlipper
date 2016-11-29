@@ -128,7 +128,7 @@ private:
 //== CLASS DEFINITION =========================================================
 
 
-#if defined(GL_ARB_vertex_buffer_object)
+#if defined(GL_VERSION_1_5)
 
 class ACGDLLEXPORT VertexBufferObject
 {
@@ -172,14 +172,14 @@ private:
 class GeometryBuffer : public VertexBufferObject
 {
 public:
-  GeometryBuffer() : VertexBufferObject(GL_ARRAY_BUFFER_ARB) {}
+  GeometryBuffer() : VertexBufferObject(GL_ARRAY_BUFFER) {}
 };
 
 
 class IndexBuffer : public VertexBufferObject
 {
 public:
-  IndexBuffer() : VertexBufferObject(GL_ELEMENT_ARRAY_BUFFER_ARB) {}
+  IndexBuffer() : VertexBufferObject(GL_ELEMENT_ARRAY_BUFFER) {}
 };
 
 

@@ -54,7 +54,7 @@
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 TypeCameraPlugin::TypeCameraPlugin() :
-        contextMenu_(0)
+        contextMenu_(0), showFrustumAction_(0)
 {
 
 }
@@ -64,13 +64,11 @@ void TypeCameraPlugin::pluginsInitialized() {
   if ( OpenFlipper::Options::gui() ){
     contextMenu_ = new QMenu(tr("Rendering"));
 
-    QAction* lastAction;
-
-    lastAction = contextMenu_->addAction( tr("Show viewing frustum") );
-    lastAction->setCheckable(true);
-    lastAction->setChecked(false);
-    lastAction->setToolTip(tr("Visualize cameras viewing frustum."));
-    lastAction->setStatusTip( lastAction->toolTip() );
+    showFrustumAction_ = contextMenu_->addAction( tr("Show viewing frustum") );
+    showFrustumAction_->setCheckable(true);
+    showFrustumAction_->setChecked(false);
+    showFrustumAction_->setToolTip(tr("Visualize cameras viewing frustum."));
+    showFrustumAction_->setStatusTip( showFrustumAction_->toolTip() );
 
     // Add context menu
     emit addContextMenuItem(contextMenu_->menuAction(), DATA_CAMERA, CONTEXTOBJECTMENU);
@@ -79,8 +77,17 @@ void TypeCameraPlugin::pluginsInitialized() {
   }
 }
 
-void TypeCameraPlugin::slotUpdateContextMenuObject(int _objectId) {
+void TypeCameraPlugin::slotUpdateContextMenu(int _objectId) {
 
+  if (_objectId < 0)
+    return;
+
+  CameraObject* object;
+  if (!PluginFunctions::getObject(_objectId, object))
+    return;
+
+  if (showFrustumAction_)
+    showFrustumAction_->setChecked(object->cameraNode()->showFrustum());
 }
 
 void TypeCameraPlugin::contextMenuClicked(QAction* _contextAction) {

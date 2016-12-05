@@ -193,7 +193,9 @@ bool GLPrimitive::checkVBO()
 
     delete[] vboData_;
     vboData_ = 0;
-  } else if (vboDataInvalid_) {
+  }
+
+  if (vboDataInvalid_) {
     updateVBOData();
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, bufSize, vboData_, GL_STATIC_DRAW);
@@ -225,6 +227,25 @@ void GLPrimitive::draw_primitive()
     glDrawArrays(GL_LINES, 0, numLines_ * 2);
 
   unBindVBO();
+}
+
+//------------------------------------------------------------------------
+
+void GLPrimitive::draw_primitive(GLSL::Program* _program)
+{
+  if (checkVBO())
+  {
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+    vertexDecl_.activateShaderPipeline(_program);
+
+    if (numTris_)
+      glDrawArrays(GL_TRIANGLES, 0, numTris_ * 3);
+    else
+      glDrawArrays(GL_LINES, 0, numLines_ * 2);
+
+    vertexDecl_.deactivateShaderPipeline(_program);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
 }
 
 //------------------------------------------------------------------------

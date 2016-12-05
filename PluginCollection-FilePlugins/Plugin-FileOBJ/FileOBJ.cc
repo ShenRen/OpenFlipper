@@ -1048,9 +1048,9 @@ void FileOBJPlugin::readOBJFile(QByteArray& _bufferedFile, QString _filename, OB
 
       // Read knots at the beginning before the indices
       if ( keyWrd == QLatin1String("curv") ) {
-        double trash;
-        trash = getDouble(lineData);
-        trash = getDouble(lineData);
+        // skip next two doubles in stream
+        getDouble(lineData);
+        getDouble(lineData);
       }
 
 
@@ -1576,9 +1576,9 @@ void FileOBJPlugin::checkTypes(QByteArray& _bufferedFile, QString _filename, OBJ
 
       // Read knots at the beginning before the indices
       if ( keyWrd == QLatin1String("curv") ) {
-        double trash;
-        trash = getDouble(lineData);
-        trash = getDouble(lineData);
+        // skip next two doubles in stream
+        getDouble(lineData);
+        getDouble(lineData);
       }
 
       // work on the line until nothing left to read

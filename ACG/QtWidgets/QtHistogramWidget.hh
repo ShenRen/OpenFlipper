@@ -37,77 +37,52 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
  *                                                                           *
- \*===========================================================================*/
+\*===========================================================================*/
 
-/*===========================================================================*\
- *                                                                           *
- *   $Revision$                                                      *
- *   $Author$                                                      *
- *   $Date$                   *
- *                                                                           *
- \*===========================================================================*/
+#ifndef QTHISTOGRAM_HH
+#define QTHISTOGRAM_HH
 
-//=============================================================================
-//
-//  CLASS ColorCoder
-//
-//=============================================================================
+// Based on ValenceHistogramWidget by hc
 
-#ifndef ACG_COLORCODER_HH
-#define ACG_COLORCODER_HH
+#include <memory>
 
-//== INCLUDES =================================================================
-
-#include <ACG/Math/VectorT.hh>
-#include <ACG/Config/ACGDefines.hh>
-#include <QColor>
-#include "IColorCoder.hh"
-
-//== NAMESPACES ===============================================================
+#include <QWidget>
+#include "../Config/ACGDefines.hh"
+#include "../Utils/Histogram.hh"
+#include "../Utils/ColorCoder.hh"
 
 namespace ACG {
+namespace QtWidgets {
 
-//== CLASS DEFINITION =========================================================
+class ACGDLLEXPORT QtHistogramWidget : public QWidget {
+    Q_OBJECT
 
-/** \brief Class for generating nice colors for doubles
- *
- *
- */
-class ACGDLLEXPORT ColorCoder : public IColorCoder {
-public:
+    public:
+        explicit QtHistogramWidget(QWidget *parent);
+        ~QtHistogramWidget();
 
-  /// Default constructor.
-  ColorCoder(float _min = 0.0, float _max = 1.0, bool _signed = false);
+        QtHistogramWidget(const QtHistogramWidget &other) = delete;
+        QtHistogramWidget& operator=(const QtHistogramWidget &other) = delete;
 
-  /// set the color coding range for unsigned coding
-  void set_range(float _min, float _max, bool _signed);
+        void setHistogram(std::unique_ptr<Histogram> histogram);
+        void setColorCoder(std::unique_ptr<IColorCoder> color_coder);
 
-  /// color coding
-  ACG::Vec4uc color4(float _v) const override;
+    protected:
+        void paintEvent(QPaintEvent *event);
+        QColor getColor(double val); // val in [0..1]
 
-  /// color coding
-  ACG::Vec4f color_float4(float _v) const override;
-\
-  /// min scalar value
-  float min() const override;
+        std::unique_ptr<Histogram> histogram_ = nullptr;
+        double label_distance_ = 100;
 
-  /// max scalar value
-  float max() const override;
+        QColor color_; // ignored if we have a color coder
+        std::unique_ptr<IColorCoder> color_coder_ = nullptr;
 
-private:
-
-  ACG::Vec4uc color_unsigned(float _v) const;
-  ACG::Vec4uc color_signed(float _v) const;
-
-  float val0_, val1_, val2_, val3_, val4_;
-  bool signed_mode_;
 };
 
 
+} // namespace QtWidgets
+} // namespace ACG
 
-//=============================================================================
-}// namespace ACG
-//=============================================================================
-#endif // ACG_COLORCODER_HH defined
-//=============================================================================
 
+
+#endif // QTHISTOGRAM_HH

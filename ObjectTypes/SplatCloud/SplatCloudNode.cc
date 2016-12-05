@@ -98,9 +98,9 @@ SplatCloudNode::SplatCloudNode( const SplatCloud &_splatCloud, BaseNode *_parent
   defaultColor_       ( Color    (0,0,0) ), 
   defaultNormal_      ( Normal   (0,0,0) ), 
   defaultPointsize_   ( Pointsize(  0.0) ), 
-  splatsDrawMode_     ( DrawModes::NONE ), 
-  dotsDrawMode_       ( DrawModes::NONE ), 
-  pointsDrawMode_     ( DrawModes::NONE ), 
+  splatsDrawMode_     ( DrawModes::addDrawMode( "Splats" ) ),
+  dotsDrawMode_       ( DrawModes::addDrawMode( "Dots"   ) ),
+  pointsDrawMode_     ( DrawModes::addDrawMode( "Points" ) ),
   pickingBaseIndex_   ( 0 ), 
   pickDrawMode_       ( DrawModes::NONE ), // TODO: hack, see enterPick()
   vboGlId_            ( 0 ), 
@@ -116,11 +116,6 @@ SplatCloudNode::SplatCloudNode( const SplatCloud &_splatCloud, BaseNode *_parent
   pointsizeScale_     ( 1.0f ),
   backfaceCulling_    ( false )
 {
-  // add (possibly) new drawmodes
-  pointsDrawMode_ = DrawModes::addDrawMode( "Points" );
-  dotsDrawMode_   = DrawModes::addDrawMode( "Dots"   );
-  splatsDrawMode_ = DrawModes::addDrawMode( "Splats" );
-
   // create a new VBO (will be invalid and rebuilt the next time drawn (or picked))
   createVBO();
 }

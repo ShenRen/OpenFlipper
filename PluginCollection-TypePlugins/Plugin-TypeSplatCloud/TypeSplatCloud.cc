@@ -569,19 +569,6 @@ void TypeSplatCloudPlugin::addCameraObjects( SplatCloudObject *_splatCloudObject
           CameraNode *cameraNode = cameraObject->cameraNode();
           if( cameraNode != 0 )
           {
-            // set matrix
-            ACG::GLMatrixd matrix;
-            {
-              const SplatCloud_Projection &proj = camera.projection_;
-              matrix(0,0) = proj.r_[0][0]; matrix(0,1) = proj.r_[1][0]; matrix(0,2) = proj.r_[2][0];
-              matrix(1,0) = proj.r_[0][1]; matrix(1,1) = proj.r_[1][1]; matrix(1,2) = proj.r_[2][1];
-              matrix(2,0) = proj.r_[0][2]; matrix(2,1) = proj.r_[1][2]; matrix(2,2) = proj.r_[2][2];
-              matrix(0,3) = -(proj.r_[0][0]*proj.t_[0] + proj.r_[1][0]*proj.t_[1] + proj.r_[2][0]*proj.t_[2]);
-              matrix(1,3) = -(proj.r_[0][1]*proj.t_[0] + proj.r_[1][1]*proj.t_[1] + proj.r_[2][1]*proj.t_[2]);
-              matrix(2,3) = -(proj.r_[0][2]*proj.t_[0] + proj.r_[1][2]*proj.t_[1] + proj.r_[2][2]*proj.t_[2]);
-              matrix(3,0) = 0.0; matrix(3,1) = 0.0; matrix(3,2) = 0.0; matrix(3,3) = 1.0;
-            }
-
             // set resolution
             unsigned int width  = camera.imageWidth_;
             unsigned int height = camera.imageHeight_;
@@ -591,9 +578,25 @@ void TypeSplatCloudPlugin::addCameraObjects( SplatCloudObject *_splatCloudObject
               height = 1;
             }
 
+            // set matrix
+            ACG::GLMatrixd matrixView, matrixProj;
+            {
+              const SplatCloud_Projection &proj = camera.projection_;
+              matrixView(0,0) = proj.r_[0][0]; matrixView(0,1) = proj.r_[1][0]; matrixView(0,2) = proj.r_[2][0];
+              matrixView(1,0) = proj.r_[0][1]; matrixView(1,1) = proj.r_[1][1]; matrixView(1,2) = proj.r_[2][1];
+              matrixView(2,0) = proj.r_[0][2]; matrixView(2,1) = proj.r_[1][2]; matrixView(2,2) = proj.r_[2][2];
+              matrixView(0,3) = -(proj.r_[0][0]*proj.t_[0] + proj.r_[1][0]*proj.t_[1] + proj.r_[2][0]*proj.t_[2]);
+              matrixView(1,3) = -(proj.r_[0][1]*proj.t_[0] + proj.r_[1][1]*proj.t_[1] + proj.r_[2][1]*proj.t_[2]);
+              matrixView(2,3) = -(proj.r_[0][2]*proj.t_[0] + proj.r_[1][2]*proj.t_[1] + proj.r_[2][2]*proj.t_[2]);
+              matrixView(3,0) = 0.0; matrixView(3,1) = 0.0; matrixView(3,2) = 0.0; matrixView(3,3) = 1.0;
+
+              matrixProj.identity();
+              matrixProj.perspective(proj.f_, double(width) / double(height), proj.k1_, proj.k2_);
+            }
+
             // set camera parameters
-            cameraNode->setModelView( matrix );
-            cameraNode->setSize( width, height );
+            cameraNode->setModelView( matrixView );
+            cameraNode->setProjection( matrixProj );
 
             // emit signal that the camera-object has to be updated
             emit updatedObject( camera.objectId_, UPDATE_ALL );

@@ -59,6 +59,7 @@
 #include <ACG/GL/acg_glew.hh>
 #include "GLState.hh"
 
+#include <OpenMesh/Core/Utils/vector_cast.hh>
 #include <cstring>
 
 
@@ -85,7 +86,7 @@ const float    GLState::default_shininess(100.f);
 
 bool GLState::depthFuncLock_ = false;
 bool GLState::depthRangeLock_ = false;
-bool GLState::blendFuncSeparateLock_[2] = { false };
+bool GLState::blendFuncSeparateLock_[] = { false };
 bool GLState::blendEquationLock_ = false;
 bool GLState::blendColorLock_ = false;
 bool GLState::alphaFuncLock_ = false;
@@ -100,9 +101,9 @@ bool GLState::programLock_ = false;
 
 std::deque <GLStateContext> GLState::stateStack_;
 std::bitset<0xFFFF+1> GLState::glStateLock_;
-int GLState::glBufferTargetLock_[4] = {0};
-int GLState::glTextureStageLock_[16] = {0};
-bool GLState::framebufferLock_[2] = {false};
+int GLState::glBufferTargetLock_[] = {0};
+int GLState::glTextureStageLock_[] = {0};
+bool GLState::framebufferLock_[] = {false};
 int GLState::maxTextureCoords_ = 0;
 int GLState::maxCombinedTextureImageUnits_ = 0;
 int GLState::maxDrawBuffers_ = 0;
@@ -1070,6 +1071,19 @@ Vec4uc GLState::pick_get_name_color (size_t _idx)
 
 //-----------------------------------------------------------------------------
 
+Vec4f GLState::pick_get_name_color_norm (unsigned int _idx)
+{
+  Vec4f rv(0.0f, 0.0f, 0.0f, 0.0f);
+  if (colorPicking_)
+  {
+    Vec4uc color_abs = colorStack_.getIndexColor(_idx);
+    rv = OpenMesh::vector_cast<Vec4f, Vec4uc>(color_abs) / 255.0f;
+  }
+  return rv;
+}
+
+//-----------------------------------------------------------------------------
+
 void GLState::pick_push_name (size_t _idx)
 {
   colorStack_.pushIndex (_idx);
@@ -1128,7 +1142,7 @@ bool GLState::color_picking () const
 
 //-----------------------------------------------------------------------------
 
-GLenum GLState::glStateCaps[95] = {GL_ALPHA_TEST,
+GLenum GLState::glStateCaps[] = {GL_ALPHA_TEST,
 GL_AUTO_NORMAL,
 GL_MAP2_VERTEX_3,
 GL_MAP2_VERTEX_4,
@@ -1799,7 +1813,7 @@ void GLState::bindBuffer(GLenum _target, GLuint _buffer)
     if (stateStack_.back().glBufferTargetState_[idx] != _buffer)
 #endif
     {
-      glBindBufferARB(_target, _buffer);
+      glBindBuffer(_target, _buffer);
       stateStack_.back().glBufferTargetState_[idx] = _buffer;
     }
   }

@@ -82,7 +82,7 @@ void SkeletonTransform::scaleSkeleton(double _factor, Skeleton::Pose* _pose) {
   // if given pose is refPose
   if ( _pose == refPose_){
     //scale bones in the animations
-    for (unsigned int a=0; a < skeleton_.animationCount(); a++)
+    for (size_t a=0; a < skeleton_.animationCount(); a++)
       for (unsigned int iFrame = 0; iFrame < skeleton_.animation(a)->frameCount(); iFrame++){
 
           Skeleton::Pose* pose = skeleton_.animation(a)->pose( iFrame );

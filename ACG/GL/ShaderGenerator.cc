@@ -2336,12 +2336,24 @@ void ShaderProgGenerator::scanShaderTemplate(QStringList& _templateSrc, QString 
       QByteArray lineBytes = trimmedLine.toUtf8();
 
       int templateVersion = 0;
-      if (sscanf(lineBytes.constData(), "#version %d", &templateVersion) == 1)
+      if (trimmedLine.startsWith("#version "))
       {
-        desc_.version = std::max(templateVersion, desc_.version);
+        QStringList tokens = trimmedLine.split(' ');
 
-        // remove version line from template since this is added later in the build functions
-        it = _templateSrc.erase(it);
+        if (tokens.size() > 1)
+        {
+          // templateVersion
+          bool convOk = false;
+          templateVersion = tokens.at(1).toInt(&convOk);
+
+          if (convOk)
+          {
+            desc_.version = std::max(templateVersion, desc_.version);
+
+            // remove version line from template since this is added later in the build functions
+            it = _templateSrc.erase(it);
+          }
+        }
       }
       // scan layout() directive
       else if (trimmedLine.startsWith("layout(") || trimmedLine.startsWith("layout ("))

@@ -27,5 +27,4 @@ if(OPENVOLUMEMESH_FOUND)
   endif()
 endif()
 
-
 openflipper_plugin (INSTALLDATA Icons DIRS OpenMesh OpenVolumeMesh Widgets DEPS OpenMesh OpenVolumeMesh)

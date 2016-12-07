@@ -53,6 +53,12 @@
 
 #include "OVMPropertyVisualizerDouble.hh"
 
+#include <ACG/Utils/IColorCoder.hh>
+#include <ACG/Utils/LinearTwoColorCoder.hh>
+#include <ACG/Utils/ColorConversion.hh>
+
+#include <QObject>
+
 template <typename MeshT>
 OVMPropertyVisualizerDouble<MeshT>::OVMPropertyVisualizerDouble(MeshT* _mesh, int objectID, PropertyInfo _propertyInfo)
     : OVMPropertyVisualizer<MeshT>(_mesh, objectID, _propertyInfo)
@@ -61,6 +67,10 @@ OVMPropertyVisualizerDouble<MeshT>::OVMPropertyVisualizerDouble(MeshT* _mesh, in
     DoubleWidget* w = new DoubleWidget();
     w->paramDouble->setTitle(QString("Double Parameters of ").append(PropertyVisualizer::propertyInfo.propName().c_str()));
     PropertyVisualizer::widget = w;
+
+    this->connect(w->computeHistogramButton, &QPushButton::clicked,
+                  [this, w](){this->template showHistogram<double>(w->histogram);});
+
 }
 
 template <typename MeshT>
@@ -70,14 +80,9 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
     if (!prop) return;
 
     DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
-    ACG::Vec4f colorMin, colorMax;
+    ACG::Vec4f colorMin = ACG::to_Vec4f(doubleWidget->doubleMin->color());
 
-    colorMin = OVMPropertyVisualizer<MeshT>::convertColor(doubleWidget->doubleMin->color());
-    colorMax = OVMPropertyVisualizer<MeshT>::convertColor(doubleWidget->doubleMax->color());
-
-    // color coder in [0,1]
-    ACG::ColorCoder cc;
-
+    auto cc = doubleWidget->buildColorCoder();
     double min, max;
 
     if ( doubleWidget->doubleAbsolute->isChecked() ){
@@ -133,13 +138,7 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
 
             double t = (value-min)/range;
 
-            ACG::Vec4f color;
-
-            if( doubleWidget->doubleColorCoder->isChecked())
-                color = cc.color_float4(t);
-            else {
-                color = (colorMin)*(1.0-t) + (colorMax)*t;
-            }
+            ACG::Vec4f color = cc->color_float4(t);
 
             if (doubleWidget->doubleMapOutsideRange->isChecked()) {
               if (prop[*e_it] < min || prop[*e_it] > max)
@@ -265,6 +264,13 @@ void OVMPropertyVisualizerDouble<MeshT>::setVertexPropertyFromText(unsigned int 
     OpenVolumeMesh::VertexHandle vh(index);
 
     prop[vh] = this->strToDouble(text);
+}
+
+template <typename MeshT>
+std::unique_ptr<ACG::IColorCoder> OVMPropertyVisualizerDouble<MeshT>::buildColorCoder()
+{
+    DoubleWidget* doubleWidget = static_cast<DoubleWidget*>(PropertyVisualizer::widget);
+    return doubleWidget->buildColorCoder();
 }
 
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

@@ -153,7 +153,6 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
 
     int id = -1;
     bool hexMesh = false;
-    bool tetMesh = false;
 
     if(!OpenFlipper::Options::nogui() && typeCheck_->currentIndex() == 0) {
         hexMesh = fileManager_.isHexahedralMesh(_filename.toStdString());
@@ -162,6 +161,7 @@ int FileOpenVolumeMeshPlugin::loadObject(QString _filename) {
     }
 
 #ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+    bool tetMesh = false;
     if(!OpenFlipper::Options::nogui() && typeCheck_->currentIndex() == 0) {
         tetMesh = fileManager_.isTetrahedralMesh(_filename.toStdString());
     } else if (!OpenFlipper::Options::nogui() && typeCheck_->currentIndex() == 3) {

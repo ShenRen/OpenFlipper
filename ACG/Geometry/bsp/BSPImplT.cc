@@ -63,7 +63,7 @@
 
 #include "BSPImplT.hh"
 #include <cfloat>
-
+#include <cmath>
 
 //== CLASS DEFINITION =========================================================
 #include <vector>
@@ -179,6 +179,16 @@ nearestRaycollision(const Point& _p, const Point& _r) const {
 
   return RayCollision(data.hit_handles);
 }
+
+template<class BSPCore>
+template<class Callback>
+void
+BSPImplT<BSPCore>::
+intersectBall(const Point &_c, Scalar _r, Callback _callback) const
+{
+    _intersect_ball(*(this->root_), _c, _r, _callback);
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -309,8 +319,42 @@ _raycollision_nearest_directional(Node* _node, RayCollisionData& _data) const
 		if ( second_node && ACG::Geometry::axisAlignedBBIntersection( _data.ref, _data.ray, second_node->bb_min, second_node->bb_max, tmin, tmax) && (tmin < dist) ) {
 			_raycollision_nearest_directional(second_node, _data);
 		}
-	}
+  }
+}
+template<class BSPCore>
+template<class Callback>
+void BSPImplT<BSPCore>::
+_intersect_ball(const Node &_node,
+                const Point &_c,
+                Scalar _r,
+                Callback _callback) const
+{
+    // terminal node
+    if (!_node.left_child_)
+    {
+        const double r_sqr = _r * _r;
+        for (const auto &fh: _node) {
+            const double dist = this->traits_.sqrdist(fh, _c);
+            if (dist < r_sqr) {
+                _callback(fh);
+            }
+        }
+    }
+    else // non-terminal node
+    {
+        const Scalar dist = _node.plane_.distance(_c);
+        const Node &left = *_node.left_child_;
+        const Node &right = *_node.right_child_;
+
+        if (dist > -_r){
+            _intersect_ball(left, _c, _r, _callback);
+        }
+        if (dist < _r) {
+            _intersect_ball(right, _c, _r, _callback);
+        }
+    }
 }
 
 
 //=============================================================================
+

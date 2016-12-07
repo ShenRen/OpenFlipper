@@ -348,20 +348,6 @@ void OMPropertyVisualizer<MeshT>::clear()
         clearVertexProp();
 }
 
-
-template <typename MeshT>
-OpenMesh::Vec4f OMPropertyVisualizer<MeshT>::convertColor(const QColor _color){
-
-  OpenMesh::Vec4f color;
-
-  color[0] = _color.redF();
-  color[1] = _color.greenF();
-  color[2] = _color.blueF();
-  color[3] = _color.alphaF();
-
-  return color;
-}
-
 template <typename MeshT>
 void OMPropertyVisualizer<MeshT>::visualizeFaceProp(bool /*_setDrawMode*/)
 {
@@ -436,4 +422,55 @@ template <typename MeshT>
 void OMPropertyVisualizer<MeshT>::setVertexPropertyFromText(unsigned int index, QString text)
 {
     emit log(LOGERR, "Setting vertex property not implemented");
+}
+
+
+template<typename MeshT>
+template<typename Type>
+void OMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget) {
+    using PV = OMPropertyVisualizer<MeshT>;
+    const std::string &prop_name = PV::propertyInfo.propName();
+
+    // ugly repetition ahead. In C++14, we could use a generic lambda,
+    // in C++11 the cleanest solution would be to add another templated member function - not worth it.
+    switch (PropertyVisualizer::propertyInfo.entityType()) {
+    case PropertyInfo::EF_FACE:
+    {
+        OpenMesh::FPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    case PropertyInfo::EF_EDGE:
+    {
+        OpenMesh::EPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    case PropertyInfo::EF_HALFEDGE:
+    {
+        OpenMesh::HPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    case PropertyInfo::EF_VERTEX:
+    {
+        OpenMesh::VPropHandleT<Type> prop_handle;
+        if (!PV::mesh->get_property_handle(prop_handle, prop_name)) break;
+        PropertyVisualizer::template showHistogramT<Type>(
+                    histogramWidget,
+                    PV::mesh->property(prop_handle).data_vector());
+        break;
+    }
+    default:
+        assert(false);
+    }
 }

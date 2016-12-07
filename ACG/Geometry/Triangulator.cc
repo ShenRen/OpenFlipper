@@ -61,7 +61,7 @@ namespace ACG {
 Triangulator::Triangulator(const std::vector<Vec3f>& _pos)
   : polySize_(_pos.size()), numRemaningVertices_(_pos.size()), numTris_(0), 
   numReflexVertices_(0),
-  status_(-1), convex_(false)
+  ok_(false), convex_(false)
 {
   if (polySize_ < 3)
     return;
@@ -77,7 +77,7 @@ Triangulator::Triangulator(const std::vector<Vec3f>& _pos)
 
     numRemaningVertices_ = 0;
     convex_ = true;
-    status_ = 0;
+    ok_ = true;
   }
   else
   {
@@ -89,9 +89,9 @@ Triangulator::Triangulator(const std::vector<Vec3f>& _pos)
 
     Vec3f n(0.0f, 0.0f, 0.0f);
 
-    for (int i = 0; i < polySize_; ++i)
+    for (size_t i = 0; i < polySize_; ++i)
     {
-      int next = (i + 1) % polySize_;
+      const size_t next = (i + 1) % polySize_;
 
       Vec3f a = _pos[i] - _pos[next];
       Vec3f b = _pos[i] + _pos[next];
@@ -124,7 +124,7 @@ Triangulator::Triangulator(const std::vector<Vec3f>& _pos)
     axis[1] = axis[2] % axis[0];
 
 
-    for (int i = 0; i < polySize_; ++i)
+    for (size_t i = 0; i < polySize_; ++i)
     {
       // project onto polygon plane
       pos_[i][0] = axis[0] | _pos[i];
@@ -135,7 +135,7 @@ Triangulator::Triangulator(const std::vector<Vec3f>& _pos)
     // create triangle fans if there is at most one concave vertex
     int reflexVertexID = 0;
 
-    for (int i = 0; i < polySize_; ++i)
+    for (size_t i = 0; i < polySize_; ++i)
     {
       // test vertex (i+1)
       if (isReflexVertex(pos_[i], pos_[(i + 1) % polySize_], pos_[(i + 2) % polySize_]))
@@ -154,9 +154,9 @@ Triangulator::Triangulator(const std::vector<Vec3f>& _pos)
       numTris_ = polySize_ - 2;
       tris_.resize(numTris_ * 3);
       numRemaningVertices_ = 0;
-      status_ = 0;
+      ok_ = true;
 
-      for (int i = 0; i < numTris_; ++i)
+      for (size_t i = 0; i < numTris_; ++i)
       {
         tris_[i * 3] = reflexVertexID;
         tris_[i * 3 + 1] = (reflexVertexID + i + 1) % polySize_;
@@ -282,10 +282,10 @@ void Triangulator::initVertexList()
 {
   vertices_.resize(polySize_);
   reflexVertices_.clear();
-  for (int i = 0; i < polySize_; ++i)
+  for (size_t i = 0; i < polySize_; ++i)
   {
-    int p = (i + polySize_ - 1) % polySize_;
-    int n = (i + 1) % polySize_;
+    size_t p = (i + polySize_ - 1) % polySize_;
+    size_t n = (i + 1) % polySize_;
 
     vertices_[i] = RingVertex(i, isReflexVertex(pos_[p], pos_[i], pos_[n]), pos_[i], &vertices_[p], &vertices_[n]);
 
@@ -302,7 +302,7 @@ int Triangulator::earClippingN3()
   // O(n^3)
 
   numTris_ = 0;
-  status_ = 0;
+  ok_ = true;
 
   initVertexList();
 
@@ -386,13 +386,13 @@ int Triangulator::earClippingN2()
   // O(n^2)
 
   numTris_ = 0;
-  status_ = 0;
+  ok_      = true;
 
   initVertexList();
 
   // triangulate
 
-  int numTries = 0; // # checked vertices per iteration that aren't ears
+  size_t numTries = 0; // # checked vertices per iteration that aren't ears
   numRemaningVertices_ = polySize_; // size of currently remaining polygon
   int numIterations = 0;
 
@@ -439,7 +439,7 @@ int Triangulator::earClippingN2()
       addEar(curVertex);
       numTries = 0;
 
-      status_ = 1;
+      ok_ = false;
     }
 
     curVertex = curVertex->next;

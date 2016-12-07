@@ -109,7 +109,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
   // ID
   info_->id->setText( locale.toString(_objectId) );
   // Joints
-  info_->joints->setText( locale.toString( _skeleton->jointCount() ) );
+  info_->joints->setText( QString::number( _skeleton->jointCount() ) );
 
 
   // animation list with animation names and the frame count
@@ -117,7 +117,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
   QString animationInfo;
   unsigned int aniCount = _skeleton->animationCount();
 
-  for (unsigned int i = 0; i < aniCount; ++i) {
+  for (size_t i = 0; i < aniCount; ++i) {
     std::string aniName = _skeleton->animationName(i);
     animationInfo = "Name: " + QString(aniName.c_str())
                      + " : Frames: " + locale.toString(_skeleton->animation(aniName)->frameCount());
@@ -132,7 +132,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
 
   // Check if we have a parent joint
   if ( _skeleton->joint(_index)->parent() !=0 ) {
-    adjacentHandles = adjacentHandles + "Parent: " + locale.toString( _skeleton->joint(_index)->parent()->id()  ) + " ;";
+    adjacentHandles = adjacentHandles + "Parent: " + QString::number( _skeleton->joint(_index)->parent()->id()  ) + " ;";
   }
 
   // Check for children
@@ -143,7 +143,7 @@ void InfoSkeletonObjectPlugin::printSkeletonInfo( Skeleton* _skeleton,  unsigned
     for ( Skeleton::Joint::ChildIter it = _skeleton->joint(_index)->begin(); it != _skeleton->joint(_index)->end(); ++it) {
         Skeleton::Joint *joint = *it;
 
-        adjacentHandles = adjacentHandles + " " + locale.toString(joint->id());
+        adjacentHandles = adjacentHandles + " " + QString::number(joint->id());
       }
   }
 
@@ -211,7 +211,7 @@ void InfoSkeletonObjectPlugin::slotInformationRequested(const QPoint _clickedPoi
 
     ACG::SceneGraph::PickTarget target = ACG::SceneGraph::PICK_ANYTHING;
 
-    unsigned int   node_idx, target_idx;
+    size_t         node_idx, target_idx;
     ACG::Vec3d     hit_point;
 
     if (PluginFunctions::scenegraphPick(target, _clickedPoint, node_idx, target_idx, &hit_point)) {

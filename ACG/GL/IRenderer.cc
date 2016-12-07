@@ -448,6 +448,9 @@ class ScenegraphTraversalStackEl {
 
 void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph::DrawModes::DrawMode _drawMode, ACG::SceneGraph::BaseNode &_node, const ACG::SceneGraph::Material &_mat )
 {
+    renderObjectSource_.clear();
+    overlayObjectSource_.clear();
+
     if (_node.status() == ACG::SceneGraph::BaseNode::HideSubtree)
         return;
 
@@ -479,6 +482,10 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
 
             if (cur.node->status() != ACG::SceneGraph::BaseNode::HideNode)
                 cur.node->getRenderObjects(this, *_glState, nodeDM, cur.material);
+
+            // keep track of which node added objects
+            size_t numAddedObjects = renderObjects_.size() - renderObjectSource_.size();
+            renderObjectSource_.insert(renderObjectSource_.end(), numAddedObjects, cur.node);
 
             // Process children?
             if (cur.node->status() != ACG::SceneGraph::BaseNode::HideChildren) {
@@ -574,11 +581,21 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
   lineGL42Objects_.clear();
   lineGL42Objects_.reserve(numLineObjects);
 
+
+  sortListObjects_.clear();
+  sortListObjects_.reserve(numRenderObjects);
+
+  sortListOverlays_.clear();
+  sortListOverlays_.reserve(numOverlayObjects);
+
   // init sorted objects array
   for (size_t i = 0; i < renderObjects_.size(); ++i)
   {
     if (renderObjects_[i].overlay)
+    {
       overlayObjects_.push_back(&renderObjects_[i]);
+      sortListOverlays_.push_back(i);
+    }
     else if (enableLineThicknessGL42_ && numLineObjects && renderObjects_[i].isDefaultLineObject())
     {
       renderObjects_[i].shaderDesc.geometryTemplateFile = "Wireframe/gl42/geometry.tpl";
@@ -591,7 +608,10 @@ void IRenderer::prepareRenderingPipeline(ACG::GLState* _glState, ACG::SceneGraph
       lineGL42Objects_.push_back(&renderObjects_[i]);
     }
     else
+    {
       sortedObjects_.push_back(&renderObjects_[i]);
+      sortListObjects_.push_back(i);
+    }
   }
 
   sortRenderObjects();
@@ -801,16 +821,50 @@ void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
 
 namespace {
 struct RenderObjectComparator {
-    bool operator() (ACG::RenderObject *a, ACG::RenderObject * b) {
-        return (a->priority < b->priority);
+    RenderObjectComparator(const std::vector<ACG::RenderObject>& _vec) : vec_(_vec) {
     }
+
+    bool operator() (int a, int b) {
+        return (vec_[a].priority < vec_[b].priority);
+    }
+
+    const std::vector<ACG::RenderObject>& vec_;
 };
 }
 
 void IRenderer::sortRenderObjects()
 {
-  std::sort(sortedObjects_.begin(), sortedObjects_.end(), RenderObjectComparator());
-  std::sort(overlayObjects_.begin(), overlayObjects_.end(), RenderObjectComparator());
+  size_t numObjs = sortListObjects_.size();
+  size_t numOverlays = sortListOverlays_.size();
+
+  RenderObjectComparator cmpOp(renderObjects_);
+
+  std::sort(sortListObjects_.begin(), sortListObjects_.end(), cmpOp);
+  std::sort(sortListOverlays_.begin(), sortListOverlays_.end(), cmpOp);
+
+  // apply sorting list
+  std::vector<ACG::SceneGraph::BaseNode*> temp;
+  renderObjectSource_.swap(temp);
+
+
+  renderObjectSource_.resize(numObjs, 0);
+  overlayObjectSource_.resize(numOverlays, 0);
+
+  for (size_t i = 0; i < numObjs; ++i)
+  {
+    int objID = sortListObjects_[i];
+    sortedObjects_[i] = &renderObjects_[objID];
+
+    renderObjectSource_[i] = temp[objID];
+  }
+
+  for (size_t i = 0; i < numOverlays; ++i)
+  {
+    int objID = sortListOverlays_[i];
+    overlayObjects_[i] = &renderObjects_[objID];
+
+    overlayObjectSource_[i] = temp[objID];
+  }
 }
 
 
@@ -1163,6 +1217,18 @@ ACG::RenderObject* IRenderer::getOverlayRenderObject( int i )
   return overlayObjects_[i];
 }
 
+
+ACG::SceneGraph::BaseNode* IRenderer::getRenderObjectNode( int i )
+{
+  return renderObjectSource_[i];
+}
+
+ACG::SceneGraph::BaseNode* IRenderer::getOverlayRenderObjectNode( int i )
+{
+  return overlayObjectSource_[i];
+}
+
+
 ACG::RenderObject* IRenderer::getLineGL42RenderObject( int i )
 {
   if (lineGL42Objects_.empty())
@@ -1476,8 +1542,8 @@ void IRenderer::renderLineThicknessGL42()
     Texture2D* lineColorImg2D = 0;
     TextureBuffer* lineColorImgBuf = 0;
 
-    GLsizei w = prevViewport_[2], h = prevViewport_[3];
-    GLsizei lineBPP = useIntegerTexture ? 4 : 16; // bytes per pixel
+    size_t w = static_cast<size_t>(prevViewport_[2]), h = static_cast<size_t>(prevViewport_[3]);
+    size_t lineBPP = static_cast<size_t>(useIntegerTexture ? 4 : 16); // bytes per pixel
 
 
     if (useBufferTexture)
@@ -1506,7 +1572,7 @@ void IRenderer::renderLineThicknessGL42()
       }
 
       // resize
-      if (lineColorImg2D->getWidth() != w || lineColorImg2D->getHeight() != h)
+      if (lineColorImg2D->getWidth() != static_cast<int>(w) || lineColorImg2D->getHeight() != static_cast<int>(h))
         lineColorImg2D->setData(0,
           useIntegerTexture ? GL_R32UI : GL_RGBA32F,
           w, h, 

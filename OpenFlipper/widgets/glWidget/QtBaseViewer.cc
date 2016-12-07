@@ -1219,12 +1219,12 @@ bool glViewer::decodeView(const QString& _view,
       // Parse the components
       // first, get the projection and the modelview matrices
       //*********************************************************
-      for (std::size_t i = 0; i < 4; ++i)
+      for (int i = 0; i < 4; ++i)
       {
-        for (std::size_t j = 0; j < 4; ++j)
+        for (int j = 0; j < 4; ++j)
         {
           m(i,j) = split[i*4 + j].toDouble();
-          p(i,j) = split[i*4 + j +16].toDouble();
+          p(i,j) = split[i*4 + j +16 ].toDouble();
         }
       }
 
@@ -1262,9 +1262,9 @@ bool glViewer::decodeView(const QString& _view,
       // Parse the components
       // first, get the projection and the modelview matrices
       //*********************************************************
-      for (std::size_t i = 0; i < 4; ++i)
+      for (int i = 0; i < 4; ++i)
       {
-        for (std::size_t j = 0; j < 4; ++j)
+        for (int j = 0; j < 4; ++j)
         {
           m(i,j) = split[i*4 + j].toDouble();
           p(i,j) = split[i*4 + j +16].toDouble();
@@ -2482,8 +2482,8 @@ void glViewer::updateCursorPosition (QPointF _scenePos)
 
   ACG::Vec3d tmp;
 
-  unsigned int nodeIdx   = 0;
-  unsigned int targetIdx = 0;
+  size_t nodeIdx   = 0;
+  size_t targetIdx = 0;
 
 
   // ignore cursor if we are outside of our window

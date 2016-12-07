@@ -100,7 +100,7 @@ JointT<PointT>::~JointT()
  * not to change, unless joints are deleted from the skeleton.
  */
 template <class PointT>
-inline unsigned int JointT<PointT>::id()
+inline size_t JointT<PointT>::id() const
 {
   return id_;
 }
@@ -108,7 +108,7 @@ inline unsigned int JointT<PointT>::id()
 //-----------------------------------------------------------------------------------------------------
 
 template <class PointT>
-inline void JointT<PointT>::setId(unsigned int _id)
+inline void JointT<PointT>::setId(const size_t _id)
 {
   id_ = _id;
 }
@@ -167,9 +167,9 @@ inline JointT<PointT> *JointT<PointT>::parent()
 //-----------------------------------------------------------------------------------------------------
 
 template <class PointT>
-inline bool JointT<PointT>::isRoot()
+inline bool JointT<PointT>::isRoot() const
 {
-  return parent_ == NULL;
+  return (parent_ == NULL);
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ inline typename JointT<PointT>::ChildIter JointT<PointT>::end()
  * @brief Returns the number of children
  */
 template<typename PointT>
-inline size_t JointT<PointT>::size()
+inline size_t JointT<PointT>::size() const
 {
   return children_.size();
 }
@@ -230,7 +230,7 @@ inline JointT<PointT> *JointT<PointT>::child(size_t _index)
  *
  */
 template <class PointT>
-inline bool JointT<PointT>::selected()
+inline bool JointT<PointT>::selected() const
 {
   return selected_;
 }
@@ -250,14 +250,14 @@ inline void JointT<PointT>::setSelected(bool _selected)
 //-----------------------------------------------------------------------------------------------------
 
 template<typename PointT>
-inline std::string JointT<PointT>::name() {
+inline std::string JointT<PointT>::name() const {
   return name_;
 }
 
 //-----------------------------------------------------------------------------------------------------
 
 template<typename PointT>
-inline void JointT<PointT>::setName(std::string _name) {
+inline void JointT<PointT>::setName(const std::string& _name) {
   name_ = _name;
 }
 

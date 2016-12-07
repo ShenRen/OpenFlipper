@@ -83,6 +83,12 @@ namespace GLSL {
     clear();
   }
 
+
+  UniformPool& UniformPool::operator =(const UniformPool& _other) {
+    addPool(_other);
+    return *this;
+  }
+
   void UniformPool::clear() {
     // Delete the uniforms in that pool
     for (UniformListIt it = pool_.begin(); it != pool_.end(); ++it)
@@ -310,7 +316,6 @@ namespace GLSL {
 
     checkGLError2(id.c_str());
   }
-
 
   /** \brief Creates a copy of input data
   */

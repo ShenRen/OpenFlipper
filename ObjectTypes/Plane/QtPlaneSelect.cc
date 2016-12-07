@@ -127,7 +127,7 @@ void QtPlaneSelect::slotMouseEvent(QMouseEvent* event)
         return;
 
       
-      unsigned int     node_idx, target_idx;
+      size_t     node_idx, target_idx;
 
       if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE,
                                             event->pos(),

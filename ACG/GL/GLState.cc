@@ -86,7 +86,7 @@ const float    GLState::default_shininess(100.f);
 
 bool GLState::depthFuncLock_ = false;
 bool GLState::depthRangeLock_ = false;
-bool GLState::blendFuncSeparateLock_[2] = { false };
+bool GLState::blendFuncSeparateLock_[] = { false };
 bool GLState::blendEquationLock_ = false;
 bool GLState::blendColorLock_ = false;
 bool GLState::alphaFuncLock_ = false;
@@ -101,9 +101,9 @@ bool GLState::programLock_ = false;
 
 std::deque <GLStateContext> GLState::stateStack_;
 std::bitset<0xFFFF+1> GLState::glStateLock_;
-int GLState::glBufferTargetLock_[4] = {0};
-int GLState::glTextureStageLock_[16] = {0};
-bool GLState::framebufferLock_[2] = {false};
+int GLState::glBufferTargetLock_[] = {0};
+int GLState::glTextureStageLock_[] = {0};
+bool GLState::framebufferLock_[] = {false};
 int GLState::maxTextureCoords_ = 0;
 int GLState::maxCombinedTextureImageUnits_ = 0;
 int GLState::maxDrawBuffers_ = 0;
@@ -1050,7 +1050,7 @@ void GLState::pick_init (bool _color)
 
 //-----------------------------------------------------------------------------
 
-bool GLState::pick_set_maximum (unsigned int _idx)
+bool GLState::pick_set_maximum (size_t _idx)
 {
   bool rv = colorStack_.setMaximumIndex (_idx);
   if (colorPicking_)
@@ -1060,14 +1060,14 @@ bool GLState::pick_set_maximum (unsigned int _idx)
 
 //-----------------------------------------------------------------------------
 
-void GLState::pick_set_name (unsigned int _idx)
+void GLState::pick_set_name (size_t _idx)
 {
   colorStack_.setIndex (_idx);
 }
 
 //-----------------------------------------------------------------------------
 
-Vec4uc GLState::pick_get_name_color (unsigned int _idx)
+Vec4uc GLState::pick_get_name_color (size_t _idx)
 {
   if (colorPicking_)
     return colorStack_.getIndexColor (_idx);
@@ -1089,7 +1089,7 @@ Vec4f GLState::pick_get_name_color_norm (unsigned int _idx)
 
 //-----------------------------------------------------------------------------
 
-void GLState::pick_push_name (unsigned int _idx)
+void GLState::pick_push_name (size_t _idx)
 {
   colorStack_.pushIndex (_idx);
 }
@@ -1103,16 +1103,16 @@ void GLState::pick_pop_name ()
 
 //-----------------------------------------------------------------------------
 
-std::vector<unsigned int> GLState::pick_color_to_stack (Vec4uc _rgba) const
+std::vector<size_t> GLState::pick_color_to_stack (Vec4uc _rgba) const
 {
   if (colorPicking_ && colorStack_.initialized ())
     return colorStack_.colorToStack (_rgba);
-  return std::vector<unsigned int> ();
+  return std::vector<size_t> ();
 }
 
 //-----------------------------------------------------------------------------
 
-unsigned int GLState::pick_free_indicies () const
+size_t GLState::pick_free_indicies () const
 {
   if (colorPicking_ && colorStack_.initialized ())
     return colorStack_.freeIndicies ();
@@ -1130,7 +1130,7 @@ bool GLState::pick_error () const
 
 //-----------------------------------------------------------------------------
 
-unsigned int GLState::pick_current_index () const
+size_t GLState::pick_current_index () const
 {
   if (colorPicking_)
     return colorStack_.currentIndex ();
@@ -1147,7 +1147,7 @@ bool GLState::color_picking () const
 
 //-----------------------------------------------------------------------------
 
-GLenum GLState::glStateCaps[95] = {GL_ALPHA_TEST,
+GLenum GLState::glStateCaps[] = {GL_ALPHA_TEST,
 GL_AUTO_NORMAL,
 GL_MAP2_VERTEX_3,
 GL_MAP2_VERTEX_4,
@@ -1818,7 +1818,7 @@ void GLState::bindBuffer(GLenum _target, GLuint _buffer)
     if (stateStack_.back().glBufferTargetState_[idx] != _buffer)
 #endif
     {
-      glBindBufferARB(_target, _buffer);
+      glBindBuffer(_target, _buffer);
       stateStack_.back().glBufferTargetState_[idx] = _buffer;
     }
   }

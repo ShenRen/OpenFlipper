@@ -183,7 +183,7 @@ public:
   
   /** \brief get the internal mesh
   */
-  const Mesh& mesh() const { return mesh_; }  
+  const Mesh& mesh() const { return mesh_; }
   
 private:  
   /// The mesh this node works on
@@ -383,7 +383,7 @@ private:
   bool updateVertexPicking_;
 
   /// Index of the first vertex in vertexpicking
-  unsigned int vertexPickingBaseIndex_;
+  size_t vertexPickingBaseIndex_;
 
 /** @} */
   
@@ -404,7 +404,7 @@ private:
   bool updateEdgePicking_;
   
   /// Index of the first edge in edgepicking
-  unsigned int edgePickingBaseIndex_;
+  size_t edgePickingBaseIndex_;
 
 
 /** @} */
@@ -425,7 +425,7 @@ private:
   bool updateFacePicking_;
   
   /// Index of the first face in facepicking
-  unsigned int facePickingBaseIndex_;  
+  size_t facePickingBaseIndex_;
 
 
 /** @} */
@@ -446,7 +446,7 @@ private:
   bool updateAnyPicking_;
   
   /// Index of the first face in anypicking
-  unsigned int anyPickingBaseIndex_;    
+  size_t anyPickingBaseIndex_;
   
 /** @} */
   

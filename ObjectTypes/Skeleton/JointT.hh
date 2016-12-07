@@ -82,13 +82,13 @@ public:
   ~JointT();
   
   /// returns the joint id
-  inline unsigned int id();
+  inline size_t id() const;
 
   /// access parent of the joint
   inline void setParent(Joint *_newParent, SkeletonT<PointT> &_skeleton);
   inline Joint *parent();
   
-  inline bool isRoot();
+  inline bool isRoot() const;
 
 public:
   /**
@@ -98,7 +98,7 @@ public:
   //@{
   inline ChildIter begin();
   inline ChildIter end();
-  inline size_t size();
+  inline size_t size() const;
   inline Joint *child(size_t _index);
   //@}
 
@@ -107,21 +107,21 @@ public:
    * change and access selection state
    */
   //@{
-  inline bool selected();
+  inline bool selected() const;
   inline void setSelected(bool _selected);
   //@}
 
   /// Access the name of the joint
-  inline std::string name();
-  inline void setName(std::string _name);
+  inline std::string name() const;
+  inline void setName(const std::string& _name);
 
 private:
   /// An unique identifier, guaranteed to be part of a continuous sequence starting from 0
-  unsigned int id_;
+  size_t id_;
   bool         selected_;
 
 protected:
-  inline void setId(unsigned int _id);
+  inline void setId(const size_t _id);
   
   /// The parent joint; this joint is in its parents JointT::children_ vector. It's 0 for the root node.
   Joint *parent_;

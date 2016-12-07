@@ -186,27 +186,27 @@ rotate( Scalar angle, Scalar x, Scalar y, Scalar z,
   xs = x * s;
   ys = y * s;
   zs = z * s;
-  one_c = 1.0F - c;
+  one_c = static_cast<Scalar>(1.0) - c;
 
   m(0,0) = (one_c * xx) + c;
   m(0,1) = (one_c * xy) - zs;
   m(0,2) = (one_c * zx) + ys;
-  m(0,3) = 0.0F;
+  m(0,3) = static_cast<Scalar>(0.0);
 
   m(1,0) = (one_c * xy) + zs;
   m(1,1) = (one_c * yy) + c;
   m(1,2) = (one_c * yz) - xs;
-  m(1,3) = 0.0F;
+  m(1,3) = static_cast<Scalar>(0.0);
   
   m(2,0) = (one_c * zx) - ys;
   m(2,1) = (one_c * yz) + xs;
   m(2,2) = (one_c * zz) + c;
-  m(2,3) = 0.0F;
+  m(2,3) = static_cast<Scalar>(0.0);
   
-  m(3,0) = 0.0F;
-  m(3,1) = 0.0F;
-  m(3,2) = 0.0F;
-  m(3,3) = 1.0F;
+  m(3,0) = static_cast<Scalar>(0.0);
+  m(3,1) = static_cast<Scalar>(0.0);
+  m(3,2) = static_cast<Scalar>(0.0);
+  m(3,3) = static_cast<Scalar>(1.0);
 
   if (_mult_from == MULT_FROM_RIGHT)  *this *= m;
   else                                leftMult(m);
@@ -237,7 +237,7 @@ lookAt(const VectorT<Scalar,3>& eye,
   m(0,0)=x[0]; m(0,1)=x[1]; m(0,2)=x[2]; m(0,3)=0.0;
   m(1,0)=y[0]; m(1,1)=y[1]; m(1,2)=y[2]; m(1,3)=0.0;
   m(2,0)=z[0]; m(2,1)=z[1]; m(2,2)=z[2]; m(2,3)=0.0;
-  m(3,0)=0.0;  m(3,1)=0.0;  m(3,2)=0.0;  m(3,3)=1.0;
+  m(3,0)=static_cast<Scalar>(0.0);  m(3,1)=static_cast<Scalar>(0.0);  m(3,2)=static_cast<Scalar>(0.0);  m(3,3)=static_cast<Scalar>(1.0);
 
   *this *= m;
   translate(-eye[0], -eye[1], -eye[2]);
@@ -268,7 +268,7 @@ inverse_lookAt(const VectorT<Scalar,3>& eye,
   m(0,0)=x[0]; m(0,1)=y[0]; m(0,2)=z[0]; m(0,3)=eye[0];
   m(1,0)=x[1]; m(1,1)=y[1]; m(1,2)=z[1]; m(1,3)=eye[1];
   m(2,0)=x[2]; m(2,1)=y[2]; m(2,2)=z[2]; m(2,3)=eye[2];
-  m(3,0)=0.0;  m(3,1)=0.0;  m(3,2)=0.0;  m(3,3)=1.0;
+  m(3,0)=static_cast<Scalar>(0.0);  m(3,1)=static_cast<Scalar>(0.0);  m(3,2)=static_cast<Scalar>(0.0);  m(3,3)=static_cast<Scalar>(1.0);
 
   leftMult(m);
 }
@@ -283,7 +283,7 @@ GLMatrixT<Scalar>::
 perspective(Scalar fovY, Scalar aspect, 
 	    Scalar near_plane, Scalar far_plane)
 {
-  Scalar ymax = near_plane * tan( fovY * M_PI / 360.0 );
+  Scalar ymax = near_plane * tan( fovY * static_cast<Scalar>(M_PI) / static_cast<Scalar>(360.0) );
   Scalar ymin = -ymax;
   Scalar xmin = ymin * aspect;
   Scalar xmax = ymax * aspect;
@@ -300,7 +300,7 @@ GLMatrixT<Scalar>::
 inverse_perspective(Scalar fovY, Scalar aspect, 
 		    Scalar near_plane, Scalar far_plane)
 {
-  Scalar ymax = near_plane * tan( fovY * M_PI / 360.0 );
+  Scalar ymax = near_plane * tan( fovY *  static_cast<Scalar>(M_PI) / static_cast<Scalar>(360.0)  );
   Scalar ymin = -ymax;
   Scalar xmin = ymin * aspect;
   Scalar xmax = ymax * aspect;
@@ -318,22 +318,22 @@ frustum( Scalar left,Scalar right,
 	 Scalar bottom, Scalar top, 
 	 Scalar near_plane, Scalar far_plane )
 {
-  assert(near_plane > 0.0 && far_plane > near_plane);
+  assert(near_plane > static_cast<Scalar>(0.0) && far_plane > near_plane);
 
   GLMatrixT<Scalar> m;
   Scalar x, y, a, b, c, d;
 
-  x = (2.0*near_plane) / (right-left);
-  y = (2.0*near_plane) / (top-bottom);
+  x = (static_cast<Scalar>(2.0)*near_plane) / (right-left);
+  y = (static_cast<Scalar>(2.0)*near_plane) / (top-bottom);
   a = (right+left) / (right-left);
   b = (top+bottom) / (top-bottom);
   c = -(far_plane+near_plane) / ( far_plane-near_plane);
-  d = -(2.0*far_plane*near_plane) / (far_plane-near_plane);
+  d = -(static_cast<Scalar>(2.0)*far_plane*near_plane) / (far_plane-near_plane);
 
-  m(0,0) = x;    m(0,1) = 0.0F; m(0,2) = a;     m(0,3) = 0.0F;
-  m(1,0) = 0.0F; m(1,1) = y;    m(1,2) = b;     m(1,3) = 0.0F;
-  m(2,0) = 0.0F; m(2,1) = 0.0F; m(2,2) = c;     m(2,3) = d;
-  m(3,0) = 0.0F; m(3,1) = 0.0F; m(3,2) = -1.0F; m(3,3) = 0.0F;
+  m(0,0) = x;                        m(0,1) = static_cast<Scalar>(0.0); m(0,2) = a;                         m(0,3) = static_cast<Scalar>(0.0);
+  m(1,0) = static_cast<Scalar>(0.0); m(1,1) = y;                        m(1,2) = b;                         m(1,3) = static_cast<Scalar>(0.0);
+  m(2,0) = static_cast<Scalar>(0.0); m(2,1) = static_cast<Scalar>(0.0); m(2,2) = c;                         m(2,3) = d;
+  m(3,0) = static_cast<Scalar>(0.0); m(3,1) = static_cast<Scalar>(0.0); m(3,2) = static_cast<Scalar>(-1.0); m(3,3) = static_cast<Scalar>(0.0);
 
   *this *= m;
 }
@@ -354,17 +354,17 @@ inverse_frustum(Scalar left,Scalar right,
   GLMatrixT<Scalar> m;
   Scalar x, y, a, b, c, d;
 
-  x = (right-left) / (2.0*near_plane);
-  y = (top-bottom) / (2.0*near_plane);
-  a = (right+left) / (2.0*near_plane);
-  b = (top+bottom) / (2.0*near_plane);
-  c = (far_plane+near_plane) / (2.0*far_plane*near_plane);
-  d = (near_plane-far_plane) / (2.0*far_plane*near_plane);  
+  x = (right-left) / (static_cast<Scalar>(2.0)*near_plane);
+  y = (top-bottom) / (static_cast<Scalar>(2.0)*near_plane);
+  a = (right+left) / (static_cast<Scalar>(2.0)*near_plane);
+  b = (top+bottom) / (static_cast<Scalar>(2.0)*near_plane);
+  c = (far_plane+near_plane) / (static_cast<Scalar>(2.0)*far_plane*near_plane);
+  d = (near_plane-far_plane) / (static_cast<Scalar>(2.0)*far_plane*near_plane);
 
-  m(0,0)=x;     m(0,1)= 0.0F;  m(0,2)= 0.0F;  m(0,3)= a;
-  m(1,0)=0.0F;  m(1,1)= y;     m(1,2)= 0.0F;  m(1,3)= b;
-  m(2,0)=0.0F;  m(2,1)= 0.0F;  m(2,2)= 0.0F;  m(2,3)= -1.0;
-  m(3,0)=0.0F;  m(3,1)= 0.0F;  m(3,2)= d;     m(3,3)= c;
+  m(0,0)=x;                         m(0,1)= static_cast<Scalar>(0.0);  m(0,2)= static_cast<Scalar>(0.0);  m(0,3)= a;
+  m(1,0)=static_cast<Scalar>(0.0);  m(1,1)= y;                         m(1,2)= static_cast<Scalar>(0.0);  m(1,3)= b;
+  m(2,0)=static_cast<Scalar>(0.0);  m(2,1)= static_cast<Scalar>(0.0);  m(2,2)= static_cast<Scalar>(0.0);  m(2,3)= static_cast<Scalar>(-1.0);
+  m(3,0)=static_cast<Scalar>(0.0);  m(3,1)= static_cast<Scalar>(0.0);  m(3,2)= d;                         m(3,3)= c;
 
   leftMult(m);
 }
@@ -390,17 +390,17 @@ ortho(Scalar left, Scalar right,
 
   m(1,0) = m(0,1) = m(0,2) =
   m(2,0) = m(2,1) = m(1,2) =
-  m(3,0) = m(3,1) = m(3,2) = 0.0;
+  m(3,0) = m(3,1) = m(3,2) = static_cast<Scalar>(0.0);
   
-  m(0,0) =  2.0 / r_l;
-  m(1,1) =  2.0 / t_b;
-  m(2,2) = -2.0 / f_n;
+  m(0,0) = static_cast<Scalar>( 2.0) / r_l;
+  m(1,1) = static_cast<Scalar>( 2.0) / t_b;
+  m(2,2) = static_cast<Scalar>(-2.0) / f_n;
   
   m(0,3) = -(right + left) / r_l;
   m(1,3) = -(top + bottom) / t_b;
   m(2,3) = -(far_plane + near_plane) / f_n;
 
-  m(3,3) = 1.0;
+  m(3,3) = static_cast<Scalar>(1.0);
 
   *this *= m;
 }
@@ -419,18 +419,18 @@ inverse_ortho(Scalar left, Scalar right,
 
   m(1,0) = m(0,1) = m(0,2) =
   m(2,0) = m(2,1) = m(1,2) =
-  m(3,0) = m(3,1) = m(3,2) = 0.0;
+  m(3,0) = m(3,1) = m(3,2) = static_cast<Scalar>(0.0);
   
 
-  m(0,0) =  0.5 * (right - left);
-  m(1,1) =  0.5 * (top - bottom);
-  m(2,2) = -0.5 * (far_plane - near_plane);
+  m(0,0) = static_cast<Scalar>( 0.5) * (right - left);
+  m(1,1) = static_cast<Scalar>( 0.5) * (top - bottom);
+  m(2,2) = static_cast<Scalar>(-0.5) * (far_plane - near_plane);
   
-  m(0,3) =  0.5 * (right + left);
-  m(1,3) =  0.5 * (top + bottom);
-  m(2,3) = -0.5 * (far_plane + near_plane);
+  m(0,3) = static_cast<Scalar>( 0.5) * (right + left);
+  m(1,3) = static_cast<Scalar>( 0.5) * (top + bottom);
+  m(2,3) = static_cast<Scalar>(-0.5) * (far_plane + near_plane);
 
-  m(3,3) = 1.0;
+  m(3,3) = static_cast<Scalar>(1.0);
 
   leftMult(m);
 }
@@ -446,7 +446,7 @@ VectorT<Scalar, 2>
   Scalar a = (*this)(2,2);
   Scalar b = (*this)(2,3);
 
-  return VectorT<Scalar, 2>(b / (-1.0 + a), b / (1.0 + a));
+  return VectorT<Scalar, 2>(b / (static_cast<Scalar>(-1.0) + a), b / (static_cast<Scalar>(1.0) + a));
 }
 
 //-----------------------------------------------------------------------------

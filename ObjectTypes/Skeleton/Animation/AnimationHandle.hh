@@ -59,16 +59,16 @@ public:
   /// Constructs an invalid animation handle (interpreted as handle of the reference pose)
   AnimationHandle() : idAnimation(0), iFrame(0) {};
   /// Constructs a valid handle for the given animation and frame
-  AnimationHandle(unsigned int idAnimation, unsigned int iFrame = 0) : idAnimation(idAnimation + 1), iFrame(iFrame) {};
+  AnimationHandle(size_t idAnimation, size_t iFrame = 0) : idAnimation(idAnimation + 1), iFrame(iFrame) {};
   /// Returns true if the handle is valid
   inline bool isValid() const { return idAnimation > 0; }
   /// Returns the animation index (zero based)
-  inline unsigned int animationIndex() const { return idAnimation - 1; }
+  inline size_t animationIndex() const { return idAnimation - 1; }
   
   /// Returns the selected frame (zero based)
-  inline unsigned int frame() const { return iFrame; }
+  inline size_t frame() const { return iFrame; }
   /// Sets the current animation frame (not failsafe)
-  inline void setFrame(unsigned int _iFrame) { iFrame = _iFrame; }
+  inline void setFrame(size_t _iFrame) { iFrame = _iFrame; }
 
   /// Returns to the first frame
   inline void firstFrame() { iFrame = 0; }
@@ -82,9 +82,9 @@ public:
 
 private:
   /// The one based index of the animation, set to 0 for invalid (or reference pose)
-  unsigned int idAnimation;
+  size_t idAnimation;
   /// The frame number
-  unsigned int iFrame;
+  size_t iFrame;
 };
 
 #endif // ANIMATIONHANDLE_HH

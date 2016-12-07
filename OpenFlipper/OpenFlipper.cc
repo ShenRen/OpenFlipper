@@ -111,35 +111,64 @@
 #ifdef WIN32
 
   void attachConsole()
-  {
-	  //try to attach the console of the parent process
-	  if (AttachConsole(-1))
-	  {
-		  //if the console was attached change stdinput and output
-		  freopen("CONIN$", "r", stdin);
-		  freopen("CONOUT$", "w", stdout);
-		  freopen("CONOUT$", "w", stderr);
-	  }
-	  else
-	  {
-		  //create and attach a new console if needed
-#ifndef NDEBUG
-		  //always open a console in debug mode
-		  AllocConsole();
-		  freopen("CONIN$", "r", stdin);
-		  freopen("CONOUT$", "w", stdout);
-		  freopen("CONOUT$", "w", stderr);
-		  return;
-#endif
-		  if (OpenFlipper::Options::logToConsole())
-		  {
-			  AllocConsole();
-			  freopen("CONIN$", "r", stdin);
-			  freopen("CONOUT$", "w", stdout);
-			  freopen("CONOUT$", "w", stderr);
-		  }
-	  }
-  }
+   {
+     //try to attach the console of the parent process
+     if (AttachConsole(-1))
+     {
+       //if the console was attached change stdinput and output
+       FILE* check = freopen("CONIN$", "r", stdin);
+       if (check) {
+         std::cerr << "Error reopening stdin" << std::endl;
+       }
+       check = freopen("CONOUT$", "w", stdout);
+       if (check) {
+         std::cerr << "Error reopening stdout" << std::endl;
+       }
+       check = freopen("CONOUT$", "w", stderr);
+       if (check) {
+         std::cerr << "Error reopening stderr" << std::endl;
+       }
+     }
+     else
+     {
+       //create and attach a new console if needed
+ #ifndef NDEBUG
+       //always open a console in debug mode
+       AllocConsole();
+
+       FILE* check = freopen("CONIN$", "r", stdin);
+       if (check) {
+         std::cerr << "Error reopening stdin" << std::endl;
+       }
+       check = freopen("CONOUT$", "w", stdout);
+       if (check) {
+         std::cerr << "Error reopening stdout" << std::endl;
+       }
+       check = freopen("CONOUT$", "w", stderr);
+       if (check) {
+         std::cerr << "Error reopening stderr" << std::endl;
+       }
+       return;
+ #endif
+       if (OpenFlipper::Options::logToConsole())
+       {
+         AllocConsole();
+
+         FILE* check = freopen("CONIN$", "r", stdin);
+         if (check) {
+           std::cerr << "Error reopening stdin" << std::endl;
+         }
+         check = freopen("CONOUT$", "w", stdout);
+         if (check) {
+           std::cerr << "Error reopening stdout" << std::endl;
+         }
+         check = freopen("CONOUT$", "w", stderr);
+         if (check) {
+           std::cerr << "Error reopening stderr" << std::endl;
+         }
+       }
+     }
+   }
 
 #endif
 
@@ -278,7 +307,27 @@ bool remoteControl  = false;
 
 bool parseCommandLineOptions(CSimpleOpt& args){
 
-  QString port;
+  QString port;  
+
+#ifndef WIN32
+#ifndef __APPLE__
+  //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1 on Linux
+  int QtVersionMajor, QtVersionMinor, QtVersionPatch;
+  if(sscanf(qVersion(),"%1d.%1d.%1d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
+  {
+    if(QtVersionMajor == 5 && QtVersionMinor >= 7)
+    {
+      if(QtVersionPatch < 2)
+      {
+        std::cerr << "The used Qt Version does not support stereo mode. Disabling stereo mode." << std::endl;
+        OpenFlipper::Options::stereo(false);
+      }
+      else
+        std::cerr << "Stereo Mode has not been tested for the used Qt Version." << std::endl;
+    }
+  }
+#endif
+#endif
 
   // while there are arguments left to process
   while (args.Next()) {

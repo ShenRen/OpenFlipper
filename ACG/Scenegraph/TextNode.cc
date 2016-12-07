@@ -266,7 +266,7 @@ enter(GLState& _state, const DrawModes::DrawMode& /*_drawmode*/) {
   ACG::GLState::enable(GL_TEXTURE_2D);
   ACG::GLState::enable(GL_BLEND);
   ACG::GLState::enable(GL_ALPHA_TEST);
-  ACG::GLState::alphaFunc(GL_GREATER, 0.2);
+  ACG::GLState::alphaFunc(GL_GREATER, 0.2f);
   ACG::GLState::blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   if (alwaysOnTop_)
     ACG::GLState::disable(GL_DEPTH_TEST);

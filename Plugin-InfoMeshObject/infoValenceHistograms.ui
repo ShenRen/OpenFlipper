@@ -31,7 +31,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="ValenceHistogramWidget" name="vertexValenceChart_wdgt" native="true"/>
+           <widget class="ACG::QtWidgets::QtHistogramWidget" name="vertexValenceChart_wdgt" native="true"/>
           </item>
          </layout>
         </widget>
@@ -43,7 +43,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="ValenceHistogramWidget" name="faceValenceChart_wdgt" native="true"/>
+           <widget class="ACG::QtWidgets::QtHistogramWidget" name="faceValenceChart_wdgt" native="true"/>
           </item>
          </layout>
         </widget>
@@ -114,9 +114,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ValenceHistogramWidget</class>
+   <class>ACG::QtWidgets::QtHistogramWidget</class>
    <extends>QWidget</extends>
-   <header>ValenceHistogramWidget.hh</header>
+   <header>ACG/QtWidgets/QtHistogramWidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

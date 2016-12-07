@@ -981,7 +981,7 @@ void CoordsysNode::boundingCircle(std::vector<Vec2f> &_in, Vec2f &_center, float
   for (unsigned int i = 0; i < _in.size () - 1; i++)
     for (unsigned int j = i + 1; j < _in.size (); j++)
     {
-      Vec2f cen = (_in[i] + _in[j]) * 0.5;
+      Vec2f cen = (_in[i] + _in[j]) * 0.5f;
       float rad = (_in[i] - cen).length ();
       bool allin = true;
 

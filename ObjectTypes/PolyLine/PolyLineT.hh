@@ -641,8 +641,8 @@ private:
   void edge_points_in_segment( const MeshT&                             _mesh,
 			                         const Point&                             _p0,
 			                         const Point&                             _p1,
-			                         const typename MeshT::FaceHandle         _fh0,
-			                         const typename MeshT::FaceHandle         _fh1,
+                               const typename MeshT::FaceHandle&        _fh0,
+                               const typename MeshT::FaceHandle&        _fh1,
 			                         std::vector<Point> &                     _points,
 			                         std::vector<typename MeshT::EdgeHandle>& _ehandles );
 

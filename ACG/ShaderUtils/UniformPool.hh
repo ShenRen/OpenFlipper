@@ -121,6 +121,11 @@ namespace GLSL {
      */
     bool empty() const;
 
+    /** \brief copy
+     *
+     */
+    UniformPool& operator =(const UniformPool& _other);
+
   private:
     struct UniformBase {
       std::string id;

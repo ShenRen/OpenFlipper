@@ -1507,13 +1507,13 @@ void QtBaseViewer::actionDrawMenu( QAction * _action )
 
 void QtBaseViewer::actionBackground()
 {
-  const Vec4f bc = glstate_->clear_color() * 255.0;
+  const Vec4f bc = glstate_->clear_color() * 255.0f;
   QColor backCol((int)bc[0], (int)bc[1], (int)bc[2]);
   QColor c = QColorDialog::getColor(backCol,this);
   if (c != backCol && c.isValid())
-    backgroundColor(Vec4f(((double) c.red())   / 255.0,
-			  ((double) c.green()) / 255.0,
-			  ((double) c.blue())  / 255.0,
+    backgroundColor(Vec4f(((double) c.red())   / 255.0f,
+			  ((double) c.green()) / 255.0f,
+			  ((double) c.blue())  / 255.0f,
 			  1.0));
 
 }

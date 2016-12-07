@@ -94,48 +94,10 @@ ACG::Vec4uc ColorCoder::color4(float _v) const
 }
 
 /// color coding
-ACG::Vec3uc ColorCoder::color(float _v) const
-{
-  ACG::Vec4uc c;
-  if (signed_mode_)
-    c = color_signed(_v);
-  else
-    c = color_unsigned(_v);
-  return (ACG::Vec3uc(c[0], c[1], c[2]) / 255.f);
-}
-
-/// color coding
-ACG::Vec3f ColorCoder::color_float(float _v) const
-{
-  ACG::Vec4uc c;
-  if (signed_mode_)
-    c = color_signed(_v);
-  else
-    c = color_unsigned(_v);
-  return (ACG::Vec3f(c[0], c[1], c[2]) / 255.f);
-}
-
-/// color coding
 ACG::Vec4f ColorCoder::color_float4(float _v) const
 {
-  ACG::Vec4uc c;
-  if (signed_mode_)
-    c = color_signed(_v);
-  else
-    c = color_unsigned(_v);
+  ACG::Vec4uc c = color4(_v);
   return (ACG::Vec4f(c[0], c[1], c[2], c[3]) / 255.f);
-}
-
-/// color coding
-QColor ColorCoder::color_qcolor(float _v) const
-{
-  ACG::Vec4uc c;
-  if (signed_mode_)
-    c = color_signed(_v);
-  else
-    c = color_unsigned(_v);
-
-  return(QColor(c[0], c[1], c[2], c[3]));
 }
 
 /// min scalar value

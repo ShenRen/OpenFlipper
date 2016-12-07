@@ -105,8 +105,8 @@ class ACGDLLEXPORT DrawMeshBase {
         void fillInvVertexMap(size_t n_vertices, void *data);
 
     public:
-        unsigned int getNumTris() const { return numTris_; }
-        unsigned int getNumVerts() const { return numVerts_; }
+        size_t getNumTris() const { return numTris_; }
+        size_t getNumVerts() const { return numVerts_; }
 
         /** \brief get mesh compiler used to create the draw mesh
         */
@@ -385,22 +385,22 @@ private:
    * @param _hh corresponding halfedge handle of this vertex
    * @param _fh corresponding face handle of this vertex
    */
-  void readVertex(unsigned int                    _vertex,
-                  const typename Mesh::VertexHandle   _vh,
-                  const typename Mesh::HalfedgeHandle _hh,
-                  const typename Mesh::FaceHandle     _fh);
+  void readVertex(size_t                               _vertex,
+                  const typename Mesh::VertexHandle&   _vh,
+                  const typename Mesh::HalfedgeHandle& _hh,
+                  const typename Mesh::FaceHandle&     _fh);
 
   /** \brief return a vertex color from mesh
    *
    * @param _vh mesh vertex handle
    */
-  unsigned int getVertexColor(const typename Mesh::VertexHandle   _vh);
+  unsigned int getVertexColor(const typename Mesh::VertexHandle&   _vh);
 
   /** \brief return a face color from mesh
    *
    * @param _fh mesh face handle
    */
-  unsigned int getFaceColor(const typename Mesh::FaceHandle   _fh);
+  unsigned int getFaceColor(const typename Mesh::FaceHandle&   _fh);
 
   /** \brief  eventually update vertex and index buffers
    *
@@ -474,7 +474,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first vertex
    */
-  void drawPickingVertices_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingVertices_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized vertex picking is supported
@@ -559,7 +559,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first edge
    */
-  void drawPickingEdges_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingEdges_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized face picking is supported
@@ -628,7 +628,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first face
    */
-  void drawPickingFaces_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingFaces_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
 
   /**  \brief Check if optimized face picking is supported
@@ -734,7 +734,7 @@ public:
    * @param _mvp model view projection transformation
    * @param _pickOffset base picking id of the first element
    */
-  void drawPickingAny_opt(const GLMatrixf& _mvp, int _pickOffset);
+  void drawPickingAny_opt(const GLMatrixf& _mvp, size_t _pickOffset);
 
   /**  \brief Check if optimized any picking is supported
    *
@@ -929,19 +929,19 @@ private:
   //========================================================================
   // write functions for flexible vertex format
 
-  void writeVertexElement(void* _dstBuf, unsigned int _vertex, unsigned int _stride, unsigned int _elementOffset, unsigned int _elementSize, const void* _elementData);
+  void writeVertexElement(void* _dstBuf, size_t _vertex, size_t _stride, size_t _elementOffset, size_t _elementSize, const void* _elementData);
 
-  void writePosition(unsigned int _vertex, const ACG::Vec3d& _p);
+  void writePosition(size_t _vertex, const ACG::Vec3d& _p);
 
-  void writeNormal(unsigned int _vertex, const ACG::Vec3d& _n);
+  void writeNormal(size_t _vertex, const ACG::Vec3d& _n);
 
-  void writeTexcoord(unsigned int _vertex, const ACG::Vec2f& _uv);
+  void writeTexcoord(size_t _vertex, const ACG::Vec2f& _uv);
 
-  void writeColor(unsigned int _vertex, unsigned int _color);
+  void writeColor(size_t _vertex, unsigned int _color);
 
-  void writeVertexProperty(unsigned int _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf);
+  void writeVertexProperty(size_t _vertex, const VertexElement* _elementDesc, const ACG::Vec4f& _propf);
 
-  void writeVertexProperty(unsigned int _vertex, const VertexElement* _elementDesc, const ACG::Vec4d& _propd);
+  void writeVertexProperty(size_t _vertex, const VertexElement* _elementDesc, const ACG::Vec4d& _propd);
 
 
   /** \brief Read one vertex from the rendering vbo.
@@ -1103,7 +1103,7 @@ private:
       return normal;
   }
 
-  typename Mesh::HalfedgeHandle mapToHalfedgeHandle(int _vertexId);
+  typename Mesh::HalfedgeHandle mapToHalfedgeHandle(size_t _vertexId);
 
 };
 

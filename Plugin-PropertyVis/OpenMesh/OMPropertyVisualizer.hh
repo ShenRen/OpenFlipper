@@ -125,7 +125,6 @@ protected:
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
 
-    OpenMesh::Vec4f convertColor(QColor color);
     virtual void setPropertyFromText(unsigned int index, QString text);
 
     virtual int getEntityCount();
@@ -140,6 +139,9 @@ protected:
 
     template <typename InnerType >
     QString getPropertyText_(unsigned int index);
+
+    template<typename Type>
+    void showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget);
 
 private:
     template<typename PropHandleT>
@@ -158,7 +160,6 @@ private:
             const PropHandleT &p1, &p2;
             MeshT*& mesh;
     };
-
 };
 
 

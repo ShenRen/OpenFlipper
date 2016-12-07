@@ -446,6 +446,14 @@ protected:
   const ACG::Vec3f& getGlobalAmbientScale() const {return globalLightModelAmbient_;}
 
 
+  /// Get node that emitted the render object in the sorted list by index (not including overlay objects)
+  ACG::SceneGraph::BaseNode* getRenderObjectNode(int i);
+
+  /// Get node that emitted the render object in the sorted list by index (only overlay objects)
+  ACG::SceneGraph::BaseNode* getOverlayRenderObjectNode(int i);
+
+
+
   /** Enable/disable line thickness rendering with opengl4.2
    *
    * Instead of quad extrusion in a geometry shader, thick lines are manually rasterized in a load/store image.
@@ -507,6 +515,10 @@ protected:
   /// array of renderobjects, filled by addRenderObject()
   std::vector<ACG::RenderObject> renderObjects_;
 
+  /// map sortedID -> original renderObjectID
+  std::vector<int> sortListObjects_;
+  /// map sortedID -> original renderObjectID
+  std::vector<int> sortListOverlays_;
 
   /// sorted list of renderobjects without overlay objects (sorted in rendering order)
   std::vector<ACG::RenderObject*> sortedObjects_;
@@ -516,6 +528,12 @@ protected:
 
   /// active render object modifiers
   std::vector<ACG::RenderObjectModifier*> renderObjectModifiers_;
+
+  /// source node that added the render object (map renderObjectID -> scenegraph node)
+  std::vector<ACG::SceneGraph::BaseNode*> renderObjectSource_;
+
+  /// source node that added the overlay render object (map renderObjectID -> scenegraph node)
+  std::vector<ACG::SceneGraph::BaseNode*> overlayObjectSource_;
 
   /**
    * Stores fbo containing a depth map for each viewport.

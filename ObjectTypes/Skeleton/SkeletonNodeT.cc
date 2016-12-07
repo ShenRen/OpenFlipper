@@ -860,7 +860,7 @@ void SkeletonNodeT<SkeletonType>::getRenderObjects(IRenderer* _renderer,
                 _state));
 
               GLMatrixf modelview = ro.modelview;
-              modelview.translate(globalPosD[0], globalPosD[1], globalPosD[2]);
+              modelview.translate(static_cast<float>(globalPosD[0]), static_cast<float>(globalPosD[1]), static_cast<float>(globalPosD[2]));
               modelview.scale(sphereSize, sphereSize, sphereSize);
 
               // store matrix

@@ -284,7 +284,7 @@ typename PoseT<PointT>::Matrix PoseT<PointT>::globalMatrixInv(unsigned int _join
 //-----------------------------------------------------------------------------
 
 template<typename PointT>
-void PoseT<PointT>::insertJointAt(unsigned int _index)
+void PoseT<PointT>::insertJointAt(size_t _index)
 {
   Matrix id;
   id.identity();
@@ -301,7 +301,7 @@ void PoseT<PointT>::insertJointAt(unsigned int _index)
 //-----------------------------------------------------------------------------
 
 template<typename PointT>
-void PoseT<PointT>::removeJointAt(unsigned int _index)
+void PoseT<PointT>::removeJointAt(size_t _index)
 {
   local_.erase(local_.begin() + _index);
   global_.erase(global_.begin() + _index);
@@ -318,7 +318,7 @@ void PoseT<PointT>::removeJointAt(unsigned int _index)
  * @param _keepChildPositions Do the children stay at the same position or do they move with their parent joint
  */
 template<typename PointT>
-void PoseT<PointT>::updateFromLocal(unsigned int _joint, bool _keepChildPositions)
+void PoseT<PointT>::updateFromLocal(size_t _joint, bool _keepChildPositions)
 {
   // first update the global coordinate system
   if(skeleton_->parent(_joint) == -1)
@@ -336,7 +336,7 @@ void PoseT<PointT>::updateFromLocal(unsigned int _joint, bool _keepChildPosition
   // update children
   if (_keepChildPositions) {
     // finally update all children as well
-    for(unsigned int i = 0; i < skeleton_->childCount(_joint); ++i) {
+    for(size_t i = 0; i < skeleton_->childCount(_joint); ++i) {
       updateFromLocal(skeleton_->child(_joint, i));
     }
   } else {
@@ -356,7 +356,7 @@ void PoseT<PointT>::updateFromLocal(unsigned int _joint, bool _keepChildPosition
  * @param _keepChildPositions  Do the children stay at the same global position or do they move with their parent joint
  */
 template<typename PointT>
-void PoseT<PointT>::updateFromGlobal(unsigned int _joint, bool _keepChildPositions)
+void PoseT<PointT>::updateFromGlobal(size_t _joint, bool _keepChildPositions)
 {
   // first update the local coordinate system
   if(skeleton_->parent(_joint) == -1)
@@ -373,7 +373,7 @@ void PoseT<PointT>::updateFromGlobal(unsigned int _joint, bool _keepChildPositio
 
   // update children
   if (_keepChildPositions) {
-    for(unsigned int i = 0; i < skeleton_->childCount(_joint); ++i) {
+    for(size_t i = 0; i < skeleton_->childCount(_joint); ++i) {
       updateFromGlobal(skeleton_->child(_joint, i));
     }
   } else {
@@ -400,7 +400,7 @@ void PoseT<PointT>::updateFromGlobal(unsigned int _joint, bool _keepChildPositio
  * @param _joint The joints index, same as for SkeletonT<>::joint
  */
 template<typename PointT>
-inline const typename PoseT<PointT>::Matrix& PoseT<PointT>::unifiedMatrix(unsigned int _joint)
+inline const typename PoseT<PointT>::Matrix& PoseT<PointT>::unifiedMatrix(size_t _joint)
 {
   return unified_[_joint];
 }
@@ -418,7 +418,7 @@ inline const typename PoseT<PointT>::Matrix& PoseT<PointT>::unifiedMatrix(unsign
  * @return The rotational part of the unified matrix
  */
 template<typename PointT>
-inline const typename PoseT<PointT>::Quaternion& PoseT<PointT>::unifiedRotation(unsigned int _joint)
+inline const typename PoseT<PointT>::Quaternion& PoseT<PointT>::unifiedRotation(size_t _joint)
 {
   return unifiedDualQuaternion_[_joint].real();
 }
@@ -434,7 +434,7 @@ inline const typename PoseT<PointT>::Quaternion& PoseT<PointT>::unifiedRotation(
  * @return The rotational part of the unified matrix
  */
 template<typename PointT>
-inline const typename PoseT<PointT>::DualQuaternion& PoseT<PointT>::unifiedDualQuaternion(unsigned int _joint)
+inline const typename PoseT<PointT>::DualQuaternion& PoseT<PointT>::unifiedDualQuaternion(size_t _joint)
 {
   return unifiedDualQuaternion_[_joint];
 }

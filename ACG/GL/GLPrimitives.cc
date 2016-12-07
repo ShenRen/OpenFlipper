@@ -193,7 +193,9 @@ bool GLPrimitive::checkVBO()
 
     delete[] vboData_;
     vboData_ = 0;
-  } else if (vboDataInvalid_) {
+  }
+
+  if (vboDataInvalid_) {
     updateVBOData();
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, bufSize, vboData_, GL_STATIC_DRAW);

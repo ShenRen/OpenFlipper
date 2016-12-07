@@ -50,6 +50,7 @@
 #define OM_PROPERTY_VISUALIZER_VECTOR_CC
 
 #include "OMPropertyVisualizerVector.hh"
+#include <ACG/Utils/ColorConversion.hh>
 
 template <typename MeshT>
 OMPropertyVisualizerVector<MeshT>::OMPropertyVisualizerVector(MeshT* _mesh, PropertyInfo _propertyInfo)
@@ -305,7 +306,7 @@ template <typename MeshT>
 
     lineNode->clear();
 
-    typename MeshT::Color color = OMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    typename MeshT::Color color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     OpenMesh::FPropHandleT< typename MeshT::Point > prop;
 
@@ -344,7 +345,7 @@ void OMPropertyVisualizerVector<MeshT>::visualizeEdgePropAsStrokes()
 
     lineNode->clear();
 
-    typename MeshT::Color color = OMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    typename MeshT::Color color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     //TODO check if this also works if the property is Vec3f
     OpenMesh::EPropHandleT< typename MeshT::Point > prop;
@@ -380,7 +381,7 @@ void OMPropertyVisualizerVector<MeshT>::visualizeHalfedgePropAsStrokes()
 
     lineNode->clear();
 
-    typename MeshT::Color color = OMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    typename MeshT::Color color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     //TODO check if this also works if the property is Vec3f
     OpenMesh::HPropHandleT< typename MeshT::Point > prop;
@@ -414,7 +415,7 @@ void OMPropertyVisualizerVector<MeshT>::visualizeVertexPropAsStrokes()
 
     lineNode->clear();
 
-    typename MeshT::Color color = OMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    typename MeshT::Color color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     //TODO check if this also works if the property is Vec3f
     OpenMesh::VPropHandleT< typename MeshT::Point > prop;

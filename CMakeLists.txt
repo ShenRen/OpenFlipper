@@ -42,7 +42,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # add our macro directory to cmake search path
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/OpenFlipper/cmake)
+
+# Include some of our OpenFlipper cmake macros
+include(OpenFlipper_common)
 
 # search for more macro directories in Package-* folders
 file (

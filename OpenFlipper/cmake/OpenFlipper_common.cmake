@@ -99,7 +99,7 @@ function (of_add_plugins)
     
 endfunction ()
 
-macro(_get_plugin_name _path _name)
+macro(_common_get_plugin_name _path _name)
 
    # Only get the plugins name:
    string (REGEX MATCH "Plugin-.+[/\\]?$" ${_name} ${${_path}})
@@ -128,7 +128,7 @@ function (of_print_plugin_stats)
   foreach (_plugin ${_plugins_in})
 
     # Extract plugin name from path
-    _get_plugin_name( _plugin _plugin_name )
+    _common_get_plugin_name( _plugin _plugin_name )
 
     # Possibly get the collection name
     string (REGEX MATCH "PluginCollection-.+[/\\]" collection_name ${_plugin})
@@ -163,7 +163,7 @@ function (of_print_plugin_stats)
   foreach (_plugin ${_plugins_in})
 
      # Extract plugin name from path
-     _get_plugin_name( _plugin _plugin_name )
+     _common_get_plugin_name( _plugin _plugin_name )
 
      # We need the upper case name that is used for the plugin handling variables
      string (TOUPPER ${_plugin_name} _PLUGIN)

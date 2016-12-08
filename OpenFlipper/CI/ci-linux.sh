@@ -3,9 +3,10 @@
 # Script abort on error
 set -e
 
-COMPILER=$1
-LANGUAGE=$2
-QTVERSION=$3
+# Expected Settings via environment variables:
+# COMPILER= gcc/clang
+# LANGUAGE= C++98 / C++11
+# QTVERSION= QT4/QT5
 
 OPTIONS=""
 MAKE_OPTIONS=""

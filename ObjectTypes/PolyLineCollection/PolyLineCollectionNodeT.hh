@@ -154,17 +154,22 @@ private:
   /// VBO used to render the poly line
   GeometryBuffer vbo_;
 
+  /// IBO used to render the poly line
+  IndexBuffer ibo_;
+
   /// Flag to trigger update of vbo
   bool updateVBO_;
 
   /// Sphere for VertexSphere DrawMode
   GLSphere* sphere_;
 
+  /// (Offset in vbo, Vertex count in vbo) for each poly line
   std::vector<std::pair<size_t, size_t> > offsets_;
 
   std::vector< PolyLineNodeT<typename PolyLineCollection::PolyLine>* > polylineNodes_;
 
   size_t total_vertex_count_;
+  size_t total_segment_count_;
 };
 
 

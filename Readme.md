@@ -21,4 +21,5 @@ http://openflipper.org/Documentation/latest/buildingOpenFlipper.html
 Latest NEWS
 ===========
 
-- 12.08.2016: Moved the cmake directory contents into OpenFlipper/cmake (First steps to reduce number of toplevel dirs and get more modular than before)
+- 12/08/2016: Moved CI directory into OpenFlipper subdirectory to remove toplevel dir count
+- 12/08/2016: Moved the cmake directory contents into OpenFlipper/cmake (First steps to reduce number of toplevel dirs and get more modular than before)

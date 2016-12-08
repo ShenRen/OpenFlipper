@@ -17,3 +17,8 @@ qwt ( >=6.0 )   optional http://qwt.sourceforge.net/
 # Compiling OpenFlipper:
 A detailed compilation manual is available online at:
 http://openflipper.org/Documentation/latest/buildingOpenFlipper.html
+
+Latest NEWS
+===========
+
+- 12.08.2017: Moved the cmake directory contents into OpenFlipper/cmake (First steps to reduce number of toplevel dirs and get more modular than before)

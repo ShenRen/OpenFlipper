@@ -15,8 +15,7 @@ GLEW            http://glew.sourceforge.net
 qwt ( >=6.0 )   optional http://qwt.sourceforge.net/  
 
 # Compiling OpenFlipper:
-A detailed compilation manual is available online at:
-http://openflipper.org/Documentation/latest/buildingOpenFlipper.html
+A detailed compilation manual is available [here](http://openflipper.org/Documentation/latest/a00099.html).
 
 Latest NEWS
 ===========

@@ -476,13 +476,17 @@ function (_build_openflipper_plugin plugin)
           "${CMAKE_SOURCE_DIR}/Package-*"
     )
 
+    # ${CMAKE_BINARY_DIR}/OpenFlipper/libs_required/ACG  : Required due to ui files creating headers there
+
     include_directories (
       .
       ${PACKAGE_DIRS}
       ${CMAKE_SOURCE_DIR}
+      ${ACG_INCLUDE_DIR}
       ${OPENMESH_INCLUDE_DIRS}
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${CMAKE_CURRENT_BINARY_DIR}
+      ${CMAKE_BINARY_DIR}/OpenFlipper/libs_required/ACG
       ${${_PLUGIN}_DEPS_INCDIRS}
       ${${_PLUGIN}_INCDIRS}
       ${OPENGL_INCLUDE_DIR}

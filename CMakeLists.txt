@@ -182,6 +182,8 @@ if(NO_DECREMENT_DEPRECATED_WARNINGS)
   add_definitions( -DNO_DECREMENT_DEPRECATED_WARNINGS )
 endif()
 
+find_package(ACG)
+
 # OpenMesh is a dependent project (in libs_required) so no finder is needed.
 if (NOT USE_INTERNAL_OPENMESH)
   find_package (OpenMesh REQUIRED)
@@ -284,7 +286,7 @@ endif()
 # ========================================================================
 # Core Library Components (Except the Core application)
 # ========================================================================
-add_subdirectory (ACG)
+add_subdirectory (OpenFlipper/libs_required/ACG)
 add_subdirectory (OpenFlipper/PluginLib)
 
 # ========================================================================

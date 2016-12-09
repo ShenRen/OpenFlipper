@@ -128,7 +128,7 @@ void icp(const std::vector< VectorT >& _points1 , const std::vector< VectorT >& 
 //=============================================================================
 #if defined(INCLUDE_TEMPLATES) && !defined(ICP_C)
 #define ICP_TEMPLATES
-#include "ICP.cc"
+#include "ICPT.cc"
 #endif
 //=============================================================================
 #endif // ICP_HH defined

@@ -1,4 +1,4 @@
-rmdir libs_required\OpenMesh /s
+rmdir libs_required\OpenMesh /s /q
 
 
 git submodule init

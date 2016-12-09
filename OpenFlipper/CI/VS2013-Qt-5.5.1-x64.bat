@@ -1,3 +1,6 @@
+rmdir libs_required\OpenMesh /s
+
+
 git submodule init
 git submodule update --remote
 

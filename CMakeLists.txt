@@ -285,6 +285,7 @@ endforeach ()
 # Group the external libraries in a folder libs_required
 GROUP_PROJECT(OpenMeshTools libs_required)
 GROUP_PROJECT(OpenMeshCore libs_required)
+GROUP_PROJECT(ACG libs_required)
 GROUP_PROJECT(OpenVolumeMesh libs_required)
 
 if( DOXYGEN_FOUND )

@@ -102,6 +102,7 @@ set (directories
 # generate dllexport macros on windows
 if (WIN32)
   add_definitions(-DACGDLL)
+  remove_definitions(-DUSEACG)
 endif ()
 
 # collect all header,source and ui files

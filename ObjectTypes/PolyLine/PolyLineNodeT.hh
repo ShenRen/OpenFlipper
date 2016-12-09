@@ -70,6 +70,7 @@
 #include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/IRenderer.hh>
 #include <ACG/GL/GLPrimitives.hh>
+#include <ACG/GL/globjects.hh>
 
 //== FORWARDDECLARATIONS ======================================================
 
@@ -176,6 +177,33 @@ public:
    */
   void setCustomBuffer(int _id, const void* _buffer);
 
+
+
+  /** \brief Create the vertex declaration
+  *
+  * The vertex data in the vbo contains both vertex and edge colors,
+  * so the vertex declaration decides which bytes to use for colored rendering (if any).
+  * @param _dst Vertex declaration to initialize
+  * @param _colorSource 0 - no colors, 1 - vertex colors, 2 - edge colors
+  *
+  */
+  void setupVertexDeclaration(VertexDeclaration* _dst, int _colorSource) const;
+
+
+  /** \brief Fill a buffer with vertex data
+  *
+  * Fill the specified buffer with vertex buffer data.
+  * The buffer size in bytes can be calculated as vertex stride * num vertices.
+  * If _addLineStripEndVertex is true, then the buffer size is  vertex stride * (num vertices + 1) instead.
+  * Vertex layout and stride can be queried with via setupVertexDeclaration.
+  * @param _buf                   address to buffer to which the vertices are written
+  * @param _bufSize               size in bytes available in the specified buffer
+  * @param _addLineStripEndVertex add a copy of the first vertex to the end of the buffer (useful to close the line in line_strip rendering mode)
+  * @return                       number of bytes written
+  *
+  */
+  size_t fillVertexBuffer(void* _buf, size_t _bufSize, bool _addLineStripEndVertex);
+
 private:
 
   void pick_vertices       ( GLState& _state );
@@ -211,16 +239,6 @@ private:
    */
   void updateVBO();
 
-  /** \brief Create the vertex declaration
-  *
-  * The vertex data in the vbo contains both vertex and edge colors,
-  * so the vertex declaration decides which bytes to use for colored rendering (if any).
-  * @param _dst Vertex declaration to initialize
-  * @param _colorSource 0 - no colors, 1 - vertex colors, 2 - edge colors
-  *
-  */
-  void setupVertexDeclaration(VertexDeclaration* _dst, int _colorSource) const;
-
   /** \brief Write vertex data for rendering to a buffer
    *
    * @param _vertex index of polyline vertex
@@ -242,7 +260,7 @@ private:
   PolyLine& polyline_;
 
   /// VBO used to render the poly line
-  unsigned int vbo_;
+  GeometryBuffer vbo_;
 
   /// Index buffer for selected vertices
   std::vector<unsigned int> selectedVertexIndexBuffer_;

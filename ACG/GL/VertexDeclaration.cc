@@ -94,6 +94,17 @@ unsigned int VertexElement::getByteOffset() const
   return static_cast<unsigned int>(offset.u);
 }
 
+bool VertexElement::operator ==(const VertexElement &_other) const
+{
+  return (type_ == _other.type_) &&
+      (numElements_ == _other.numElements_) &&
+      (usage_ == _other.usage_) &&
+      (shaderInputName_ == _other.shaderInputName_) &&
+      (pointer_ == _other.pointer_) &&
+      (divisor_ == _other.divisor_) &&
+      (vbo_ == _other.vbo_);
+}
+
 VertexDeclaration::VertexDeclaration()
 : vertexStride_(0), strideUserDefined_(0)
 {
@@ -532,11 +543,17 @@ unsigned int VertexDeclaration::getVertexStride(unsigned int i) const
   if (strideUserDefined_)
     return vertexStride_;
 
-  unsigned int vbo = getElement(i)->vbo_;
-  std::map<unsigned int, unsigned int>::const_iterator it = vertexStridesVBO_.find(vbo);
+  const VertexElement* element = getElement(i);
 
-  return (it != vertexStridesVBO_.end()) ? it->second : vertexStride_;
-//  return vertexStride_;
+  if (element)
+  {
+    unsigned int vbo = getElement(i)->vbo_;
+    std::map<unsigned int, unsigned int>::const_iterator it = vertexStridesVBO_.find(vbo);
+
+    return (it != vertexStridesVBO_.end()) ? it->second : vertexStride_;
+  }
+
+  return 0;
 }
 
 
@@ -614,6 +631,21 @@ QString VertexDeclaration::toString() const
   }
 
   return result;
+}
+
+bool VertexDeclaration::operator ==(const VertexDeclaration &_other) const
+{
+  if (strideUserDefined_ != _other.strideUserDefined_ ||
+      vertexStride_ != _other.vertexStride_)
+    return false;
+
+  if (elements_ != _other.elements_)
+    return false;
+
+  if (vertexStridesVBO_ != _other.vertexStridesVBO_)
+    return false;
+
+  return true;
 }
 
 bool VertexDeclaration::supportsInstancedArrays()

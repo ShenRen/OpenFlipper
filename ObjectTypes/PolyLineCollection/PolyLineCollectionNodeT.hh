@@ -58,6 +58,8 @@
 #include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/IRenderer.hh>
 #include <ACG/GL/GLPrimitives.hh>
+#include <ACG/GL/globjects.hh>
+#include <ObjectTypes/PolyLine/PolyLineNodeT.hh>
 
 //== FORWARDDECLARATIONS ======================================================
 
@@ -88,7 +90,7 @@ public:
   PolyLineCollectionNodeT(PolyLineCollection& _pl, BaseNode* _parent = 0, std::string _name = "<PolyLineCollectionNode>");
 
   /// Destructor
-  virtual ~PolyLineCollectionNodeT() {}
+  virtual ~PolyLineCollectionNodeT();
 
   PolyLineCollection& polyline_collection() { return polyline_collection_; }
 
@@ -117,7 +119,7 @@ public:
   void getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::SceneGraph::DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
 
   /// Trigger an update of the vbo
-  void update() { updateVBO_ = true; };
+  void update() { updateVBO_ = true; }
   void resetVBO() {offsets_.clear();}
 
 private:
@@ -129,7 +131,9 @@ private:
   PolyLineCollectionNodeT& operator=(const PolyLineCollectionNodeT& _rhs);
 
   /// Buffer organization
-  ACG::VertexDeclaration vertexDecl_;
+  ACG::VertexDeclaration vertexDecl_;       // layout without colors
+  ACG::VertexDeclaration vertexDeclVColor_; // layout with vertex colors
+  ACG::VertexDeclaration vertexDeclEColor_; // layout with edge colors
 
   /** \brief Trigger an update of the vbo
    *
@@ -138,12 +142,9 @@ private:
    */
   void updateVBO();
 
-  /** \brief Write vertex data for rendering to a buffer
-   *
-   * @param _vertex index of polyline vertex
-   * @param _dst address of vertex in buffer
-   */
-  void writeVertex(typename PolyLineCollection::PolyLine* _polyline, unsigned int _vertex, void* _dst);
+
+  void pick_vertices(GLState& _state);
+  void pick_edges(GLState& _state, unsigned int _offset = 0);
 
 private:
 
@@ -151,7 +152,10 @@ private:
   PolyLineCollection& polyline_collection_;
 
   /// VBO used to render the poly line
-  unsigned int vbo_;
+  GeometryBuffer vbo_;
+
+  /// IBO used to render the poly line
+  IndexBuffer ibo_;
 
   /// Flag to trigger update of vbo
   bool updateVBO_;
@@ -159,9 +163,13 @@ private:
   /// Sphere for VertexSphere DrawMode
   GLSphere* sphere_;
 
+  /// (Offset in vbo, Vertex count in vbo) for each poly line
   std::vector<std::pair<size_t, size_t> > offsets_;
 
+  std::vector< PolyLineNodeT<typename PolyLineCollection::PolyLine>* > polylineNodes_;
+
   size_t total_vertex_count_;
+  size_t total_segment_count_;
 };
 
 

@@ -55,7 +55,7 @@ IF (NOT OPENMESH_FOUND)
     /usr/
     "${CMAKE_SOURCE_DIR}/OpenMesh/src/OpenMesh"
     "${CMAKE_SOURCE_DIR}/libs_required/OpenMesh/src/OpenMesh"
-    "${CMAKE_SOURCE_DIR}/OpenFlipper/libs_required/OpenMesh/src/OpenMesh"
+    "${CMAKE_SOURCE_DIR}/OpenFlipper/libs_required/OpenMesh/src"
     "${CMAKE_SOURCE_DIR}/../OpenMesh/src/OpenMesh"
     "C:/Program Files/OpenMesh 3.2"
     "C:/Program Files/OpenMesh 3.1"

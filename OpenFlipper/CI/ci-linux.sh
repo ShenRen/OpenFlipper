@@ -58,6 +58,10 @@ fi
 echo "Building with path: build-release-$BUILDPATH"
 echo "Full cmake options: $OPTIONS  "
 
+########################################
+# Build daemon cleanup code
+########################################
+rm -rf libs_required/OpenMesh
 
 ########################################
 # Fetch submodules
@@ -65,6 +69,11 @@ echo "Full cmake options: $OPTIONS  "
 git submodule init
 git submodule update --remote
 
+########################################
+# Show information for easier debugging
+########################################
+git submodule status
+ls OpenFlipper/libs_required/
 
 ########################################
 # Fetch test data

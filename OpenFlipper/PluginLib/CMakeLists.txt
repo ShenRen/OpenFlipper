@@ -33,7 +33,6 @@ file (
       "${CMAKE_SOURCE_DIR}/Package-*"
 )
 
-
 include_directories (
   ..
   ${PACKAGE_DIRS}

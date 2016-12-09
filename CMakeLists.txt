@@ -215,6 +215,9 @@ enable_testing()
 # Build all additional libraries
 # ========================================================================
 
+add_subdirectory (OpenFlipper/libs_required/OpenMesh)
+add_subdirectory (OpenFlipper/libs_required/ACG)
+
 # search all libs in the libs directory
 # (required and optional libraries
 file (
@@ -286,7 +289,6 @@ endif()
 # ========================================================================
 # Core Library Components (Except the Core application)
 # ========================================================================
-add_subdirectory (OpenFlipper/libs_required/ACG)
 add_subdirectory (OpenFlipper/PluginLib)
 
 # ========================================================================

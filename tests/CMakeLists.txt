@@ -57,7 +57,7 @@ SET (CTEST_DROP_SITE_CDASH FALSE)
     find_package(GoogleTest)
 
     if(GTEST_FOUND)
-      add_subdirectory(${CMAKE_SOURCE_DIR}/libs_required/OpenMesh/src/Unittests ${CMAKE_BINARY_DIR}/libs_required/OpenMesh/src/Unittests)
+      add_subdirectory(${CMAKE_SOURCE_DIR}/OpenFlipper/libs_required/OpenMesh/src/Unittests ${CMAKE_BINARY_DIR}/OpenFlipper/libs_required/OpenMesh/src/Unittests)
     endif()
 
   endif()

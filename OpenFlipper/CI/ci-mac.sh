@@ -1,9 +1,20 @@
+########################################
+# Build daemon cleanup code
+########################################
+rm -rf libs_required/OpenMesh
+
 
 ########################################
 # Fetch submodules
 ########################################
 git submodule init
 git submodule update --remote
+
+########################################
+# Show information for easier debugging
+########################################
+git submodule status
+ls OpenFlipper/libs_required/
 
 
 ########################################

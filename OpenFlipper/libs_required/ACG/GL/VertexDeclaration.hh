@@ -100,6 +100,14 @@ struct ACGDLLEXPORT VertexElement
   /*! interpret pointer_ as byte offset
   */
   unsigned int getByteOffset() const;
+
+  /*! comparison operator
+  */
+  bool operator == (const VertexElement& _other) const;
+
+  /*! comparison operator
+  */
+  bool operator != (const VertexElement& _other) const {return !(*this == _other);}
 };
 
 /** \brief Class to define the vertex input layout
@@ -352,6 +360,15 @@ public:
   /*! Returns a string describing the vertex format for debugging purpose.
   */
   QString toString() const;
+
+
+  /*! comparison operator
+  */
+  bool operator ==(const VertexDeclaration& _other) const;
+
+  /*! comparison operator
+  */
+  bool operator !=(const VertexDeclaration& _other) const {return !(*this == _other);}
 
 private:
 

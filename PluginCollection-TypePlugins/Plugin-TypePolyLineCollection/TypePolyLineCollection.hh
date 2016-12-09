@@ -54,15 +54,13 @@
 #include <OpenFlipper/common/Types.hh>
 #include <ObjectTypes/PolyLineCollection/PolyLineCollection.hh>
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
-#include <OpenFlipper/BasePlugin/LoadSaveInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 #include <OpenFlipper/BasePlugin/TypeInterface.hh>
 
-class TypePolyLineCollectionPlugin : public QObject, BaseInterface, LoadSaveInterface, LoggingInterface, TypeInterface
+class TypePolyLineCollectionPlugin : public QObject, BaseInterface, LoggingInterface, TypeInterface
 {
    Q_OBJECT
    Q_INTERFACES(BaseInterface)
-   Q_INTERFACES(LoadSaveInterface)
    Q_INTERFACES(LoggingInterface)
    Q_INTERFACES(TypeInterface)
 
@@ -75,7 +73,7 @@ class TypePolyLineCollectionPlugin : public QObject, BaseInterface, LoadSaveInte
     void log(Logtype _type, QString _message);
     void log(QString _message);
 
-    // LoadSave Interface
+    // Type Interface
     void emptyObjectAdded( int _id );
 
   private slots:

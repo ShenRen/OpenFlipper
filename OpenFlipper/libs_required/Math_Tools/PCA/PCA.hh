@@ -136,7 +136,7 @@ private:
 //=============================================================================
 #if defined(INCLUDE_TEMPLATES) && !defined(PCA_C)
 #define PCA_TEMPLATES
-#include "PCA.cc"
+#include "PCAT.cc"
 #endif
 //=============================================================================
 #endif // PCA_HH defined

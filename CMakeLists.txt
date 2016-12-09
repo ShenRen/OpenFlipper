@@ -2,6 +2,11 @@
 # Required 3.1 to set C++11 
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
+# Convenience checks for problems
+if(EXISTS ${CMAKE_SOURCE_DIR}/libs_required/OpenMesh)
+  message(FATAL_ERROR "Directory libs_required/OpenMesh has been moved to OpenFlipper/libs_required/OpenMesh! Please remove the old directory if it's still there!")
+endif()
+
 # Set and enforce C++-11 flags
 set( CMAKE_CXX_STANDARD_REQUIRED TRUE )
 set( CMAKE_CXX_STANDARD 11 )

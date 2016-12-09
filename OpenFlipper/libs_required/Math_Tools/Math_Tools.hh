@@ -83,7 +83,7 @@ sane_normalized( VectorT _vec);
 //=============================================================================
 #if defined(INCLUDE_TEMPLATES) && !defined(MATH_TOOLS_C)
 #define MATH_TOOLS_TEMPLATES
-#include "Math_Tools.cc"
+#include "Math_ToolsT.cc"
 #endif
 //=============================================================================
 #endif // ACG_GEODESICFASTMARCHT_HH defined

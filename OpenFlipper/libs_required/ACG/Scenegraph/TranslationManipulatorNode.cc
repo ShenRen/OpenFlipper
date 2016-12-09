@@ -64,7 +64,7 @@
 
 #include <ACG/GL/IRenderer.hh>
 
-#include <Math_Tools/Math_Tools.hh>
+#include <OpenMesh/Core/Geometry/MathDefs.hh>
 
 //== NAMESPACES ===============================================================
 
@@ -2140,10 +2140,19 @@ TranslationManipulatorNode::set_direction(const Vec3d& _directionX, const Vec3d&
 //----------------------------------------------------------------------------
 
 
+
+
 Vec3d
 TranslationManipulatorNode::directionX() const
 {
-  return MathTools::sane_normalized( localTransformation_.transform_vector(dirX_) );
+  Vec3d direction = localTransformation_.transform_vector(dirX_);
+  
+  if ( ! OpenMesh::is_zero( direction.sqrnorm() ) )
+     direction.normalize();
+  else
+     direction = Vec3d(0.0,0.0,0.0);
+
+  return direction;
 }
 
 //----------------------------------------------------------------------------
@@ -2152,7 +2161,14 @@ TranslationManipulatorNode::directionX() const
 Vec3d
 TranslationManipulatorNode::directionY() const
 {
-  return MathTools::sane_normalized( localTransformation_.transform_vector(dirY_) );
+  Vec3d direction = localTransformation_.transform_vector(dirY_);
+
+  if ( ! OpenMesh::is_zero( direction.sqrnorm() ) )
+     direction.normalize();
+  else
+     direction = Vec3d(0.0,0.0,0.0);
+
+  return direction;
 }
 
 //----------------------------------------------------------------------------
@@ -2161,7 +2177,14 @@ TranslationManipulatorNode::directionY() const
 Vec3d
 TranslationManipulatorNode::directionZ() const
 {
-  return MathTools::sane_normalized(localTransformation_.transform_vector(dirZ_));
+  Vec3d direction = localTransformation_.transform_vector(dirZ_);
+
+  if ( ! OpenMesh::is_zero( direction.sqrnorm() ) )
+     direction.normalize();
+  else
+     direction = Vec3d(0.0,0.0,0.0);
+
+  return direction;
 }
 
 //----------------------------------------------------------------------------

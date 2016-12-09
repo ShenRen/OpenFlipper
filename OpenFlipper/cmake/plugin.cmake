@@ -480,6 +480,7 @@ function (_build_openflipper_plugin plugin)
       .
       ${PACKAGE_DIRS}
       ${CMAKE_SOURCE_DIR}
+      ${ACG_INCLUDE_DIR}
       ${OPENMESH_INCLUDE_DIRS}
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${CMAKE_CURRENT_BINARY_DIR}

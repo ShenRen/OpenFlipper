@@ -18,6 +18,7 @@ FIND_PATH(ACG_INCLUDE_DIR ACG/QtWidgets/QtBaseViewer.hh
 	  PATHS /usr/local/include 
                 /usr/include 
                 "${CMAKE_SOURCE_DIR}/"
+                "${CMAKE_SOURCE_DIR}/OpenFlipper/libs_required/"
                 "${CMAKE_SOURCE_DIR}/../"
                 /ACG/acgdev/gcc-4.3-x86_64/OM2/ACG-2.0/include
                 )

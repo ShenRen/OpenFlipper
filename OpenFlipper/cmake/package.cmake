@@ -195,9 +195,9 @@ if (WIN32)
   elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 12.*" )
     SET(REDISTRIBUTABLE_FILE "${CMAKE_WINDOWS_LIBS_DIR}/vs2013/x32/vcredist_x86.exe")
   elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*Win64" )
-    SET(REDISTRIBUTABLE_FILE "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x64/vcredist_x64.exe")
+    SET(REDISTRIBUTABLE_FILE "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x64/vcredist.x64.exe")
   elseif ( CMAKE_GENERATOR MATCHES "^Visual Studio 14.*" )
-    SET(REDISTRIBUTABLE_FILE "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x32/vcredist_x86.exe")
+    SET(REDISTRIBUTABLE_FILE "${CMAKE_WINDOWS_LIBS_DIR}/vs2015/x32/vcredist.x86.exe")
   endif()
 
   # append dll's to installed package

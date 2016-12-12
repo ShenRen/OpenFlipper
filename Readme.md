@@ -21,6 +21,7 @@ Latest NEWS
 ===========
 
 - 12/12/2016: Moved MeshTools into libs_required (Will be moved to Mesh Datatype when the type linking is changed)
+- 12/12/2016: Redistributables for Visual Studio removed (Now in library Management repository)
 - 12/12/2016: Moved tests directory into OpenFlipper subdir
 - 12/09/2016: Moved Math_Tools to OpenFlipper/libs_required/Math_Tools
 - 12/09/2016: Moved OpenMesh directory into OpenFlipper subdirectory OpenFlipper/libs_required/OpenMesh

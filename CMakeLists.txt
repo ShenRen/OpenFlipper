@@ -300,7 +300,7 @@ add_subdirectory (OpenFlipper/PluginLib)
 # ========================================================================
 # Tests
 # ========================================================================
-add_subdirectory (tests)
+add_subdirectory (OpenFlipper/tests)
 
 # ========================================================================
 # Documentation generators

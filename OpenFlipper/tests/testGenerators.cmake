@@ -95,7 +95,7 @@ function( setup_and_run_file_test TESTFILE TESTSCRIPT TESTNAME TESTSCRIPTNAME )
     string (REGEX MATCH "Plugin-.+[/\\]?$" _plugin_name ${_plugin_dir})
 
     # Configure the test script from the current directory with the given filenames and variables into the test directory
-    configure_file(${CMAKE_SOURCE_DIR}/tests/${TESTSCRIPT}
+    configure_file(${CMAKE_SOURCE_DIR}/OpenFlipper/tests/${TESTSCRIPT}
      ${CMAKE_BINARY_DIR}/tests/${_plugin_name}/${TESTSCRIPTNAME} @ONLY )
 
     # Execute the script by OpenFlipper and than run the result parser which checks for correct values.
@@ -108,7 +108,7 @@ function( setup_and_run_file_test TESTFILE TESTSCRIPT TESTNAME TESTSCRIPTNAME )
        -D output_test=${OUTPUT_TEST_DATA_FILE}
        -D test_file_info=${TEST_FILE_INFO}
        -D result_checker=${OPENFLIPPER_TEST_BINARIES}/compareTool
-       -P ${CMAKE_SOURCE_DIR}/tests/run_file_test.cmake
+       -P ${CMAKE_SOURCE_DIR}/OpenFlipper/tests/run_file_test.cmake
     )
 
     # Timeout after 3 minutes if we have an endless loop
@@ -152,7 +152,7 @@ function( run_local_script_test TEST_SCRIPT )
     ${CMAKE_COMMAND}
     -D test_cmd=${test_cmd}
     -D test_args:string=${args}
-    -P ${CMAKE_SOURCE_DIR}/tests/run_script_test.cmake
+    -P ${CMAKE_SOURCE_DIR}/OpenFlipper/tests/run_script_test.cmake
   )
 
   # Timeout after 3 minutes if we have an endless loop
@@ -304,7 +304,7 @@ function( run_algorithm_test TEST_SCRIPT INPUT_FILE INPUT_REFERENCE )
      -D output_test=${OUTPUT_TEST_DATA_FILE}
      -D test_file_info=${TEST_FILE_INFO}
      -D result_checker=${OPENFLIPPER_TEST_BINARIES}/compareTool
-     -P ${CMAKE_SOURCE_DIR}/tests/run_file_test.cmake
+     -P ${CMAKE_SOURCE_DIR}/OpenFlipper/tests/run_file_test.cmake
   )
 
   # Timeout after 3 minutes if we have an endless loop

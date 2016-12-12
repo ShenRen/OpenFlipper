@@ -20,6 +20,7 @@ A detailed compilation manual is available [here](http://openflipper.org/Documen
 Latest NEWS
 ===========
 
+- 12/12/2016: Moved tests directory into OpenFlipper subdir
 - 12/09/2016: Moved Math_Tools to OpenFlipper/libs_required/Math_Tools
 - 12/09/2016: Moved OpenMesh directory into OpenFlipper subdirectory OpenFlipper/libs_required/OpenMesh
 	      ** You might have to delete your libs_required/OpenMesh directory manually if you get cmake errors regarding duplicate targets **

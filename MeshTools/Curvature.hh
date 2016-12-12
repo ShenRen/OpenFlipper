@@ -102,7 +102,7 @@ void discrete_mean_curv_op( const MeshT&                           _m,
 //=============================================================================
 #if defined(INCLUDE_TEMPLATES) && !defined(CURVATURE_C)
 #define CURVATURE_TEMPLATES
-#include "Curvature.cc"
+#include "CurvatureT.cc"
 #endif
 //=============================================================================
 #endif // CURVATURE_HH defined

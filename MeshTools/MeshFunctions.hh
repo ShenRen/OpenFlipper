@@ -177,7 +177,7 @@ void transformHandleVertices(ACG::Matrix4x4d _matrix , MeshT& _mesh);
 //=============================================================================
 #if defined(INCLUDE_TEMPLATES) && !defined(MESHFUNCTIONS_C)
 #define MESHFUNCTIONS_TEMPLATES
-#include "MeshFunctions.cc"
+#include "MeshFunctionsT.cc"
 #endif
 //=============================================================================
 #endif // MESHFUNCTIONS_HH defined

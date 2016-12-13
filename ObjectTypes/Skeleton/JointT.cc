@@ -257,7 +257,7 @@ inline std::string JointT<PointT>::name() const {
 //-----------------------------------------------------------------------------------------------------
 
 template<typename PointT>
-inline void JointT<PointT>::setName(const std::string _name) {
+inline void JointT<PointT>::setName(const std::string& _name) {
   name_ = _name;
 }
 

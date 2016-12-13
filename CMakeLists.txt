@@ -2,6 +2,11 @@
 # Required 3.1 to set C++11 
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
+# Convenience checks for problems
+if(EXISTS ${CMAKE_SOURCE_DIR}/libs_required/OpenMesh)
+  message(FATAL_ERROR "Directory libs_required/OpenMesh has been moved to OpenFlipper/libs_required/OpenMesh! Please remove the old directory if it's still there!")
+endif()
+
 # Set and enforce C++-11 flags
 set( CMAKE_CXX_STANDARD_REQUIRED TRUE )
 set( CMAKE_CXX_STANDARD 11 )
@@ -42,7 +47,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # add our macro directory to cmake search path
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/OpenFlipper/cmake)
+
+# Include some of our OpenFlipper cmake macros
+include(OpenFlipper_common)
 
 # search for more macro directories in Package-* folders
 file (
@@ -179,6 +187,8 @@ if(NO_DECREMENT_DEPRECATED_WARNINGS)
   add_definitions( -DNO_DECREMENT_DEPRECATED_WARNINGS )
 endif()
 
+find_package(ACG)
+
 # OpenMesh is a dependent project (in libs_required) so no finder is needed.
 if (NOT USE_INTERNAL_OPENMESH)
   find_package (OpenMesh REQUIRED)
@@ -209,6 +219,9 @@ enable_testing()
 # ========================================================================
 # Build all additional libraries
 # ========================================================================
+
+add_subdirectory (OpenFlipper/libs_required/OpenMesh)
+add_subdirectory (OpenFlipper/libs_required/ACG)
 
 # search all libs in the libs directory
 # (required and optional libraries
@@ -272,6 +285,7 @@ endforeach ()
 # Group the external libraries in a folder libs_required
 GROUP_PROJECT(OpenMeshTools libs_required)
 GROUP_PROJECT(OpenMeshCore libs_required)
+GROUP_PROJECT(ACG libs_required)
 GROUP_PROJECT(OpenVolumeMesh libs_required)
 
 if( DOXYGEN_FOUND )
@@ -281,13 +295,12 @@ endif()
 # ========================================================================
 # Core Library Components (Except the Core application)
 # ========================================================================
-add_subdirectory (ACG)
 add_subdirectory (OpenFlipper/PluginLib)
 
 # ========================================================================
 # Tests
 # ========================================================================
-add_subdirectory (tests)
+add_subdirectory (OpenFlipper/tests)
 
 # ========================================================================
 # Documentation generators

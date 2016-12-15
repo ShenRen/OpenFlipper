@@ -179,6 +179,8 @@ private: //---------------------------------------------------------------------
   /// Store ray collide information
   struct RayCollisionData
   {
+    RayCollisionData() : ref(), ray() {}
+
     Point   ref;
     Point   ray;
     RayCollision hit_handles;

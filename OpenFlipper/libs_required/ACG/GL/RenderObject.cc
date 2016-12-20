@@ -164,6 +164,8 @@ void RenderObject::setupShaderGenFromDrawmode( const SceneGraph::DrawModes::Draw
 
     if (_props->normalSource() == SceneGraph::DrawModes::NORMAL_PER_FACE)
       shaderDesc.vertexNormalInterpolator = "flat";
+    else
+      shaderDesc.vertexNormalInterpolator.clear();
 
     if (_props->primitive() == SceneGraph::DrawModes::PRIMITIVE_WIREFRAME ||
         _props->primitive() == SceneGraph::DrawModes::PRIMITIVE_HIDDENLINE ||

@@ -773,6 +773,9 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
     if (props->flatShaded())
       ro.shaderDesc.shadeMode = SG_SHADE_FLAT;
 
+    if (props->normalSource() == DrawModes::NORMAL_PER_FACE)
+      ro.shaderDesc.vertexNormalInterpolator = "flat";
+
     // handle 'special' primitives (wireframe, hiddenline, primitives in sysmem buffers)..
 
     if (props->primitive() == DrawModes::PRIMITIVE_WIREFRAME)

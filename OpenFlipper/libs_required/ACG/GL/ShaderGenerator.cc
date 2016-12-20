@@ -178,11 +178,10 @@ void ShaderGenerator::initVertexShaderIO(const ShaderGenDesc* _desc, const Defau
     addInput("vec4", keywords.vs_inputColor);
 
   if (_iodesc->passNormalVS_)
-    addOutput("vec3", keywords.vs_outputNormalVS);
+    addStringToList("vec3 " + keywords.vs_outputNormalVS, &outputs_, _desc->vertexNormalInterpolator + " out ", ";");
 
   if (_iodesc->passNormalOS_)
-    addOutput("vec3", keywords.vs_outputNormalOS);
-
+    addStringToList("vec3 " + keywords.vs_outputNormalOS, &outputs_, _desc->vertexNormalInterpolator + " out ", ";");
 
   // vertex color output
 

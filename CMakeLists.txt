@@ -224,12 +224,14 @@ add_subdirectory (OpenFlipper/libs_required/OpenMesh)
 add_subdirectory (OpenFlipper/libs_required/ACG)
 
 # search all libs in the libs directory
-# (required and optional libraries
+# in Packages, types, ...
+# (required and optional libraries )
 file (
   GLOB _local_libs_in
   RELATIVE "${CMAKE_SOURCE_DIR}"
            "${CMAKE_SOURCE_DIR}/libs_required/*/CMakeLists.txt"
            "${CMAKE_SOURCE_DIR}/libs/*/CMakeLists.txt"
+           "${CMAKE_SOURCE_DIR}/Type-*/libs/*/CMakeLists.txt"
            "${CMAKE_SOURCE_DIR}/Package-*/libs/*/CMakeLists.txt"
 )
 

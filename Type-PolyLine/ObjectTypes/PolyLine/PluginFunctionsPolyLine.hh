@@ -79,7 +79,7 @@ namespace PluginFunctions {
  * @param _polylines ( vector returning the source polylines )
  * @return false, if no polyline is selected as source
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getSourcePolylines( std::vector<PolyLine*>& _polylines  );
 
 /** \brief Get a pointer to every Polyline which is marked as a target.
@@ -87,14 +87,14 @@ bool getSourcePolylines( std::vector<PolyLine*>& _polylines  );
  * @param _polylines ( vector returning the target polylines )
  * @return false, if no polyline is selected as target
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getTargetPolylines( std::vector<PolyLine*>& _polylines  );
 
 
 /** This functions returns the object with the given id if it is a PolyLineObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject(  int _identifier , PolyLineObject*& _object );
 
 /** \brief Get a poly Line from an object.
@@ -102,7 +102,7 @@ bool getObject(  int _identifier , PolyLineObject*& _object );
  * @param _object The object should be of type BaseDataObject. If the content is a poly Line, a
  *                poly line will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PolyLine* polyLine( BaseObjectData* _object );
 
 /** \brief Cast an BaseObject to a PolyLineObject if possible
@@ -110,7 +110,7 @@ PolyLine* polyLine( BaseObjectData* _object );
  * @param _object The object should be of type BaseDataObject. If the content is a polyLine, a
  *                a PolyLineObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PolyLineObject* polyLineObject( BaseObjectData* _object );
 
 /** \brief Get an PolyLineObject from the given id If possible
@@ -118,7 +118,7 @@ PolyLineObject* polyLineObject( BaseObjectData* _object );
 * @param _objectId Id of the requested Object. If the content is a volume, a
 *                  a PolyLineObject is returned. Otherwise a NULL pointer is returned.
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PolyLineObject* polyLineObject( int _objectId );
 
 }

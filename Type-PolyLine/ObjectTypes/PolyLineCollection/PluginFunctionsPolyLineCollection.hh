@@ -80,7 +80,7 @@ namespace PluginFunctions {
  * @return false, if no PolylineCollection is selected as source
 */
 
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getSourcePolylineCollections( std::vector<PolyLineCollection*>& _polylines  );
 
 /** \brief Get a pointer to every Polyline Collection which is marked as a target.
@@ -89,7 +89,7 @@ bool getSourcePolylineCollections( std::vector<PolyLineCollection*>& _polylines 
  * @return false, if no PolylineCollection is selected as target
 */
 
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getTargetPolylineCollections( std::vector<PolyLineCollection*>& _polylines  );
 
 
@@ -97,7 +97,7 @@ bool getTargetPolylineCollections( std::vector<PolyLineCollection*>& _polylines 
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
 
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject(  int _identifier , PolyLineCollectionObject*& _object );
 
 /** \brief Get a polyLine Collection from an object.
@@ -106,7 +106,7 @@ bool getObject(  int _identifier , PolyLineCollectionObject*& _object );
  *                Polyline Collection will be returned. Otherwise a NULL pointer is returned.
  */
 
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PolyLineCollection* polyLineCollection( BaseObjectData* _object );
 
 /** \brief Cast an BaseObject to a Polyline Collection Object if possible
@@ -115,7 +115,7 @@ PolyLineCollection* polyLineCollection( BaseObjectData* _object );
  *                a Polyline Collection Object is returned. Otherwise a NULL pointer is returned.
  */
 
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PolyLineCollectionObject* polyLineCollectionObject( BaseObjectData* _object );
 
 /** \brief Get an Polyline Collection Object from the given id If possible
@@ -124,7 +124,7 @@ PolyLineCollectionObject* polyLineCollectionObject( BaseObjectData* _object );
 *                  a Polyline Collection Object is returned. Otherwise a NULL pointer is returned.
 */
 
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PolyLineCollectionObject* polyLineCollectionObject( int _objectId );
 
 }

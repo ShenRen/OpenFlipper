@@ -69,7 +69,7 @@
 
 #include "PolyLineCollectionNodeT.hh"
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 //== TYPEDEFS =================================================================
 
@@ -77,7 +77,7 @@
 
 /** This class provides the functionality for all kind of polyline collections for the framework
  */
-class DLLEXPORT PolyLineCollectionObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT PolyLineCollectionObject : public BaseObjectData {
   public:
 
     typedef PolyLineCollection PolyLineCollectionType;

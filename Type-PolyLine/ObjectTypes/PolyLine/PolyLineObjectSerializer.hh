@@ -67,7 +67,7 @@
 
 /** This class provides the functionality for serializing PolyLineObjects including all known object data
  */
-class DLLEXPORT PolyLineObjectSerializer
+class OBJECTTYPEDLLEXPORT PolyLineObjectSerializer
 {
 private:
     PolyLineObject* instance;

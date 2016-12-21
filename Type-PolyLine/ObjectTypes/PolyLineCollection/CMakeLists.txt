@@ -23,7 +23,8 @@ link_directories (
 # generate dllexport macros on windows
 if (WIN32)
   add_definitions (
-    -DPLUGINLIBDLL
+    -DPLUGINLIBDLL    
+    -DBUILDOBJECTTYPEDLL
     -DACGDLL
     -DUSEACG
   )

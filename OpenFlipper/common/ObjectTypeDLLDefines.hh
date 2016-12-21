@@ -47,87 +47,45 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifndef QTPLANESELECT_HH
-#define QTPLANESELECT_HH
-
-#include <ACG/GL/GLState.hh>
-#include <ACG/Math/VectorT.hh>
-
-#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
-
-#include <ACG/Scenegraph/TransformNode.hh>
-#include <ACG/Scenegraph/LineNode.hh>
-#include <ObjectTypes/Plane/PlaneNode.hh>
-
-#include <qnamespace.h>
-#include <QObject>
-
-#include <list>
-
-class OBJECTTYPEDLLEXPORT QtPlaneSelect : public QObject
-{
-    Q_OBJECT
-
-    /*******************************************************************************
-             Initialization and deinitialization
-     *******************************************************************************/
-    public:
-        QtPlaneSelect( ACG::GLState& glState );
-        ~QtPlaneSelect();
-
-    
-    /*******************************************************************************
-             Public slots.
-     *******************************************************************************/
-    public slots:
-
-        /*******************************************************************************
-                     Call this to notify the scissor about mouse actions.
-         *******************************************************************************/
-        void slotMouseEvent(QMouseEvent* _event);
-
-        /*******************************************************************************
-                     Call this to notify the scissor about mouse actions.
-         *******************************************************************************/
-        void slotKeyReleaseEvent(QKeyEvent* _event);
-
-    /*******************************************************************************
-             Signals ("callbacks")
-     *******************************************************************************/
-    signals:
-        void signalTriggerCut( );
-        void updateViewProxy();
-        void nodeVisChangedProxy(int _id);
-
-
-    /*******************************************************************************
-            Public accessors.
-     *******************************************************************************/
-    public:
-        ACG::Vec3d           getNormal( ) { return normal; }
-        ACG::Vec3d           getSourcePoint( ) { return sourcePoint3D; }
-        size_t               getNode() { return nodeIdx_; };
-        size_t               getTargetIndex() { return targetIdx_; };
-
-    
-    /*******************************************************************************
-             Members
-     *******************************************************************************/
-    protected:
-        ACG::GLState&       glState;
-        ACG::Vec3d          sourcePoint3D;
-        ACG::Vec3d          normal;
-        size_t              nodeIdx_;
-        size_t              targetIdx_;
-        bool                isDragging;
-
-        PlaneNode*         planeNode_;
-
-    private:
-        Plane plane_;
-        void setPlaneAndSize(const ACG::Vec3d& _sourcePoint3D,const ACG::Vec3d& _target2D);
-};
 
 
 
-#endif // QTPLANESELECT_HH
+//=============================================================================
+//
+//  Global defines for OpenFlipper
+//
+//=============================================================================
+
+/**
+ * \file ObjectTypeDLLDefines.hh
+ * This File contains the required defines for the OpenFlipper Framework
+ * using ObjectTypes
+ */
+
+#pragma once
+
+//== DEEFINES =================================================================
+
+#ifndef OBJECTTYPEDLLEXPORT
+	#ifdef WIN32
+		#ifndef BUILDOBJECTTYPEDLL
+			#define OBJECTTYPEDLLEXPORT __declspec(dllimport)
+			#define OBJECTTYPEDLLEXPORTONLY
+		#else
+			#define OBJECTTYPEDLLEXPORT __declspec(dllexport)
+			#define OBJECTTYPEDLLEXPORTONLY __declspec(dllexport)
+		#endif
+	#else
+		#define OBJECTTYPEDLLEXPORT
+		#define OBJECTTYPEDLLEXPORTONLY
+	#endif
+#endif
+
+// Disable the warnings about needs to have DLL interface as we have tons of vector templates
+#ifdef WIN32
+  #pragma warning( disable: 4251 )
+#endif
+
+
+//=============================================================================
+//=============================================================================

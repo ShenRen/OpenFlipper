@@ -68,7 +68,7 @@
 
 #include <OpenFlipper/common/BaseObjectData.hh>       
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 #include "PlaneTypes.hh"
 
@@ -76,7 +76,7 @@
 
 // //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT PlaneObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT PlaneObject : public BaseObjectData {
 
   friend class TypePlanePlugin;
 

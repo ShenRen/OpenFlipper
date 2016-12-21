@@ -49,14 +49,14 @@
 
 #pragma once
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include <OpenFlipper/common/perObjectData.hh>
 #include <ACG/Math/VectorT.hh>
 #include <vector>
 
 #define BEZSPLINE_DATA "BezierSpline_Data"
 
-class DLLEXPORT PolyLineBezierSplineData : public PerObjectData
+class OBJECTTYPEDLLEXPORT PolyLineBezierSplineData : public PerObjectData
 {
 
 public:

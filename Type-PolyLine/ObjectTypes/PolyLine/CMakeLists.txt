@@ -24,6 +24,7 @@ link_directories (
 if (WIN32)
   add_definitions (
     -DPLUGINLIBDLL
+    -DBUILDOBJECTTYPEDLL
     -DACGDLL
     -DUSEACG
   )

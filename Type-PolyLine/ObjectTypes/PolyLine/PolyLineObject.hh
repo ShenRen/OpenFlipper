@@ -71,7 +71,7 @@
 
 #include <ObjectTypes/PolyLine/PolyLineNodeT.hh>
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 //== TYPEDEFS =================================================================
 
@@ -79,7 +79,7 @@
 
 /** This class provides the functionality for all kind of meshes for the framework
  */
-class DLLEXPORT PolyLineObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT PolyLineObject : public BaseObjectData {
 
   friend class TypePolyLinePlugin;
 

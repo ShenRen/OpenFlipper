@@ -61,7 +61,7 @@
 
 #include <ACG/Math/Matrix4x4T.hh>
 #include <ACG/Math/VectorT.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 //== NAMESPACES ===============================================================
 
@@ -74,7 +74,7 @@
 
 **/
 
-class DLLEXPORT Plane {
+class OBJECTTYPEDLLEXPORT Plane {
 
 public:
 

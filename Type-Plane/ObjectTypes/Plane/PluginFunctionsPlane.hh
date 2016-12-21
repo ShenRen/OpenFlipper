@@ -64,6 +64,7 @@
 #define PLUGINFUNCTIONSPLANE_HH
 
 #include <OpenFlipper/common/Types.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 /** The Namespace PluginFunctions contains functions for all plugins. */
 namespace PluginFunctions {
@@ -71,7 +72,7 @@ namespace PluginFunctions {
 /** This functions returns the object with the given id if it is a PlaneObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject(  int _identifier , PlaneObject*& _object );
 
 /** \brief Get a PlaneNode from an object.
@@ -79,7 +80,7 @@ bool getObject(  int _identifier , PlaneObject*& _object );
  * @param _object The object should be of type BaseDataObject. If the content is a plane, a
  *                PlaneNode will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PlaneNode* planeNode( BaseObjectData* _object );
 
 /** \brief Get a Plane from an object.
@@ -87,7 +88,7 @@ PlaneNode* planeNode( BaseObjectData* _object );
  * @param _object The object should be of type BaseDataObject. If the content is a plane, a
  *                Plane will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 Plane* plane( BaseObjectData* _object );
 
 /** \brief Cast an BaseObject to a PlaneObject if possible
@@ -95,14 +96,14 @@ Plane* plane( BaseObjectData* _object );
  * @param _object The object should be of type BaseDataObject. If the content is a plane, a
  *                a PlaneObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PlaneObject* planeObject( BaseObjectData* _object );
 
 /** \brief Get a PlaneObject from an object id if possible
 *
 * @param _objectId If the object is a plane, a PlaneObject is returned. Otherwise a NULL pointer is returned.
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 PlaneObject* planeObject( int _objectId );
 
 }

@@ -62,7 +62,7 @@
 #include <ACG/Scenegraph/BaseNode.hh>
 #include <ACG/Scenegraph/DrawModes.hh>
 #include <ACG/Math/Matrix4x4T.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/IRenderer.hh>
 #include <ACG/GL/GLPrimitives.hh>
@@ -71,7 +71,7 @@
 
 //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT PlaneNode : public ACG::SceneGraph::BaseNode
+class OBJECTTYPEDLLEXPORT PlaneNode : public ACG::SceneGraph::BaseNode
 {
 public:
     /** \brief Construct a plane rendering node

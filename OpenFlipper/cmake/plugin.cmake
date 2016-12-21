@@ -1,6 +1,8 @@
 # This module provides the following macro:
 #
 # openflipper_plugin ( [DIRS dir1 dir2 ...]
+#                      [TYPES type1 type2 ...] 
+#                      [OPT_TYPES type1 type2 ...] 
 #                      [DEPS dep1 dep2 ...]
 #                      [OPTDEPS dep1 dep2 ...]
 #                      [LDFLAGSADD flag1 flag2 ...]
@@ -18,6 +20,8 @@
 #
 
 # DIRS                   = additional directories with source files
+# TYPES                  = List of datatypes required by this plugin (uppercase)
+# OPT_TYPES              = List of optional datatypes for this plugin (uppercase)
 # DEPS                   = required dependencies for find_package macro
 # OPTDEPS                = optional dependencies for find_package macro, if found, a define ENABLE_<Depname> will be added automatically
 # LDFLAGSADD             = flags added to the link command
@@ -72,7 +76,7 @@ endmacro ()
 # parse plugin macro parameter
 macro (_get_plugin_parameters _prefix)
     set (_current_var _foo)
-    set (_supported_var DIRS DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD
+    set (_supported_var DIRS TYPES OPT_TYPES DEPS OPTDEPS LDFLAGSADD CFLAGSADD CDEFINITIONSADD
       LIBRARIES ADD_CORE_APP_LIBRARIES LIBDIRS INCDIRS ADDSRC INSTALLDATA GLEWDEFINITIONS TRANSLATION_LANGUAGES TRANSLATION_ADDFILES)
     set (_supported_flags LICENSEMANAGER)
     foreach (_val ${_supported_var})
@@ -319,6 +323,44 @@ macro (_check_plugin_deps _prefix _optional )
         endif ()
     endforeach ()
 
+    
+    if ( NOT ${_optional} STREQUAL "TRUE"  )
+   
+      if  ( DEFINED ${_prefix}_TYPES )
+
+          foreach (_TYPE ${${_prefix}_TYPES})
+             if ( DEFINED ${_TYPE}_INCLUDE )
+               list(APPEND ${_prefix}_TYPE_INCLUDES "${${_TYPE}_INCLUDE}")
+               list(APPEND ${_prefix}_TYPE_DEPENDENCIES "${_TYPE}")
+               set(${_prefix}_TYPE_DEFINITIONS "${${_prefix}_TYPE_DEFENITIONS} -DENABLE_${_TYPE}_SUPPORT")
+             else()
+               acg_set (_${_prefix}_MISSING_DEPS "${_${_prefix}_MISSING_DEPS} TYPE_${_TYPE} ")
+               set (${_prefix}_HAS_DEPS FALSE)
+             endif()
+
+          endforeach()
+      endif()
+    endif()
+
+    # Optional types
+    if ( ${_optional} STREQUAL "TRUE"  )
+      if  ( DEFINED ${_prefix}_OPT_TYPES )
+
+          foreach (_TYPE ${${_prefix}_OPT_TYPES})
+
+             if ( DEFINED ${_TYPE}_INCLUDE )
+               list(APPEND ${_prefix}_TYPE_INCLUDES "${${_TYPE}_INCLUDE}")
+               list(APPEND ${_prefix}_TYPE_DEPENDENCIES "${_TYPE}")
+               set(${_prefix}_TYPE_DEFINITIONS "${${_prefix}_TYPE_DEFENITIONS} -DENABLE_${_TYPE}_SUPPORT")
+             else()
+               message(warning "Optional Datatype ${_TYPE} not available, proceeding without it")
+             endif()
+
+          endforeach()
+      endif()
+    endif()
+
+
     set(LOADED_PACKAGES ${LOADED_PACKAGES} ${LOADED_PACKAGES_})
     set(LOADED_PACKAGES ${LOADED_PACKAGES} PARENT_SCOPE)
 endmacro ()
@@ -478,6 +520,9 @@ function (_build_openflipper_plugin plugin)
 
     # ${CMAKE_BINARY_DIR}/OpenFlipper/libs_required/ACG  : Required due to ui files creating headers there
 
+    
+    
+
     include_directories (
       .
       ${PACKAGE_DIRS}
@@ -494,6 +539,7 @@ function (_build_openflipper_plugin plugin)
       ${GLUT_INCLUDE_DIR}
       ${CMAKE_BINARY_DIR}/OpenFlipper/PluginLib
       ${PACKAGE_INCLUDES}
+      ${${_PLUGIN}_TYPE_INCLUDES}
     )
 
     # Linking for apple is special here as the linker pulls in the dependencies, we have to set them like in PluginLib!
@@ -610,7 +656,7 @@ function (_build_openflipper_plugin plugin)
       acg_qt4_autoqrc (qrc_targets ${qrc})
     endif ()
 
-
+    add_definitions(${${_PLUGIN}_TYPE_DEFINITIONS})
 
     add_library (Plugin-${plugin} MODULE ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
     #group projects by parent folder name on MSVC (used for e.g. plugincollection)
@@ -696,6 +742,7 @@ function (_build_openflipper_plugin plugin)
     target_link_libraries (Plugin-${plugin}
       ${${_PLUGIN}_DEPS_LIBRARIES}
       ${${_PLUGIN}_LIBRARIES}
+      ${${_PLUGIN}_TYPE_DEPENDENCIES}
     )
 
     # no install on mac, because the whole bundle will be installed in the

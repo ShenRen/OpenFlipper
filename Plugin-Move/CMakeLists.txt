@@ -2,10 +2,6 @@ include (plugin)
 
 SET( CURRENT_PLUGIN_DEPS "")
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/PolyLine)
-  add_definitions (-DENABLE_POLYLINE_SUPPORT)
-endif ()
-
 if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/TSplineMesh)
   add_definitions (-DENABLE_TSPLINEMESH_SUPPORT)
 endif ()
@@ -38,6 +34,8 @@ endif()
 list(REMOVE_DUPLICATES CURRENT_PLUGIN_DEPS )
 
 openflipper_plugin ( DEPS ${CURRENT_PLUGIN_DEPS}
+                     TYPES PLANE
+                     OPT_TYPES POLYLINE
 		     TRANSLATION_LANGUAGES de_DE
                      INSTALLDATA Icons VsiMetadata )
 

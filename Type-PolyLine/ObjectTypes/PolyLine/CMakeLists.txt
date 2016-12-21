@@ -70,6 +70,6 @@ target_link_libraries (${TYPENAME}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARY}
   ${GLUT_LIBRARIES}
-  PluginLib
+  OpenFlipperPluginLib
 )
 

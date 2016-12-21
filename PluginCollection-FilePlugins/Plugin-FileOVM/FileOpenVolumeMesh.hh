@@ -60,7 +60,6 @@
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 #include <OpenFlipper/BasePlugin/ScriptInterface.hh>
 #include <OpenFlipper/BasePlugin/INIInterface.hh>
-#include <ObjectTypes/Plane/Plane.hh>
 
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>

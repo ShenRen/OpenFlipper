@@ -5,7 +5,7 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/libs/PhySim)
 
   openflipper_plugin ( DEPS PhySim CGAL Boost GMP CoMISo BLAS
     		       INSTALLDATA Icons
-                       TYPES POLYLINE
+                       TYPES POLYLINE PLANE
  		      )
 
   if ( WIN32 )
@@ -17,5 +17,5 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/libs/PhySim)
 
 else()
   openflipper_plugin ( INSTALLDATA Icons 
-                       TYPES POLYLINE)
+                       TYPES POLYLINE PLANE)
 endif ()

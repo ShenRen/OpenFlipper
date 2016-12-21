@@ -47,126 +47,69 @@
  *                                                                           *
 \*===========================================================================*/
 
-//=============================================================================
-//
-//  CLASS QtWidgetNode
-//
-//=============================================================================
+#include "PlaneType.hh"
 
-#ifndef QT_WIDGET_NODE_HH
-#define QT_WIDGET_NODE_HH
 
-//== INCLUDES =================================================================
+//== IMPLEMENTATION ==========================================================
 
-#include <ObjectTypes/QtWidget/PlaneType.hh>
-#include <ACG/Scenegraph/BaseNode.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
-#include <ACG/GL/VertexDeclaration.hh>
-#include <ACG/GL/IRenderer.hh>
-#include <ACG/GL/GLPrimitives.hh>
 
-#include <QObject>
-#include <QWidget>
-
-//== NAMESPACES ===============================================================
-
-namespace ACG {
-namespace SceneGraph {
-
-//== CLASS DEFINITION =========================================================
-
-class DLLEXPORT QtWidgetNode : public BaseNode
+void Plane::setPlane(const ACG::Vec3d& _position, const ACG::Vec3d& _xDirection, const ACG::Vec3d& _yDirection)
 {
-public:
-    /** \brief Construct a QtWidget Node
-     *
-     * @param _widget The widget which will be rendered in the viewport
-     * @param _parent The parent node in the scenegraph
-     * @param _name   The name of the new node (visible in the scenegraph dialogs)
-     */
-    QtWidgetNode(QWidget* _widget, BaseNode *_parent = 0, std::string _name = "<QtWidgetNode>");
+  position   = _position;
+  xDirection = _xDirection;
+  yDirection = _yDirection;
+  normal     = (_xDirection % _yDirection).normalize();
+}
 
-    /// destructor
-    ~QtWidgetNode();
+//----------------------------------------------------------------
 
-    /// static name of this class
-    ACG_CLASSNAME(QtWidgetNode);
+void Plane::setPlane(const ACG::Vec3d& _position, const ACG::Vec3d& _normal)
+{
 
-    /// return available draw modes
-    ACG::SceneGraph::DrawModes::DrawMode availableDrawModes() const;
+  //find a non zero component
+  int comp = -1;
+  for (int i=0; i < 3; i++)
+    if ( _normal[i] != 0.0 ){
+      comp = i;
+      break;
+    }
 
-    /// update bounding box
-    void boundingBox(ACG::Vec3d & _bbMin, ACG::Vec3d & _bbMax);
+  if (comp == -1){
+    std::cerr << "PlaneNode: normal is invalid!" << std::endl;
+    return;
+  }
 
-    /** \brief Add the objects to the given renderer
-     *
-     * @param _renderer The renderer which will be used. Add your geometry into this class
-     * @param _state    The current GL State when this object is called
-     * @param _drawMode The active draw mode
-     * @param _mat      Current material
-     */
-    void getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::SceneGraph::DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
+  //compute orthogonal vectors in the plane
+  xDirection[comp] = (-_normal[ (comp + 1) % 3 ] - _normal[(comp + 2) % 3]) / _normal[comp];
+  xDirection[ (comp + 1) % 3 ] = 1;
+  xDirection[ (comp + 2) % 3 ] = 1;
+  xDirection = xDirection.normalize();
+
+  yDirection = _normal % xDirection;
+  yDirection = yDirection.normalize();
+
+  position = _position;
+  normal   = _normal;
+}
+
+//----------------------------------------------------------------
+
+void Plane::transform(const ACG::Matrix4x4d& _mat)
+{
+  position    = _mat.transform_point(position);
+  xDirection  = _mat.transform_vector(xDirection);
+  yDirection  = _mat.transform_vector(yDirection);
+
+  normal      = (xDirection % yDirection).normalize();
+}
+
+//----------------------------------------------------------------
+
+void Plane::setSize(double _xDirection, double _yDirection)
+{
+  xDirection = xDirection.normalize() * _xDirection;
+  yDirection = yDirection.normalize() * _yDirection;
+}
 
 
-    void mouseEvent(GLState& _state, QMouseEvent* _event);
-    void mouseEvent(QMouseEvent* _event);
-
-    QWidget* widget()const{return widget_;}
-    /// set a new widget at the current widgets position (if last widget wasn't zero)
-    void setWidget(QWidget* _w);
-
-private:
-    class NodeEventFilter : public QObject
-    {
-    public:
-      NodeEventFilter(QtWidgetNode* p){node_ = p;}
-    protected:
-      bool eventFilter(QObject *obj, QEvent *event);
-    private:
-      QtWidgetNode *node_;
-    } *ef_;
-
-    friend class NodeEventFilter;
-
-    /// create and update the widget texture
-    void createTexture();
-
-    /// widgetgeometry will be screen aligned. the width/height and position is in respect to the _state projection matrix
-    void createGeometry(GLState& _state);
-
-    /// update geometry on current position with old projection/view matrix
-    void updateGeometry();
-
-    /// upload widget plane data to graphics card
-    void uploadPlane();
-
-    /// VBO used to render the plane
-    unsigned int vbo_;
-    GLuint texID_;
-    ACG::VertexDeclaration vertexDecl_;
-
-    /// current widget
-    QWidget* widget_;
-
-    /// initial widgetHeight/Width. Is 0, if widget is 0 or if plane wasn't initialized with current view/projMatrix
-    int oldWidgetWidth_;
-    int oldWidgetHeight_;
-
-    /// plane position and dimensions
-    Plane plane_;
-    bool planeCreated_;
-
-    /// last state
-    GLState* state_;
-
-    bool anisotropicSupport_;
-
-};
-
-//=============================================================================
-} // namespace SceneGraph
-} // namespace ACG
-
-//=============================================================================
-#endif // QT_WIDGET_NODE_HH defined
 //=============================================================================

@@ -49,124 +49,75 @@
 
 //=============================================================================
 //
-//  CLASS QtWidgetNode
+//  CLASS Plane
 //
 //=============================================================================
 
-#ifndef QT_WIDGET_NODE_HH
-#define QT_WIDGET_NODE_HH
+#ifndef PLANE_HH
+#define PLANE_HH
 
 //== INCLUDES =================================================================
 
-#include <ObjectTypes/QtWidget/PlaneType.hh>
-#include <ACG/Scenegraph/BaseNode.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
-#include <ACG/GL/VertexDeclaration.hh>
-#include <ACG/GL/IRenderer.hh>
-#include <ACG/GL/GLPrimitives.hh>
 
-#include <QObject>
-#include <QWidget>
+#include <ACG/Math/Matrix4x4T.hh>
+#include <ACG/Math/VectorT.hh>
+#include <OpenFlipper/common/GlobalDefines.hh>
 
 //== NAMESPACES ===============================================================
 
-namespace ACG {
-namespace SceneGraph {
-
 //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT QtWidgetNode : public BaseNode
-{
+
+/** \class Plane PlaneType.hh <ObjectTypes/Plane/PlaneType.hh>
+
+    This class defines a simple plane
+
+**/
+
+class DLLEXPORT Plane {
+
 public:
-    /** \brief Construct a QtWidget Node
-     *
-     * @param _widget The widget which will be rendered in the viewport
-     * @param _parent The parent node in the scenegraph
-     * @param _name   The name of the new node (visible in the scenegraph dialogs)
-     */
-    QtWidgetNode(QWidget* _widget, BaseNode *_parent = 0, std::string _name = "<QtWidgetNode>");
 
-    /// destructor
-    ~QtWidgetNode();
+  /** \brief Set plane
+   *
+   * @param _position   One point on the plane. Will be used as corner point point for rendering in the PlaneNode
+   * @param _xDirection Vector pointing in planes x direction
+   * @param _yDirection Vector pointing in planes y direction
+   */
+  void setPlane(const ACG::Vec3d& _position, const ACG::Vec3d& _xDirection, const ACG::Vec3d& );
 
-    /// static name of this class
-    ACG_CLASSNAME(QtWidgetNode);
+   /** \brief Set plane with given normal and one point
+    *
+    * @param _position One point on the plane. Will be used as corner point for rendering in the PlaneNode
+    * @param _normal   Plane normal
+    */
+  void setPlane(const ACG::Vec3d & _position, const ACG::Vec3d & _normal);
 
-    /// return available draw modes
-    ACG::SceneGraph::DrawModes::DrawMode availableDrawModes() const;
+  /** \brief Set plane size
+   *
+   * Scales the plane such that the x and y direction vectors have the given lengths
+   *
+   * @param _xDirection Size in x direction
+   * @param _yDirection Size in y direction
+   */
+  void setSize(double _xDirection, double _yDirection);
 
-    /// update bounding box
-    void boundingBox(ACG::Vec3d & _bbMin, ACG::Vec3d & _bbMax);
+  /** \brief Transform the plane with given matrix
+   *
+   *
+   * @param _mat Transformation matrix.
+   */
+  void transform(const ACG::Matrix4x4d & _mat);
 
-    /** \brief Add the objects to the given renderer
-     *
-     * @param _renderer The renderer which will be used. Add your geometry into this class
-     * @param _state    The current GL State when this object is called
-     * @param _drawMode The active draw mode
-     * @param _mat      Current material
-     */
-    void getRenderObjects(ACG::IRenderer* _renderer, ACG::GLState&  _state , const ACG::SceneGraph::DrawModes::DrawMode&  _drawMode , const ACG::SceneGraph::Material* _mat);
+public:
 
-
-    void mouseEvent(GLState& _state, QMouseEvent* _event);
-    void mouseEvent(QMouseEvent* _event);
-
-    QWidget* widget()const{return widget_;}
-    /// set a new widget at the current widgets position (if last widget wasn't zero)
-    void setWidget(QWidget* _w);
-
-private:
-    class NodeEventFilter : public QObject
-    {
-    public:
-      NodeEventFilter(QtWidgetNode* p){node_ = p;}
-    protected:
-      bool eventFilter(QObject *obj, QEvent *event);
-    private:
-      QtWidgetNode *node_;
-    } *ef_;
-
-    friend class NodeEventFilter;
-
-    /// create and update the widget texture
-    void createTexture();
-
-    /// widgetgeometry will be screen aligned. the width/height and position is in respect to the _state projection matrix
-    void createGeometry(GLState& _state);
-
-    /// update geometry on current position with old projection/view matrix
-    void updateGeometry();
-
-    /// upload widget plane data to graphics card
-    void uploadPlane();
-
-    /// VBO used to render the plane
-    unsigned int vbo_;
-    GLuint texID_;
-    ACG::VertexDeclaration vertexDecl_;
-
-    /// current widget
-    QWidget* widget_;
-
-    /// initial widgetHeight/Width. Is 0, if widget is 0 or if plane wasn't initialized with current view/projMatrix
-    int oldWidgetWidth_;
-    int oldWidgetHeight_;
-
-    /// plane position and dimensions
-    Plane plane_;
-    bool planeCreated_;
-
-    /// last state
-    GLState* state_;
-
-    bool anisotropicSupport_;
+  ACG::Vec3d position;
+  ACG::Vec3d normal;
+  ACG::Vec3d xDirection;
+  ACG::Vec3d yDirection;
 
 };
 
 //=============================================================================
-} // namespace SceneGraph
-} // namespace ACG
-
-//=============================================================================
-#endif // QT_WIDGET_NODE_HH defined
+#endif // PLANE_HH defined
 //=============================================================================

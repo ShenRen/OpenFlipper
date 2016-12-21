@@ -41,6 +41,7 @@ acg_drop_templates (sources)
 # collect all header,source files
 acg_append_files (headers "*.hh" . )
 acg_append_files (sources "*.cc" . )
+acg_qt5_automoc (moc_targets ${headers})
 
 # Match our current directory name
 string (REGEX MATCH "[^/\\]*$" TYPENAME ${CMAKE_CURRENT_SOURCE_DIR})
@@ -58,7 +59,7 @@ include_directories (
   ${GLUT_INCLUDE_DIR}
 )
 
-acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} )
+acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} ${moc_targets} )
 
 add_dependencies( ${TYPENAME} OpenMeshCore OpenMeshTools ACG OpenFlipperPluginLib)
 

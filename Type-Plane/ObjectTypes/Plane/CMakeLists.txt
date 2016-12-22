@@ -61,6 +61,9 @@ include_directories (
   ${GLUT_INCLUDE_DIR}
 )
 
+SET(CMAKE_SKIP_RPATH  TRUE)
+
+
 acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} ${moc_targets} )
 
 add_dependencies( ${TYPENAME} OpenMeshCore OpenMeshTools ACG OpenFlipperPluginLib)

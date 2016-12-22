@@ -68,7 +68,7 @@ add_dependencies( ${TYPENAME} OpenMeshCore OpenMeshTools ACG OpenFlipperPluginLi
 set_target_properties (
         ${TYPENAME} PROPERTIES
         BUILD_WITH_INSTALL_RPATH 0
-        SKIP_BUILD_RPATH 0
+        SKIP_BUILD_RPATH 1
   ) 
 
 

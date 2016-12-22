@@ -65,6 +65,12 @@ acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} ${moc_targets} )
 
 add_dependencies( ${TYPENAME} OpenMeshCore OpenMeshTools ACG OpenFlipperPluginLib)
 
+set_target_properties (
+        ${TYPENAME} PROPERTIES
+        BUILD_WITH_INSTALL_RPATH 0
+        SKIP_BUILD_RPATH 0
+  ) 
+
 
 target_link_libraries (${TYPENAME}
   ${OPENMESH_LIBRARIES}

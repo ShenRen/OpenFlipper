@@ -170,6 +170,9 @@ public:
   /// interpolation qualifier for input vertex colors: "flat", "smooth", "noperspective"
   QString vertexColorsInterpolator;
 
+  /// interpolation qualifier for vertex shader normal outputs: "flat", "smooth", "noperspective"
+  QString vertexNormalInterpolator;
+
   // color material for input vertex colors: GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_SPECULAR, GL_AMBIENT_AND_DIFFUSE
   // Usage of vertex colors in lighting function, as diffuse, emission, ambient color ..  see glColorMaterial()
   // default: GL_AMBIENT_AND_DIFFUSE
@@ -307,6 +310,9 @@ public:
     }
 
     if (shaderMods != _rhs.shaderMods)
+      return false;
+
+    if (vertexNormalInterpolator != _rhs.vertexNormalInterpolator)
       return false;
 
     if (numLights)

@@ -94,7 +94,6 @@ MeshNodeT(Mesh& _mesh,
   updateAnyPicking_(true),
   anyPickingBaseIndex_(0),
   perFaceTextureIndexAvailable_(false),
-  perFaceTextureCoordsAvailable_(false),
   textureMap_(0),
   draw_with_offset_(false)
 {
@@ -162,6 +161,8 @@ availableDrawModes() const {
     drawModes |= DrawModes::HALFEDGES_COLORED;
   }
   
+  bool enableTexturedFaces = drawMesh_->perFaceTextureCoordinateAvailable() != 0;
+
   if (mesh_.has_face_colors()) {
     drawModes |= DrawModes::SOLID_FACES_COLORED;
     
@@ -171,7 +172,7 @@ availableDrawModes() const {
     if (mesh().has_vertex_normals()) {
       drawModes |= DrawModes::SOLID_FACES_COLORED_SMOOTH_SHADED;
 
-      if (perFaceTextureCoordsAvailable_)
+      if (enableTexturedFaces)
         drawModes |= DrawModes::SOLID_FACES_COLORED_2DTEXTURED_FACE_SMOOTH_SHADED;
     }
   }
@@ -183,7 +184,7 @@ availableDrawModes() const {
       drawModes |= DrawModes::SOLID_TEXTURED_SHADED; 
   }
   
-  if ( perFaceTextureCoordsAvailable_ ) {
+  if ( enableTexturedFaces ) {
     drawModes |= DrawModes::SOLID_2DTEXTURED_FACE;
     
     if (mesh_.has_face_normals())
@@ -771,6 +772,11 @@ void ACG::SceneGraph::MeshNodeT<Mesh>::getRenderObjects( IRenderer* _renderer, G
 
     if (props->flatShaded())
       ro.shaderDesc.shadeMode = SG_SHADE_FLAT;
+
+    if (props->normalSource() == DrawModes::NORMAL_PER_FACE)
+      ro.shaderDesc.vertexNormalInterpolator = "flat";
+    else
+      ro.shaderDesc.vertexNormalInterpolator.clear();
 
     // handle 'special' primitives (wireframe, hiddenline, primitives in sysmem buffers)..
 
@@ -1674,10 +1680,7 @@ template<class Mesh>
 void
 MeshNodeT<Mesh>::
 setHalfedgeTextcoordPropertyName( std::string _halfedgeTextcoordPropertyName ){ 
-
   drawMesh_->setPerFaceTextureCoordinatePropertyName(_halfedgeTextcoordPropertyName);
-  perFaceTextureCoordsAvailable_ = drawMesh_->perFaceTextureCoordinateAvailable() != 0;
-  
 }
 
 

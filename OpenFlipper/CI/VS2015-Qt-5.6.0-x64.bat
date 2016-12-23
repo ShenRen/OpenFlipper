@@ -45,6 +45,8 @@ set BUILD_PLATFORM=VS2015
 
 del *.exe
 
+"C:\Program Files (x86)\CMake\bin\cmake.exe"  -DGTEST_PREFIX="%LIBPATH_BASE%\%ARCHITECTURE%\%GTESTVERSION%" -G "%GENERATOR%"  -DCMAKE_BUILD_TYPE=Release -DOPENFLIPPER_BUILD_UNIT_TESTS=TRUE %CMAKE_CONFIGURATION% ..
+
 %VS_PATH% /Build "Release" OpenFlipper.sln /Project "PACKAGE"
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
@@ -58,6 +60,11 @@ run_tests.bat
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
+cd ..
+
+cd Build
+
+dir
 
 
 

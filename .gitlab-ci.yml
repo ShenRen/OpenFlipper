@@ -64,3 +64,18 @@ Mac-Cpp11:
   artifacts:
     paths:
       - build-release/*.dmg
+
+Doc-publish:
+  only:
+     - master
+  script: "OpenFlipper/CI/ci-doc.sh"
+  tags:
+     - Linux
+  artifacts:
+    paths:
+       - build-release/Doxygen-warning.log 
+       - build-release/Doxygen-error.log
+
+
+
+

@@ -75,7 +75,7 @@ namespace SceneGraph {
 
 //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT QtWidgetNode : public BaseNode
+class OBJECTTYPEDLLEXPORT QtWidgetNode : public BaseNode
 {
 public:
     /** \brief Construct a QtWidget Node

@@ -1,6 +1,6 @@
- /*===========================================================================*\
-*                                                                            *
-*                              OpenFlipper                                   *
+/*===========================================================================*\
+ *                                                                           *
+ *                              OpenFlipper                                  *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,66 +36,88 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
-*                                                                            *
+ *                                                                           *
 \*===========================================================================*/
 
 /*===========================================================================*\
-*                                                                            *
-*   $Revision$                                                       *
-*   $LastChangedBy$                                                *
-*   $Date$                     *
-*                                                                            *
+ *                                                                           *
+ *   $Revision$                                                         *
+ *   $Author$                                                      *
+ *   $Date$                   *
+ *                                                                           *
 \*===========================================================================*/
 
-
-
-
 //=============================================================================
 //
-//  Standard Functions
+//  CLASS Plane
 //
 //=============================================================================
 
-/**
- * \file PluginFunctionsQtWidget.hh
- * This file contains functions which can be used by plugins to access QtWidgets in the framework.
- */
+#ifndef PLANE_HH
+#define PLANE_HH
 
-//
-#ifndef PLUGINFUNCTIONSQTWIDGET_HH
-#define PLUGINFUNCTIONSQTWIDGET_HH
-
-#include <OpenFlipper/common/Types.hh>
-#include "QtWidget.hh"
+//== INCLUDES =================================================================
 
 
+#include <ACG/Math/Matrix4x4T.hh>
+#include <ACG/Math/VectorT.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
-/** The Namespace PluginFunctions contains functions for all plugins. */
-namespace PluginFunctions {
+//== NAMESPACES ===============================================================
 
-/** This functions returns the object with the given id if it is a QtWidgetObject.
- * See get_object(  int _identifier , BaseObject*& _object ) for more details.
- */
-DLLEXPORT
-bool getObject(  int _identifier , QtWidgetObject*& _object );
+//== CLASS DEFINITION =========================================================
 
-/** \brief Get a QtWidgetNode from an object.
- *
- * @param _object The object should be of type BaseDataObject. If the content is a QtWidget, a
- *                QtWidgetNode will be returned. Otherwise a NULL pointer is returned.
- */
-DLLEXPORT
-QtWidgetNode* qtWidgetNode( BaseObjectData* _object );
 
-/** \brief Cast an BaseObject to a QtWidgetObject if possible
- *
- * @param _object The object should be of type BaseDataObject. If the content is a QtWidget, a
- *                a QtWidgetObject is returned. Otherwise a NULL pointer is returned.
- */
-DLLEXPORT
-QtWidgetObject* qtWidgetObject( BaseObjectData* _object );
+/** \class Plane PlaneType.hh <ObjectTypes/Plane/PlaneType.hh>
 
-}
+    This class defines a simple plane
 
-#endif // PLUGINFUNCTIONSQTWIDGET_HH
+**/
 
+class OBJECTTYPEDLLEXPORT Plane {
+
+public:
+
+  /** \brief Set plane
+   *
+   * @param _position   One point on the plane. Will be used as corner point point for rendering in the PlaneNode
+   * @param _xDirection Vector pointing in planes x direction
+   * @param _yDirection Vector pointing in planes y direction
+   */
+  void setPlane(const ACG::Vec3d& _position, const ACG::Vec3d& _xDirection, const ACG::Vec3d& );
+
+   /** \brief Set plane with given normal and one point
+    *
+    * @param _position One point on the plane. Will be used as corner point for rendering in the PlaneNode
+    * @param _normal   Plane normal
+    */
+  void setPlane(const ACG::Vec3d & _position, const ACG::Vec3d & _normal);
+
+  /** \brief Set plane size
+   *
+   * Scales the plane such that the x and y direction vectors have the given lengths
+   *
+   * @param _xDirection Size in x direction
+   * @param _yDirection Size in y direction
+   */
+  void setSize(double _xDirection, double _yDirection);
+
+  /** \brief Transform the plane with given matrix
+   *
+   *
+   * @param _mat Transformation matrix.
+   */
+  void transform(const ACG::Matrix4x4d & _mat);
+
+public:
+
+  ACG::Vec3d position;
+  ACG::Vec3d normal;
+  ACG::Vec3d xDirection;
+  ACG::Vec3d yDirection;
+
+};
+
+//=============================================================================
+#endif // PLANE_HH defined
+//=============================================================================

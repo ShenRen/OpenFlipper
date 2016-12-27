@@ -75,7 +75,7 @@
 
 // //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT QtWidgetObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT QtWidgetObject : public BaseObjectData {
 
   friend class TypeQtWidgetPlugin;
 

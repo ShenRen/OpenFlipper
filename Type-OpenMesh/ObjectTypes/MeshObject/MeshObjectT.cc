@@ -667,9 +667,9 @@
     bool ok = OpenMesh::IO::read_mesh( (*mesh()) , filename );
     if (!ok)
     {
-      if ( dataType() == typeid("TriangleMesh") )
+      if ( dataType() == typeId("TriangleMesh") )
         std::cerr << "Main Application : Read error for Triangle Mesh at "<< filename << std::endl;
-      if ( dataType() == typeid("PolyMesh") )
+      if ( dataType() == typeId("PolyMesh") )
         std::cerr << "Main Application : Read error for Poly Mesh\n";
       return false;
     }

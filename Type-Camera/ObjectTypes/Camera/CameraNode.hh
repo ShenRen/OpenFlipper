@@ -72,7 +72,7 @@
 
 #include <ACG/Math/QuaternionT.hh>
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 //== NAMESPACES ===============================================================
 
@@ -87,7 +87,7 @@ namespace SceneGraph {
  This class is able to render spheres colorcoding the vertex CameraVis
  **/
 
-class DLLEXPORT CameraNode: public BaseNode {
+class OBJECTTYPEDLLEXPORT CameraNode: public BaseNode {
 
 public:
 

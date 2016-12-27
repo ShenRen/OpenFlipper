@@ -79,7 +79,7 @@ namespace PluginFunctions {
  * @param _cameras ( vector returning the source cameras )
  * @return false, if no camera is selected as source
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getSourceCameras( std::vector<CameraNode*>& _cameras  );
 
 /** \brief Get a pointer to every Camera which is marked as a target.
@@ -87,21 +87,21 @@ bool getSourceCameras( std::vector<CameraNode*>& _cameras  );
  * @param _cameras ( vector returning the target cameras )
  * @return false, if no camera is selected as target
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getTargetCameras( std::vector<CameraNode*>& _cameras  );
 
 
 /** This functions returns the object with the given id if it is a CameraObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject(  int _identifier , CameraObject*& _object );
 
 /** \brief Get a CameraObject from an object id if possible
 *
 * @param _objectId If the object is a camera, a CameraObject is returned. Otherwise a NULL pointer is returned.
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 CameraObject* cameraObject( int _objectId );
 
 /** \brief Get a CameraNode from an object.
@@ -109,7 +109,7 @@ CameraObject* cameraObject( int _objectId );
  * @param _object The object should be of type BaseDataObject. If the content is a camera, a
  *                CameraNode will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 CameraNode* cameraNode( BaseObjectData* _object );
 
 /** \brief Cast an BaseObject to a CameraObject if possible
@@ -117,7 +117,7 @@ CameraNode* cameraNode( BaseObjectData* _object );
  * @param _object The object should be of type BaseDataObject. If the content is a camera, a
  *                a CameraObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 CameraObject* cameraObject( BaseObjectData* _object );
 
 

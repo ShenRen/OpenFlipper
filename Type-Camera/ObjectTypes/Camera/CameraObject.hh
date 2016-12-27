@@ -71,7 +71,7 @@
 
 #include <OpenFlipper/common/BaseObjectData.hh>
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 #include "CameraTypes.hh"
 
@@ -79,7 +79,7 @@
 
 // //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT CameraObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT CameraObject : public BaseObjectData {
 
   friend class TypeCameraPlugin;
 

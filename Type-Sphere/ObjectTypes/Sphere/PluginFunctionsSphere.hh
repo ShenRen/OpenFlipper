@@ -47,134 +47,59 @@
 *                                                                            *
 \*===========================================================================*/
 
+
+
+
 //=============================================================================
 //
-//  Types
+//  Standard Functions
 //
 //=============================================================================
 
 /**
- * \file SphereObject.hh 
- * This File contains the Sphere Object
+ * \file PluginFunctionsSphere.hh
+ * This file contains functions which can be used by plugins to access spheres in the framework.
  */
 
+//
+#ifndef PLUGINFUNCTIONSSPHERE_HH
+#define PLUGINFUNCTIONSSPHERE_HH
 
-#ifndef SPHEREOBJECT_HH
-#define SPHEREOBJECT_HH
+#include <OpenFlipper/common/Types.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
- 
+/** The Namespace PluginFunctions contains functions for all plugins. */
+namespace PluginFunctions {
 
-//== INCLUDES =================================================================
+/** This functions returns the object with the given id if it is a SphereObject.
+ * See get_object(  int _identifier , BaseObject*& _object ) for more details.
+ */
+OBJECTTYPEDLLEXPORT
+bool getObject(  int _identifier , SphereObject*& _object );
 
-#include <OpenFlipper/common/BaseObjectData.hh>       
+/** \brief Get a SphereNode from an object.
+ *
+ * @param _object The object should be of type BaseDataObject. If the content is a sphere, a
+ *                SphereNode will be returned. Otherwise a NULL pointer is returned.
+ */
+OBJECTTYPEDLLEXPORT
+SphereNode* sphereNode( BaseObjectData* _object );
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+/** \brief Cast an BaseObject to a SphereObject if possible
+ *
+ * @param _object The object should be of type BaseDataObject. If the content is a sphere, a
+ *                a SphereObject is returned. Otherwise a NULL pointer is returned.
+ */
+OBJECTTYPEDLLEXPORT
+SphereObject* sphereObject( BaseObjectData* _object );
 
-#include "SphereTypes.hh"
+/** \brief Get a SphereObject from id if possible
+*
+* @param _objectId If the content is a sphere, a SphereObject is returned. Otherwise a NULL pointer is returned.
+*/
+OBJECTTYPEDLLEXPORT
+SphereObject* sphereObject( int _objectId );
 
-//== TYPEDEFS =================================================================
+}
 
-// //== CLASS DEFINITION =========================================================
-
-class DLLEXPORT SphereObject : public BaseObjectData {
-
-  friend class TypeSpherePlugin;
-
-  public: 
-    /// constructor
-    SphereObject();
-    
-    /** \brief copy constructor
-     *
-     *  Create a copy of this object
-     */
-    SphereObject(const SphereObject& _object);
-
-    /// destructor
-    virtual ~SphereObject();
-    
-    /// Reset current object, including all related nodes.
-    virtual void cleanup();   
-
-    /** return a full copy of this object ( All scenegraph nodes will be created )
-     *  but the object will not be a part of the object tree.
-     */
-    BaseObject* copy();
-
-
-  protected:
-    /// Initialise current object, including all related nodes.
-    virtual void init(SphereNode* _sphere = 0);
-
-  //===========================================================================
-  /** @name Name and Path handling
-   * @{ */
-  //===========================================================================       
-  public:
-    
-    /// Set the name of the Object
-    void setName( QString _name );
-        
-  //===========================================================================
-  /** @name Visualization
-   * @{ */
-  //=========================================================================== 
-
-  public:
-    /// Get the scenegraph Node
-    SphereNode* sphereNode();
-    
-  private:
-    SphereNode* sphereNode_;
-
-  /** @} */ 
-    
-  //===========================================================================
-  /** @name Object Information
-   * @{ */
-  //===========================================================================    
-  public:
-    /// Get all Info for the Object as a string
-    QString getObjectinfo();
-    
-  /** @} */  
-    
-    
-
-
-  //===========================================================================
-  /** @name Picking
-   * @{ */
-  //===========================================================================    
-  public:
-    /// detect if the node has been picked
-    bool picked( uint _node_idx );
-
-    /// Enable or disable picking for this Object
-    void enablePicking( bool _enable );
-
-    /// Check if picking is enabled for this Object
-    bool pickingEnabled();
-    
-  /** @} */  
-    
-  //===========================================================================
-  /** @name Update handling
-   *
-   *  This is mostly private. Updates have to be triggered via
-   *  emit updatedObject()
-   *
-   * @{ */
-  //===========================================================================
-  protected:
-
-    /// Update the whole Object (Selection,Topology,...)
-    virtual void update(UpdateType _type = UPDATE_ALL);
-
-  /** @} */
-
-};
-
-//=============================================================================
-#endif // SPHEREOBJECT_HH defined
-//=============================================================================
+#endif // PLUGINFUNCTIONSSPHERE_HH

@@ -1337,8 +1337,10 @@ triangleIntersection( const Vec&  _o,
     //if determinant is near zero, the ray lies in plane of triangle
     det = edge1 | pvec;
 
-    if (det > -0.000001 && det < 0.000001)
+    static const typename Vec::value_type EPSILON = std::numeric_limits<typename Vec::value_type>::epsilon() * 1e2;
+    if (det > -EPSILON && det < EPSILON) {
         return false;
+    }
     inv_det = typename Vec::value_type(1.0) / det;
 
     //calculate distance from vert0 to ray origin

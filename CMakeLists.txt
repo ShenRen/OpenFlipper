@@ -297,14 +297,16 @@ file (
 
 # add all found libs to the build
 foreach (DATATYPE_DIR ${_data_types})
-  add_subdirectory(${DATATYPE_DIR})
+  if (EXISTS ${CMAKE_SOURCE_DIR}/${DATATYPE_DIR}/CMakeLists.txt)
+    add_subdirectory(${DATATYPE_DIR})
 
-  # Extract Name of type from directory
-  string(REGEX MATCH "[^/\\]*$" TYPENAME ${DATATYPE_DIR})
-  string(TOUPPER ${TYPENAME} TYPENAME )
-  list(APPEND TYPE_LIST ${TYPENAME})
+    # Extract Name of type from directory
+    string(REGEX MATCH "[^/\\]*$" TYPENAME ${DATATYPE_DIR})
+    string(TOUPPER ${TYPENAME} TYPENAME )
+    list(APPEND TYPE_LIST ${TYPENAME})
 
-  set(${TYPENAME}_INCLUDE ${CMAKE_SOURCE_DIR}/${DATATYPE_DIR}/../../ )
+    set(${TYPENAME}_INCLUDE ${CMAKE_SOURCE_DIR}/${DATATYPE_DIR}/../../ )
+ endif()
 endforeach()
 
 # info header for Available data types

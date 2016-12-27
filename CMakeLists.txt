@@ -88,22 +88,6 @@ include (MSVCMacros)
 acg_get_version (OpenFlipper)
 
 # ========================================================================
-# qtcrator workaround for missing files in project
-# ========================================================================
-
-# qtcreator (4.0.3) does not include some header files and *T.cc in its
-# project structure. The issue is well-known, this is a workaround.
-# Unfortunately I could not find a workaround that does not involve adding
-# a dummy target that is visible in the target list.
-
-# To force adding files to the project structure, use
-# target_sources(_qtcreator_add_files PUBLIC ${EXTRA_FILES})
-# in your CMakeLists.txt templates of the form (*T.cc) are added automatically
-
-add_library(_qtcreator_add_files CMakeLists.txt) # dummy file that always exists
-set_target_properties(_qtcreator_add_files PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
-
-# ========================================================================
 # Branding 
 # ========================================================================
 

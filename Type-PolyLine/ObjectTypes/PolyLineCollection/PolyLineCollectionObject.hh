@@ -190,7 +190,7 @@ class OBJECTTYPEDLLEXPORT PolyLineCollectionObject : public BaseObjectData {
                                  const ACG::Vec3d _hitPoint,
                                  const ACG::Vec3d _start ,
                                  const ACG::Vec3d _dir,
-                                 const size_t _targetIdx );
+                                 const unsigned int _targetIdx );
 
   /** @} */
 

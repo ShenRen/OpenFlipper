@@ -269,7 +269,7 @@ ACG::Vec3d PolyLineCollectionObject::refinePick(ACG::SceneGraph::PickTarget _pic
                                                 const ACG::Vec3d _hitPoint,
                                                 const ACG::Vec3d _start ,
                                                 const ACG::Vec3d _dir,
-                                                const size_t _targetIdx )
+                                                const unsigned int _targetIdx )
 {
   return _hitPoint;
 }

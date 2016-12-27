@@ -47,9 +47,10 @@
 *                                                                            *
 \*===========================================================================*/
 
+
 //=============================================================================
 //
-// PluginFunctions BSplineCurve
+// PluginFunctions BSplineSurface
 // Author:  Ellen Dekkers <dekkers@cs.rwth-aachen.de>
 //
 //=============================================================================
@@ -62,41 +63,41 @@
 //=============================================================================
 
 /**
- * \file PluginFunctionsBSplineCurve.hh
- * This file contains functions which can be used by plugins to access bspline curves in the framework.
+ * \file PluginFunctionsBSplineSurface.hh
+ * This file contains functions which can be used by plugins to access bspline surfaces in the framework.
  */
 
 //
-#ifndef PLUGINFUNCTIONSBSPLINECURVE_HH
-#define PLUGINFUNCTIONSBSPLINECURVE_HH
+#ifndef PLUGINFUNCTIONSBSPLINESURFACE_HH
+#define PLUGINFUNCTIONSBSPLINESURFACE_HH
 
 #include <OpenFlipper/common/Types.hh>
 
 /** The Namespace PluginFunctions contains functions for all plugins.  */
 namespace PluginFunctions {
 
-/** This functions returns the object with the given id if it is a BSplineCurveObject.
+/** This functions returns the object with the given id if it is a BSplineSurfaceObject.
   * See get_object(  int _identifier , BaseObject*& _object ) for more details.
   */
-DLLEXPORT
-bool getObject(  int _identifier , BSplineCurveObject*& _object );
+OBJECTTYPEDLLEXPORT
+bool getObject(  int _identifier , BSplineSurfaceObject*& _object );
 
-/** \brief Get a Bspline curve from an object.
+/** \brief Get a Bspline Surface from an object.
   *
-  * @param _object The object should be of type BaseDataObject. If the content is a BSpline , a
-  *               spline will be returned. Otherwise a NULL pointer is returned.
+  * @param _object The object should be of type BaseDataObject. If the content is a BSpline Surface , a
+  *               spline surface will be returned. Otherwise a NULL pointer is returned.
   */
-DLLEXPORT
-BSplineCurve* splineCurve( BaseObjectData* _object );
+OBJECTTYPEDLLEXPORT
+BSplineSurface* splineSurface( BaseObjectData* _object );
 
-/** \brief Cast an BaseObject to a BSplineCurveObject if possible
+/** \brief Cast an BaseObject to a BSplineSurfaceObject if possible
   *
-  * @param _object The object should be of type BaseDataObject. If the content is a bspline curve, a
-  *                a BSplineCurveObject is returned. Otherwise a NULL pointer is returned.
+  * @param _object The object should be of type BaseDataObject. If the content is a bspline surface, a
+  *                a BSplineSurfaceObject is returned. Otherwise a NULL pointer is returned.
   */
-DLLEXPORT
-BSplineCurveObject* bsplineCurveObject( BaseObjectData* _object);
+OBJECTTYPEDLLEXPORT
+BSplineSurfaceObject* bsplineSurfaceObject( BaseObjectData* _object);
 
 }
 
-#endif // PLUGINFUNCTIONSBSPLINECURVE_HH
+#endif // PLUGINFUNCTIONSBSPLINESURFACE_HH

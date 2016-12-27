@@ -50,50 +50,53 @@
 
 //=============================================================================
 //
-// BSplineCurve object type
+// BSplineSurface object type
 // Author:  Ellen Dekkers <dekkers@cs.rwth-aachen.de>
 //
 //=============================================================================
 
-
 /**
- * \file BSplineCurveObject.hh
- * This File contains the BSpline curve Object
+ * \file BSplineSurfaceObject.hh
+ * This file contains the BSpline Surface Object
  */
 
 
-#ifndef BSPLINECURVEOBJECT_HH
-#define BSPLINECURVEOBJECT_HH
-
+#ifndef BSPLINESURFACEOBJECT_HH
+#define BSPLINESURFACEOBJECT_HH
 
 //== INCLUDES =================================================================
 
-#include <OpenFlipper/common/BaseObjectData.hh>
-#include <ObjectTypes/BSplineCurve/BSplineCurveNodeT.hh>
+#include <ACG/Scenegraph/ShaderNode.hh>
+#include <ACG/Scenegraph/EnvMapNode.hh>
 
-#include <OpenFlipper/common/GlobalDefines.hh>
-#include "BSplineCurveTypes.hh"
+#include "BSplineSurfaceTypes.hh"
+#include <OpenFlipper/common/BaseObjectData.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
+
+
+#include "BSplineSurfaceNodeT.hh"
 
 
 //== TYPEDEFS =================================================================
 
 //== CLASS DEFINITION =========================================================
 
-/** This class provides the functionality for bspline curves
+/** This class provides the functionality for bspline surfaces
  */
-class DLLEXPORT BSplineCurveObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT BSplineSurfaceObject : public BaseObjectData {
 
-  friend class TypeBSplineCurvePlugin;
+  friend class TypeBSplineSurfacePlugin;
 
   public:
-    /// constructor
-    BSplineCurveObject();
+
+    /// Constructor
+    BSplineSurfaceObject();
 
     /// copy constructor
-    BSplineCurveObject(const BSplineCurveObject& _object);
+    BSplineSurfaceObject(const BSplineSurfaceObject& _object);
 
-    /// destructor
-    virtual ~BSplineCurveObject();
+    /// Destructor
+    virtual ~BSplineSurfaceObject();
 
     /// Reset current object, including all related nodes.
     virtual void cleanup();
@@ -107,7 +110,7 @@ class DLLEXPORT BSplineCurveObject : public BaseObjectData {
   protected:
 
     /// Initialise current object, including all related nodes.
-    virtual void init(BSplineCurve* _curve = 0);
+    virtual void init(BSplineSurface* _surface = 0);
 
 
   //===========================================================================
@@ -119,7 +122,7 @@ class DLLEXPORT BSplineCurveObject : public BaseObjectData {
     /// Set the name of the Object
     void setName( QString _name );
 
-    
+
   //===========================================================================
   /** @name Content
    * @{ */
@@ -127,12 +130,10 @@ class DLLEXPORT BSplineCurveObject : public BaseObjectData {
 
   public:
     /// return a pointer to the spline curve
-    BSplineCurve* splineCurve();
-    
-  private:
-    BSplineCurve* splineCurve_;
+    BSplineSurface* splineSurface();
 
-  /** @} */
+  private:
+    BSplineSurface* splineSurface_;
 
   //===========================================================================
   /** @name Update handling
@@ -142,9 +143,8 @@ class DLLEXPORT BSplineCurveObject : public BaseObjectData {
    *
    * @{ */
   //===========================================================================
-    
-  protected:
 
+  protected:
     /// Update the whole Object (Selection,Topology,...)
     virtual void update(UpdateType _type = UPDATE_ALL);
 
@@ -157,14 +157,26 @@ class DLLEXPORT BSplineCurveObject : public BaseObjectData {
 
   public :
 
-    /// Get the scenegraph Node
-    ACG::SceneGraph::BSplineCurveNodeT< BSplineCurve >* splineCurveNode();
-    
+    /// Return pointer to the bspline surface node
+    ACG::SceneGraph::BSplineSurfaceNodeT< BSplineSurface > * splineSurfaceNode();
+
+    /// Return pointer to the shader node
+    ACG::SceneGraph::ShaderNode * shaderNode();
+
+    /// Get the TextureNode (actually its an environment map node) of the bspline surface
+    ACG::SceneGraph::EnvMapNode * textureNode();
+
   private :
 
-    /// Scenegraph Mesh Node
-    ACG::SceneGraph::BSplineCurveNodeT< BSplineCurve >* splineCurveNode_;
-        
+    /// Scenegraph BSplineSurface Node
+    ACG::SceneGraph::BSplineSurfaceNodeT< BSplineSurface >* splineSurfaceNode_;
+
+    /// Scenegraph ShaderNode
+    ACG::SceneGraph::ShaderNode * shaderNode_;
+
+    /// Scenegraph TextureNode (whoch is actually an environment node)
+    ACG::SceneGraph::EnvMapNode * textureNode_;
+
   /** @} */
 
   //===========================================================================
@@ -197,5 +209,5 @@ class DLLEXPORT BSplineCurveObject : public BaseObjectData {
 };
 
 //=============================================================================
-#endif // BSPLINECURVEOBJECT_HH defined
+#endif // BSPLINESURFACEOBJECT_HH defined
 //=============================================================================

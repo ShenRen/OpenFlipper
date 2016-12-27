@@ -67,6 +67,8 @@
 //== INCLUDES =================================================================
 
 #include <OpenFlipper/common/BaseObjectData.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
+
 #include <QWidget>
 
 #include "QtWidgetTypes.hh"

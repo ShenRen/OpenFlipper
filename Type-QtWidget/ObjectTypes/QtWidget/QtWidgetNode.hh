@@ -64,6 +64,8 @@
 #include <ACG/GL/VertexDeclaration.hh>
 #include <ACG/GL/IRenderer.hh>
 #include <ACG/GL/GLPrimitives.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
+
 
 #include <QObject>
 #include <QWidget>

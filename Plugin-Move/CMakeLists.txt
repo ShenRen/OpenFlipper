@@ -6,10 +6,6 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/TSplineMesh)
   add_definitions (-DENABLE_TSPLINEMESH_SUPPORT)
 endif ()
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/Skeleton)
-  add_definitions (-DENABLE_SKELETON_SUPPORT)
-endif ()
-
 if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/PolyhedralMesh)
     add_definitions (-DENABLE_OPENVOLUMEMESH_SUPPORT)
     add_definitions (-DENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT)
@@ -34,8 +30,8 @@ endif()
 list(REMOVE_DUPLICATES CURRENT_PLUGIN_DEPS )
 
 openflipper_plugin ( DEPS ${CURRENT_PLUGIN_DEPS}
-                     TYPES PLANE
-                     OPT_TYPES POLYLINE
+                     TYPES PLANE POLYMESH TRIANGLEMESH
+                     OPT_TYPES POLYLINE SKELETON
 		     TRANSLATION_LANGUAGES de_DE
                      INSTALLDATA Icons VsiMetadata )
 

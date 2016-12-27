@@ -66,11 +66,11 @@
 #define DATA_TRIANGLE_MESH typeId("TriangleMesh")
 #include <ObjectTypes/MeshObject/MeshObjectT.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMeshTypes.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 
 /// Type for a MeshObject containing a triangle mesh
-class DLLEXPORTONLY TriMeshObject : public MeshObject< TriMesh > {
+class OBJECTTYPEDLLEXPORTONLY TriMeshObject : public MeshObject< TriMesh > {
 
 public:
   /** \brief copy constructor

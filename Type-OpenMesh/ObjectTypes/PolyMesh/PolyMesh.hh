@@ -63,11 +63,12 @@
  * Use this macro to reference polygonal meshes.
  */
 #define DATA_POLY_MESH typeId("PolyMesh")
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include <ObjectTypes/MeshObject/MeshObjectT.hh>
 #include <ObjectTypes/PolyMesh/PolyMeshTypes.hh>
 
 /// Type for a Meshobject containing a poly mesh
-class DLLEXPORTONLY PolyMeshObject : public MeshObject< PolyMesh > {
+class OBJECTTYPEDLLEXPORTONLY PolyMeshObject : public MeshObject< PolyMesh > {
 
 public:
   /** \brief copy constructor

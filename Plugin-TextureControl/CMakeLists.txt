@@ -27,7 +27,9 @@ find_package(Qwt6)
 
 if (QWT6_FOUND)
   add_definitions(-DWITH_QWT)
-  openflipper_plugin( DEPS ${CURRENT_PLUGIN_DEPS} Qwt6)
+  openflipper_plugin( DEPS ${CURRENT_PLUGIN_DEPS} Qwt6
+                      TYPES POLYMESH TRIANGLEMESH)
 else()
-  openflipper_plugin( DEPS ${CURRENT_PLUGIN_DEPS})
+  openflipper_plugin( DEPS ${CURRENT_PLUGIN_DEPS}
+                      TYPES POLYMESH TRIANGLEMESH)
 endif()

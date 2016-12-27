@@ -70,6 +70,7 @@
 #include "SplatCloud.hh"
 
 #include <OpenFlipper/common/Types.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 
 //== NAMESPACES ==================================================

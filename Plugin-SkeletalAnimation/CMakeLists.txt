@@ -1,2 +1,3 @@
 include (plugin)
-openflipper_plugin (INSTALLDATA Icons)
+openflipper_plugin (INSTALLDATA Icons
+                    TYPES SKELETON)

@@ -23,7 +23,7 @@ link_directories (
 # generate dllexport macros on windows
 if (WIN32)
   add_definitions (
-    -DPLUGINLIBDLL    
+    -DPLUGINLIBDLL
     -DUSEPLUGINLIBDLL
     -DBUILDOBJECTTYPEDLL
     -DACGDLL
@@ -35,15 +35,11 @@ endif ()
 # Cleanup
 #=======================================================
 
-# remove template cc files from source file list
-acg_drop_templates (sources)
-
-
-
 # collect all header,source files
 acg_append_files (headers "*.hh" . )
 acg_append_files (sources "*.cc" . )
 acg_qt5_automoc (moc_targets ${headers})
+
 
 # Match our current directory name
 string (REGEX MATCH "[^/\\]*$" TYPENAME ${CMAKE_CURRENT_SOURCE_DIR})
@@ -61,7 +57,9 @@ include_directories (
   ${GLUT_INCLUDE_DIR}
 )
 
-acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} ${moc_targets} )
+# remove template cc files from source file list
+acg_drop_templates (sources)
+acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} ${moc_targets})
 
 add_dependencies( ${TYPENAME} OpenMeshCore OpenMeshTools ACG OpenFlipperPluginLib)
 

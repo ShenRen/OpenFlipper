@@ -35,11 +35,6 @@ endif ()
 # Cleanup
 #=======================================================
 
-# remove template cc files from source file list
-acg_drop_templates (sources)
-
-
-
 # collect all header,source files
 acg_append_files (headers "*.hh" . )
 acg_append_files (sources "*.cc" . )
@@ -62,6 +57,8 @@ include_directories (
   ${GLUT_INCLUDE_DIR}
 )
 
+# remove template cc files from source file list
+acg_drop_templates (sources)
 acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} ${moc_targets})
 
 add_dependencies( ${TYPENAME} OpenMeshCore OpenMeshTools ACG OpenFlipperPluginLib)

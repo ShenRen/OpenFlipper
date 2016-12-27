@@ -67,7 +67,7 @@
 
 #include "SkeletonTypes.hh"
 #include <OpenFlipper/common/BaseObjectData.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include <OpenFlipper/common/GlobalOptions.hh>
 
 #include "SkeletonNodeT.hh"
@@ -79,7 +79,7 @@
 
 /** This class provides the functionality for all kind of meshes for the framework
  */
-class DLLEXPORT SkeletonObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT SkeletonObject : public BaseObjectData {
 
   friend class TypeSkeletonPlugin;
 

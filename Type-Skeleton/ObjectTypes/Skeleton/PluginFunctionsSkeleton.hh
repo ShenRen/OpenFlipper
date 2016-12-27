@@ -66,6 +66,7 @@
 #define PLUGINFUNCTIONSSKELETON_HH
 
 #include <OpenFlipper/common/Types.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 /** The Namespace PluginFunctions contains functions for all plugins. */
 namespace PluginFunctions {
@@ -73,7 +74,7 @@ namespace PluginFunctions {
 /** This functions returns the object with the given id if it is a SkeletonObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject(  int _identifier , SkeletonObject*& _object );
 
 /** \brief Get a skeleton from an object.
@@ -81,14 +82,14 @@ bool getObject(  int _identifier , SkeletonObject*& _object );
  * @param _object The object should be of type BaseDataObject. If the content is a skeleton, a
  *                skeleton will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 Skeleton* skeleton( BaseObjectData* _object );
 
 /** \brief Get a skeleton from an id.
  *
  * @param _identifier The skeleton is returned if the object with id is a skeleton object, otherwise 0.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 Skeleton* skeleton(  int _identifier );
 
 /** \brief Cast an BaseObject to a SkeletonObject if possible
@@ -96,14 +97,14 @@ Skeleton* skeleton(  int _identifier );
  * @param _object The object should be of type BaseDataObject. If the content is a polyLine, a
  *                a SkeletonObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 SkeletonObject* skeletonObject( BaseObjectData* _object );
 
 /** \brief Get SkeletonObject with its id if possible
  *
  * @param _identifier The skeleton object if request was successfull or otherwise 0
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 SkeletonObject* skeletonObject( int _identifier );
 
 }

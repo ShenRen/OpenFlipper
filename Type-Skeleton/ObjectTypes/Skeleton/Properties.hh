@@ -63,7 +63,7 @@
 #include <map>
 #include <string>
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 
 /**
@@ -97,7 +97,7 @@ protected:
  * vector holding the objects this property class refers to changes. The properties are bound to objects
  * by their integer based index.
  */
-class DLLEXPORT Properties
+class OBJECTTYPEDLLEXPORT Properties
 {
 protected:
   /**
@@ -106,7 +106,7 @@ protected:
     * This class is used as an abstraction layer for the numerous instances of the PropertyT template.
     * Its easier to store them in a vector this way.
     */
-  class DLLEXPORT BaseProperty
+  class OBJECTTYPEDLLEXPORT BaseProperty
   {
     friend class Properties;
   public:

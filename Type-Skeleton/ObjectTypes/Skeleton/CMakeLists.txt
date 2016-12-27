@@ -37,7 +37,7 @@ endif ()
 
 # collect all header,source files
 acg_append_files (headers "*.hh" . )
-acg_append_files (sources "*.cc" . )
+acg_append_files (sources "*.cc" . Animation Helper )
 acg_qt5_automoc (moc_targets ${headers})
 
 

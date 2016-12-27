@@ -52,7 +52,7 @@
 
 #include "../Skeleton.hh"
 #include <ACG/Math/Matrix4x4T.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 /** \brief Skeleton transformation class
  *
@@ -61,7 +61,7 @@
  * and that the transformations do not mess up the skeleton
  *
  **/
-class DLLEXPORT SkeletonTransform {
+class OBJECTTYPEDLLEXPORT SkeletonTransform {
 
   public:
     SkeletonTransform(Skeleton& _skeleton);

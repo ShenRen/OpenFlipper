@@ -1,3 +1,3 @@
 include (plugin)
 
-openflipper_plugin (TYPES SPLATCLOUD)
+openflipper_plugin (TYPES SPLATCLOUD CAMERA)

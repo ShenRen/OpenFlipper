@@ -8,7 +8,7 @@ Clone the repository with submodules:
  git clone --recursive https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/OpenFlipper-Free.git
  
 # Required libs: 
-Qt ( >= 4.8.2 ) http://www.qtsoftware.com/downloads  
+Qt ( >= 5.5 )   http://www.qtsoftware.com/downloads  
 OpenGL          http://www.opengl.org  
 GLUT            http://www.opengl.org/resources/libraries/glut  
 GLEW            http://glew.sourceforge.net  

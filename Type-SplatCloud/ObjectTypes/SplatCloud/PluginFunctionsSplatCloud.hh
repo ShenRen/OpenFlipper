@@ -85,7 +85,7 @@ namespace PluginFunctions {
 /** This functions returns the object with the given id if it is a SplatCloudObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject( int _identifier, SplatCloudObject *&_object );
 
 
@@ -94,7 +94,7 @@ bool getObject( int _identifier, SplatCloudObject *&_object );
  * @param _object The object should be of type BaseDataObject. If the content is a SplatCloud, a
  *                ShaderNode will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 ShaderNode* splatShaderNode( BaseObjectData *_object );
 
 
@@ -103,7 +103,7 @@ ShaderNode* splatShaderNode( BaseObjectData *_object );
  * @param _object The object should be of type BaseDataObject. If the content is a SplatCloud, a
  *                SplatCloudNode will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 SplatCloudNode* splatCloudNode( BaseObjectData *_object );
 
 
@@ -112,7 +112,7 @@ SplatCloudNode* splatCloudNode( BaseObjectData *_object );
  * @param _object The object should be of type BaseDataObject. If the content is a SplatCloud, a
  *                SplatCloud will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 SplatCloud* splatCloud( BaseObjectData *_object );
 
 
@@ -121,7 +121,7 @@ SplatCloud* splatCloud( BaseObjectData *_object );
  * @param _object The object should be of type BaseDataObject. If the content is a SplatCloud, a
  *                SplatCloudObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 SplatCloudObject* splatCloudObject( BaseObjectData *_object );
 
 
@@ -130,7 +130,7 @@ SplatCloudObject* splatCloudObject( BaseObjectData *_object );
  * @param _objectId Id of the object. If the object exists and is a SplatCloud, a
  *                SplatCloudObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 SplatCloudObject* splatCloudObject(  int _objectId );
 
 

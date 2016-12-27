@@ -63,7 +63,7 @@
 //== INCLUDES ====================================================
 
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 #include <typeinfo>
 #include <string>
@@ -82,7 +82,7 @@
  * Storage of properties for each splat and for the whole splatcloud.
  */
 
-class DLLEXPORT SplatCloud
+class OBJECTTYPEDLLEXPORT SplatCloud
 {
 
   // == DECLARATIONS =====================================================

@@ -67,7 +67,7 @@
 
 #include "SplatCloud/SplatCloud.hh"
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 #include <ACG/Scenegraph/BaseNode.hh>
 
@@ -91,7 +91,7 @@ namespace SceneGraph {
  * This class is able to render a SplatCloud as splats, dots or points
  */
 
-class DLLEXPORT SplatCloudNode : public BaseNode
+class OBJECTTYPEDLLEXPORT SplatCloudNode : public BaseNode
 {
 public:
 

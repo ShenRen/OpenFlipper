@@ -73,13 +73,13 @@
 
 #include <OpenFlipper/common/BaseObjectData.hh>
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 
 //== CLASS DEFINITION ============================================
 
 
-class DLLEXPORT SplatCloudObject : public BaseObjectData
+class OBJECTTYPEDLLEXPORT SplatCloudObject : public BaseObjectData
 {
 
   friend class TypeSplatCloudPlugin;

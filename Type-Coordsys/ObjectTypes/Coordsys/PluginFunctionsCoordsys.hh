@@ -1,6 +1,6 @@
 /*===========================================================================*\
- *                                                                           *
- *                              OpenFlipper                                  *
+*                                                                            *
+*                              OpenFlipper                                   *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,129 +36,69 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
- *                                                                           *
+*                                                                            *
 \*===========================================================================*/
 
 /*===========================================================================*\
- *                                                                           *
- *   $Revision$                                                       *
- *   $Author$                                                      *
- *   $Date$                   *
- *                                                                           *
+*                                                                            *
+*   $Revision$                                                       *
+*   $LastChangedBy$                                                *
+*   $Date$                     *
+*                                                                            *
 \*===========================================================================*/
 
 
-
-
 //=============================================================================
 //
-//  CLASS PointNode
+//  Standard Functions
 //
 //=============================================================================
 
+/**
+ * \file PluginFunctionsCoordsys.hh
+ * This file contains functions which can be used by plugins to access Coordsyss in the framework.
+ */
 
-#ifndef ACG_COORDSYSNODE_HH
-#define ACG_COORDSYSNODE_HH
+//
+#ifndef PLUGINFUNCTIONSCOORDSYS_HH
+#define PLUGINFUNCTIONSCOORDSYS_HH
 
+#include <OpenFlipper/common/Types.hh>
 
-//== INCLUDES =================================================================
+/** The Namespace PluginFunctions contains functions for all plugins. */
+namespace PluginFunctions {
 
-#include <ACG/Scenegraph/BaseNode.hh>
-#include <ACG/Scenegraph/DrawModes.hh>
-#include <ACG/GL/GLPrimitives.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
-#include <vector>
+/** This functions returns the object with the given id if it is a CoordsysObject.
+ * See get_object(  int _identifier , BaseObject*& _object ) for more details.
+ */
+OBJECTTYPEDLLEXPORT
+bool getObject(  int _identifier , CoordsysObject*& _object );
 
-//== NAMESPACES ===============================================================
+/** \brief Get a CoordsysNode from an object.
+ *
+ * @param _object The object should be of type BaseDataObject. If the content is a coordsys, a
+ *                CoordsysNode will be returned. Otherwise a NULL pointer is returned.
+ */
+OBJECTTYPEDLLEXPORT
+CoordsysNode* coordsysNode( BaseObjectData* _object );
 
-namespace ACG {
-namespace SceneGraph {
+/** \brief Cast an BaseObject to a CoordsysObject if possible
+ *
+ * @param _object The object should be of type BaseDataObject. If the content is a coordsys, a
+ *                a CoordsysObject is returned. Otherwise a NULL pointer is returned.
+ */
+OBJECTTYPEDLLEXPORT
+CoordsysObject* coordsysObject( BaseObjectData* _object );
 
-//== CLASS DEFINITION =========================================================
-
-
-/** \class CoordinateSystemNode
- * \brief Node for displaying coordinate systems
-
- CoordinateSystemNode renders a coordinate system.
-
-**/
-
-class DLLEXPORT CoordinateSystemNode : public BaseNode
-{
-
-public:
-  
-  /** default constructor
-   * @param _parent Define the parent Node this node gets attached to
-   * @param _name Name of this Node
-   */
-  CoordinateSystemNode( BaseNode* _parent=0, std::string  _name="<TextNode>");
-
-  /// destructor
-  ~CoordinateSystemNode();
-
-  /// static name of this class
-  ACG_CLASSNAME(CoordinateSystemNode);
-
-  /// return available draw modes
-  ACG::SceneGraph::DrawModes::DrawMode  availableDrawModes() const;
-
-  /// update bounding box
-  void boundingBox(Vec3d& _bbMin, Vec3d& _bbMax);
-
-  /// draw Coordsys
-  void draw(GLState& _state, const DrawModes::DrawMode& _drawMode);
-  
-  /// draw Coordsys for object picking
-  void pick(GLState& _state, PickTarget _target);
-
-  /// set position of the coordsys
-  void position(const Vec3d& _pos);
-
-  /// Get current position of the coordinate system;
-  Vec3d position();
-
-  /// Get current rotation of the coordinate system;
-  Matrix4x4d rotation();
-
-  /// Set the rotation of the coordinate system;
-  void rotation(const Matrix4x4d & _rotation);
-
-  /// set size of the coordsys ( Size is length of one of the axis )
-  void size(const double _size);
-
-  /// Get current size
-  double size();
-
-  private:
-
-    void drawCoordsys(GLState&  _state);
-    void drawCoordsysPick(GLState&  _state);
-
-    /// 3d position of the coordsys origin
-    Vec3d  position_;
-    
-    /// Orientation of coordsys
-    Matrix4x4d rotation_;
-
-    /// Size of the coordsys
-    double coordsysSize_;
-
-    int slices_;
-    int stacks_;
-    int loops_;
-
-    GLSphere* sphere_;
-    GLCone* cone_;
-    GLCylinder* cylinder_;
-    GLDisk* disk_;
-};
+/** \brief Get a CoordsysObject with its identifier
+ *
+ * @param _objectId The object should be of type CoordsysObject. If the id belongs to a coordsys, a
+ *                a CoordsysObject is returned. Otherwise a NULL pointer is returned.
+ */
+OBJECTTYPEDLLEXPORT
+CoordsysObject* coordsysObject( int _objectId );
 
 
-//=============================================================================
-} // namespace SceneGraph
-} // namespace ACG
-//=============================================================================
-#endif // ACG_COORDSYSNODE_HH defined
-//=============================================================================
+}
+
+#endif // PLUGINFUNCTIONSCOORDSYS_HH

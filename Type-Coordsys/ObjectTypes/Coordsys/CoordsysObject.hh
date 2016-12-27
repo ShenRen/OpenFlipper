@@ -68,7 +68,7 @@
 
 #include <OpenFlipper/common/BaseObjectData.hh>       
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 #include "CoordsysTypes.hh"
 
@@ -76,7 +76,7 @@
 
 // //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT CoordsysObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT CoordsysObject : public BaseObjectData {
 
   friend class TypeCoordsysPlugin;
 

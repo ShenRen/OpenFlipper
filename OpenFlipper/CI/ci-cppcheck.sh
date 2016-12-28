@@ -22,8 +22,7 @@ echo "Please Wait ..."
 cppcheck  --enable=all \
           -j4 \
           --quiet \
-          -i libs_required \
-          -i OpenFlipperi/libs_required/OpenMesh
+          -i OpenFlipper/libs_required/OpenMesh \
           -i build-release \
           -i build-debug \
           -i .svn \

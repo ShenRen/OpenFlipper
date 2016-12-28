@@ -60,6 +60,7 @@ include_directories (
 # remove template cc files from source file list
 acg_drop_templates (sources)
 acg_add_library ( ${TYPENAME} SHARED ${sources} ${headers} ${moc_targets})
+set_target_properties ( ${TYPENAME} PROPERTIES MACOSX_RPATH 0 )
 
 add_dependencies( ${TYPENAME} OpenMeshCore OpenMeshTools ACG OpenFlipperPluginLib)
 

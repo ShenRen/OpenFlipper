@@ -61,7 +61,7 @@ echo "Full cmake options: $OPTIONS  "
 ########################################
 # Build daemon cleanup code
 ########################################
-rm -rf libs_required/OpenMesh
+rm -rf libs_required
 
 ########################################
 # Fetch submodules

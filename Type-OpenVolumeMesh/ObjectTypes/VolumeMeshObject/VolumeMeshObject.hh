@@ -69,7 +69,7 @@
 
 
 template<class MeshT>
-class OBJECTTYPEDLLEXPORT VolumeMeshObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORTONLY VolumeMeshObject : public BaseObjectData {
 
   friend class TypePolyhedralMeshPlugin;
   friend class TypeHexahedralMeshPlugin;

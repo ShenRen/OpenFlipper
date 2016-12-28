@@ -20,6 +20,5 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/TetrahedralMesh)
     add_definitions (-DENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT)
 endif ()
 
-openflipper_plugin (DEPS OpenMesh OpenVolumeMesh
-                    TYPES POLYMESH TRIANGLEMESH
+openflipper_plugin (TYPES POLYMESH TRIANGLEMESH
                     OPT_TYPES BSPLINECURVE BSPLINESURFACE)

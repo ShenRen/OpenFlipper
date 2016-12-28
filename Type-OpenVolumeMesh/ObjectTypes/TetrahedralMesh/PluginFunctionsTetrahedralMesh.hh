@@ -52,6 +52,7 @@
 #include <ObjectTypes/VolumeMeshObject/VolumeMeshObject.hh>
 #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #include <OpenFlipper/common/Types.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 //== NAMESPACES ===============================================================
 

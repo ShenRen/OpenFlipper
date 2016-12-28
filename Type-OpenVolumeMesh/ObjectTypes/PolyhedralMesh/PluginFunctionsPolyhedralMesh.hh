@@ -60,6 +60,7 @@
 #include <ObjectTypes/VolumeMeshObject/VolumeMeshObject.hh>
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #include <OpenFlipper/common/Types.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 //== NAMESPACES ===============================================================
 

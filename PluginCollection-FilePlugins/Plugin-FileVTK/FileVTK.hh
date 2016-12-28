@@ -67,13 +67,13 @@
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
 #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 
@@ -601,7 +601,7 @@ class FileVTKPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     */
     bool writeASCIIData(std::ostream& _out, PolyMesh& _mesh);
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
+#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
     /** \brief Adds a tetra cell to the volume mesh.
     *
     *
@@ -700,7 +700,7 @@ class FileVTKPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     bool writeASCIIDataOfOpenVolumeMesh(std::ostream& _out, MeshT& _mesh );
 #endif //ENABLE_OPENVOLUMEMESH_SUPPORT
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
     /** \brief Adds a tetra cell to the volume mesh.
     *
     *
@@ -821,9 +821,9 @@ class FileVTKPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     * @param _mesh        Mesh to work on
     */
     bool writeASCIIData(std::ostream& _out, HexahedralMesh& _mesh);
-#endif //ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#endif //ENABLE_HEXAHEDRALMESH_SUPPORT
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     /** \brief Adds a tetra cell to the volume mesh.
     *
     *
@@ -944,9 +944,9 @@ class FileVTKPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     * @param _mesh        Mesh to work on
     */
     bool writeASCIIData(std::ostream& _out, PolyhedralMesh& _mesh);
-#endif //ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#endif //ENABLE_POLYHEDRALMESH_SUPPORT
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     /** \brief Adds a tetra cell to the volume mesh.
     *
     *
@@ -1067,7 +1067,7 @@ class FileVTKPlugin : public QObject, BaseInterface, FileInterface, LoadSaveInte
     * @param _mesh        Mesh to work on
     */
     bool writeASCIIData(std::ostream& _out, TetrahedralMesh& _mesh);
-#endif //ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#endif //ENABLE_POLYHEDRALMESH_SUPPORT
 
 
     enum BestMeshType {

@@ -47,8 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #define OVM_PROPERTY_MODEL_CC
 
 #include "OVMPropertyModel.hh"
@@ -961,4 +959,3 @@ supportedPropertyTypes.insert(proptype_##primitive##_Vec3f);  \
 
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

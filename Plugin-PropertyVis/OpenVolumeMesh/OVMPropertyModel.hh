@@ -47,7 +47,7 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
+#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
 
 #ifndef OVM_PROPERTY_MODEL_H
 #define OVM_PROPERTY_MODEL_H
@@ -258,4 +258,4 @@ INITIALIZE_PROPTYPES(Vertex)
 
 #endif /* OVM_PROPERTY_MODEL_H */
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */
+#endif

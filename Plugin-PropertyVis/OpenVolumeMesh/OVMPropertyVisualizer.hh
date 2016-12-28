@@ -47,7 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
 
 #ifndef OVM_PROPERTY_VISUALIZER_HH
 #define OVM_PROPERTY_VISUALIZER_HH
@@ -245,5 +244,4 @@ void Classname::visualizeVertexProp(bool _setDrawMode)\
 
 #endif /* OVM_PROPERTY_VISUALIZER_HH */
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */
 

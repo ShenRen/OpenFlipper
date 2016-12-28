@@ -45,8 +45,6 @@
  * This file contains all required includes for using tetrahedral meshes
 */
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
-
 #ifndef TETRAHEDRAL_MESH_INCLUDE_HH
 #define TETRAHEDRAL_MESH_INCLUDE_HH
 
@@ -72,5 +70,3 @@ typedef VolumeMeshObject<TetrahedralMesh> TetrahedralMeshObject;
 //=============================================================================
 #endif // TETRAHEDRAL_MESH_INCLUDE_HH defined
 //=============================================================================
-
-#endif // ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT

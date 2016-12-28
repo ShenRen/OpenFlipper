@@ -40,8 +40,6 @@
  *                                                                           *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
-
 #include <OpenFlipper/common/Types.hh>
 
 #include <ObjectTypes/TetrahedralMesh/PluginFunctionsTetrahedralMesh.hh>
@@ -151,5 +149,3 @@ TetrahedralMeshObject* tetrahedralMeshObject( int _identifier )
 
 }
 
-
-#endif // ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT

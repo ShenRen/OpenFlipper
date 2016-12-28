@@ -61,7 +61,7 @@
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
 
@@ -160,7 +160,7 @@ public slots:
   int addRandomBSplineSurface(const Vector& _position = Vector(0, 0, 0), int nDiv = 5);
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   int addTetrahedralCube(const Vector& _position = Vector(0.0,0.0,0.0),
                          const double _length = 2.0);
 
@@ -177,7 +177,7 @@ private:
   // construct Octahedron in triMesh_
   void constructOctahedron(const Vector& _position, const double _length);
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   int addPolyhedralMesh();
 #endif
 

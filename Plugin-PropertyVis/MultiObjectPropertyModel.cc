@@ -345,7 +345,7 @@ QWidget* MultiObjectPropertyModel::createWidgetForType(const TypeInfoWrapper& in
     // OpenVolumeMesh
     // ----------------------------------------
 
-    #ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
+    #if defined(ENABLE_HEXAHEDRALMESH_SUPPORT)
     if (OVMPropertyModel<HexahedralMesh>::isBoolType(info))
         return new BooleanWidget();
     if (OVMPropertyModel<HexahedralMesh>::isIntType(info))
@@ -412,6 +412,7 @@ void range2_om(const Mesh* mesh, const PropertyInfo& info, T& min, T&max)
             (mesh, mesh->n_faces(), info.propName(), min, max);
 }
 
+#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
 template <typename Mesh, typename T>
 void range2_ovm(Mesh* mesh, const PropertyInfo& info, T& min, T&max)
 {
@@ -448,6 +449,7 @@ void range2_ovm(Mesh* mesh, const PropertyInfo& info, T& min, T&max)
             (prop, mesh->n_vertices(), min, max);
     }
 }
+#endif
 
 template <typename T>
 void range1(const BaseObject* obj, const PropertyInfo& info, T& min, T& max)
@@ -459,12 +461,12 @@ void range1(const BaseObject* obj, const PropertyInfo& info, T& min, T& max)
     if (obj->dataType(DATA_POLY_MESH))
         range2_om(polyMesh(obj->id()), info, min, max);
 
-    #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+    #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     if (obj->dataType(DATA_POLYHEDRAL_MESH))
         range2_ovm(polyhedralMesh(obj->id()), info, min, max);
     #endif
 
-    #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+    #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
     if (obj->dataType(DATA_HEXAHEDRAL_MESH))
         range2_ovm(hexahedralMesh(obj->id()), info, min, max);
     #endif
@@ -476,13 +478,13 @@ void MultiObjectPropertyModel::setRange(const PropertyInfo& info, QWidget* widge
 
     bool isDoubleType = info.typeinfo() == OMPropertyModel<TriMesh>::proptype_double;
 
-    #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+    #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
       isDoubleType |= OVMPropertyModel<HexahedralMesh>::isDoubleType(info.typeinfo());
     #endif
 
     bool isIntType = info.typeinfo() == OMPropertyModel<TriMesh>::proptype_int;
 
-    #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+    #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
       isIntType |= OVMPropertyModel<HexahedralMesh>::isIntType(info.typeinfo());
     #endif
 

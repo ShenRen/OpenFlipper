@@ -58,7 +58,7 @@
 #include <ACG/Scenegraph/StatusNodesT.hh>
 #include <ACG/Scenegraph/ShaderNode.hh>
 #include <ACG/Scenegraph/TextureNode.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include <OpenFlipper/common/BaseObjectData.hh>
 #include <ObjectTypes/VolumeMeshObject/VolumeMeshNode.hh>
 
@@ -69,7 +69,7 @@
 
 
 template<class MeshT>
-class DLLEXPORTONLY VolumeMeshObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORTONLY VolumeMeshObject : public BaseObjectData {
 
   friend class TypePolyhedralMeshPlugin;
   friend class TypeHexahedralMeshPlugin;

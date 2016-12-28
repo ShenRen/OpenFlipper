@@ -1,37 +1,12 @@
 include (plugin)
 
-SET( CURRENT_PLUGIN_DEPS "")
-
 if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/TSplineMesh)
   add_definitions (-DENABLE_TSPLINEMESH_SUPPORT)
 endif ()
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/PolyhedralMesh)
-    add_definitions (-DENABLE_OPENVOLUMEMESH_SUPPORT)
-    add_definitions (-DENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT)
-  
-    list( APPEND CURRENT_PLUGIN_DEPS OpenVolumeMesh )
-endif()
-
-if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/HexahedralMesh)
-    add_definitions (-DENABLE_OPENVOLUMEMESH_SUPPORT)
-    add_definitions (-DENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT)
-
-    list( APPEND CURRENT_PLUGIN_DEPS OpenVolumeMesh )
-endif()
-
-if (EXISTS ${CMAKE_SOURCE_DIR}/ObjectTypes/TetrahedralMesh)
-    add_definitions (-DENABLE_OPENVOLUMEMESH_SUPPORT)
-    add_definitions (-DENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT)
-
-    list( APPEND CURRENT_PLUGIN_DEPS OpenVolumeMesh )
-endif()
-
-list(REMOVE_DUPLICATES CURRENT_PLUGIN_DEPS )
-
-openflipper_plugin ( DEPS ${CURRENT_PLUGIN_DEPS}
-                     TYPES PLANE POLYMESH TRIANGLEMESH
-                     OPT_TYPES POLYLINE SKELETON
+openflipper_plugin ( TYPES PLANE POLYMESH TRIANGLEMESH
+                     OPTDEPS OpenVolumeMesh
+                     OPT_TYPES POLYLINE SKELETON HEXAHEDRALMESH POLYHEDRALMESH TETRAHEDRALMESH
 		     TRANSLATION_LANGUAGES de_DE
                      INSTALLDATA Icons VsiMetadata )
 

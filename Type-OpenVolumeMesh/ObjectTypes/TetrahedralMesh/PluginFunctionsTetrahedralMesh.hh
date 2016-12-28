@@ -46,9 +46,6 @@
  * TetrahedralMeshes in the framework.
  */
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
-
-//
 #ifndef PLUGINFUNCTIONSTETRAHEDRALMESH_HH
 #define PLUGINFUNCTIONSTETRAHEDRALMESH_HH
 
@@ -67,7 +64,7 @@ namespace PluginFunctions {
  * @param _meshes ( vector returning the source hexahedral meshes )
  * @return false, if no hexahedral mesh is selected as source
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getSourceMeshes( std::vector<TetrahedralMesh*>& _meshes  );
 
 /** \brief Get a pointer to every TetrahedralMesh which is marked as a target.
@@ -75,14 +72,14 @@ bool getSourceMeshes( std::vector<TetrahedralMesh*>& _meshes  );
  * @param _meshes ( vector returning the target hexahedral meshes )
  * @return false, if no hexahedral mesh is selected as target
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getTargetMeshes( std::vector<TetrahedralMesh*>& _meshes  );
 
 
 /** This functions returns the object with the given id if it is an TetrahedralMeshObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject( int _identifier, TetrahedralMeshObject*& _object );
 
 /** \brief Get an TetrahedralMesh from an object.
@@ -90,7 +87,7 @@ bool getObject( int _identifier, TetrahedralMeshObject*& _object );
  * @param _object The object should be of type BaseDataObject. If the content is
  * a hexahedral mesh, a hexahedral mesh will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 TetrahedralMesh* tetrahedralMesh( BaseObjectData* _object );
 
 /** \brief Get a TetrahedralMesh from an object id.
@@ -98,7 +95,7 @@ TetrahedralMesh* tetrahedralMesh( BaseObjectData* _object );
  * @param _identifier Identifier of the object. If its a TetrahedralMesh mesh, the function will return the pointer to the mesh
  *                    otherwise 0
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 TetrahedralMesh* tetrahedralMesh( int _identifier );
 
 /** \brief Cast an BaseObject to an TetrahedralMeshObject if possible
@@ -106,7 +103,7 @@ TetrahedralMesh* tetrahedralMesh( int _identifier );
  * @param _object The object should be of type BaseDataObject. If the content is
  * an TetrahedralMesh, an TetrahedralMeshObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 TetrahedralMeshObject* tetrahedralMeshObject( BaseObjectData* _object );
 
 
@@ -115,11 +112,9 @@ TetrahedralMeshObject* tetrahedralMeshObject( BaseObjectData* _object );
  * @param _identifier
  */
 
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 TetrahedralMeshObject* tetrahedralMeshObject( int _identifier );
 
 }
 
 #endif // PLUGINFUNCTIONSTETRAHEDRALMESH_HH
-
-#endif // ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT

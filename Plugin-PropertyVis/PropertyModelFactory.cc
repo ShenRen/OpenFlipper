@@ -52,17 +52,17 @@
 #include "MultiObjectPropertyModel.hh"
 #include "OpenMesh/OMPropertyModel.hh"
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
+#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
     #include "OpenVolumeMesh/OVMPropertyModel.hh"
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
-#endif /* ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT */
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
+#endif /* ENABLE_POLYHEDRALMESH_SUPPORT */
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
-#endif /* ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT */
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
+#endif /* ENABLE_HEXAHEDRALMESH_SUPPORT */
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 
@@ -138,21 +138,21 @@ PropertyModel* __PropertyModelFactory::getModel(int objectID)
         PolyMesh* mesh = PluginFunctions::polyMesh(object);
         propertyModel = new OMPropertyModel<PolyMesh>(mesh, objectID);
     }
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     else if ( object->dataType(DATA_POLYHEDRAL_MESH) )
     {
         PolyhedralMesh* mesh = PluginFunctions::polyhedralMesh(object);
         propertyModel = new OVMPropertyModel<PolyhedralMesh>(mesh, objectID);
     }
-#endif /* ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT */
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#endif /* ENABLE_POLYHEDRALMESH_SUPPORT */
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
     else if ( object->dataType(DATA_HEXAHEDRAL_MESH) )
     {
         HexahedralMesh* mesh = PluginFunctions::hexahedralMesh(object);
         propertyModel = new OVMPropertyModel<HexahedralMesh>(mesh, objectID);
     }
-#endif /* ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT */
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#endif /* ENABLE_HEXAHEDRALMESH_SUPPORT */
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     else if ( object->dataType(DATA_TETRAHEDRAL_MESH) )
     {
         TetrahedralMesh* mesh = PluginFunctions::tetrahedralMesh(object);

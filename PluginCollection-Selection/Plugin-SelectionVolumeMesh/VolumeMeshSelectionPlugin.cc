@@ -117,7 +117,7 @@ void VolumeMeshSelectionPlugin::pluginsInitialized() {
     registerType(environmentHandle_, DATA_POLYHEDRAL_MESH);
     emit
     registerType(environmentHandle_, DATA_HEXAHEDRAL_MESH);
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     emit
     registerType(environmentHandle_, DATA_TETRAHEDRAL_MESH);
 #endif
@@ -244,7 +244,7 @@ void VolumeMeshSelectionPlugin::slotSelectionOperation(QString _operation) {
                                                                     : PluginFunctions::ALL_OBJECTS);
 
     DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     data_type |= DATA_TETRAHEDRAL_MESH;
 #endif
 
@@ -539,7 +539,7 @@ void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
                     }
                 }
             }
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
             else if(object->dataType() == DATA_TETRAHEDRAL_MESH)
             {
                 if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_FACE,
@@ -583,7 +583,7 @@ bool SelectVolumeAction::operator()(BaseNode* _node)
             HexahedralMesh* m = PluginFunctions::hexahedralMesh(object);
             selected = plugin_->volumeSelection(m, state_, &region_, type_, deselection_);
         }
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
         else if(object->dataType(DATA_TETRAHEDRAL_MESH)) {
 
             TetrahedralMesh* m = PluginFunctions::tetrahedralMesh(object);
@@ -817,7 +817,7 @@ OpenVolumeMesh::StatusAttrib*VolumeMeshSelectionPlugin::getStatus(int _objectId)
     if (hexMeshObj != NULL)
         return &hexMeshObj->status();
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     TetrahedralMeshObject* tetMeshObj = NULL;
     PluginFunctions::getObject(_objectId, tetMeshObj);
     if (tetMeshObj != NULL)
@@ -837,7 +837,7 @@ OpenVolumeMesh::StatusAttrib* VolumeMeshSelectionPlugin::getStatus(BaseObjectDat
     if (hexMeshObj != NULL)
         return &hexMeshObj->status();
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     TetrahedralMeshObject* tetMeshObj = PluginFunctions::tetrahedralMeshObject(object);
     if (tetMeshObj != NULL)
         return &tetMeshObj->status();
@@ -938,7 +938,7 @@ void VolumeMeshSelectionPlugin::slotLoadSelection(const INIFile& _file) {
     // Iterate over all polyhedral mesh objects in the scene and save
     // the selections for all supported entity types
     DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     data_type |= DATA_TETRAHEDRAL_MESH;
 #endif
 
@@ -987,7 +987,7 @@ void VolumeMeshSelectionPlugin::slotSaveSelection(INIFile& _file) {
     // Iterate over all volumemesh objects in the scene and save
     // the selections for all vertices
     DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     data_type |= DATA_TETRAHEDRAL_MESH;
 #endif
 
@@ -1027,7 +1027,7 @@ void VolumeMeshSelectionPlugin::slotKeyShortcutEvent(int _key, Qt::KeyboardModif
     PluginFunctions::IteratorRestriction restriction = (targetsOnly ? PluginFunctions::TARGET_OBJECTS
                                                                     : PluginFunctions::ALL_OBJECTS);
     DataType data_type = DATA_POLYHEDRAL_MESH | DATA_HEXAHEDRAL_MESH;
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     data_type |= DATA_TETRAHEDRAL_MESH;
 #endif
 

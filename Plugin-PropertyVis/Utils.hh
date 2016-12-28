@@ -61,11 +61,11 @@
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
 
@@ -205,11 +205,11 @@ static DataType supportedDataTypes()
 {
     DataType res = DATA_TRIANGLE_MESH | DATA_POLY_MESH;
 
-    #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+    #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     res |= DATA_POLYHEDRAL_MESH;
     #endif
 
-    #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+    #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
     res |= DATA_HEXAHEDRAL_MESH;
     #endif
 

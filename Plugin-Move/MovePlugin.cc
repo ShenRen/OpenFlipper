@@ -72,15 +72,15 @@
 #include <ObjectTypes/Skeleton/Helper/SkeletonTransform.hh>
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
 #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
 
@@ -598,17 +598,17 @@ void MovePlugin::moveObject(ACG::Matrix4x4d mat, int _id) {
   } else  if  ( object->dataType()  == DATA_SKELETON ) {
     transformSkeleton(mat , *PluginFunctions::skeleton(object) );
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   } else  if  ( object->dataType()  == DATA_HEXAHEDRAL_MESH ) {
     HexahedralMeshObject* obj = PluginFunctions::hexahedralMeshObject(object);
     transformVolumeMesh(mat , *obj->mesh() , obj->normals() );
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   } else  if  ( object->dataType()  == DATA_TETRAHEDRAL_MESH ) {
     TetrahedralMeshObject* obj = PluginFunctions::tetrahedralMeshObject(object);
     transformVolumeMesh(mat , *obj->mesh() , obj->normals() );
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   } else  if  ( object->dataType()  == DATA_POLYHEDRAL_MESH ) {
     PolyhedralMeshObject* obj = PluginFunctions::polyhedralMeshObject(object);
     transformVolumeMesh(mat , *obj->mesh() , obj->normals() );
@@ -1399,15 +1399,15 @@ void MovePlugin::slotMoveManipToCOG() {
         else if ( object->dataType( DATA_TSPLINE_MESH ) )
             object->manipulatorNode()->set_center( MeshInfo::cog(PluginFunctions::tsplineMesh(object)) );
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
         else if ( object->dataType( DATA_HEXAHEDRAL_MESH ) )
             object->manipulatorNode()->set_center( cogVolumeMesh(*PluginFunctions::hexahedralMesh(object)) );
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
         else if ( object->dataType( DATA_TETRAHEDRAL_MESH ) )
             object->manipulatorNode()->set_center( cogVolumeMesh(*PluginFunctions::tetrahedralMesh(object)) );
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
         else if ( object->dataType( DATA_POLYHEDRAL_MESH ) )
             object->manipulatorNode()->set_center( cogVolumeMesh(*PluginFunctions::polyhedralMesh(object)) );
 #endif
@@ -1467,15 +1467,15 @@ void MovePlugin::slotRotate() {
           if (object->dataType(DATA_TSPLINE_MESH))
             transformMesh(m, (*PluginFunctions::tsplineMesh(object)));
         #endif
-        #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+        #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
           if (object->dataType(DATA_HEXAHEDRAL_MESH))
             transformVolumeMesh(m, (*PluginFunctions::hexahedralMesh(object)), (PluginFunctions::hexahedralMeshObject(object)->normals()));
         #endif
-        #ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+        #ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
           if (object->dataType(DATA_TETRAHEDRAL_MESH))
             transformVolumeMesh(m, (*PluginFunctions::tetrahedralMesh(object)), (PluginFunctions::tetrahedralMeshObject(object)->normals()));
         #endif
-        #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+        #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
           if (object->dataType(DATA_POLYHEDRAL_MESH))
             transformVolumeMesh(m, (*PluginFunctions::polyhedralMesh(object)), (PluginFunctions::polyhedralMeshObject(object)->normals()));
         #endif
@@ -1523,15 +1523,15 @@ void MovePlugin::slotRotate() {
                 if (o_it->dataType(DATA_TSPLINE_MESH))
                   transformMesh(m, (*PluginFunctions::tsplineMesh(o_it)));
               #endif
-              #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+              #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
                 if (object->dataType(DATA_HEXAHEDRAL_MESH))
                   transformVolumeMesh(m, (*PluginFunctions::hexahedralMesh(object)), (PluginFunctions::hexahedralMeshObject(object)->normals()));
               #endif
-              #ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+              #ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
                 if (object->dataType(DATA_TETRAHEDRAL_MESH))
                   transformVolumeMesh(m, (*PluginFunctions::tetrahedralMesh(object)), (PluginFunctions::tetrahedralMeshObject(object)->normals()));
               #endif
-              #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+              #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
                 if (object->dataType(DATA_POLYHEDRAL_MESH))
                   transformVolumeMesh(m, (*PluginFunctions::polyhedralMesh(object)), (PluginFunctions::polyhedralMeshObject(object)->normals()));
               #endif
@@ -1619,15 +1619,15 @@ void MovePlugin::slotScale() {
 	        if (object->dataType(DATA_TSPLINE_MESH))
 	          transformMesh(m,  (*PluginFunctions::tsplineMesh(object)));
 	      #endif
-        #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+        #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
           if (object->dataType(DATA_HEXAHEDRAL_MESH))
             transformVolumeMesh(m, (*PluginFunctions::hexahedralMesh(object)), (PluginFunctions::hexahedralMeshObject(object)->normals()));
        #endif
-       #ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+       #ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
          if (object->dataType(DATA_TETRAHEDRAL_MESH))
            transformVolumeMesh(m, (*PluginFunctions::tetrahedralMesh(object)), (PluginFunctions::tetrahedralMeshObject(object)->normals()));
        #endif
-       #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+       #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
           if (object->dataType(DATA_POLYHEDRAL_MESH))
             transformVolumeMesh(m, (*PluginFunctions::polyhedralMesh(object)), (PluginFunctions::polyhedralMeshObject(object)->normals()));
        #endif
@@ -1673,15 +1673,15 @@ void MovePlugin::slotScale() {
                 if (o_it->dataType(DATA_TSPLINE_MESH))
                   transformMesh(m, (*PluginFunctions::tsplineMesh(o_it)));
               #endif
-              #ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+              #ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
                 if (object->dataType(DATA_HEXAHEDRAL_MESH))
                   transformVolumeMesh(m, (*PluginFunctions::hexahedralMesh(object)), (PluginFunctions::hexahedralMeshObject(object)->normals()));
               #endif
-              #ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+              #ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
                 if (object->dataType(DATA_TETRAHEDRAL_MESH))
                   transformVolumeMesh(m, (*PluginFunctions::tetrahedralMesh(object)), (PluginFunctions::tetrahedralMeshObject(object)->normals()));
               #endif
-              #ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+              #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
                 if (object->dataType(DATA_POLYHEDRAL_MESH))
                   transformVolumeMesh(m, (*PluginFunctions::polyhedralMesh(object)), (PluginFunctions::polyhedralMeshObject(object)->normals()));
               #endif
@@ -1772,7 +1772,7 @@ void MovePlugin::slotMoveToOrigin() {
         }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
         if ( o_it->dataType( DATA_HEXAHEDRAL_MESH )) {
           HexahedralMesh& mesh = *PluginFunctions::hexahedralMesh(*o_it);
           cog += cogVolumeMesh(mesh) * double(mesh.n_vertices());
@@ -1780,7 +1780,7 @@ void MovePlugin::slotMoveToOrigin() {
         }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
         if ( o_it->dataType( DATA_TETRAHEDRAL_MESH )) {
           TetrahedralMesh& mesh = *PluginFunctions::tetrahedralMesh(*o_it);
           cog += cogVolumeMesh(mesh) * double(mesh.n_vertices());
@@ -1788,7 +1788,7 @@ void MovePlugin::slotMoveToOrigin() {
         }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
         if ( o_it->dataType( DATA_POLYHEDRAL_MESH )) {
           PolyhedralMesh& mesh = *PluginFunctions::polyhedralMesh(*o_it);
           cog += cogVolumeMesh(mesh) * double(mesh.n_vertices());
@@ -1843,7 +1843,7 @@ void MovePlugin::slotMoveToOrigin() {
     }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
     if ( o_it->dataType( DATA_HEXAHEDRAL_MESH )) {
         HexahedralMesh& mesh = *PluginFunctions::hexahedralMesh(*o_it);
 
@@ -1858,7 +1858,7 @@ void MovePlugin::slotMoveToOrigin() {
     }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     if ( o_it->dataType( DATA_TETRAHEDRAL_MESH )) {
         TetrahedralMesh& mesh = *PluginFunctions::tetrahedralMesh(*o_it);
 
@@ -1873,7 +1873,7 @@ void MovePlugin::slotMoveToOrigin() {
     }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     if ( o_it->dataType( DATA_POLYHEDRAL_MESH )) {
         PolyhedralMesh& mesh = *PluginFunctions::polyhedralMesh(*o_it);
 
@@ -1966,7 +1966,7 @@ void MovePlugin::unifyBoundingBox(Unificationtype u)
         }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
         if ( o_it->dataType( DATA_HEXAHEDRAL_MESH )) {
           HexahedralMesh& mesh = *PluginFunctions::hexahedralMesh(*o_it);
           getBBVolumeMesh(mesh,bb_min_tmp,bb_max_tmp);
@@ -1975,7 +1975,7 @@ void MovePlugin::unifyBoundingBox(Unificationtype u)
         }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
         if ( o_it->dataType( DATA_TETRAHEDRAL_MESH )) {
           TetrahedralMesh& mesh = *PluginFunctions::tetrahedralMesh(*o_it);
           getBBVolumeMesh(mesh,bb_min_tmp,bb_max_tmp);
@@ -1984,7 +1984,7 @@ void MovePlugin::unifyBoundingBox(Unificationtype u)
         }
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
         if ( o_it->dataType( DATA_POLYHEDRAL_MESH )) {
           PolyhedralMesh& mesh = *PluginFunctions::polyhedralMesh(*o_it);
           getBBVolumeMesh(mesh,bb_min_tmp,bb_max_tmp);
@@ -2007,15 +2007,15 @@ void MovePlugin::unifyBoundingBox(Unificationtype u)
       else if ( o_it->dataType( DATA_TSPLINE_MESH ) )
         unifyBB(*PluginFunctions::tsplineMesh(*o_it),bb_min,bb_max, u);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
       else if ( o_it->dataType( DATA_HEXAHEDRAL_MESH ) )
         unifyBBVolumeMesh(*PluginFunctions::hexahedralMesh(*o_it),(PluginFunctions::hexahedralMeshObject(*o_it)->normals()),bb_min,bb_max, u);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
       else if ( o_it->dataType( DATA_TETRAHEDRAL_MESH ) )
         unifyBBVolumeMesh(*PluginFunctions::tetrahedralMesh(*o_it),(PluginFunctions::tetrahedralMeshObject(*o_it)->normals()),bb_min,bb_max, u);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
       else if ( o_it->dataType( DATA_POLYHEDRAL_MESH ) )
         unifyBBVolumeMesh(*PluginFunctions::polyhedralMesh(*o_it),(PluginFunctions::polyhedralMeshObject(*o_it)->normals()),bb_min,bb_max, u);
 #endif
@@ -2028,15 +2028,15 @@ void MovePlugin::unifyBoundingBox(Unificationtype u)
       else if ( o_it->dataType( DATA_TSPLINE_MESH ) )
         unifyBB(*PluginFunctions::tsplineMesh(*o_it), u);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
       else if ( o_it->dataType( DATA_HEXAHEDRAL_MESH ) )
         unifyBBVolumeMesh(*PluginFunctions::hexahedralMesh(*o_it),(PluginFunctions::hexahedralMeshObject(*o_it)->normals()), u);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
       else if ( o_it->dataType( DATA_TETRAHEDRAL_MESH ) )
         unifyBBVolumeMesh(*PluginFunctions::tetrahedralMesh(*o_it),(PluginFunctions::tetrahedralMeshObject(*o_it)->normals()), u);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
       else if ( o_it->dataType( DATA_POLYHEDRAL_MESH ) )
         unifyBBVolumeMesh(*PluginFunctions::polyhedralMesh(*o_it),(PluginFunctions::polyhedralMeshObject(*o_it)->normals()), u);
 #endif
@@ -2292,7 +2292,7 @@ void MovePlugin::transformSkeleton( ACG::Matrix4x4d _mat , Skeleton& _skeleton  
 
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
+#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
 /** \brief Transform a volume mesh with the given transformation matrix
  *
  * Note: The normals have to be transformed with the inverse
@@ -2593,7 +2593,7 @@ void MovePlugin::updateSelectionType() {
 
     }
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
+#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
     bool functionExistsVolumeMeshV;
     emit functionExists("volumemeshselection", "vertexTypeActive()", functionExistsVolumeMeshV);
     bool functionExistsVolumeMeshE;

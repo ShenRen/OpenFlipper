@@ -43,22 +43,22 @@
 *                                                                            *
  *   $Revision: 13489 $                                                       *
  *   $LastChangedBy: kremer $                                                 *
- *   $Date: 2012-01-25 12:30:09 +0100 (Wed, 25 Jan 2012) $                    *
+ *   $Date: 2012-01-25 12:30:09 +0100 (Mi, 25 Jan 2012) $                    *
  *                                                                            *
  \*===========================================================================*/
 
 /**
- * \file PluginFunctionsHexahedralMesh.hh
+ * \file PluginFunctionsPolyhedralMesh.hh
  * This file contains functions which can be used by plugins to access
- * HexahedralMeshes in the framework.
+ * PolyhedralMeshes in the framework.
  */
 
 //
-#ifndef PLUGINFUNCTIONSHEXAHEDRALMESH_HH
-#define PLUGINFUNCTIONSHEXAHEDRALMESH_HH
+#ifndef PLUGINFUNCTIONSPOLYHEDRALMESH_HH
+#define PLUGINFUNCTIONSPOLYHEDRALMESH_HH
 
 #include <ObjectTypes/VolumeMeshObject/VolumeMeshObject.hh>
-#include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
+#include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #include <OpenFlipper/common/Types.hh>
 
 //== NAMESPACES ===============================================================
@@ -67,62 +67,62 @@
 namespace PluginFunctions {
 
 
-/** \brief Get a pointer to every HexahedralMesh which is marked as a source.
+/** \brief Get a pointer to every PolyhedralMesh which is marked as a source.
  *
- * @param _meshes ( vector returning the source hexahedral meshes )
- * @return false, if no hexahedral mesh is selected as source
+ * @param _meshes ( vector returning the source polyhedral meshes )
+ * @return false, if no polyhedral mesh is selected as source
 */
-DLLEXPORT
-bool getSourceMeshes( std::vector<HexahedralMesh*>& _meshes  );
+OBJECTTYPEDLLEXPORT
+bool getSourceMeshes( std::vector<PolyhedralMesh*>& _meshes  );
 
-/** \brief Get a pointer to every HexahedralMesh which is marked as a target.
+/** \brief Get a pointer to every PolyhedralMesh which is marked as a target.
  *
- * @param _meshes ( vector returning the target hexahedral meshes )
- * @return false, if no hexahedral mesh is selected as target
+ * @param _meshes ( vector returning the target polyhedral meshes )
+ * @return false, if no polyhedral mesh is selected as target
 */
-DLLEXPORT
-bool getTargetMeshes( std::vector<HexahedralMesh*>& _meshes  );
+OBJECTTYPEDLLEXPORT
+bool getTargetMeshes( std::vector<PolyhedralMesh*>& _meshes  );
 
 
-/** This functions returns the object with the given id if it is an HexahedralMeshObject.
+/** This functions returns the object with the given id if it is an PolyhedralMeshObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
-bool getObject( int _identifier, HexahedralMeshObject*& _object );
+OBJECTTYPEDLLEXPORT
+bool getObject( int _identifier, PolyhedralMeshObject*& _object );
 
-/** \brief Get an HexahedralMesh from an object.
+/** \brief Get an PolyhedralMesh from an object.
  *
  * @param _object The object should be of type BaseDataObject. If the content is
- * a hexahedral mesh, a hexahedral mesh will be returned. Otherwise a NULL pointer is returned.
+ * a polyhedral mesh, a polyhedral mesh will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
-HexahedralMesh* hexahedralMesh( BaseObjectData* _object );
+OBJECTTYPEDLLEXPORT
+PolyhedralMesh* polyhedralMesh( BaseObjectData* _object );
 
-/** \brief Get a HexahedralMesh from an object id.
+/** \brief Get a PolyhedralMesh from an object id.
  *
- * @param _identifier Identifier of the object. If its a HexahedralMesh mesh, the function will return the pointer to the mesh
+ * @param _identifier Identifier of the object. If its a PolyhedralMesh mesh, the function will return the pointer to the mesh
  *                    otherwise 0
  */
-DLLEXPORT
-HexahedralMesh* hexahedralMesh( int _identifier );
+OBJECTTYPEDLLEXPORT
+PolyhedralMesh* polyhedralMesh( int _identifier );
 
-/** \brief Cast an BaseObject to an HexahedralMeshObject if possible
+/** \brief Cast an BaseObject to an PolyhedralMeshObject if possible
  *
  * @param _object The object should be of type BaseDataObject. If the content is
- * an HexahedralMesh, an HexahedralMeshObject is returned. Otherwise a NULL pointer is returned.
+ * an PolyhedralMesh, an PolyhedralMeshObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
-HexahedralMeshObject* hexahedralMeshObject( BaseObjectData* _object );
+OBJECTTYPEDLLEXPORT
+PolyhedralMeshObject* polyhedralMeshObject( BaseObjectData* _object );
 
 
-/** \brief Cast an int to an HexahedralMeshObject if possible
+/** \brief Cast an int to an PolyhedralMeshObject if possible
  *
  * @param _identifier
  */
 
-DLLEXPORT
-HexahedralMeshObject* hexahedralMeshObject( int _identifier );
+OBJECTTYPEDLLEXPORT
+PolyhedralMeshObject* polyhedralMeshObject( int _identifier );
 
 }
 
-#endif // PLUGINFUNCTIONSHEXAHEDRALMESH_HH
+#endif // PLUGINFUNCTIONSOPENVOLUMEMESH_HH

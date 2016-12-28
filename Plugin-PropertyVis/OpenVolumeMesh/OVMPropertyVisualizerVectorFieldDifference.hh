@@ -47,8 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #ifndef OVM_PROPERTY_VISUALIZER_VECTOR_FIELD_DIFFERENCE_HH
 #define OVM_PROPERTY_VISUALIZER_VECTOR_FIELD_DIFFERENCE_HH
 
@@ -100,5 +98,3 @@ private:
 
 
 #endif /* OVM_PROPERTY_VISUALIZER_VECTOR_FIELD_DIFFERENCE_HH */
-
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

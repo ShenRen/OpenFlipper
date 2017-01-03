@@ -47,12 +47,9 @@
 *                                                                            *
 \*===========================================================================*/
 
-#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
-
 #ifndef OVM_PROPERTY_MODEL_H
 #define OVM_PROPERTY_MODEL_H
 
-#include "SingleObjectPropertyModel.hh"
 #include "OVMPropertyVisualizer.hh"
 #include "OVMPropertyVisualizerBoolean.hh"
 #include "OVMPropertyVisualizerDouble.hh"
@@ -72,34 +69,9 @@
 
 #define PROP_VIS "PropertyVisualization"
 
+#include "OVMPropertyModelSubclass.hh"
+
 class PropertyVisPlugin;
-
-/* This class adds signal/slot support for OVMPropertyModelSubclass. This needs
- * to be done because "Sorry, Qt does not support templates that contain signals,
- * slots or Q_OBJECT"
- * http://doc.trolltech.com/qq/qq15-academic.html
- */
-class OVMPropertyModelSubclass: public SingleObjectPropertyModel
-{
-Q_OBJECT
-public:
-    OVMPropertyModelSubclass(QObject *parent = 0)
-        : SingleObjectPropertyModel(parent)
-    {
-    }
-
-public slots:
-    virtual void slotCombine(){ combine(); }
-    virtual void slotSaveProperty(){ saveProperty(); }
-    virtual void slotLoadProperty(){ loadProperty(); }
-    virtual void slotPickProperty(){ pickProperty(); }
-
-private:
-    virtual void combine(){}
-    virtual void saveProperty(){}
-    virtual void pickProperty(){}
-
-};
 
 template<typename MeshT>
 class OVMPropertyModel: public OVMPropertyModelSubclass {
@@ -258,4 +230,3 @@ INITIALIZE_PROPTYPES(Vertex)
 
 #endif /* OVM_PROPERTY_MODEL_H */
 
-#endif

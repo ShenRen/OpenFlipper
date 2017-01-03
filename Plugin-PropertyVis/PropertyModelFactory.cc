@@ -53,7 +53,7 @@
 #include "OpenMesh/OMPropertyModel.hh"
 
 #if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
-    #include "OpenVolumeMesh/OVMPropertyModel.hh"
+    #include "OpenVolumeMesh/OVMPropertyModelT.hh"
 #endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */
 
 #ifdef ENABLE_POLYHEDRALMESH_SUPPORT

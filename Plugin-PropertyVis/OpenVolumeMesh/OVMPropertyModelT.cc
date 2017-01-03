@@ -49,9 +49,6 @@
 
 #define OVM_PROPERTY_MODEL_CC
 
-#include "OVMPropertyModel.hh"
-
-
 template <typename MeshT>
 OVMPropertyModel<MeshT>::OVMPropertyModel(MeshT* mesh, int objectID, QObject *parent)
     : OVMPropertyModelSubclass(parent),

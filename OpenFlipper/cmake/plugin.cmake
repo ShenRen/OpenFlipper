@@ -332,7 +332,7 @@ macro (_check_plugin_deps _prefix _optional )
              if ( DEFINED ${_TYPE}_INCLUDE )
                list(APPEND ${_prefix}_TYPE_INCLUDES "${${_TYPE}_INCLUDE}")
                list(APPEND ${_prefix}_TYPE_DEPENDENCIES "${_TYPE}")
-               set(${_prefix}_TYPE_DEFINITIONS "${${_prefix}_TYPE_DEFINITIONS} -DENABLE_${_TYPE}_SUPPORT")
+               list(APPEND ${_prefix}_TYPE_DEFINITIONS "-DENABLE_${_TYPE}_SUPPORT")
              else()
                acg_set (_${_prefix}_MISSING_DEPS "${_${_prefix}_MISSING_DEPS} TYPE_${_TYPE} ")
                set (${_prefix}_HAS_DEPS FALSE)
@@ -351,7 +351,7 @@ macro (_check_plugin_deps _prefix _optional )
              if ( DEFINED ${_TYPE}_INCLUDE )
                list(APPEND ${_prefix}_TYPE_INCLUDES "${${_TYPE}_INCLUDE}")
                list(APPEND ${_prefix}_TYPE_DEPENDENCIES "${_TYPE}")
-               set(${_prefix}_TYPE_DEFINITIONS "${${_prefix}_TYPE_DEFINITIONS} -DENABLE_${_TYPE}_SUPPORT")
+               list(APPEND ${_prefix}_TYPE_DEFINITIONS "-DENABLE_${_TYPE}_SUPPORT")
              else()
                message(warning "Optional Datatype ${_TYPE} not available, proceeding without it")
              endif()
@@ -645,6 +645,8 @@ function (_build_openflipper_plugin plugin)
       endif()
     endif ()
 
+    add_definitions(${${_PLUGIN}_TYPE_DEFINITIONS})
+
     # genereate uic and moc targets
     if (QT5_FOUND)
       acg_qt5_autouic (uic_targets ${ui})
@@ -656,7 +658,6 @@ function (_build_openflipper_plugin plugin)
       acg_qt4_autoqrc (qrc_targets ${qrc})
     endif ()
 
-    add_definitions(${${_PLUGIN}_TYPE_DEFINITIONS})
 
     add_library (Plugin-${plugin} MODULE ${uic_targets} ${sources} ${headers} ${moc_targets} ${qrc_targets} ${${_PLUGIN}_ADDSRC})
     #group projects by parent folder name on MSVC (used for e.g. plugincollection)
@@ -681,7 +682,7 @@ function (_build_openflipper_plugin plugin)
 
     list(APPEND ${_PLUGIN}_DEPS_COMPILE_DEFINITIONS ${${_PLUGIN}_CDEFINITIONSADD} )
 
-	string(REPLACE ";" " " ${_PLUGIN}_CFLAGSADD_STR "${${_PLUGIN}_CFLAGSADD}")
+    string(REPLACE ";" " " ${_PLUGIN}_CFLAGSADD_STR "${${_PLUGIN}_CFLAGSADD}")
 
     set_target_properties (
       Plugin-${plugin} PROPERTIES

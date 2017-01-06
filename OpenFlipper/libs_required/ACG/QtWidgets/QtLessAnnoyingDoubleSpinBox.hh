@@ -1,12 +1,12 @@
 //=============================================================================
 //
-//  CLASS LessAnnoyingQDoubleSpinBox
+//  CLASS QtLessAnnoyingQDoubleSpinBox
 //
 //=============================================================================
 
 
-#ifndef LESSANNOYINGDOUBLESPINBOX_HH
-#define LESSANNOYINGDOUBLESPINBOX_HH
+#ifndef QTLESSANNOYINGDOUBLESPINBOX_HH
+#define QTLESSANNOYINGDOUBLESPINBOX_HH
 
 #include <QDoubleSpinBox>
 #include <QWidget>
@@ -14,13 +14,13 @@
 
 // This spin box allows you to enter more decimals and rounds the number afterwards.
 // Also you can input numbers in scientific format, e.g. 1e-6.
-class LessAnnoyingDoubleSpinBox : public QDoubleSpinBox
+class QtLessAnnoyingDoubleSpinBox : public QDoubleSpinBox
 {
 
 public:
 
 
-  LessAnnoyingDoubleSpinBox(QWidget* _qwidget = Q_NULLPTR ) : QDoubleSpinBox(_qwidget)
+  QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget = Q_NULLPTR ) : QDoubleSpinBox(_qwidget)
   {
   }
 
@@ -65,6 +65,6 @@ private:
 };
 
 //=============================================================================
-#endif // LESSANNOYINGDOUBLESPINBOX_HH defined
+#endif // QTLESSANNOYINGDOUBLESPINBOX_HH defined
 //=============================================================================
 

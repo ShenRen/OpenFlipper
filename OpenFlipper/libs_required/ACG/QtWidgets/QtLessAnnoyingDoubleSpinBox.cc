@@ -46,35 +46,45 @@
 //=============================================================================
 
 
-#pragma once
-
-#include <QDoubleSpinBox>
-#include <QWidget>
-
-#include "../Config/ACGDefines.hh"
+#include "QtLessAnnoyingDoubleSpinBox.hh"
 
 
-// This spin box allows you to enter more decimals and rounds the number afterwards.
-// Also you can input numbers in scientific format, e.g. 1e-6.
-class ACGDLLEXPORT QtLessAnnoyingDoubleSpinBox : public QDoubleSpinBox
+QtLessAnnoyingDoubleSpinBox::QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget = Q_NULLPTR ) : QDoubleSpinBox(_qwidget)
 {
+}
 
-public:
+QValidator::State QtLessAnnoyingDoubleSpinBox:: validate(QString& text, int&) const
+{
+  QString copy = strip_prefix_suffix(text) + "0";
 
+  bool ok;
+  copy.toDouble(&ok);
+  if ( ok )
+    return QValidator::Acceptable;
+  else
+    return QValidator::Invalid;
+}
 
-  QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget = Q_NULLPTR );
+double QValidator::StatevalueFromText(const QString &text) const
+{
+  QString copy = strip_prefix_suffix(text);
 
-  virtual QValidator::State validate(QString& text, int&) const override;
+  bool ok;
+  double value = copy.toDouble(&ok);
 
-  virtual double valueFromText(const QString &text) const override;
+  double factor = pow(10.0, decimals() );
+  value = double( long(value * double(factor) + 0.5) ) / factor;
 
-private:
+  if ( !ok )
+    return 0;
 
-  QString strip_prefix_suffix(const QString& text) const;
+  return value;
+}
 
-};
+QString QValidator::Statestrip_prefix_suffix(const QString& text) const
+{
+  int lenpre = prefix().length();
+  int lensuf = suffix().length();
 
-//=============================================================================
-#endif // QTLESSANNOYINGDOUBLESPINBOX_HH defined
-//=============================================================================
-
+  return text.mid( lenpre, text.length() - lenpre -lensuf ).simplified();
+}

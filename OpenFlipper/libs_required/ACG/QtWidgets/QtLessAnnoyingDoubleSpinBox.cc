@@ -49,7 +49,7 @@
 #include "QtLessAnnoyingDoubleSpinBox.hh"
 
 
-QtLessAnnoyingDoubleSpinBox::QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget = Q_NULLPTR ) : QDoubleSpinBox(_qwidget)
+QtLessAnnoyingDoubleSpinBox::QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget ) : QDoubleSpinBox(_qwidget)
 {
 }
 
@@ -65,7 +65,7 @@ QValidator::State QtLessAnnoyingDoubleSpinBox:: validate(QString& text, int&) co
     return QValidator::Invalid;
 }
 
-double QValidator::StatevalueFromText(const QString &text) const
+double QtLessAnnoyingDoubleSpinBox::StatevalueFromText(const QString &text) const
 {
   QString copy = strip_prefix_suffix(text);
 
@@ -81,7 +81,7 @@ double QValidator::StatevalueFromText(const QString &text) const
   return value;
 }
 
-QString QValidator::Statestrip_prefix_suffix(const QString& text) const
+QString QtLessAnnoyingDoubleSpinBox::Statestrip_prefix_suffix(const QString& text) const
 {
   int lenpre = prefix().length();
   int lensuf = suffix().length();

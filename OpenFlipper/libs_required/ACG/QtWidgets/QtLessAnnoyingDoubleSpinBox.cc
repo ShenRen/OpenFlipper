@@ -53,7 +53,7 @@ QtLessAnnoyingDoubleSpinBox::QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget ) : Q
 {
 }
 
-QValidator::State QtLessAnnoyingDoubleSpinBox:: validate(QString& text, int&) const
+QValidator::State QtLessAnnoyingDoubleSpinBox::validate(QString& text, int&) const
 {
   QString copy = strip_prefix_suffix(text) + "0";
 
@@ -65,7 +65,7 @@ QValidator::State QtLessAnnoyingDoubleSpinBox:: validate(QString& text, int&) co
     return QValidator::Invalid;
 }
 
-double QtLessAnnoyingDoubleSpinBox::StatevalueFromText(const QString &text) const
+double QtLessAnnoyingDoubleSpinBox::valueFromText(const QString &text) const
 {
   QString copy = strip_prefix_suffix(text);
 
@@ -81,7 +81,7 @@ double QtLessAnnoyingDoubleSpinBox::StatevalueFromText(const QString &text) cons
   return value;
 }
 
-QString QtLessAnnoyingDoubleSpinBox::Statestrip_prefix_suffix(const QString& text) const
+QString QtLessAnnoyingDoubleSpinBox::strip_prefix_suffix(const QString& text) const
 {
   int lenpre = prefix().length();
   int lensuf = suffix().length();

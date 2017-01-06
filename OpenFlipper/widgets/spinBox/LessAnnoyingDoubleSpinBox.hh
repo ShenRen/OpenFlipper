@@ -11,6 +11,9 @@
 #include <QDoubleSpinBox>
 #include <QWidget>
 
+
+// This spin box allows you to enter more decimals and rounds the number afterwards.
+// Also you can input numbers in scientific format, e.g. 1e-6.
 class LessAnnoyingDoubleSpinBox : public QDoubleSpinBox
 {
 

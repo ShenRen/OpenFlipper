@@ -47,6 +47,7 @@
 
 
 #include "QtLessAnnoyingDoubleSpinBox.hh"
+#include <cmath>
 
 
 QtLessAnnoyingDoubleSpinBox::QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget ) : QDoubleSpinBox(_qwidget)
@@ -72,7 +73,7 @@ double QtLessAnnoyingDoubleSpinBox::valueFromText(const QString &text) const
   bool ok;
   double value = copy.toDouble(&ok);
 
-  double factor = pow(10.0, decimals() );
+  double factor = std::pow(10.0, decimals() );
   value = double( long(value * double(factor) + 0.5) ) / factor;
 
   if ( !ok )

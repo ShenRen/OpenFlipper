@@ -94,6 +94,11 @@ void MeshConvertPlugin::pluginsInitialized()
   // Integrate the new toolbar into OpenFlipper
   emit addToolbar( toolbar );
 
+  //populate scripting function
+  emit setSlotDescription("convert(int,bool)", "Convert a mesh to PolyMesh or to TriMesh. returns the ID of the new mesh or -1 in case of error. The old mesh remains unchanged.",
+                          QString("object_id,toTriMesh").split(","),
+                          QString(" id of an object to convert, flag to convert to a TriMesh, if not set creates a new PolyMesh").split(","));
+
 }
 
 MeshConvertPlugin::MeshConvertPlugin()
@@ -106,18 +111,24 @@ MeshConvertPlugin::~MeshConvertPlugin()
 
 }
 
-void MeshConvertPlugin::convert(QAction* _action)
+int MeshConvertPlugin::convert(int _id, bool _toTriMesh)
 {
-  std::vector<int> _ids;
-  if(! PluginFunctions::getTargetIdentifiers( _ids  ))
-    return;
-  BaseObject* obj;
+  int newID = -1;
   PolyMesh* p;
   TriMesh* t;
-  for(std::vector<int>::iterator id = _ids.begin(); id != _ids.end(); ++id)
+  if(_toTriMesh && PluginFunctions::getMesh(_id,p))
   {
-    if((_action == bidirectionalConversion || _action == polyConversion) &&
-            PluginFunctions::getMesh(*id,t))
+    TriMesh  converted = static_cast<TriMesh>(*p);
+    emit addEmptyObject(DATA_TRIANGLE_MESH, newID);
+    if(PluginFunctions::getMesh(newID,t))
+    {
+      *t = converted;
+      emit updatedObject(newID);
+    }
+  }
+  else
+  {
+    if( PluginFunctions::getMesh(_id,t))
     {
       PolyMesh  converted = static_cast<PolyMesh>(*t);
       int newID = -1;
@@ -128,17 +139,24 @@ void MeshConvertPlugin::convert(QAction* _action)
         emit updatedObject(newID);
       }
     }
-    if((_action == bidirectionalConversion || _action == triConversion) &&
-            PluginFunctions::getMesh(*id,p))
+  }
+  return newID;
+}
+
+void MeshConvertPlugin::convert(QAction* _action)
+{
+  std::vector<int> _ids;
+  if(! PluginFunctions::getTargetIdentifiers( _ids  ))
+    return;
+  for(std::vector<int>::iterator id = _ids.begin(); id != _ids.end(); ++id)
+  {
+    if((_action == bidirectionalConversion || _action == polyConversion))
     {
-      TriMesh  converted = static_cast<TriMesh>(*p);
-      int newID = -1;
-      emit addEmptyObject(DATA_TRIANGLE_MESH, newID);
-      if(PluginFunctions::getMesh(newID,t))
-      {
-        *t = converted;
-        emit updatedObject(newID);
-      }
+      convert(*id,false);
+    }
+    if((_action == bidirectionalConversion || _action == triConversion))
+    {
+      convert(*id,true);
     }
   }
 }

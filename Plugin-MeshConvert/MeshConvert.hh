@@ -53,10 +53,9 @@
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 #include <OpenFlipper/BasePlugin/ToolbarInterface.hh>
 #include <OpenFlipper/BasePlugin/LoadSaveInterface.hh>
+#include <OpenFlipper/BasePlugin/ScriptInterface.hh>
 
-//class QAction;
-
-class MeshConvertPlugin: public QObject, BaseInterface, LoggingInterface, LoadSaveInterface, ToolbarInterface {
+class MeshConvertPlugin: public QObject, BaseInterface, LoggingInterface, LoadSaveInterface, ScriptInterface, ToolbarInterface {
     Q_OBJECT
     Q_INTERFACES(BaseInterface)
     Q_INTERFACES(LoggingInterface)
@@ -83,6 +82,10 @@ signals:
     // BaseInterface
     void updatedObject(int _objectId);
 
+    // ScriptInterface
+    void setSlotDescription(QString     _slotName,   QString     _slotDescription,
+                            QStringList _parameters, QStringList _descriptions);
+
 public:
     MeshConvertPlugin();
     ~MeshConvertPlugin();
@@ -108,7 +111,18 @@ private:
 
 public slots:
 
+    /**
+     * @brief convert Converts trimesh to poly and vice versa depending on the Action that was called.
+     */
     void convert(QAction*);
+
+    /**
+     * @brief convert    Convert a mesh to PolyMesh or to TriMesh. The old mesh remains unchanged.
+     * @param _id        Object_ID to determine which object shall be converted.
+     * @param _toTriMesh Flag to indicate conversion to TriMesh or Polymesh if set to false.
+     * @return           the ID of the new mesh or -1 in case of error.
+     */
+    int convert(int _id, bool _toTriMesh);
 
     QString version() { return QString("1.0"); };
 

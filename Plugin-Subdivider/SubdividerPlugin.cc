@@ -288,7 +288,7 @@ void SubdividerPlugin::subdivide(int _objectId, QString _algorithm , int _steps,
       subdivider.detach();
     } else if ( _algorithm.contains("midpoint",Qt::CaseInsensitive)  )
     {
-      OpenMesh::Subdivider::Uniform::MidPointT<TriMesh,double> subdivider;
+      OpenMesh::Subdivider::Uniform::MidpointT<TriMesh,double> subdivider;
 
       subdivider.attach(*mesh);
       subdivider(_steps,_update_points);

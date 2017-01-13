@@ -119,6 +119,16 @@ of SIGGRAPH 1996, ACM SIGGRAPH, 1996, pp. 189-192.</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QRadioButton" name="midpoint_radioButton">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Midpoint subdivision algorithm&lt;/p&gt;&lt;p&gt;With every step, the set of vertices is replaced with by the midpoints of all current edges. Then, two sets of faces are created to set up the new connectivity: From all midpoints of edges surrounding an original face, a new face is created. Also, for all midpoints of edges surrounding an original vertex, a new face is created&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: This algorithm is best suited for closed meshes since boundaries tend to fragment into isolated faces after a few iterations!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Midpoint</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>

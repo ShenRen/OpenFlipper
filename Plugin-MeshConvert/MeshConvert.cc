@@ -68,7 +68,7 @@ void MeshConvertPlugin::pluginsInitialized()
 {
 
   // Create your toolbar
-  toolbar = new QToolBar(tr("Example Toolbar"));
+  toolbar = new QToolBar(tr("Mesh conversion"));
 
   grp = new QActionGroup(toolbar);
 

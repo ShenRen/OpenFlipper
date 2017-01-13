@@ -55,7 +55,6 @@
 #include <OpenMesh/Tools/Subdivider/Uniform/Sqrt3InterpolatingSubdividerLabsikGreinerT.hh>
 #include <OpenMesh/Tools/Subdivider/Uniform/ModifiedButterFlyT.hh>
 #include <OpenMesh/Tools/Subdivider/Uniform/LongestEdgeT.hh>
-#include <OpenMesh/Tools/Subdivider/Uniform/MidpointT.hh>
 
 #include <OpenMesh/Tools/Subdivider/Uniform/CatmullClarkT.hh>
 
@@ -138,9 +137,6 @@ void SubdividerPlugin::slotSubdivideUniformButton()
       else if ( tool_->catmullClark_radioButton->isChecked()  )
       {
         subdivide(ids[i],"catmullClark",tool_->subdivision_steps_spinBox->value(), tool_->updatePoints->isChecked());
-      } else if ( tool_->midpoint_radioButton->isChecked()  )
-      {
-        subdivide(ids[i],"midpoint",tool_->subdivision_steps_spinBox->value(), tool_->updatePoints->isChecked());
       }
 
       // Create backup
@@ -282,13 +278,6 @@ void SubdividerPlugin::subdivide(int _objectId, QString _algorithm , int _steps,
     else if ( _algorithm.contains("modifiedButterfly",Qt::CaseInsensitive)  )
     {
       OpenMesh::Subdivider::Uniform::ModifiedButterflyT<TriMesh,double> subdivider;
-
-      subdivider.attach(*mesh);
-      subdivider(_steps,_update_points);
-      subdivider.detach();
-    } else if ( _algorithm.contains("midpoint",Qt::CaseInsensitive)  )
-    {
-      OpenMesh::Subdivider::Uniform::MidpointT<TriMesh,double> subdivider;
 
       subdivider.attach(*mesh);
       subdivider(_steps,_update_points);

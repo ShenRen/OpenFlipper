@@ -786,9 +786,7 @@ public:
       macro_requestTexcoord,    // mesh texture coordinate
       macro_requestVertexColor, // vertex color
       macro_requestNormalVS,    // view space normal
-      macro_requestNormalOS,    // object space normal
-
-      macro_requestRenormalize; // normal should be renormalized before using it for lighting
+      macro_requestNormalOS;    // object space normal
 
     // input / output abstraction macros
     QString macro_inputPosVS,
@@ -1388,9 +1386,6 @@ private:
 
   /// default IO descriptor for the vertex shader
   ShaderGenerator::DefaultIODesc ioDesc_;
-
-  /// renormalize before lighting, default false,  can be activated via "#define SG_REQUEST_RENORMALIZE"
-  bool renormalizeLighting_;
 
 
   static QString shaderDir_;

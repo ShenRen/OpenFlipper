@@ -101,7 +101,12 @@ void MeshConvertPlugin::pluginsInitialized()
 
 }
 
-MeshConvertPlugin::MeshConvertPlugin()
+MeshConvertPlugin::MeshConvertPlugin() :
+  toolbar(nullptr),
+  grp(nullptr),
+  bidirectionalConversion(nullptr),
+  polyConversion(nullptr),
+  triConversion(nullptr)
 {
 
 }

@@ -43,6 +43,7 @@
 #define RAMINFO_HH
 
 #include "OpenFlipper/common/GlobalDefines.hh"
+#include <stdint.h>
 
 namespace Utils
 {
@@ -53,21 +54,21 @@ namespace Utils
      * @return unsigned long the free amount of ram in MB (as for linux users free ram means here available ram)
      */
     DLLEXPORT
-    unsigned long queryFreeRAM();
+    uint64_t queryFreeRAM();
 
     /**
      * @brief queryTotalRAM queries the os ram information and returns the amount of total ram (0 if not supported like on osx)
      * @return unsigned long the total amount of ram in MB
      */
     DLLEXPORT
-    unsigned long queryTotalRAM();
+    uint64_t queryTotalRAM();
 
     /**
      * @brief queryBufferedRAM queries the os ram information and returns the amount of buffered ram (0 if not supported like on osx or windows)
      * @return unsigned long the buffered amount of ram in MB
      */
     DLLEXPORT
-    unsigned long queryBufferedRAM();
+    uint64_t queryBufferedRAM();
 
   }
 }

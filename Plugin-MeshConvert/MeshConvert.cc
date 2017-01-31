@@ -136,7 +136,6 @@ int MeshConvertPlugin::convert(int _id, bool _toTriMesh)
     if( PluginFunctions::getMesh(_id,t))
     {
       PolyMesh  converted = static_cast<PolyMesh>(*t);
-      int newID = -1;
       emit addEmptyObject(DATA_POLY_MESH, newID);
       if(PluginFunctions::getMesh(newID,p))
       {

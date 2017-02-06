@@ -139,7 +139,7 @@ class PropertyNameListModel: public QAbstractListModel {
         };
 
     public:
-        PropertyNameListModel(QObject *parent = 0);
+        explicit PropertyNameListModel(QObject *parent = 0);
         virtual ~PropertyNameListModel();
 
         virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;

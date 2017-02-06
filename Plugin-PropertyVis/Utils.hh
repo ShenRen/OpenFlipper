@@ -178,7 +178,7 @@ class NewNameMessageBox: public QMessageBox
     Q_OBJECT
 
 public:
-    NewNameMessageBox(QString propName);
+    explicit NewNameMessageBox(QString propName);
 
 private slots:
     void slotReplace() { replace = true; }

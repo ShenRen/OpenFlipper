@@ -73,7 +73,7 @@ class OMPropertyModelSubclass: public SingleObjectPropertyModel
 {
 Q_OBJECT
 public:
-    OMPropertyModelSubclass(QObject *parent = 0)
+    explicit OMPropertyModelSubclass(QObject *parent = 0)
         : SingleObjectPropertyModel(parent)
     {
     }

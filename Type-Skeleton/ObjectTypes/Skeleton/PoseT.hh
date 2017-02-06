@@ -84,9 +84,11 @@ protected:
 
 public:
   /// Constructor
-  PoseT(SkeletonT<Point>* _skeleton);
+  explicit PoseT(SkeletonT<Point>* _skeleton);
+
   /// Copy Constructor
-  PoseT(const PoseT<PointT>& _other);
+  explicit PoseT(const PoseT<PointT>& _other);
+
   /// Destructor
   virtual ~PoseT();
 

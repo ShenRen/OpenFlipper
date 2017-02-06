@@ -64,7 +64,7 @@
 class OBJECTTYPEDLLEXPORT SkeletonTransform {
 
   public:
-    SkeletonTransform(Skeleton& _skeleton);
+    explicit SkeletonTransform(Skeleton& _skeleton);
     ~SkeletonTransform() {}
 
   public:

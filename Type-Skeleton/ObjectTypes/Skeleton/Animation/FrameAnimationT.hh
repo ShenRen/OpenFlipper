@@ -65,13 +65,13 @@ class FrameAnimationT : public AnimationT<PointT>
     typedef PoseT<PointT>                         Pose;
 
   public:
-    FrameAnimationT(const PoseT<PointT> &_pose);
+    explicit FrameAnimationT(const PoseT<PointT> &_pose);
 
-    FrameAnimationT(Skeleton* _skeleton);
+    explicit FrameAnimationT(Skeleton* _skeleton);
 
     FrameAnimationT(Skeleton* _skeleton, unsigned int _iNumFrames);
 
-    FrameAnimationT(const FrameAnimationT<PointT> &_other);
+    explicit FrameAnimationT(const FrameAnimationT<PointT> &_other);
 
     virtual ~FrameAnimationT();
 

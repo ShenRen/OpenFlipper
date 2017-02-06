@@ -80,7 +80,7 @@ protected:
   typedef T value_type;
 
 public:
-  PropertyHandleT(int _idx = -1);
+  explicit PropertyHandleT(int _idx = -1);
   virtual ~PropertyHandleT();
 
   inline bool isValid();

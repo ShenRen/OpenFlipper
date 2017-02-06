@@ -59,9 +59,11 @@ echo "CPPCHECK Summary"
 echo "=============================================================================="
 echo -e "${NC}"
 
-if [ $COUNT -gt 25 ]; then
+MAX_ERROR=364
+
+if [ $COUNT -gt $MAX_ERROR ]; then
   echo -e ${WARNING}
-  echo "Total CPPCHECK error Count is $COUNT, which is too High! CPPCHECK Run failed";
+  echo "Total CPPCHECK error Count is $COUNT, which is too High (Max is $MAX_ERROR)! CPPCHECK Run failed";
   echo -e "${NC}"
   exit 1;
 else

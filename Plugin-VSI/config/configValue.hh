@@ -77,7 +77,7 @@ class ConfigValue : public QObject {
   public:
 
     /// Constructor
-    ConfigValue (ElementInput *_input);
+    explicit ConfigValue (ElementInput *_input);
 
     /// Destructor
     ~ConfigValue ();

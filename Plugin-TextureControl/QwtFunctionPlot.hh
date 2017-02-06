@@ -114,7 +114,7 @@ class QwtFunctionPlot : public QDialog, public Ui::QwtFunctionPlotBase
 public:
 
   /// Default constructor
-  QwtFunctionPlot( QWidget*    _parent = 0 );
+  explicit QwtFunctionPlot( QWidget*    _parent = 0 );
 
   /// Destructor
   ~QwtFunctionPlot() {}

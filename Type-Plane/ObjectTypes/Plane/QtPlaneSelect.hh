@@ -72,7 +72,7 @@ class OBJECTTYPEDLLEXPORT QtPlaneSelect : public QObject
              Initialization and deinitialization
      *******************************************************************************/
     public:
-        QtPlaneSelect( ACG::GLState& glState );
+        explicit QtPlaneSelect( ACG::GLState& glState );
         ~QtPlaneSelect();
 
     

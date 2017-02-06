@@ -121,7 +121,7 @@ private:
     class NodeEventFilter : public QObject
     {
     public:
-      NodeEventFilter(QtWidgetNode* p){node_ = p;}
+      explicit NodeEventFilter(QtWidgetNode* p){node_ = p;}
     protected:
       bool eventFilter(QObject *obj, QEvent *event);
     private:

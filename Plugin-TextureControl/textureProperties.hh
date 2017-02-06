@@ -77,7 +77,7 @@ class texturePropertiesWidget : public QDialog, public Ui::Dialog
     void getCoordinates1D(QString _textureName, int _id, std::vector< double >& _x );
 
   public:
-    texturePropertiesWidget(QWidget *parent = 0);
+    explicit texturePropertiesWidget(QWidget *parent = 0);
 
     void show(TextureData* _texData, int _id, QString _name = "");
 

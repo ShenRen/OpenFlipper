@@ -70,7 +70,7 @@ class GraphicsView : public QGraphicsView
 
   public:
     /// Constructor
-    GraphicsView(QWidget* _parent = NULL);
+    explicit GraphicsView(QWidget* _parent = NULL);
 
   signals:
     /// Inform the scene about size changes

@@ -1177,7 +1177,7 @@ public:
   /** 
   @param _desc description-set of shader properties.
   */
-  ShaderProgGenerator(const ShaderGenDesc* _desc);
+  explicit ShaderProgGenerator(const ShaderGenDesc* _desc);
 
   /** 
   @param _desc description-set of shader properties.

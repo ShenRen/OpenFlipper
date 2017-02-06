@@ -100,11 +100,11 @@ public:
     : Vec4(_w, _x, _y, _z) {}
 
   /// construct from 3D point (pure imaginary quaternion)
-  QuaternionT(const Vec3& _p)
+  explicit QuaternionT(const Vec3& _p)
     : Vec4(0, _p[0], _p[1], _p[2]) {}
 
   /// construct from 4D vector
-  QuaternionT(const Vec4& _p)
+  explicit QuaternionT(const Vec4& _p)
     : Vec4(_p[0], _p[1], _p[2], _p[3]) {}
 
   /// construct from rotation axis and angle (in radians)
@@ -121,7 +121,7 @@ public:
 
   /// construct from rotation matrix (only valid for rotation matrices!)
   template <class MatrixT>
-  QuaternionT(const MatrixT& _rot)
+  explicit QuaternionT(const MatrixT& _rot)
   { init_from_matrix( _rot); }
   
 

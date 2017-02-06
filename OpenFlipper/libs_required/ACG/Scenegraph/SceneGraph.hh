@@ -531,7 +531,7 @@ class FindNodeAction
 public:
 
   /// constructor: _node_id is the node to be searched for
-  FindNodeAction(unsigned int _node_id) :
+  explicit FindNodeAction(unsigned int _node_id) :
     node_id_(_node_id), node_ptr_(0)  {}
 
   bool operator()(BaseNode* _node)

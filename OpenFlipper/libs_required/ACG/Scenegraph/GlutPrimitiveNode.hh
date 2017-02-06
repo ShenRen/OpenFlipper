@@ -120,7 +120,7 @@ public:
     unsigned int slices, stacks;
     
     // Constructor
-    Primitive(GlutPrimitiveType _t)
+    explicit Primitive(GlutPrimitiveType _t)
     {
       // Set the type
       type = _t;

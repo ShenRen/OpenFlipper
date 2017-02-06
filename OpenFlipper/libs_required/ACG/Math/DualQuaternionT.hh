@@ -119,16 +119,16 @@ public:
                   Scalar _Dw, Scalar _Dx, Scalar _Dy, Scalar _Dz);
 
   /// Construct from a rotation given as quaternion
-  DualQuaternionT(Quaternion _rotation);
+  explicit DualQuaternionT(Quaternion _rotation);
   
   /// Construct from a translatation given as a vector
-  DualQuaternionT(const Vec3& _translation);
+  explicit DualQuaternionT(const Vec3& _translation);
   
   /// Construct from a translation+rotation
   DualQuaternionT(const Vec3& _translation, const Quaternion& _rotation);
   
   /// Construct from a rigid transformation given as matrix
-  DualQuaternionT(const Matrix& _transformation);
+  explicit DualQuaternionT(const Matrix& _transformation);
   
   // default quaternions
   

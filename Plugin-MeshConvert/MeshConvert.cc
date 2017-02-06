@@ -102,7 +102,11 @@ void MeshConvertPlugin::pluginsInitialized()
 }
 
 MeshConvertPlugin::MeshConvertPlugin() :
-        toolbar(0),grp(0),bidirectionalConversion(0),polyConversion(0),triConversion(0)
+  toolbar(nullptr),
+  grp(nullptr),
+  bidirectionalConversion(nullptr),
+  polyConversion(nullptr),
+  triConversion(nullptr)
 {
 
 }
@@ -132,7 +136,6 @@ int MeshConvertPlugin::convert(int _id, bool _toTriMesh)
     if( PluginFunctions::getMesh(_id,t))
     {
       PolyMesh  converted = static_cast<PolyMesh>(*t);
-      int newID = -1;
       emit addEmptyObject(DATA_POLY_MESH, newID);
       if(PluginFunctions::getMesh(newID,p))
       {

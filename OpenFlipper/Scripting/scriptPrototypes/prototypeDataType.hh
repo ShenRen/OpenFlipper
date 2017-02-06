@@ -61,7 +61,7 @@ class prototypeDataType : public QObject , public QScriptable
      Q_OBJECT
 
  public:
-   prototypeDataType(QObject *parent = 0);
+   explicit prototypeDataType(QObject *parent = 0);
 
  public Q_SLOTS:
      QString  toString() const;

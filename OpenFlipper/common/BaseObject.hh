@@ -109,7 +109,7 @@ class DLLEXPORT BaseObject : public QObject {
     * If the objectroot exists and parent is 0, it will be appended to the objectroot.
     * If a parent is given, it is appended to this object.
     */
-    BaseObject( BaseObject *_parent = 0);
+    explicit BaseObject( BaseObject *_parent = 0);
 
     virtual ~BaseObject();
 

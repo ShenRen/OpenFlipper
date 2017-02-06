@@ -89,7 +89,7 @@ public:
    *
    * @param _pluginName Name of the Plugin which uses this logger (Prepended to all Output)
    */
-  ScriptingWrapper(QString _pluginName);
+  explicit ScriptingWrapper(QString _pluginName);
   
   /// Destructor
   ~ScriptingWrapper();

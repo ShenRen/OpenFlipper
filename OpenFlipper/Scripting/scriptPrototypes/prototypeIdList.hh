@@ -61,7 +61,7 @@ class prototypeIdList : public QObject , public QScriptable
      Q_OBJECT
 
  public:
-     prototypeIdList(QObject *parent = 0);
+     explicit prototypeIdList(QObject *parent = 0);
 
  public Q_SLOTS:
      QString  toString() const;

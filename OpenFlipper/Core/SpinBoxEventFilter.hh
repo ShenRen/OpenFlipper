@@ -65,7 +65,7 @@ class SpinBoxEventFilter : public QObject {
     Q_OBJECT
 
     public:
-        SpinBoxEventFilter(QObject *parent = 0);
+        explicit SpinBoxEventFilter(QObject *parent = 0);
         virtual ~SpinBoxEventFilter();
 
         bool eventFilter(QObject *object, QEvent *event);

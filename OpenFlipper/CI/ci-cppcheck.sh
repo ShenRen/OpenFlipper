@@ -59,7 +59,7 @@ echo "CPPCHECK Summary"
 echo "=============================================================================="
 echo -e "${NC}"
 
-MAX_ERROR=264
+MAX_ERROR=218
 
 if [ $COUNT -gt $MAX_ERROR ]; then
   echo -e ${WARNING}

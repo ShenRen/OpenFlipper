@@ -66,7 +66,7 @@ class RemesherToolBox : public QWidget, public Ui::RemesherTool
     void showing();
 
   public:
-    RemesherToolBox(QWidget *parent = 0);
+    explicit RemesherToolBox(QWidget *parent = 0);
 
   protected:
     void showEvent ( QShowEvent * _event );

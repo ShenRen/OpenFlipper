@@ -9,7 +9,7 @@ class AlignMeshesToolbox : public QWidget, public Ui::AlignMeshesToolbox
   Q_OBJECT
 
   public:
-    AlignMeshesToolbox(QWidget *parent = 0);
+    explicit AlignMeshesToolbox(QWidget *parent = 0);
 };
 
 #endif // ALIGN_MESHES_TOOLBOX_HH

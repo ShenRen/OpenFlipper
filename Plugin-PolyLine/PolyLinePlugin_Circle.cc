@@ -62,7 +62,7 @@ struct Onb {
 
         ACG::Vec3d x, y, z;
 
-        Onb(PolyLineCircleData* _circleData) {
+        explicit Onb(PolyLineCircleData* _circleData) {
             x = _circleData->circleMainAxis_;
             z = _circleData->circleSideAxis_;
             y = _circleData->circleNormal_;

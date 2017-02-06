@@ -62,7 +62,7 @@ class ProgressEmitter : public QObject
     void changeDescription(QString _jobId, QString _description);
   
   public:
-    ProgressEmitter(QString _jobId) : jobId_(_jobId) {}
+    explicit ProgressEmitter(QString _jobId) : jobId_(_jobId) {}
     
     void sendProgressSignal(double _percent) {
       emit signalJobState(jobId_, (int)_percent);

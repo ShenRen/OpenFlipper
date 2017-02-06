@@ -62,8 +62,8 @@ class Highlighter : public QSyntaxHighlighter
   Q_OBJECT
 
   public:
-    Highlighter( QTextDocument* parent = 0);
-    Highlighter( QTextEdit* parent);
+    explicit Highlighter( QTextDocument* parent = 0);
+    explicit Highlighter( QTextEdit* parent);
 
     /// Updates the highlighter with the current rule set defined in the patterns
     void update();

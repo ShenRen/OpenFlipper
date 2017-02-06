@@ -61,6 +61,6 @@ class InfoDialog : public QDialog, public Ui::InfoWidget
   Q_OBJECT
 
   public:
-    InfoDialog(QWidget *parent = 0);
+    explicit InfoDialog(QWidget *parent = 0);
 };
 

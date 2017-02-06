@@ -72,7 +72,7 @@ class CompareVectors
 public:
 
   /// Constructor
-  CompareVectors(double _eps = FLT_MIN);
+  explicit CompareVectors(double _eps = FLT_MIN);
 
   /// comparison operator
   bool operator()( const ACG::Vec3d& _v0, const ACG::Vec3d& _v1 ) const;

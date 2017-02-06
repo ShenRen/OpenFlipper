@@ -66,7 +66,7 @@ class IsotropicRemesherToolBox : public QWidget, public Ui::IsotropicRemesherToo
     void showing();
 
   public:
-    IsotropicRemesherToolBox(QWidget *parent = 0);
+    explicit IsotropicRemesherToolBox(QWidget *parent = 0);
 
   protected:
     void showEvent ( QShowEvent * _event );

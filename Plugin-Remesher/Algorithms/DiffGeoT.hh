@@ -79,7 +79,7 @@ public:
   typedef typename Mesh::VertexHandle  VertexHandle;
 
    
-  DiffGeoT(Mesh& _mesh);
+  explicit DiffGeoT(Mesh& _mesh);
   ~DiffGeoT();
 
 

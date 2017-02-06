@@ -120,7 +120,7 @@ private:
   /// Internal vertex type
   struct Vertex
   {
-    Vertex(const ACG::Vec3d& _p) : p(_p) { };
+    explicit Vertex(const ACG::Vec3d& _p) : p(_p) { };
     ACG::Vec3d                    p;
 
     /// This vector will contain a list of all faces incident to the current vertex

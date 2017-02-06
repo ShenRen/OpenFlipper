@@ -76,7 +76,7 @@ public:
   /** \brief Creates a new PolyLineBezierSplineData object with no points.
    *
    */
-  PolyLineBezierSplineData(unsigned int _meshIndex);
+  explicit PolyLineBezierSplineData(unsigned int _meshIndex);
 
 	/** \brief Adds a point to the end of the list and inserts control points.
 	 *

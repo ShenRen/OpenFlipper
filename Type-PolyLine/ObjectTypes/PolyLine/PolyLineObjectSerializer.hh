@@ -72,7 +72,7 @@ class OBJECTTYPEDLLEXPORT PolyLineObjectSerializer
 private:
     PolyLineObject* instance;
 public:
-    PolyLineObjectSerializer(PolyLineObject* _object);
+    explicit PolyLineObjectSerializer(PolyLineObject* _object);
     void serialize(std::ostream& _stream);
     void deserialize(std::istream& _stream);
 };

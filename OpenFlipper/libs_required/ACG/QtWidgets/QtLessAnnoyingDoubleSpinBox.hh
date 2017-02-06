@@ -62,7 +62,7 @@ class ACGDLLEXPORT QtLessAnnoyingDoubleSpinBox : public QDoubleSpinBox
 public:
 
 
-  QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget = Q_NULLPTR );
+  explicit QtLessAnnoyingDoubleSpinBox(QWidget* _qwidget = Q_NULLPTR );
 
   virtual QValidator::State validate(QString& text, int&) const override;
 

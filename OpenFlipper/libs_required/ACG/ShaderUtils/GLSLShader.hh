@@ -77,7 +77,7 @@ namespace GLSL {
   class ACGDLLEXPORT Shader {
 
     public:
-      Shader(GLenum shaderType);
+      explicit Shader(GLenum shaderType);
       virtual ~Shader();
       void setSource(const StringList& source);
       void setSource(const QStringList& source);

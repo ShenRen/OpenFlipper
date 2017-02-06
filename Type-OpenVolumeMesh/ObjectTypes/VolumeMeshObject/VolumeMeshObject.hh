@@ -90,7 +90,7 @@ public:
     *
     * @param _typeId   This is the type Id the Object will use. Should be typeId("TriangleMesh") or typeId("PolyMesh")
     */
-    VolumeMeshObject(DataType _typeId);
+    explicit VolumeMeshObject(DataType _typeId);
 
     /// destructor
     virtual ~VolumeMeshObject();

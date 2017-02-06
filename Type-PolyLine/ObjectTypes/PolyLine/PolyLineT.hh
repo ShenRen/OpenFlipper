@@ -96,7 +96,7 @@ public:
   typedef typename Point::value_type  Scalar;
 
   /// Constructor
-  PolyLineT(bool _closed = false );
+  explicit PolyLineT(bool _closed = false );
 
   /// Copy Constructor
   PolyLineT(const PolyLineT& _line);

@@ -82,7 +82,7 @@ class QtGLGraphicsScene : public QGraphicsScene
 Q_OBJECT
 
 public:
-  QtGLGraphicsScene(QtBaseViewer* _w);
+  explicit QtGLGraphicsScene(QtBaseViewer* _w);
 
 protected:
   friend class QtBaseViewer;

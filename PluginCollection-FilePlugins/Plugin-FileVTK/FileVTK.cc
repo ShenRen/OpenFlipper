@@ -1187,11 +1187,11 @@ bool FileVTKPlugin::writeASCIIData(std::ostream& _out, HexahedralMesh& _mesh)   
 
 
 #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
-int FileVTKPlugin::addTetraCell(PolyhedralMesh*& _mesh, std::vector<quint32> indices)                 { return addTetraCellToOpenVolumeMesh(_mesh, indices);              }
-int FileVTKPlugin::addHexaCell(PolyhedralMesh*& _mesh, std::vector<quint32> indices)                  { return addHexaCellToOpenVolumeMesh(_mesh, indices);               }
-int FileVTKPlugin::addWedgeCell(PolyhedralMesh*& _mesh, std::vector<quint32> indices)                 { return addWedgeCellToOpenVolumeMesh(_mesh, indices);              }
-int FileVTKPlugin::addPyramidCell(PolyhedralMesh*& _mesh, std::vector<quint32> indices)               { return addPyramidCellToOpenVolumeMesh(_mesh, indices);            }
-int FileVTKPlugin::addFace(PolyhedralMesh*& _mesh, std::vector<quint32> indices)                      { return addFaceToOpenVolumeMesh(_mesh, indices);                   }
+int FileVTKPlugin::addTetraCell(PolyhedralMesh*& _mesh, const std::vector<quint32>& indices)                 { return addTetraCellToOpenVolumeMesh(_mesh, indices);              }
+int FileVTKPlugin::addHexaCell(PolyhedralMesh*& _mesh, const std::vector<quint32>& indices)                  { return addHexaCellToOpenVolumeMesh(_mesh, indices);               }
+int FileVTKPlugin::addWedgeCell(PolyhedralMesh*& _mesh, const std::vector<quint32>& indices)                 { return addWedgeCellToOpenVolumeMesh(_mesh, indices);              }
+int FileVTKPlugin::addPyramidCell(PolyhedralMesh*& _mesh, const std::vector<quint32>& indices)               { return addPyramidCellToOpenVolumeMesh(_mesh, indices);            }
+int FileVTKPlugin::addFace(PolyhedralMesh*& _mesh, const std::vector<quint32>& indices)                      { return addFaceToOpenVolumeMesh(_mesh, indices);                   }
 int FileVTKPlugin::addFace(PolyhedralMesh*& _mesh, quint32 _index1, quint32 _index2, quint32 _index3) { return addFaceToOpenVolumeMesh(_mesh, _index1, _index2, _index3); }
 void FileVTKPlugin::addVertexNormal(PolyhedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal)  { addVertexNormalToOpenVolumeMesh(_mesh, _index, _normal);          }
 void FileVTKPlugin::addFaceNormal(PolyhedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal)    { addFaceNormalToOpenVolumeMesh(_mesh, _index, _normal);            }
@@ -1200,11 +1200,11 @@ bool FileVTKPlugin::writeASCIIData(std::ostream& _out, PolyhedralMesh& _mesh)   
 
 
 #ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
-int FileVTKPlugin::addTetraCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                 { return addTetraCellToOpenVolumeMesh(_mesh, indices);              }
-int FileVTKPlugin::addHexaCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                  { return addHexaCellToOpenVolumeMesh(_mesh, indices);               }
-int FileVTKPlugin::addWedgeCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                 { return addWedgeCellToOpenVolumeMesh(_mesh, indices);              }
-int FileVTKPlugin::addPyramidCell(TetrahedralMesh*& _mesh, std::vector<quint32> indices)               { return addPyramidCellToOpenVolumeMesh(_mesh, indices);            }
-int FileVTKPlugin::addFace(TetrahedralMesh*& _mesh, std::vector<quint32> indices)                      { return addFaceToOpenVolumeMesh(_mesh, indices);                   }
+int FileVTKPlugin::addTetraCell(TetrahedralMesh*& _mesh, const std::vector<quint32>& indices)                 { return addTetraCellToOpenVolumeMesh(_mesh, indices);              }
+int FileVTKPlugin::addHexaCell(TetrahedralMesh*& _mesh, const std::vector<quint32>& indices)                  { return addHexaCellToOpenVolumeMesh(_mesh, indices);               }
+int FileVTKPlugin::addWedgeCell(TetrahedralMesh*& _mesh, const std::vector<quint32>& indices)                 { return addWedgeCellToOpenVolumeMesh(_mesh, indices);              }
+int FileVTKPlugin::addPyramidCell(TetrahedralMesh*& _mesh, const std::vector<quint32>& indices)               { return addPyramidCellToOpenVolumeMesh(_mesh, indices);            }
+int FileVTKPlugin::addFace(TetrahedralMesh*& _mesh, const std::vector<quint32>& indices)                      { return addFaceToOpenVolumeMesh(_mesh, indices);                   }
 int FileVTKPlugin::addFace(TetrahedralMesh*& _mesh, quint32 _index1, quint32 _index2, quint32 _index3) { return addFaceToOpenVolumeMesh(_mesh, _index1, _index2, _index3); }
 void FileVTKPlugin::addVertexNormal(TetrahedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal)  { addVertexNormalToOpenVolumeMesh(_mesh, _index, _normal);          }
 void FileVTKPlugin::addFaceNormal(TetrahedralMesh*& _mesh, quint32 _index, OpenMesh::Vec3d _normal)    { addFaceNormalToOpenVolumeMesh(_mesh, _index, _normal);            }

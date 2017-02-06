@@ -137,7 +137,7 @@ protected:
     friend class Properties;
 
   public:
-    PropertyT(unsigned long _size = 0);
+    explicit PropertyT(unsigned long _size = 0);
     virtual ~PropertyT();
 
   public:

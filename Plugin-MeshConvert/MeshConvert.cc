@@ -58,8 +58,7 @@
 #include <OpenFlipper/libs_required/OpenMesh/src/OpenMesh/Core/Mesh/Casts.hh>
 
 
-void MeshConvertPlugin::initializePlugin() :
-    toolbar(0),grp(0),bidirectionalConversion(0),polyConversion(0),triConversion(0)
+void MeshConvertPlugin::initializePlugin()
 {
 
 }
@@ -102,7 +101,8 @@ void MeshConvertPlugin::pluginsInitialized()
 
 }
 
-MeshConvertPlugin::MeshConvertPlugin()
+MeshConvertPlugin::MeshConvertPlugin() :
+        toolbar(0),grp(0),bidirectionalConversion(0),polyConversion(0),triConversion(0)
 {
 
 }

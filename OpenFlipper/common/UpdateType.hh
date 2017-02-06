@@ -73,7 +73,7 @@ class DLLEXPORT UpdateType {
 
     UpdateType(const UpdateType& _type);
     
-    explicit UpdateType(UpdateTypeSet _set);
+    UpdateType(UpdateTypeSet _set);
     
     /// Exact compare operator
     bool operator==(const UpdateType& _type) const;

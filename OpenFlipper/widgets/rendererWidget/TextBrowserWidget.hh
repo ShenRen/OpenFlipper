@@ -97,7 +97,7 @@ class TextBrowserWidget : public QPlainTextEdit
 
 
   public:
-    TextBrowserWidget(QWidget *parent = 0);
+    explicit TextBrowserWidget(QWidget *parent = 0);
 
     void sideAreaPaintEvent(QPaintEvent *event);
     int sideAreaWidth();
@@ -147,7 +147,7 @@ class TextBrowserWidget : public QPlainTextEdit
 class TextBrowserSideArea : public QWidget
 {
   public:
-    TextBrowserSideArea(TextBrowserWidget* _textBrowser) :
+    explicit TextBrowserSideArea(TextBrowserWidget* _textBrowser) :
       QWidget(_textBrowser),
       textBrowser_(_textBrowser)
   {}

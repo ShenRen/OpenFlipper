@@ -119,46 +119,47 @@ PolyLineT<PointT>::
 /// Copy Constructor
 template <class PointT>
 PolyLineT<PointT>::
-  PolyLineT( const PolyLineT& _line )
+  PolyLineT( const PolyLineT& _line ) :
+
+    //copy points
+    points_(_line.points_),
+
+    closed_(_line.closed_),
+
+    //copy vertex properties
+    vnormals_(_line.vnormals_),
+    vbinormals_(_line.vbinormals_),
+    vcolors_(_line.vcolors_),
+    vscalars_(_line.vscalars_),
+    vselections_(_line.vselections_),
+    vvhandles_(_line.vvhandles_),
+    vehandles_(_line.vehandles_),
+    vfhandles_(_line.vfhandles_),
+
+    //copy edge properties
+    enormals_(_line.enormals_),
+    ecolors_(_line.ecolors_),
+    escalars_(_line.escalars_),
+    eselections_(_line.eselections_),
+    epreimage_direction_(_line.epreimage_direction_),
+
+    // property reference counter
+    ref_count_vnormals_(_line.ref_count_vnormals_),
+    ref_count_vbinormals_(_line.ref_count_vbinormals_),
+    ref_count_vcolors_(_line.ref_count_vcolors_),
+    ref_count_vscalars_(_line.ref_count_vscalars_),
+    ref_count_vselections_(_line.ref_count_vselections_),
+    ref_count_vvhandles_(_line.ref_count_vvhandles_),
+    ref_count_vehandles_(_line.ref_count_vehandles_),
+    ref_count_vfhandles_(_line.ref_count_vfhandles_),
+
+    ref_count_enormals_(_line.ref_count_enormals_),
+    ref_count_ecolors_(_line.ref_count_ecolors_),
+    ref_count_escalars_(_line.ref_count_escalars_),
+    ref_count_eselections_(_line.ref_count_eselections_),
+    ref_count_epreimage_direction_(_line.ref_count_epreimage_direction_)
+
 {
-  closed_ = _line.closed_;
-
-  //copy points
-  points_ = _line.points_;
-
-  //copy vertex properties
-  vnormals_    = _line.vnormals_;
-  vbinormals_  = _line.vbinormals_;
-  vcolors_     = _line.vcolors_;
-  vscalars_    = _line.vscalars_;
-  vselections_ = _line.vselections_;
-  vvhandles_   = _line.vvhandles_;
-  vehandles_   = _line.vehandles_;
-  vfhandles_   = _line.vfhandles_;
-
-  //copy edge properties
-  enormals_    = _line.enormals_;
-  ecolors_     = _line.ecolors_;
-  escalars_    = _line.escalars_;
-  eselections_ = _line.eselections_;
-  epreimage_direction_ = _line.epreimage_direction_;
-
-  // property reference counter
-  ref_count_vnormals_    = _line.ref_count_vnormals_;
-  ref_count_vbinormals_  = _line.ref_count_vbinormals_;
-  ref_count_vcolors_     = _line.ref_count_vcolors_;
-  ref_count_vscalars_    = _line.ref_count_vscalars_;
-  ref_count_vselections_ = _line.ref_count_vselections_;
-  ref_count_vvhandles_   = _line.ref_count_vvhandles_;
-  ref_count_vehandles_   = _line.ref_count_vehandles_;
-  ref_count_vfhandles_   = _line.ref_count_vfhandles_;
-
-  ref_count_enormals_    = _line.ref_count_enormals_;
-  ref_count_ecolors_     = _line.ref_count_ecolors_;
-  ref_count_escalars_    = _line.ref_count_escalars_;
-  ref_count_eselections_ = _line.ref_count_eselections_;
-  ref_count_epreimage_direction_ = _line.ref_count_epreimage_direction_;
-
 
   // copy custom properties
   for (typename CustomPropertyMap::const_iterator it = _line.custom_properties.begin(); it != _line.custom_properties.end(); ++it) {

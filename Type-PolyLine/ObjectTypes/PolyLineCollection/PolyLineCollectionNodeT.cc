@@ -88,7 +88,8 @@ PolyLineCollectionNodeT<PolyLineCollection>::PolyLineCollectionNodeT(PolyLineCol
         polyline_collection_(_pl),
         updateVBO_(true),
         sphere_(0),
-        total_vertex_count_(0)
+        total_vertex_count_(0),
+        total_segment_count_(0)
 
 {
   // Initial default draw mode

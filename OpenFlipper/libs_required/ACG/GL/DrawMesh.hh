@@ -185,7 +185,7 @@ private:
 
 public:
 
-  DrawMeshT(Mesh& _mesh);
+  explicit DrawMeshT(Mesh& _mesh);
   virtual ~DrawMeshT();
 
   void disableColors()      {colorMode_ = 0;}

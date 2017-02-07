@@ -65,9 +65,8 @@ namespace ACG {
 template < typename Scalar >
 KnotvectorT<Scalar>::
 KnotvectorT()
-  : ref_count_selections_(0)
+  : ref_count_selections_(0), knotvectorType_(UNIFORM_INTERPOL),num_control_points_(0),spline_degree_(0)
 {
-  knotvectorType_ = UNIFORM_INTERPOL;
 }
 
 //-----------------------------------------------------------------------------
@@ -75,19 +74,14 @@ KnotvectorT()
 template < typename Scalar >
 KnotvectorT<Scalar>::
 KnotvectorT( const KnotvectorT& _knotvec )
+   : selections_(_knotvec.selections_),
+     ref_count_selections_( _knotvec.ref_count_selections_),
+     knots_(_knotvec.knots_),
+     knotvectorType_(_knotvec.knotvectorType_),
+     num_control_points_(_knotvec.num_control_points_),
+     spline_degree_(_knotvec.spline_degree_)
 {
-  knots_ = _knotvec.knots_;
 
-  // properties
-  selections_ = _knotvec.selections_;
-
-  // property reference counter
-  ref_count_selections_ = _knotvec.ref_count_selections_;
-
-  knotvectorType_ = _knotvec.knotvectorType_;
-
-  num_control_points_ = _knotvec.num_control_points_;
-  spline_degree_      = _knotvec.spline_degree_;
 }
 
 //-----------------------------------------------------------------------------

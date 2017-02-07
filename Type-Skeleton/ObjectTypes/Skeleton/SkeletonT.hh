@@ -119,7 +119,7 @@ public:
     */
   class AnimationIterator {
   public:
-    AnimationIterator(std::vector<Animation*>& _animations );
+    explicit AnimationIterator(std::vector<Animation*>& _animations );
     AnimationIterator(std::vector<Animation*>& _animations, size_t _animationIndex );
 
   public:
@@ -138,7 +138,7 @@ public:
   /// Default constructor
   SkeletonT();
   /// Copy constructor
-  SkeletonT(const SkeletonT<PointT>& _other);
+  explicit SkeletonT(const SkeletonT<PointT>& _other);
   /// Assignment operator
   SkeletonT& operator= (const SkeletonT<PointT>& _other);
 

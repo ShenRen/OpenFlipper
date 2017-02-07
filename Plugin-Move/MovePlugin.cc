@@ -927,11 +927,6 @@ void MovePlugin::placeManip(QMouseEvent * _event, bool _snap) {
 
         object->manipPlaced(true);
 
-        /// TODO: Whats this?
-        int data = -1;
-        if (data != -1)
-          object->manipulatorNode()->setData( data );
-
         object->manipulatorNode()->loadIdentity();
         object->manipulatorNode()->set_center(hitPoint);
         object->manipulatorNode()->set_draw_cylinder(true);

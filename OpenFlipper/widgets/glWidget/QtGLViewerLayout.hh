@@ -73,7 +73,7 @@ class QtGLViewerLayout : public QGraphicsLayout
 {
   public:
 
-    QtGLViewerLayout (QGraphicsLayoutItem * _parent = 0);
+    explicit QtGLViewerLayout (QGraphicsLayoutItem * _parent = 0);
 
     /// Add Wheel Widget to Layout
     void addWheelX (QGraphicsWidget *_item);

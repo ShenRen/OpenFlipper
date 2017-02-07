@@ -60,7 +60,7 @@ class RendererDialog : public QDialog, public Ui::RendererWidget
   Q_OBJECT
 
   public:
-    RendererDialog(QWidget *parent = 0);
+    explicit RendererDialog(QWidget *parent = 0);
 
 
 

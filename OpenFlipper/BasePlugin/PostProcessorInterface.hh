@@ -124,7 +124,7 @@ struct DLLEXPORT PostProcessorOutput
 // in/out format descriptor
 struct PostProcessorFormatDesc
 {
-  PostProcessorFormatDesc(bool _multisampled = false) : supportMultisampling_(_multisampled),outputFormat_(PostProcessorFormat_DONTCARE)
+  explicit PostProcessorFormatDesc(bool _multisampled = false) : supportMultisampling_(_multisampled),outputFormat_(PostProcessorFormat_DONTCARE)
   {}
 
 

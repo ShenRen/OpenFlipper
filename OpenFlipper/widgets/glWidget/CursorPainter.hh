@@ -77,7 +77,7 @@ class DLLEXPORT CursorPainter : public QObject
 
   public:
     /// Constructor
-    CursorPainter (QObject *_parent = 0);
+    explicit CursorPainter (QObject *_parent = 0);
 
     /// Destructor
     ~CursorPainter ();

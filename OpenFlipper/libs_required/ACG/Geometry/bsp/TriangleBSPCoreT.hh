@@ -93,7 +93,7 @@ public: //---------------------------------------------------------------------
 
   /** Constructor: need traits that define the types and 
       give us the points by traits_.point(PointHandle) */
-  TriangleBSPCoreT(const BSPTraits& _traits) : traits_(_traits), root_(0), nodes(0), n_triangles(0) {}
+  explicit TriangleBSPCoreT(const BSPTraits& _traits) : traits_(_traits), root_(0), nodes(0), n_triangles(0) {}
 
   /// Destructor
   ~TriangleBSPCoreT() {

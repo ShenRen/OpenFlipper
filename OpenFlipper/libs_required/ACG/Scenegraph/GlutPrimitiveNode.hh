@@ -120,33 +120,35 @@ public:
     unsigned int slices, stacks;
     
     // Constructor
-    Primitive(GlutPrimitiveType _t)
-    {
-      // Set the type
-      type = _t;
+    explicit Primitive(GlutPrimitiveType _t) :
 
-      // default axis is negative z 
-      axis = Vec3d(0,0,1);
-      
-      // set default resolution
-      size = 1.0;  
-      innersize = 1.0;
-      slices = 20;
-      stacks = 20;
+        // default axis is negative z
+        axis(Vec3d(0,0,1)),
+
+        // Set the type
+        type(_t),
+
+        // set default resolution
+        size(1.0),
+        innersize(1.0),
+        slices(20),
+        stacks(20)
+    {
     }
 
-    Primitive(GlutPrimitiveType _t, Vec3d _p, Vec3d _a, ACG::Vec4f _c)
-    {
-      type     = _t;
-      position = _p;
-      axis     = _a;
-      color    = _c;
-      
+    Primitive(GlutPrimitiveType _t, Vec3d _p, Vec3d _a, ACG::Vec4f _c) :
+      position(_p),
+      axis(_a),
+      type(_t),
+      color(_c),
+
       // set default resolution
-      size = 1.0;  
-      innersize = 1.0;
-      slices = 20;
-      stacks = 20;
+      size(1.0),
+      innersize(1.0),
+      slices(20),
+      stacks(20)
+    {
+      
     }
 
     // Copy Constructor

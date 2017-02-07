@@ -42,11 +42,13 @@ function (of_add_plugins)
         "${CMAKE_SOURCE_DIR}/PluginCollection-*/Plugin-*/CMakeLists.txt"
         "${CMAKE_SOURCE_DIR}/Package*/Plugin-*/CMakeLists.txt"
         "${CMAKE_SOURCE_DIR}/Package*/PluginCollection-*/Plugin-*/CMakeLists.txt"
+        "${CMAKE_SOURCE_DIR}/Type-*/Plugin-*/CMakeLists.txt"
+        "${CMAKE_SOURCE_DIR}/*/Type-*/Plugin-*/CMakeLists.txt"
     )
     
     foreach (_plugin ${_plugins_in})
         get_filename_component (_plugin_dir ${_plugin} PATH)
-        
+
         # In INSTALLDATA_DIRS the resource directories will be handed down.
         set(INSTALLDATA_DIRS)
         add_subdirectory (${CMAKE_SOURCE_DIR}/${_plugin_dir})
@@ -120,6 +122,8 @@ function (of_print_plugin_stats)
     "${CMAKE_SOURCE_DIR}/PluginCollection-*/Plugin-*"
     "${CMAKE_SOURCE_DIR}/Package*/Plugin-*"
     "${CMAKE_SOURCE_DIR}/Package*/PluginCollection-*/Plugin-*"
+    "${CMAKE_SOURCE_DIR}/Type-*/Plugin-*"
+    "${CMAKE_SOURCE_DIR}/*/Type-*/Plugin-*"
 
   )
 

@@ -175,7 +175,7 @@ private:
     //  vec4 g_SlicePlane1;
     //   ..
 
-    ClippingShaderModifier(int _numClipPlanes);
+    explicit ClippingShaderModifier(int _numClipPlanes);
     virtual ~ClippingShaderModifier() {}
 
     void modifyVertexIO(ShaderGenerator* _shader);
@@ -190,7 +190,7 @@ private:
   class ClippingObjectModifier : public RenderObjectModifier
   {
   public:
-    ClippingObjectModifier(const ClippingNode* _node);
+    explicit ClippingObjectModifier(const ClippingNode* _node);
     virtual ~ClippingObjectModifier() {}
 
     void apply(RenderObject* _obj);

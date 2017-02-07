@@ -84,7 +84,7 @@ class ACGDLLEXPORT PBuffer
 public:
 
   /// Default constructor
-  PBuffer(int _bits);
+  explicit PBuffer(int _bits);
 
   /** Constructor with arguments for pbuffer dimension.
       \param _w specifies the pbuffer's width in pixel.

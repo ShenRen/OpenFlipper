@@ -59,7 +59,7 @@
 class SBFReader : public ACG::MeshCompilerDefaultFaceInput
 {
 public:
-  SBFReader(const char* szObjFile);
+  explicit SBFReader(const char* szObjFile);
   virtual ~SBFReader(void) {}
 
   int getNumVertices() {return m_Vertices.size() / 3;}

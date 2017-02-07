@@ -67,7 +67,7 @@ class PostProcessorDialog : public QDialog, public Ui::PostProcessorWidget
     void updateExaminer(unsigned _viewer);
 
   public:
-    PostProcessorDialog(QWidget *_parent = 0);
+    explicit PostProcessorDialog(QWidget *_parent = 0);
 
     /// return the names of all saved post processors
     static QStringList getSavedPostProcessorNames(const unsigned _examiner);

@@ -72,7 +72,7 @@ class CompareVectors
 public:
 
   /// Constructor
-  CompareVectors(double _eps = FLT_MIN);
+  explicit CompareVectors(double _eps = FLT_MIN);
 
   /// comparison operator
   bool operator()( const ACG::Vec3d& _v0, const ACG::Vec3d& _v1 ) const;
@@ -120,7 +120,7 @@ private:
   /// Internal vertex type
   struct Vertex
   {
-    Vertex(const ACG::Vec3d& _p) : p(_p) { };
+    explicit Vertex(const ACG::Vec3d& _p) : p(_p) { };
     ACG::Vec3d                    p;
 
     /// This vector will contain a list of all faces incident to the current vertex

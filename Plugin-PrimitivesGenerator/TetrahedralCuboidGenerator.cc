@@ -47,7 +47,7 @@
  *                                                                            *
  \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 
 #include "TetrahedralCuboidGenerator.hh"
 

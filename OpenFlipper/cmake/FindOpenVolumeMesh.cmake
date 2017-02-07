@@ -16,6 +16,7 @@ FIND_PATH(OPENVOLUMEMESH_INCLUDE_DIR OpenVolumeMesh/Mesh/PolyhedralMesh.hh
 	  PATHS /usr/local/include 
                 /usr/include 
                 /usr/local/OpenVolumeMesh/include
+                "${CMAKE_SOURCE_DIR}/Type-OpenVolumeMesh/libs/OpenVolumeMesh/src"
                 "${CMAKE_SOURCE_DIR}/OpenVolumeMesh/src"
                 "${CMAKE_SOURCE_DIR}/libs_required/OpenVolumeMesh/src"
                 "${CMAKE_SOURCE_DIR}/../OpenVolumeMesh/src"

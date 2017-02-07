@@ -60,9 +60,7 @@
 #include <OpenFlipper/common/GlobalOptions.hh>
 //#include <QGLWidget>
 
-#include <../ObjectTypes/TriangleMesh/TriangleMesh.hh>
-#include <../ObjectTypes/PolyMesh/PolyMesh.hh>
-
+#include "PluginFunctions.hh"
 #include "PluginFunctionsCore.hh"
 
 namespace PluginFunctions {

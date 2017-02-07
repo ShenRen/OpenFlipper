@@ -71,7 +71,7 @@ class WayFind {
 
   public:
     /// Constructor
-    WayFind (GraphicsScene *_scene);
+    explicit WayFind (GraphicsScene *_scene);
 
     /// Destructor
     ~WayFind ();
@@ -91,7 +91,7 @@ class WayFind {
           Horizontal
         };
 
-        Node (unsigned int _counter);
+        explicit Node (unsigned int _counter);
         ~Node ();
 
       public:

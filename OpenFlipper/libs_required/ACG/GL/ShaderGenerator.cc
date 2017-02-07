@@ -2329,7 +2329,6 @@ void ShaderProgGenerator::scanShaderTemplate(QStringList& _templateSrc, QString 
       // scan and adjust glsl version
       QByteArray lineBytes = trimmedLine.toUtf8();
 
-      int templateVersion = 0;
       if (trimmedLine.startsWith("#version "))
       {
         QStringList tokens = trimmedLine.split(' ');
@@ -2338,7 +2337,7 @@ void ShaderProgGenerator::scanShaderTemplate(QStringList& _templateSrc, QString 
         {
           // templateVersion
           bool convOk = false;
-          templateVersion = tokens.at(1).toInt(&convOk);
+          int templateVersion = tokens.at(1).toInt(&convOk);
 
           if (convOk)
           {

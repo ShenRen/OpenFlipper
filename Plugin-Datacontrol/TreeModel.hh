@@ -69,7 +69,7 @@ signals:
 public:
 
     /// Constructor
-    TreeModel(QObject *_parent = 0);
+    explicit TreeModel(QObject *_parent = 0);
 
     /// Destructor
     ~TreeModel();

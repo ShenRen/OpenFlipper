@@ -64,7 +64,7 @@ class DatacontrolToolboxWidget : public QWidget, public Ui::dctoolbox
     void keyEvent( QKeyEvent* _event );
 
   public:
-    DatacontrolToolboxWidget(QWidget* _parent = 0);
+    explicit DatacontrolToolboxWidget(QWidget* _parent = 0);
 
   protected:
     

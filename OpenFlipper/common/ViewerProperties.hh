@@ -121,7 +121,7 @@ namespace Viewer {
     Q_OBJECT
 
     public:
-      ViewerProperties(int _id);
+      explicit ViewerProperties(int _id);
       ~ViewerProperties();
       
     //===========================================================================

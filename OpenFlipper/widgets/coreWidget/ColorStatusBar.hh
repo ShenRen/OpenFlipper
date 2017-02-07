@@ -58,7 +58,7 @@ class ColorStatusBar : public QStatusBar
   Q_OBJECT
 
   public:
-    ColorStatusBar(QWidget* parent = 0 );
+    explicit ColorStatusBar(QWidget* parent = 0 );
 
   public slots:
     void showMessage ( const QString& message, int timeout = 0 );

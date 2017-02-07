@@ -208,12 +208,14 @@ add_subdirectory (OpenFlipper/libs_required/OpenMesh)
 add_subdirectory (OpenFlipper/libs_required/ACG)
 
 # search all libs in the libs directory
-# (required and optional libraries
+# in Packages, types, ...
+# (required and optional libraries )
 file (
   GLOB _local_libs_in
   RELATIVE "${CMAKE_SOURCE_DIR}"
            "${CMAKE_SOURCE_DIR}/libs_required/*/CMakeLists.txt"
            "${CMAKE_SOURCE_DIR}/libs/*/CMakeLists.txt"
+           "${CMAKE_SOURCE_DIR}/Type-*/libs/*/CMakeLists.txt"
            "${CMAKE_SOURCE_DIR}/Package-*/libs/*/CMakeLists.txt"
 )
 
@@ -280,6 +282,44 @@ endif()
 # Core Library Components (Except the Core application)
 # ========================================================================
 add_subdirectory (OpenFlipper/PluginLib)
+
+# ========================================================================
+# Build DataTypes
+# ========================================================================
+
+# Search for all available data types
+file (
+  GLOB _data_types
+  RELATIVE "${CMAKE_SOURCE_DIR}"
+           "${CMAKE_SOURCE_DIR}/Type-*/ObjectTypes/*"
+           "${CMAKE_SOURCE_DIR}/Package-*/Type-*/ObjectTypes/*"
+)
+
+# add all found libs to the build
+foreach (DATATYPE_DIR ${_data_types})
+  if (EXISTS ${CMAKE_SOURCE_DIR}/${DATATYPE_DIR}/CMakeLists.txt)
+    add_subdirectory(${DATATYPE_DIR})
+
+    # Extract Name of type from directory
+    string(REGEX MATCH "[^/\\]*$" TYPENAME ${DATATYPE_DIR})
+    string(TOUPPER ${TYPENAME} TYPENAME )
+    list(APPEND TYPE_LIST ${TYPENAME})
+
+    set(${TYPENAME}_INCLUDE ${CMAKE_SOURCE_DIR}/${DATATYPE_DIR}/../../ )
+ endif()
+endforeach()
+
+# info header for Available data types
+acg_color_message ("\n${_escape}[40;37m************************************************************${_escape}[0m")
+acg_color_message ("${_escape}[40;37m* Available OpenFlipper Types:                             *${_escape}[0m")
+acg_color_message ("${_escape}[40;37m************************************************************${_escape}[0m")
+acg_color_message (" ")
+
+foreach (DATATYPE ${TYPE_LIST})
+  acg_color_message ("${DATATYPE}")
+endforeach()
+
+acg_color_message (" ")
 
 # ========================================================================
 # Tests

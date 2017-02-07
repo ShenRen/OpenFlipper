@@ -813,7 +813,7 @@ void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
 
 namespace {
 struct RenderObjectComparator {
-    RenderObjectComparator(const std::vector<ACG::RenderObject>& _vec) : vec_(_vec) {
+    explicit RenderObjectComparator(const std::vector<ACG::RenderObject>& _vec) : vec_(_vec) {
     }
 
     bool operator() (int a, int b) {

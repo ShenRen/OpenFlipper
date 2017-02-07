@@ -47,8 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #ifndef OVM_PROPERTY_VISUALIZER_DOUBLE_HH
 #define OVM_PROPERTY_VISUALIZER_DOUBLE_HH
 
@@ -100,4 +98,3 @@ protected:
 
 #endif /* OVM_PROPERTY_VISUALIZER_DOUBLE_HH */
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

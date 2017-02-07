@@ -61,7 +61,7 @@ class SelectionTypeFrameWidget : public QWidget, public Ui::SelectionTypeFrame
   Q_OBJECT
 
   public:
-    SelectionTypeFrameWidget(QWidget *parent = 0);
+    explicit SelectionTypeFrameWidget(QWidget *parent = 0);
     
     // Override public function
     void setEnabled(bool _enabled);

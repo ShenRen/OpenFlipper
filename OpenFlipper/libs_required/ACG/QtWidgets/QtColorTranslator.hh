@@ -96,7 +96,7 @@ public:
   {};
 
   /// construct with QGLcontext
-  QtColorTranslator(QGLContext& _context)
+  explicit QtColorTranslator(QGLContext& _context)
   { initialize(_context); }
 
   /// Destructor.

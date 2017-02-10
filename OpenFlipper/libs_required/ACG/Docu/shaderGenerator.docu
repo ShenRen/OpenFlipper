@@ -501,6 +501,25 @@ SG_FRAGMENT_LIGHTING;
 SG_FRAGMENT_END;
 \endcode
 
+\section shaderFlowDiagrams Shader Data Flow Diagrams
+
+\subsection shader_building_blocks Shader Building Blocks
+\image html Blocks.svg  
+
+\subsection shader_IO Shader IO
+\image html ShaderIO.svg  
+
+\subsection shader_geometry_shader Geometry Shader  
+\image html GeometryShader.svg  
+
+\subsection shader_tesselation_control Tesselation Control Shader
+\image html TessControl.svg  
+
+\subsection shader_tesselation_evaluation Tesselation Evaluation Shader
+\image html TessEval.svg
+ 
+
+
 
 
 */

@@ -1595,7 +1595,8 @@ int FileVTKPlugin::loadObject(QString _filename) {
     return -1;
   }
 
-  BaseObject* baseObj = 0;
+  BaseObjectData* baseObj = 0;
+  bool is_OpenVolumeMesh = false;
 
   if ( (forceTriangleMesh_) || (bestType == BMT_TriMesh) ){
 
@@ -1660,6 +1661,7 @@ int FileVTKPlugin::loadObject(QString _filename) {
   else if (bestType == BMT_PolyhedralMesh)
   {
     // add a Polyhedral mesh
+    is_OpenVolumeMesh = true;
     int id = -1;
     emit addEmptyObject(DATA_POLYHEDRAL_MESH, id);
 
@@ -1689,6 +1691,7 @@ int FileVTKPlugin::loadObject(QString _filename) {
   else if (bestType == BMT_HexahedralMesh)
   {
     // add a hexahedral mesh
+    is_OpenVolumeMesh = true;
     int id = -1;
     emit addEmptyObject(DATA_HEXAHEDRAL_MESH, id);
 
@@ -1717,6 +1720,7 @@ int FileVTKPlugin::loadObject(QString _filename) {
   else if (bestType == BMT_TetrahedralMesh)
   {
     // add a tetrahedral mesh
+    is_OpenVolumeMesh = true;
     int id = -1;
     emit addEmptyObject(DATA_TETRAHEDRAL_MESH, id);
 
@@ -1747,6 +1751,11 @@ int FileVTKPlugin::loadObject(QString _filename) {
     baseObj->setFromFileName(_filename);
     baseObj->setName(baseObj->filename());
 
+    if (is_OpenVolumeMesh)
+    {
+      // Go into solid flat shaded mode
+      baseObj->setObjectDrawMode(ACG::SceneGraph::DrawModes::getDrawMode("Cells (flat shaded)"));
+    }
 
     emit updatedObject(baseObj->id(), UPDATE_ALL);
 

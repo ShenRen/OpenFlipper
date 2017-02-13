@@ -177,7 +177,7 @@ unsigned int OVMPropertyVisualizer<MeshT>::getClosestHalffaceId(unsigned int _fa
 template <typename MeshT>
 unsigned int OVMPropertyVisualizer<MeshT>::getClosestHalfedgeId(unsigned int _face, ACG::Vec3d& _hitPoint)
 {
-    unsigned int halfface = getClosestHalffaceId(_face, _hitPoint);
+    OpenVolumeMesh::HalfFaceHandle halfface = OpenVolumeMesh::HalfFaceHandle(getClosestHalffaceId(_face, _hitPoint));
 
     OpenVolumeMesh::OpenVolumeMeshFace face = mesh->halfface(halfface);
 

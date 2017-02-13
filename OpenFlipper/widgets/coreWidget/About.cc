@@ -102,7 +102,7 @@ void CoreWidget::showAboutWidget( ) {
     while (it != additionalAboutTabs_.constEnd()) {
       QTextEdit* tmp =  new QTextEdit();
       tmp->insertHtml( it.value() );
-
+      tmp->setReadOnly(true);
       aboutWidget_->About->addTab( tmp, it.key()  );
       ++it;
     }

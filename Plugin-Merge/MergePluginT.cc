@@ -3,14 +3,6 @@
 
 #include "MergePlugin.hh"
 
-#include <ACG/Math/GLMatrixT.hh>
-#include <Math_Tools/Math_Tools.hh>
-#include <OpenMesh/Core/Geometry/MathDefs.hh>
-#include <MeshTools/MeshSelectionT.hh>
-#include <MeshTools/MeshFunctions.hh>
-#include <Plugin-HoleFilling/HoleFillerT.hh>
-#include <OpenFlipper/BasePlugin/RPCWrappers.hh>
-
 ///merges Meshes into the first mesh
 template< class MeshT >
 void MergePlugin::mergeMeshes(const std::vector< MeshT* >& _meshes)

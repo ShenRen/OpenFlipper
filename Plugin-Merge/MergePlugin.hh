@@ -6,17 +6,12 @@
 #include <QCheckBox>
 #include <QMenuBar>
 
-#ifdef CGAL_AUTOLINK
-  #include <CGAL/auto_link/LAPACK.h>
-#endif
-
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/BasePlugin/ToolboxInterface.hh>
 #include <OpenFlipper/BasePlugin/LoadSaveInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 #include <OpenFlipper/BasePlugin/ScriptInterface.hh>
 #include <OpenFlipper/common/Types.hh>
-#include <Math_Tools/PCA/PCA.hh>
 
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>

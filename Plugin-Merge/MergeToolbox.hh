@@ -6,6 +6,6 @@ class MergeToolBox : public QWidget, public Ui::MergeTool
   Q_OBJECT
 
   public:
-    MergeToolBox(QWidget *parent = 0);
+    explicit MergeToolBox(QWidget *parent = 0);
 };
 

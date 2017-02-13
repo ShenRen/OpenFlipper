@@ -1,7 +1,7 @@
 include (plugin)
 
 if (WIN32)
-  openflipper_plugin (DEPS CGAL Boost GMM LAPACK BLAS)
+  openflipper_plugin (TYPES TRIANGLEMESH POLYMESH DEPS CGAL Boost GMM LAPACK BLAS)
 else ()
-  openflipper_plugin (DEPS GMM LAPACK BLAS)
+  openflipper_plugin (TYPES TRIANGLEMESH POLYMESH DEPS GMM LAPACK BLAS)
 endif ()

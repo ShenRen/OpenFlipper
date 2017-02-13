@@ -61,6 +61,7 @@ signals:
 
 public :
 
+  MergePlugin() {};
   ~MergePlugin() {};
 
   QString name() { return (QString("Merge")); };
@@ -80,7 +81,7 @@ public slots:
   void pluginsInitialized();
   
   void mergeObjects();
-  int mergeObjects(const std::vector< BaseObjectData* > _objects, QString _name = "merged object", bool _deleteSeparateObjects = true);
+  int mergeObjects(const std::vector< BaseObjectData* > & _objects, QString _name = "merged object", bool _deleteSeparateObjects = true);
   void slotCleanup(DataType _type, bool _deleteSeparateObjects);
 
 //template functions

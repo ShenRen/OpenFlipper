@@ -139,14 +139,13 @@ void MergePlugin::pluginsInitialized()
                           QString(" vector of BaseObjectData* containing Poly or TriMeshes to be merged, name for the merged object, flag to remove separated objects default is true").split(","));
 }
 
-int MergePlugin::mergeObjects(const std::vector< BaseObjectData* > _objects, QString _name, bool _deleteSeparateObjects)
+int MergePlugin::mergeObjects(const std::vector< BaseObjectData* > & _objects, QString _name, bool _deleteSeparateObjects)
 {
   int result = -1;
   if (_objects.size() < 2)
     return -1; //nothing to do
 
   objects = _objects;
-
 
   //check dataType
   DataType type = checkType(objects);
@@ -160,7 +159,6 @@ int MergePlugin::mergeObjects(const std::vector< BaseObjectData* > _objects, QSt
   std::vector< PolyMesh* > polyMeshes;
   TriMesh* triMergePtr;
   PolyMesh* polyMergePtr;
-
 
   emit addEmptyObject(DATA_POLY_MESH, polyMergeID);
   PluginFunctions::getMesh(polyMergeID, polyMergePtr);

@@ -40,7 +40,7 @@ Q_INTERFACES(ScriptInterface)
 signals:
   //BaseInterface
   void updateView();
-  void updatedObject(int _identifier, const UpdateType _type);
+  void updatedObject(int _identifier, const UpdateType& _type);
 
   //LoggingInterface:
   void log( Logtype _type, QString _message );
@@ -61,7 +61,7 @@ signals:
 
 public :
 
-  MergePlugin() {};
+  MergePlugin();
   ~MergePlugin() {};
 
   QString name() { return (QString("Merge")); };
@@ -81,7 +81,21 @@ public slots:
   void pluginsInitialized();
   
   void mergeObjects();
+
+  /**
+   * @brief mergeObjects merges multiple OpenFlipper Objects of Type TriMesh or PolyMesh into one combined Mesh.
+   * @param _objects a vector of OpenFlipper Objects that shall be merged.
+   * @param _name The name of the merged object (default is "merged object")
+   * @param _deleteSeparateObjects flag to determine if the separate objects shall be deleted after merging (default is true)
+   * @return
+   */
   int mergeObjects(const std::vector< BaseObjectData* > & _objects, QString _name = "merged object", bool _deleteSeparateObjects = true);
+
+  /**
+   * @brief slotCleanup is called when the cleanup event is processed at the end of mergeObjects.
+   * @param _type the datatype that was used for merging
+   * @param _deleteSeparateObjects flag to determine if separated objects shall be deleted.
+   */
   void slotCleanup(DataType _type, bool _deleteSeparateObjects);
 
 //template functions

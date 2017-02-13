@@ -112,6 +112,14 @@ DataType MergePlugin::checkType(const std::vector< BaseObjectData* > & objects )
 }
 
 
+MergePlugin::MergePlugin() :
+  tool_(nullptr),
+  polyMergeID(0),
+  triMergeID(0)
+{
+
+}
+
 /// init the Toolbox
 void MergePlugin::initializePlugin() {
    tool_ = new MergeToolBox();
@@ -126,9 +134,6 @@ void MergePlugin::initializePlugin() {
    connect(this,SIGNAL(cleanup(DataType, bool)),this,SLOT(slotCleanup(DataType, bool)),Qt::QueuedConnection);
 
    emit addToolbox( tr("Merge") , tool_ );
-
-   polyMergeID = -1;
-   triMergeID  = -1;
 }
 
 void MergePlugin::pluginsInitialized()

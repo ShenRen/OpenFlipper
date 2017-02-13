@@ -76,7 +76,7 @@ class Input : public InOut {
     };
 
     /// Constructor
-    Input (Element *_f);
+    explicit Input (Element *_f);
 
     /// Current state
     unsigned int state ();

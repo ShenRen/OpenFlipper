@@ -90,7 +90,7 @@ DrawMeshT<Mesh>::DrawMeshT(Mesh& _mesh)
    invVertexMap_(0),
    offsetPos_(0), offsetNormal_(20), offsetTexc_(12), offsetColor_(32),
    textureIndexPropertyName_("Not Set"),
-   perFaceTextureCoordinatePropertyName_("Not Set"),
+   perFaceTextureCoordinatePropertyName_("h:texcoords2D"),
    updateFullVBO_(true),
    updatePerEdgeBuffers_(1),
   updatePerHalfedgeBuffers_(1)
@@ -251,7 +251,7 @@ class DrawMeshFaceInput : public MeshCompilerFaceInput
 
 public:
 
-  DrawMeshFaceInput(Mesh& _mesh) :
+  explicit DrawMeshFaceInput(Mesh& _mesh) :
   mesh_(_mesh)
   {
   };

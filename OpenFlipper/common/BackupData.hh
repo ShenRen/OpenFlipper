@@ -68,7 +68,7 @@ class DLLEXPORT BackupData : public PerObjectData
 
   public:
     /// Constructor
-    BackupData(BaseObjectData* _object = 0);
+    explicit BackupData(BaseObjectData* _object = 0);
     /// Destructor
     virtual ~BackupData();
 

@@ -47,7 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
 
 #define OVM_PROPERTY_VISZUALIZTER_VECTOR_FIELD_DIFFERENCE_CC
 
@@ -270,4 +269,3 @@ void OVMPropertyVisualizerVectorFieldDifference<MeshT>::visualizeVertexProp(bool
     }
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

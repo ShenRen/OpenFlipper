@@ -71,7 +71,7 @@ public:
    *
    * @param _pos polygon vertex positions (ccw)
   */
-  Triangulator(const std::vector<Vec3f>& _pos);
+  explicit Triangulator(const std::vector<Vec3f>& _pos);
 
   /** \brief Destructor
   */

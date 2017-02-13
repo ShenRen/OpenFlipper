@@ -56,27 +56,29 @@
 // private struct to get ram information
 namespace{
 struct MemoryVacancy{
-  unsigned long totalRamMB;
-  unsigned long freeRamMB;
-  unsigned long bufferRamMB;
+  uint64_t totalRamMB;
+  uint64_t freeRamMB;
+  uint64_t bufferRamMB;
 };
 
-void parseMeminfo(int& total, int& free, int& buffer)
+void parseMeminfo(uint64_t& _total, uint64_t& _free, uint64_t& _buffer)
 {
-  int memcache;
-  int memfree;
+  //use the specific type for scanf so we have at least 64 bit to read memory information
+  //this way we support memory information for max 9,223,372,036,854,775,807 byte of memory (that is 8 exa byte)
+  unsigned long long memcache, memfree, total, free, buffer;
+
   FILE* info = fopen("/proc/meminfo","r");
-  if(fscanf (info, "MemTotal: %d kB MemFree: %d kB Buffers: %d kB Cached: %d kB",&total, &memfree, &buffer, &memcache) < 4) //try to parse the old meminfo format
+  if(fscanf (info, "MemTotal: %19llu kB MemFree: %19llu kB Buffers: %19llu kB Cached: %19llu kB",&total, &memfree, &buffer, &memcache) < 4) //try to parse the old meminfo format
   {
     fclose(info);
     info = fopen("/proc/meminfo","r");
     //parsing the old format failed so we try to parse using the new format
-    if(fscanf(info, "MemTotal: %d kB MemFree: %d kB MemAvailable: %d kB Buffers: %d kB Cached: %d kB",&total, &memfree, &free, &buffer, &memcache) < 5)
+    if(fscanf(info, "MemTotal: %19llu kB MemFree: %19llu kB MemAvailable: %19llu kB Buffers: %19llu kB Cached: %19llu kB",&total, &memfree, &free, &buffer, &memcache) < 5)
     {
-      //parsing failed overall so return -1 for all values
-      total = -1;
-      free = -1;
-      buffer = -1;
+      //parsing failed overall so return 0 for all values
+      total = 0;
+      free = 0;
+      buffer = 0;
     }
     else
     {
@@ -89,6 +91,9 @@ void parseMeminfo(int& total, int& free, int& buffer)
     free = memfree + (buffer + memcache);
   }
   fclose(info);
+  _total = total;
+  _free = free;
+  _buffer = buffer;
 }
 
 }
@@ -143,31 +148,31 @@ namespace Utils
 
     #else // Linux
 
-      int total, free, buffer;
+      uint64_t total, free, buffer;
       parseMeminfo(total, free, buffer);
 
       // Unit in kbytes ; /1024 -> MB
-      _outMemoryVacancy.totalRamMB = (long)total / 1024;
-      _outMemoryVacancy.freeRamMB = (long)free / 1024;
-      _outMemoryVacancy.bufferRamMB = (long)buffer / 1024; // Buffers get freed, if we don't have enough free ram
+      _outMemoryVacancy.totalRamMB = total / 1024;
+      _outMemoryVacancy.freeRamMB = free / 1024;
+      _outMemoryVacancy.bufferRamMB = buffer / 1024; // Buffers get freed, if we don't have enough free ram
     #endif
     }
 
-   unsigned long queryFreeRAM()
+   uint64_t queryFreeRAM()
    {
      MemoryVacancy vac;
      MemoryInfoUpdate(vac);
      return vac.freeRamMB;
    }
 
-   unsigned long queryTotalRAM()
+   uint64_t queryTotalRAM()
    {
      MemoryVacancy vac;
      MemoryInfoUpdate(vac);
      return vac.totalRamMB;
    }
 
-   unsigned long queryBufferedRAM()
+   uint64_t queryBufferedRAM()
    {
      MemoryVacancy vac;
      MemoryInfoUpdate(vac);

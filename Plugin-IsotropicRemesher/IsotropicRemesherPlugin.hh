@@ -60,7 +60,6 @@
 #include <OpenFlipper/BasePlugin/BackupInterface.hh>
 #include <OpenFlipper/common/Types.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
-#include <ObjectTypes/PolyMesh/PolyMesh.hh>
 
 #include "IsotropicRemesherToolbox.hh"
 #include "ProgressEmitter.hh"

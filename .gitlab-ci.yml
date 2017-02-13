@@ -56,11 +56,23 @@ VS2013-Qt-5.5.1-x64:
 
 Mac-Cpp11:
   script: "OpenFlipper/CI/ci-mac.sh"
-  cache:
-    paths:
-      - build-release/
   tags:
     - Apple
   artifacts:
     paths:
       - build-release/*.dmg
+
+Doc-publish:
+  only:
+     - master
+  script: "OpenFlipper/CI/ci-doc.sh"
+  tags:
+     - Linux
+  artifacts:
+    paths:
+       - build-release/Doxygen-warning.log 
+       - build-release/Doxygen-error.log
+
+
+
+

@@ -61,8 +61,8 @@ class RenderObjectHighlighter : public QSyntaxHighlighter
   Q_OBJECT
 
   public:
-    RenderObjectHighlighter( QTextDocument* parent = 0);
-    RenderObjectHighlighter( QTextEdit* parent);
+    explicit RenderObjectHighlighter( QTextDocument* parent = 0);
+    explicit RenderObjectHighlighter( QTextEdit* parent);
 
     /// Updates the highlighter with the current rule set defined in the patterns
     void update();

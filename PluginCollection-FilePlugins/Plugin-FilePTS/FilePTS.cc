@@ -325,14 +325,19 @@ bool FilePTSPlugin::readTextFile( const char *_filename, SplatCloud &_splatCloud
     return false;
   }
 
+
   int splatIdx;
   for( splatIdx = 0; ; ++splatIdx )
   {
     // read position
     {
       float pos[3];
-      if( fscanf( file, "%32f %32f %32f", &pos[0], &pos[1], &pos[2] ) != 3 )
+
+      const int read = fscanf( file, "%32f %32f %32f", &pos[0], &pos[1], &pos[2] );
+      if( read != 3 ) {
+        emit log( LOGERR, tr("Scanned for 3 coordinates but got %1 at Index %2.\n").arg( read ).arg(splatIdx) );
         break;
+      }
 
       // increase number of splats
       _splatCloud.pushbackSplat();
@@ -349,7 +354,12 @@ bool FilePTSPlugin::readTextFile( const char *_filename, SplatCloud &_splatCloud
     if( loadColors )
     {
       float col[3];
-      fscanf( file, "%32f %32f %32f", &col[0], &col[1], &col[2] );
+
+      const int read = fscanf( file, "%32f %32f %32f", &col[0], &col[1], &col[2] );
+      if( read != 3 ) {
+        emit log( LOGERR, tr("Scanned for 3 colors but got %1 at Index %2.\n").arg( read ).arg(splatIdx) );
+        break;
+      }
 
       SplatCloud::Color color;
 
@@ -420,6 +430,7 @@ bool FilePTSPlugin::readTextFile( const char *_filename, SplatCloud &_splatCloud
       fclose( file );
       return false; // return failure
     }
+
   }
 
   // check for errors

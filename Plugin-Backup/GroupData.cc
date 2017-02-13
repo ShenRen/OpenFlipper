@@ -298,7 +298,7 @@ void GroupData::redo(int _objectid){
 struct ContainsId_deleter
 {
 
-  ContainsId_deleter(int _id):id_(_id){}
+  explicit ContainsId_deleter(int _id):id_(_id){}
   bool operator()(const BaseBackup* _b)
   {
     if (dynamic_cast<const GroupBackup* >(_b) && dynamic_cast<const GroupBackup* >(_b)->contains(id_))

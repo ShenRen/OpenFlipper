@@ -175,7 +175,7 @@ class PreloadThread : public QThread
     *
     * @param aggregator aggregator managing the different threads
     */
-    PreloadThread(PreloadAggregator *aggregator) : aggregator_(aggregator) {
+    explicit PreloadThread(PreloadAggregator *aggregator) : aggregator_(aggregator) {
     }
   
   public:

@@ -76,7 +76,7 @@ class DynamicValue : public QObject {
   public:
 
     /// Constructor
-    DynamicValue (Input *_input);
+    explicit DynamicValue (Input *_input);
 
     /// Destructor
     ~DynamicValue ();

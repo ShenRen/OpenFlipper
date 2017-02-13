@@ -68,7 +68,7 @@ class DecimaterToolbarWidget : public QWidget, public Ui::DecimaterToolbar
     void showing();
 
   public:
-    DecimaterToolbarWidget(QWidget *parent = 0);
+    explicit DecimaterToolbarWidget(QWidget *parent = 0);
 
   protected:
     void showEvent (QShowEvent *_event);

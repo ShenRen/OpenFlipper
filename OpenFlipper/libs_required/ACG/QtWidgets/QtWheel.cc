@@ -83,19 +83,17 @@ namespace QtWidgets {
 QtWheel::QtWheel(QWidget* _parent,
 	       const char* /* _name */ ,
 	       Orientation _orientation)
-  : QFrame(_parent)
+  : QFrame(_parent),
+    angle_(0.0),
+    lastAngle_(0.0),
+    gear_(1.0),
+    gearShift_(0),
+    orientation_(_orientation),
+    ticks_(36),
+    marker_(false),
+    dragging_(false),
+    tracking_(false)
 {
-  angle_       = 0.0;
-  lastAngle_   = 0.0;
-  gear_        = 1.0;
-  gearShift_   = 0;
-  // size_ will be set by redrawPixmap()
-
-  ticks_       = 36;
-  marker_      = false;
-  orientation_ = _orientation;
-  dragging_    = false;
-  tracking_    = true;
 
   palette_     = palette();
   palette_.setColor( QPalette::Dark,  QColor(0,0,0));
@@ -109,6 +107,7 @@ QtWheel::QtWheel(QWidget* _parent,
            this, SLOT( slotCustomContextMenuRequested ( const QPoint & ) ));
 
 }
+
 
 QtWheel::~QtWheel() {
 }

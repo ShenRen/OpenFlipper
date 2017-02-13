@@ -51,7 +51,7 @@
 
 #include "PrimitivesGenerator.hh"
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 #include "TetrahedralCuboidGenerator.hh"
 #endif
 
@@ -143,7 +143,7 @@ void PrimitivesGeneratorPlugin::initializePlugin()
                           QString("Center position,Number of control points").split(","));
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   emit setSlotDescription("addTetrahedralCube(Vector,double)",
                           tr("Generates a tetrahedral mesh of a cube (ObjectId is returned)"),
                           QString("Position,Length").split(","),
@@ -214,7 +214,7 @@ void PrimitivesGeneratorPlugin::pluginsInitialized() {
     whatsThisGen.setWhatsThis(action,tr("Create a random B-spline surface."),"B-spline surface");
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     action = primitivesMenu_->addAction("Cube (Tetrahedral Mesh)"    ,this,SLOT(addTetrahedralCube()));
     action->setIcon(QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"primitive_cube.png"));
     whatsThisGen.setWhatsThis(action,tr("Create a Tetrahedral Cube."), "Cube");
@@ -256,7 +256,7 @@ int PrimitivesGeneratorPlugin::addPolyMesh() {
 }
 
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 int PrimitivesGeneratorPlugin::addPolyhedralMesh() {
     int objectId = -1;
 
@@ -382,7 +382,7 @@ int PrimitivesGeneratorPlugin::addTriangulatedCube(const Vector& _position,const
 // Tetrahedral cube
 //========================================================================
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 
 int PrimitivesGeneratorPlugin::addTetrahedralCube(const Vector& _position, const double _length)
 {
@@ -395,7 +395,7 @@ int PrimitivesGeneratorPlugin::addTetrahedralCube(const Vector& _position, const
 // Tetrahedral Cuboid
 //========================================================================
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 
 int PrimitivesGeneratorPlugin::addTetrahedralCuboid(const Vector& _position,
         const Vector& _length, const unsigned int  n_x, const unsigned int  n_y, const unsigned int  n_z)

@@ -170,6 +170,9 @@ public:
   /// interpolation qualifier for input vertex colors: "flat", "smooth", "noperspective"
   QString vertexColorsInterpolator;
 
+  /// interpolation qualifier for vertex shader normal outputs: "flat", "smooth", "noperspective"
+  QString vertexNormalInterpolator;
+
   // color material for input vertex colors: GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_SPECULAR, GL_AMBIENT_AND_DIFFUSE
   // Usage of vertex colors in lighting function, as diffuse, emission, ambient color ..  see glColorMaterial()
   // default: GL_AMBIENT_AND_DIFFUSE
@@ -307,6 +310,9 @@ public:
     }
 
     if (shaderMods != _rhs.shaderMods)
+      return false;
+
+    if (vertexNormalInterpolator != _rhs.vertexNormalInterpolator)
       return false;
 
     if (numLights)
@@ -780,9 +786,7 @@ public:
       macro_requestTexcoord,    // mesh texture coordinate
       macro_requestVertexColor, // vertex color
       macro_requestNormalVS,    // view space normal
-      macro_requestNormalOS,    // object space normal
-
-      macro_requestRenormalize; // normal should be renormalized before using it for lighting
+      macro_requestNormalOS;    // object space normal
 
     // input / output abstraction macros
     QString macro_inputPosVS,
@@ -1173,7 +1177,7 @@ public:
   /** 
   @param _desc description-set of shader properties.
   */
-  ShaderProgGenerator(const ShaderGenDesc* _desc);
+  explicit ShaderProgGenerator(const ShaderGenDesc* _desc);
 
   /** 
   @param _desc description-set of shader properties.
@@ -1382,9 +1386,6 @@ private:
 
   /// default IO descriptor for the vertex shader
   ShaderGenerator::DefaultIODesc ioDesc_;
-
-  /// renormalize before lighting, default false,  can be activated via "#define SG_REQUEST_RENORMALIZE"
-  bool renormalizeLighting_;
 
 
   static QString shaderDir_;

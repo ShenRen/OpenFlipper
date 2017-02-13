@@ -74,7 +74,7 @@
   #include <ObjectTypes/Skeleton/Skeleton.hh>
 #endif
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
+#if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
 #include <OpenVolumeMesh/Attribs/NormalAttrib.hh>
 #endif
 
@@ -356,26 +356,26 @@ public:
     void transformSkeleton( ACG::Matrix4x4d _mat , Skeleton& _skeleton );
     #endif
 
-    #ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-    /// Transform a volume mesh with the given transformation matrix
-    template< typename VolumeMeshT >
-    void transformVolumeMesh(ACG::Matrix4x4d _mat , VolumeMeshT& _mesh , OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib );
+    #if defined(ENABLE_HEXAHEDRALMESH_SUPPORT) || defined(ENABLE_POLYHEDRALMESH_SUPPORT) || defined(ENABLE_TETRAHEDRALMESH_SUPPORT)
+      /// Transform a volume mesh with the given transformation matrix
+      template< typename VolumeMeshT >
+      void transformVolumeMesh(ACG::Matrix4x4d _mat , VolumeMeshT& _mesh , OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib );
 
-    /// Calculate center of gravity of a volume mesh
-    template< typename VolumeMeshT >
-    ACG::Vec3d cogVolumeMesh( VolumeMeshT& _mesh );
+      /// Calculate center of gravity of a volume mesh
+      template< typename VolumeMeshT >
+      ACG::Vec3d cogVolumeMesh( VolumeMeshT& _mesh );
 
-    /// get bounding box diagonal of a volume mesh
-    template< typename VolumeMeshT >
-    void getBBVolumeMesh( VolumeMeshT& _mesh, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max  );
+      /// get bounding box diagonal of a volume mesh
+      template< typename VolumeMeshT >
+      void getBBVolumeMesh( VolumeMeshT& _mesh, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max  );
 
-    /// scale volume mesh to have a boundingboxdiagonal of one
-    template< typename VolumeMeshT >
-    void unifyBBVolumeMesh(VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, Unificationtype u = MovePlugin::DIAGONAL);
+      /// scale volume mesh to have a boundingboxdiagonal of one
+      template< typename VolumeMeshT >
+      void unifyBBVolumeMesh(VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, Unificationtype u = MovePlugin::DIAGONAL);
 
-    /// Scales volume mesh such that bounding box diagonal has unit length
-    template< typename VolumeMeshT >
-    void unifyBBVolumeMesh( VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max, Unificationtype u = MovePlugin::DIAGONAL  );
+      /// Scales volume mesh such that bounding box diagonal has unit length
+      template< typename VolumeMeshT >
+      void unifyBBVolumeMesh( VolumeMeshT& _mesh, OpenVolumeMesh::NormalAttrib<VolumeMeshT>& _normalAttrib, ACG::Vec3d& _bb_min, ACG::Vec3d& _bb_max, Unificationtype u = MovePlugin::DIAGONAL  );
     #endif
 
     /** Get the Matrix of the last active Manipulator ( Identity if not found or hidden Manipulator )

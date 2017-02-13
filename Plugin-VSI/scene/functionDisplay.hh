@@ -75,7 +75,7 @@ class FunctionDisplay : public QGraphicsWidget
   public:
 
     /// Constructor
-    FunctionDisplay (GraphicsScene *_scene);
+    explicit FunctionDisplay (GraphicsScene *_scene);
 
     /// Destructor
     ~FunctionDisplay ();

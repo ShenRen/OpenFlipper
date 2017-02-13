@@ -65,7 +65,7 @@ class RestoreFromScreenshotDlg : public QDialog,
     Q_OBJECT
 
     public:
-        RestoreFromScreenshotDlg(QWidget * parent = 0) :
+        explicit RestoreFromScreenshotDlg(QWidget * parent = 0) :
                 QDialog(parent) {
             setupUi(this);
         }

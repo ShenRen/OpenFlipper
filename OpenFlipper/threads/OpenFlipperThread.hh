@@ -85,7 +85,7 @@ class DLLEXPORT OpenFlipperThread : public QThread
   Q_OBJECT
   
   public:
-    OpenFlipperThread( QString _jobId );
+    explicit OpenFlipperThread( QString _jobId );
     ~OpenFlipperThread();
     
   //===========================================================================
@@ -251,7 +251,7 @@ class DLLEXPORT OpenFlipperJob : public QObject
   Q_OBJECT
   
   public:
-    OpenFlipperJob(const QString _jobId) : jobId_(_jobId) {}
+    explicit OpenFlipperJob(const QString _jobId) : jobId_(_jobId) {}
     ~OpenFlipperJob();
   
   signals:

@@ -61,7 +61,7 @@ class InfoBar : public QWidget, public Ui::InfoBar
   Q_OBJECT
 
   public:
-    InfoBar(QWidget *parent = 0);
+    explicit InfoBar(QWidget *parent = 0);
     
     void showCounts();
     void hideCounts();

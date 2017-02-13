@@ -107,7 +107,7 @@ class prototypeVec3d : public QObject , public QScriptable
      Q_OBJECT
  
  public:
-     prototypeVec3d(QObject *parent = 0);
+     explicit prototypeVec3d(QObject *parent = 0);
 
  public slots:
      /** \brief Multiplies the given vector with the scalar

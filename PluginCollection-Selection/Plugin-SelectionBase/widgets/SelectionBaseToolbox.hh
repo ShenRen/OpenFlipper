@@ -63,6 +63,6 @@ class SelectionBaseToolboxWidget : public QWidget, public Ui::SelectionBaseToolb
   Q_OBJECT
 
   public:
-    SelectionBaseToolboxWidget(QWidget *parent = 0);
+    explicit SelectionBaseToolboxWidget(QWidget *parent = 0);
 };
 

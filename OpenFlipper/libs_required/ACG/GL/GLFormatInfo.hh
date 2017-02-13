@@ -78,7 +78,7 @@ namespace ACG {
 class ACGDLLEXPORT GLFormatInfo
 {
 public:
-  GLFormatInfo(GLenum _internalFormat);
+  explicit GLFormatInfo(GLenum _internalFormat);
 
   GLFormatInfo();
   ~GLFormatInfo();

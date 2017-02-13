@@ -97,7 +97,7 @@ void IsotropicRemesherPlugin::slotRemeshButtonClicked() {
 void IsotropicRemesherPlugin::slotRemesh(){
 
   //read one target objects
-  for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH)) ;
+  for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,DataType(DATA_TRIANGLE_MESH)) ;
                                         o_it != PluginFunctions::objectsEnd(); ++o_it)  {
 
     //check dataType
@@ -123,7 +123,7 @@ void IsotropicRemesherPlugin::threadFinished(QString /*_jobId*/) {
   
   std::cerr << "threadFinished() called" << std::endl;
   
-  for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH)) ;
+  for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::TARGET_OBJECTS,DataType(DATA_TRIANGLE_MESH)) ;
                                         o_it != PluginFunctions::objectsEnd(); ++o_it)  {
 
       emit updatedObject( o_it->id(), UPDATE_ALL );

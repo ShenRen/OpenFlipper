@@ -77,7 +77,7 @@ class SceneTools : public QGraphicsWidget
   public:
 
     /// Constructor
-    SceneTools (GraphicsScene *_scene);
+    explicit SceneTools (GraphicsScene *_scene);
 
     /// Destructor
     ~SceneTools ();

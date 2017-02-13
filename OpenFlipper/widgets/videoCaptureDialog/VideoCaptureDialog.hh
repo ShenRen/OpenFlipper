@@ -60,7 +60,7 @@ class VideoCaptureDialog : public QDialog, public Ui::VideoCaptureDialog
   Q_OBJECT
 
   public:
-    VideoCaptureDialog(QWidget *parent = 0);
+    explicit VideoCaptureDialog(QWidget *parent = 0);
 
   private slots:
     void slotStartVideoCapture();

@@ -93,7 +93,7 @@ public:
     typedef typename Handles::iterator        HandleIter;
     typedef TreeNode<SpecificTraits>          Node;
 
-    OVMOMCommonTriangleBSPTraits(const Mesh& _mesh) : SpecificTraits(_mesh) {}
+    explicit OVMOMCommonTriangleBSPTraits(const Mesh& _mesh) : SpecificTraits(_mesh) {}
 
     Scalar sqrdist(const Handle _h, const Point& _p) const
     {
@@ -195,7 +195,7 @@ public:
   typedef typename Mesh::Point        Point;
   typedef typename Mesh::FaceHandle   Handle;
   typedef typename Mesh::VertexHandle VertexHandle;
-  OMSpecificTriangleBSPTraits(const Mesh& _mesh) : mesh_(_mesh) {}
+  explicit OMSpecificTriangleBSPTraits(const Mesh& _mesh) : mesh_(_mesh) {}
 
   /// Returns the points belonging to the face handle _h
   inline void points(const Handle &_h, Point& _p0, Point& _p1, Point& _p2) const
@@ -248,7 +248,7 @@ public:
   typedef typename Mesh::PointT        Point;
   typedef OpenVolumeMesh::FaceHandle   Handle;
   typedef OpenVolumeMesh::VertexHandle VertexHandle;
-  OVMSpecificTriangleBSPTraits(const Mesh& _mesh) : mesh_(_mesh) {}
+  explicit OVMSpecificTriangleBSPTraits(const Mesh& _mesh) : mesh_(_mesh) {}
 
   /// Returns the points belonging to the face handle _h
   inline void points(const Handle &_h, Point& _p0, Point& _p1, Point& _p2) const

@@ -69,5 +69,5 @@ class StereoSettingsWidget : public QWidget, public Ui::StereoSettingsWidget
   Q_OBJECT
 
   public:
-    StereoSettingsWidget(QWidget *parent = 0);
+    explicit StereoSettingsWidget(QWidget *parent = 0);
 };

@@ -458,6 +458,7 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
     stack.push_back(ScenegraphTraversalStackEl(&_node, &_mat));
     while (!stack.empty()) {
         ScenegraphTraversalStackEl &cur = stack.back();
+        auto cur_idx = stack.size() - 1;
         ACG::SceneGraph::DrawModes::DrawMode nodeDM = cur.node->drawMode();
         if (nodeDM == ACG::SceneGraph::DrawModes::DEFAULT)
           nodeDM = _drawMode;
@@ -485,6 +486,7 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
             size_t numAddedObjects = renderObjects_.size() - renderObjectSource_.size();
             renderObjectSource_.insert(renderObjectSource_.end(), numAddedObjects, cur.node);
 
+            auto cur_mat = cur.material; // make a copy so we can avoid use-after-free on stack.push_back
             // Process children?
             if (cur.node->status() != ACG::SceneGraph::BaseNode::HideChildren) {
                 // Process all children which are second pass
@@ -494,7 +496,7 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
                   if (((*cIt)->traverseMode() &
                           ACG::SceneGraph::BaseNode::SecondPass) &&
                           (*cIt)->status() != ACG::SceneGraph::BaseNode::HideSubtree)
-                      stack.push_back(ScenegraphTraversalStackEl(*cIt, cur.material));
+                      stack.emplace_back(*cIt, cur_mat);
                 }
 
                 // Process all children which are not second pass
@@ -504,12 +506,13 @@ void IRenderer::traverseRenderableNodes( ACG::GLState* _glState, ACG::SceneGraph
                   if ((~(*cIt)->traverseMode() &
                           ACG::SceneGraph::BaseNode::SecondPass) &&
                           (*cIt)->status() != ACG::SceneGraph::BaseNode::HideSubtree)
-                      stack.push_back(ScenegraphTraversalStackEl(*cIt, cur.material));
+                      stack.emplace_back(*cIt, cur_mat);
                 }
             }
 
             // Next time process the other branch of this if statement.
-            cur.leave = true;
+            // 'cur' is now invalidated due to push_back, access via stack
+            stack[cur_idx].leave = true;
 
         } else {
             /*
@@ -810,7 +813,7 @@ void IRenderer::clearInputFbo( const ACG::Vec4f& clearColor )
 
 namespace {
 struct RenderObjectComparator {
-    RenderObjectComparator(const std::vector<ACG::RenderObject>& _vec) : vec_(_vec) {
+    explicit RenderObjectComparator(const std::vector<ACG::RenderObject>& _vec) : vec_(_vec) {
     }
 
     bool operator() (int a, int b) {

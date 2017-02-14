@@ -312,7 +312,8 @@ foreach (DATATYPE_DIR ${_data_types})
     string(TOUPPER ${TYPENAME} TYPENAME )
     list(APPEND TYPE_LIST ${TYPENAME})
 
-    set(${TYPENAME}_INCLUDE ${CMAKE_SOURCE_DIR}/${DATATYPE_DIR}/../../ )
+    # Binary is only for the ui files generated there. Maybe a better solution can be found!
+    set(${TYPENAME}_INCLUDE ${CMAKE_SOURCE_DIR}/${DATATYPE_DIR}/../../ ${CMAKE_BINARY_DIR}/${DATATYPE_DIR}/ )
  endif()
 endforeach()
 

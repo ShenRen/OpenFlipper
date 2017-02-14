@@ -56,10 +56,10 @@
 #endif
 
 
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include "Light.hh"
 
-class DLLEXPORT LightWidget : public QDialog, public Ui::LightWidgetBase
+class OBJECTTYPEDLLEXPORT LightWidget : public QDialog, public Ui::LightWidgetBase
 {
   Q_OBJECT
 

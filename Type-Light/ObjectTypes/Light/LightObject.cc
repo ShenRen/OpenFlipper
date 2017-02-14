@@ -59,7 +59,8 @@
 
 #include <OpenFlipper/common/Types.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctionsCore.hh>
+#include <OpenFlipper/BasePlugin/PluginFunctionsSceneGraphWidget.hh>
+#include <ACG/QtWidgets/QtSceneGraphWidget.hh>
 #include "LightWidget.hh"
 
 //== DEFINES ==================================================================

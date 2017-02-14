@@ -63,7 +63,7 @@
 //== INCLUDES =================================================================
 
 #include <ACG/Scenegraph/BaseNode.hh>
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 #include <ACG/GL/gl.hh>
 #include <ACG/GL/GLPrimitives.hh>
@@ -88,7 +88,7 @@ namespace SceneGraph {
 **/
 
 /// Structure to hold options for one LightSource
-class DLLEXPORT LightSource
+class OBJECTTYPEDLLEXPORT LightSource
 {
   // Declare Node as friend for direct access to memberss
   friend class LightNode;
@@ -252,7 +252,7 @@ protected:
 };
 
 
-class DLLEXPORT LightNode : public BaseNode
+class OBJECTTYPEDLLEXPORT LightNode : public BaseNode
 {
 
 public:
@@ -340,7 +340,7 @@ private:
 * stored in a map. If there is no free light source left,
 * return GL_INVALID_ENUM as light source enumerant.
 */
-class DLLEXPORT LightSourceHandle {
+class OBJECTTYPEDLLEXPORT LightSourceHandle {
   public:
     LightSourceHandle() {
       GLint maxLights;

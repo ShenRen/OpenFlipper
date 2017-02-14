@@ -75,7 +75,7 @@ namespace PluginFunctions {
 /** This functions returns the object with the given id if it is a LightObject.
  * See get_object(  int _identifier , BaseObject*& _object ) for more details.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 bool getObject(  int _identifier , LightObject*& _object );
 
 /** \brief Get a LightNode from an object.
@@ -83,7 +83,7 @@ bool getObject(  int _identifier , LightObject*& _object );
  * @param _object The object should be of type BaseDataObject. If the content is a light, a
  *                LightNode will be returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 LightNode* lightNode( BaseObjectData* _object );
 
 /** \brief Cast an BaseObject to a LightObject if possible
@@ -91,7 +91,7 @@ LightNode* lightNode( BaseObjectData* _object );
  * @param _object The object should be of type BaseDataObject. If the content is a light, a
  *                a LightObject is returned. Otherwise a NULL pointer is returned.
  */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 LightObject* lightObject( BaseObjectData* _object );
 
 /** \brief Get the lightSource in this Object
@@ -99,7 +99,7 @@ LightObject* lightObject( BaseObjectData* _object );
 * @param _object Try to get a light source from an object. If this Object is not
 *                a light source, the function will return 0
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 LightSource* lightSource( BaseObjectData* _object );
 
 /** \brief Get the lightSource in this Object
@@ -107,7 +107,7 @@ LightSource* lightSource( BaseObjectData* _object );
 * @param _object Try to get a light source from an object. If this Object is not
 *                a light source or anything else goes wrong, the function will return 0
 */
-DLLEXPORT
+OBJECTTYPEDLLEXPORT
 LightSource* lightSource( LightObject* _object );
 
 }

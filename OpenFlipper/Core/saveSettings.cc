@@ -50,7 +50,7 @@
 
 #include "Core.hh"
 
-#include <ObjectTypes/Light/Light.hh>
+//#include <ObjectTypes/Light/Light.hh>
 
 /// Save Settings (slot is called from CoreWidget's File-Menu)
 void Core::saveSettings(){
@@ -267,12 +267,15 @@ void Core::saveSettings(QString complete_name, bool is_saveObjectInfo, bool is_t
         }
       }
       
+      /* @Todo:  This is broken when Light source Object type is not available!
       // Don't save default light source objects
       LightObject* light = 0;
       PluginFunctions::getObject( o_it->id(), light );
       if(light != 0) {
           if(light->defaultLight()) continue;
       }
+
+      */
 
       // Store original file name
       originalFiles.insert(filename);

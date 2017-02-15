@@ -57,124 +57,33 @@
 //=============================================================================
 
 /**
- * \file PluginFunctions.hh
- * This file contains functions to setup the internal structures for PluginFunctions.
- * Dont Use these Functions in your Plugins!
+ * \file PluginFunctionsSceneGraphWidget.hh
+ * This file contains functions to add an additional widget to the SceneGraph Widget.
  */
 
-//
-#ifndef PLUGINFUNCTIONSCORE_HH
-#define PLUGINFUNCTIONSCORE_HH
+#pragma once
 
-#ifndef OPENFLIPPERCORE
-  #ifndef OPENFLIPPERPLUGINLIB
-    #ifdef WIN32
-      #pragma message("PluginFunctionsCore is only allowed to be used from within OpenFlippers Core application!")
-      
-    #else
-      #warning PluginFunctionsCore is only allowed to be used from within OpenFlippers Core application!
-      #error Bla
-    #endif
-  #endif
-#endif
 
 #include <OpenFlipper/common/GlobalDefines.hh>
 
-#include <OpenFlipper/widgets/glWidget/QtBaseViewer.hh>
-#include <OpenFlipper/common/ViewerProperties.hh>
-
 #include <ACG/QtWidgets/QtSceneGraphWidget.hh>
-#include <OpenFlipper/BasePlugin/PluginFunctionsSceneGraphWidget.hh>
 
 namespace PluginFunctions {
 
-//=======================================
-// Set pointers for global handling in PluginFunctions without exporting them to the Plugins
-    /** @name Setup Functions
-    * @{ */
-//=======================================
-/// Set the internal Viewer pointer ( DO NOT USE!! )
-DLLEXPORT
-void setViewers( std::vector< glViewer* > _viewerWidgets );
-
-/// Get a Viewer
-DLLEXPORT
-glViewer* viewer(int  _viewerId );
-
-/// Set the internal viewerProperties pointer ( DO NOT USE!! )
-DLLEXPORT
-void setViewerProperties( std::vector< Viewer::ViewerProperties* > _viewerProperties );
-
-/** Set the internal scenegraph root node pointer. This is the topmost
-* node of the whole scenegraph ( DO NOT USE!! )
-*/
-DLLEXPORT
-void setSceneGraphRootNode( SeparatorNode* _root_node );
-
-/** Set the internal scenegraph root node pointer for global nodes 
-*
-* This node is below the global status nodes and takes global nodes
-* at one level. ( DO NOT USE!! )
-*/
-DLLEXPORT
-void setSceneGraphRootNodeGlobal( SeparatorNode* _root_node );
-
-/// Set the internal data root node pointers ( DO NOT USE!! )
-DLLEXPORT
-void setDataSeparatorNodes( SeparatorNode* _dataRootNode );
-
-/** @} */
-
-//=======================================
-// Handle object count internally
-/** @name Internal Counters
-* @{ */
-//=======================================
-/// Decrease the number of current Object
-DLLEXPORT
-void increaseObjectCount();
-
-/// Increase the number of current Object
-DLLEXPORT
-void decreaseObjectCount();
-
-/// Decrease the number of current Object
-DLLEXPORT
-void increaseTargetCount();
-
-/// Increase the number of current Object
-DLLEXPORT
-void decreaseTargetCount();
-
-/** @} */
-
-//=======================================
-// Object container functions
-/** @name Internal object handle container
-* @{ */
-//=======================================
-
-/// Add object to internal object map
-DLLEXPORT
-void addObjectToMap(int _objectId, BaseObject* _object);
-
-/// Remove object from internal object map
-DLLEXPORT
-void removeObjectFromMap(int _objectId);
-
-/** @} */
 
 //=======================================
 // SceneGraph Generator Map
-/** @name Internal container for scenegraph widget generators
+/** @name Add scenegraph widget generators
 * @{ */
 //=======================================
 
+
+/// Add a scenegraph generator ( the handled type will be extracted from the generator)
 DLLEXPORT
-QMap< std::string ,ACG::QtWidgets::SceneGraphWidgetGenerator* > getSceneGraphGeneratorList();
+void addSceneGraphGenerator(ACG::QtWidgets::SceneGraphWidgetGenerator* _generator);
+
 
 /** @} */
 
 }
 
-#endif //PLUGINFUNCTIONSCORE_HH

@@ -65,7 +65,7 @@
 
 #include <OpenFlipper/common/RecentFiles.hh>
 
-#include <ObjectTypes/Light/Light.hh>
+//#include <ObjectTypes/Light/Light.hh>
 
 #include <OpenFlipper/ACGHelper/DrawModeConverter.hh>
 
@@ -594,12 +594,14 @@ void Core::writeIniFile(QString _filename,
           file = f->second;
       }
     
+      /* @Todo:  This is broken when Light source Object type is not available!
       // Don't save default light source objects
       LightObject* light = 0;
       PluginFunctions::getObject( o_it->id(), light );
       if(light != 0) {
           if(light->defaultLight()) continue;
       }
+      */
     
       if (QFile(file).exists()){
         // Add a section for this object
@@ -626,12 +628,15 @@ void Core::writeIniFile(QString _filename,
     // Tell plugins to save their information for the given object
     for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::ALL_OBJECTS) ;
                                           o_it != PluginFunctions::objectsEnd(); ++o_it) {
+
+      /* @Todo:  This is broken when Light source Object type is not available!
       // Don't save default light source objects
       LightObject* light = 0;
       PluginFunctions::getObject( o_it->id(), light );
       if(light != 0) {
         if(light->defaultLight()) continue;
       }
+      */
         
       emit iniSave(  ini , o_it->id() );
     }

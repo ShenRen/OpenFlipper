@@ -2,19 +2,12 @@
 #define MERGEPLUGIN_HH
 
 #include <QObject>
-#include <QtGui>
-#include <QCheckBox>
-#include <QMenuBar>
 
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/BasePlugin/ToolboxInterface.hh>
 #include <OpenFlipper/BasePlugin/LoadSaveInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 #include <OpenFlipper/BasePlugin/ScriptInterface.hh>
-#include <OpenFlipper/common/Types.hh>
-
-#include <ObjectTypes/PolyMesh/PolyMesh.hh>
-#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
 #include "MergeToolbox.hh"
 
@@ -107,9 +100,9 @@ private:
 
 };
 
-#if defined(INCLUDE_TEMPLATES) && !defined(MERGEPLUGIN_C)
-#define MERGEPLUGIN_TEMPLATES
-#include "MergePluginT.cc"
-#endif
+//#if defined(INCLUDE_TEMPLATES) && !defined(MERGEPLUGIN_C)
+//#define MERGEPLUGIN_TEMPLATES
+//#include "MergePluginT.cc"
+//#endif
 
 #endif //MERGEPLUGIN_HH

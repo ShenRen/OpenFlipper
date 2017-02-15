@@ -3,10 +3,11 @@
 
 #include "MergePlugin.hh"
 
-#include <iostream>
-
 #include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 #include <OpenFlipper/BasePlugin/RPCWrappers.hh>
+
+#include <ObjectTypes/PolyMesh/PolyMesh.hh>
+#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
 /**
  * Helper functions

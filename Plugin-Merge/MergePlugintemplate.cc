@@ -2,6 +2,9 @@
 #define MERGEPLUGIN_C
 
 #include "MergePlugin.hh"
+#include <OpenMesh/Core/Utils/Property.hh>
+#include <ObjectTypes/PolyMesh/PolyMesh.hh>
+#include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
 
 ///merges Meshes into the first mesh
 template< class MeshT >
@@ -72,3 +75,6 @@ void MergePlugin::mergeMeshes(const std::vector< MeshT* >& _meshes, typename Mes
 
   _vhB = tmp;
 }
+
+template void MergePlugin::mergeMeshes(const std::vector< PolyMesh* >& _meshes);
+template void MergePlugin::mergeMeshes(const std::vector< TriMesh* >& _meshes);

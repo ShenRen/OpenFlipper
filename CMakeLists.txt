@@ -185,12 +185,6 @@ if (NOT USE_INTERNAL_OPENMESH)
   find_package (OpenMesh REQUIRED)
 endif()
 
-find_package (OpenVolumeMesh)
-if (NOT OPENVOLUMEMESH_FOUND)
-    message (WARNING "OpenVolumeMesh not found, proceeding without it!")
-endif ()
-
-
 # ========================================================================
 # Configure the executables path for tests
 # ========================================================================
@@ -279,7 +273,6 @@ endforeach ()
 GROUP_PROJECT(OpenMeshTools libs_required)
 GROUP_PROJECT(OpenMeshCore libs_required)
 GROUP_PROJECT(ACG libs_required)
-GROUP_PROJECT(OpenVolumeMesh libs_required)
 
 if( DOXYGEN_FOUND )
 GROUP_PROJECT(doc-install Documentation)

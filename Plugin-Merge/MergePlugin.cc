@@ -1,5 +1,5 @@
 
-#include <QtGui>
+//#include <QtGui>
 
 #include "MergePlugin.hh"
 

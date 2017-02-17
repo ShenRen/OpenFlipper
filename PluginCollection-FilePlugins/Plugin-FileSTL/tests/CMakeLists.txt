@@ -2,7 +2,7 @@
 # Include Testing package
 if(BUILD_TESTING)
 
-  include( ${CMAKE_SOURCE_DIR}/tests/testGenerators.cmake )
+  include( ${CMAKE_SOURCE_DIR}/OpenFlipper/tests/testGenerators.cmake )
 
   # ========================================================================
   # ========================================================================

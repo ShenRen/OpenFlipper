@@ -72,7 +72,7 @@ class NonManifoldVertexFixingT {
 
 public:
 
-  NonManifoldVertexFixingT(MeshT& _mesh );
+  explicit NonManifoldVertexFixingT(MeshT& _mesh );
 
   void fix();
 

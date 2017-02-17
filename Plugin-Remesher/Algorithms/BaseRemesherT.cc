@@ -83,7 +83,7 @@ namespace Remeshing {
 template <class Mesh>
 BaseRemesherT<Mesh>::
 BaseRemesherT(Mesh& _mesh, ProgressEmitter* _progress)
-  : mesh_(_mesh), refmesh_(0), bsp_(0), progress_(_progress) {
+  : mesh_(_mesh), refmesh_(0), bsp_(0), nothing_selected_(true),progress_(_progress) {
 
 }
 

@@ -121,16 +121,16 @@ void FileOpenVolumeMeshPlugin::loadMesh(const char* _filename, MeshT& _mesh, boo
         for (int f = 0; f < nf; ++f) {
             int nfv;
             iff >> nfv;
-            std::vector<OpenVolumeMesh::VertexHandle> vids;
+            std::vector<OpenVolumeMesh::VertexHandle> vhs;
             for (int v = 0; v < nfv; ++v) {
                 int i;
                 iff >> i;
-                vids.push_back(i);
+                vhs.push_back(OpenVolumeMesh::VertexHandle(i));
             }
             int pos_cell, neg_cell;
             iff >> pos_cell;
             iff >> neg_cell;
-            _mesh.add_face(vids);
+            _mesh.add_face(vhs);
         }
     } else {
 
@@ -144,7 +144,7 @@ void FileOpenVolumeMeshPlugin::loadMesh(const char* _filename, MeshT& _mesh, boo
             for (int he = 0; he < nfhe; ++he) {
                 int i;
                 iff >> i;
-                hes.push_back(i);
+                hes.push_back(OpenVolumeMesh::HalfEdgeHandle(i));
             }
 
             _mesh.add_face(hes, _topCheck);
@@ -168,23 +168,23 @@ void FileOpenVolumeMeshPlugin::loadMesh(const char* _filename, MeshT& _mesh, boo
 
             int ncf;
             iff >> ncf;
-            std::vector< int > faceids;
+            std::vector< OpenVolumeMesh::FaceHandle > faces;
 
             for( int f = 0; f < ncf; ++f) {
 
                 int fidx;
                 iff >> fidx;
-                faceids.push_back(fidx);
+                faces.push_back(OpenVolumeMesh::FaceHandle(fidx));
             }
 
             // Get right halffaces
             // First determine the barycenter of the polyhedron
             ACG::Vec3d c(0.0, 0.0, 0.0);
-            unsigned int num_faces = faceids.size();
-            for(std::vector<int>::const_iterator it = faceids.begin();
-                    it != faceids.end(); ++it) {
+            unsigned int num_faces = faces.size();
+            for(auto fh : faces)
+            {
 
-                std::vector<OpenVolumeMesh::HalfEdgeHandle> hes = _mesh.face(*it).halfedges();
+                std::vector<OpenVolumeMesh::HalfEdgeHandle> hes = _mesh.face(fh).halfedges();
                 unsigned int val = hes.size();
                 ACG::Vec3d f_mid(0.0, 0.0, 0.0);
                 for(std::vector<OpenVolumeMesh::HalfEdgeHandle>::const_iterator p_it = hes.begin();
@@ -197,11 +197,11 @@ void FileOpenVolumeMeshPlugin::loadMesh(const char* _filename, MeshT& _mesh, boo
             // Now determine all halffaces
             // Test whether their normals point into the polyhedron
             std::vector<OpenVolumeMesh::HalfFaceHandle> hfhandles;
-            for(std::vector<int>::const_iterator it = faceids.begin();
-                    it != faceids.end(); ++it) {
+            for(auto fh : faces)
+            {
 
                 // Get face's mid-point
-                std::vector<OpenVolumeMesh::HalfEdgeHandle> hes = _mesh.face(*it).halfedges();
+                std::vector<OpenVolumeMesh::HalfEdgeHandle> hes = _mesh.face(fh).halfedges();
                 unsigned int val = hes.size();
                 ACG::Vec3d f_mid(0.0, 0.0, 0.0);
                 for(std::vector<OpenVolumeMesh::HalfEdgeHandle>::const_iterator p_it = hes.begin();
@@ -217,8 +217,8 @@ void FileOpenVolumeMeshPlugin::loadMesh(const char* _filename, MeshT& _mesh, boo
                 ACG::Vec3d n = (p0 - p1) % (p2 - p1);
                 n.normalize();
 
-                if(((c - f_mid) | n) >= 0.0) hfhandles.push_back(_mesh.halfface_handle(*it, 0));
-                else hfhandles.push_back(_mesh.halfface_handle(*it, 1));
+                if(((c - f_mid) | n) >= 0.0) hfhandles.push_back(_mesh.halfface_handle(fh, 0));
+                else hfhandles.push_back(_mesh.halfface_handle(fh, 1));
             }
 
             if(hfhandles.size() > 3) {
@@ -248,7 +248,7 @@ void FileOpenVolumeMeshPlugin::loadMesh(const char* _filename, MeshT& _mesh, boo
             for (int hf = 0; hf < nhf; ++hf) {
                 int i;
                 iff >> i;
-                hfs.push_back(i);
+                hfs.push_back(OpenVolumeMesh::HalfFaceHandle(i));
             }
 
             // Implement hex mesh shit

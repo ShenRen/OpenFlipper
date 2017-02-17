@@ -61,6 +61,6 @@ class ColorOptions : public QWidget, public Ui::colorOptions
   Q_OBJECT
 
   public:
-    ColorOptions(QWidget *parent = 0);
+    explicit ColorOptions(QWidget *parent = 0);
 };
 

@@ -47,7 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
 
 #define OVM_PROPERTY_VISUALIZER_BOOLEAN_CC
 
@@ -204,4 +203,3 @@ QString OVMPropertyVisualizerBoolean<MeshT>::getPropertyText(unsigned int index)
     return OVMPropertyVisualizer<MeshT>::template getPropertyText_<bool>(index);
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

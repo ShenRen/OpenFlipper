@@ -77,7 +77,7 @@ class Context {
 
   public:
     /// Constructor
-    Context (QScriptEngine *_engine);
+    explicit Context (QScriptEngine *_engine);
 
     /// Destructor
     ~Context ();

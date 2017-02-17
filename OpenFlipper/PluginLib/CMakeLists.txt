@@ -33,10 +33,10 @@ file (
       "${CMAKE_SOURCE_DIR}/Package-*"
 )
 
-
 include_directories (
   ..
   ${PACKAGE_DIRS}
+  ${ACG_INCLUDE_DIR}
   ${OPENMESH_INCLUDE_DIRS}
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}

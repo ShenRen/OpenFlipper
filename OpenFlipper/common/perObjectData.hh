@@ -111,7 +111,7 @@ class DLLEXPORT _CLASS : public PerObjectData {                              \
                                                                              \
   public:                                                                    \
     inline _CLASS()                 : data_( 0) { }                          \
-    inline _CLASS(const _VALUE& _x) : data_(_x) { }                          \
+    inline explicit _CLASS(const _VALUE& _x) : data_(_x) { }                 \
     inline virtual ~_CLASS() { }                                             \
     inline virtual _CLASS* copyPerObjectData() { return new _CLASS(data_); } \
     inline       _VALUE& data()       { return data_; }                      \

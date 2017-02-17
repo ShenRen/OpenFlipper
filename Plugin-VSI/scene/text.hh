@@ -78,7 +78,7 @@ class Text : public QObject, public QGraphicsSimpleTextItem, public QGraphicsLay
   public:
 
     /// Constructor
-    Text (QGraphicsItem *_parent = 0);
+    explicit Text (QGraphicsItem *_parent = 0);
     Text (const QString &_text, QGraphicsItem *_parent = 0);
 
     /// Destrucotr

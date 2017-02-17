@@ -47,17 +47,15 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #define OVM_PROPERTY_VISUALIZER_CC
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
 #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 
@@ -179,7 +177,7 @@ unsigned int OVMPropertyVisualizer<MeshT>::getClosestHalffaceId(unsigned int _fa
 template <typename MeshT>
 unsigned int OVMPropertyVisualizer<MeshT>::getClosestHalfedgeId(unsigned int _face, ACG::Vec3d& _hitPoint)
 {
-    unsigned int halfface = getClosestHalffaceId(_face, _hitPoint);
+    OpenVolumeMesh::HalfFaceHandle halfface = OpenVolumeMesh::HalfFaceHandle(getClosestHalffaceId(_face, _hitPoint));
 
     OpenVolumeMesh::OpenVolumeMeshFace face = mesh->halfface(halfface);
 
@@ -451,4 +449,3 @@ void OVMPropertyVisualizer<MeshT>::showHistogram(ACG::QtWidgets::QtHistogramWidg
     }
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

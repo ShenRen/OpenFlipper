@@ -47,8 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #define OVM_PROPERTY_VISUALIZER_DOUBLE_CC
 
 #include "OVMPropertyVisualizerDouble.hh"
@@ -273,4 +271,3 @@ std::unique_ptr<ACG::IColorCoder> OVMPropertyVisualizerDouble<MeshT>::buildColor
     return doubleWidget->buildColorCoder();
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

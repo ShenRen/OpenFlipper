@@ -1,16 +1,24 @@
 gcc-c++11-Qt5:
-  script: "CI/ci-linux.sh gcc C++11 QT5"
+  variables:     
+    COMPILER:       "gcc"     
+    LANGUAGE:       "C++11"     
+    QTVERSION:      "QT5"     
+  script: "OpenFlipper/CI/ci-linux.sh"
   tags:
     - Linux
 
 clang-c++11-Qt5:
-  script: "CI/ci-linux.sh clang C++11 QT5"
+  variables:
+    COMPILER:       "clang"     
+    LANGUAGE:       "C++11"   
+    QTVERSION:      "QT5"     
+  script: "OpenFlipper/CI/ci-linux.sh"
   tags:
     - Linux
     - MultiThreads
 
 cppcheck:
-  script: "CI/ci-cppcheck.sh"
+  script: "OpenFlipper/CI/ci-cppcheck.sh"
   tags:
     - Linux
     - MultiThreads
@@ -19,7 +27,7 @@ cppcheck:
       - cppcheck.log
 
 VS2015-Qt-5.6.0-x64:
-  script: "CI\\VS2015-Qt-5.6.0-x64.bat"
+  script: "OpenFlipper\\CI\\VS2015-Qt-5.6.0-x64.bat"
   tags: 
     - VS2015
     - Qt56
@@ -28,7 +36,7 @@ VS2015-Qt-5.6.0-x64:
       - rel/*.exe
 
 VS2015-Qt-5.6.0-x32:
-  script: "CI\\VS2015-Qt-5.6.0-x32.bat"
+  script: "OpenFlipper\\CI\\VS2015-Qt-5.6.0-x32.bat"
   tags: 
     - VS2015
     - Qt56
@@ -38,7 +46,7 @@ VS2015-Qt-5.6.0-x32:
 
 
 VS2013-Qt-5.5.1-x64:
-  script: "CI\\VS2013-Qt-5.5.1-x64.bat"
+  script: "OpenFlipper\\CI\\VS2013-Qt-5.5.1-x64.bat"
   tags:
     - VS2013
     - Qt551
@@ -47,12 +55,24 @@ VS2013-Qt-5.5.1-x64:
       - rel/*.exe
 
 Mac-Cpp11:
-  script: "CI/ci-mac.sh"
-  cache:
-    paths:
-      - build-release/
+  script: "OpenFlipper/CI/ci-mac.sh"
   tags:
     - Apple
   artifacts:
     paths:
       - build-release/*.dmg
+
+Doc-publish:
+  only:
+     - master
+  script: "OpenFlipper/CI/ci-doc.sh"
+  tags:
+     - Linux
+  artifacts:
+    paths:
+       - build-release/Doxygen-warning.log 
+       - build-release/Doxygen-error.log
+
+
+
+

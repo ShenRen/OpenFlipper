@@ -83,7 +83,7 @@ class SideArea : public QWidget {
     /** Create a SideElement
       \param _parent Parent widget
     */
-    SideArea (QWidget *_parent = 0);
+    explicit SideArea (QWidget *_parent = 0);
 
     /** Adds a plugin tool widget
       \param _plugin plugin corresponding to the widget

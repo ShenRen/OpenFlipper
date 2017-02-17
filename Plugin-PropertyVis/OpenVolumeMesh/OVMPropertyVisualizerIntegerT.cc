@@ -47,8 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #define OVM_PROPERTY_VISUALIZER_ITEGER_CC
 
 #include "OVMPropertyVisualizerInteger.hh"
@@ -271,4 +269,3 @@ std::unique_ptr<ACG::IColorCoder> OVMPropertyVisualizerInteger<MeshT, T>::buildC
     return integerWidget->buildColorCoder();
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

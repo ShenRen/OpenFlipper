@@ -683,7 +683,7 @@ class GuiUpdatingScopeGuard
 {
   bool& v_;
 public:
-  GuiUpdatingScopeGuard(bool &_in):v_(_in){v_ = true;}
+  explicit GuiUpdatingScopeGuard(bool &_in):v_(_in){v_ = true;}
   ~GuiUpdatingScopeGuard(){v_ = false;}
 };
 

@@ -76,7 +76,7 @@ class BoundarySnappingT {
 
 public:
 
-  BoundarySnappingT(MeshT& _mesh );
+  explicit BoundarySnappingT(MeshT& _mesh );
 
   /** \brief snaps boundary vertices
    *

@@ -127,7 +127,7 @@ class SideElement : public QWidget
     class TopArea : public QWidget
     {
       public:
-        TopArea (SideElement *_e);
+        explicit TopArea (SideElement *_e);
 
         virtual void mousePressEvent (QMouseEvent *_event);
       private:

@@ -59,7 +59,7 @@ class QClickableLabel : public QLabel
     void mouseButtonReleaseEvent(QPoint _p);
 
   public:
-    QClickableLabel(QWidget *_parent = 0);
+    explicit QClickableLabel(QWidget *_parent = 0);
 
   protected :
     void mouseMoveEvent ( QMouseEvent * _event);

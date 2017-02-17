@@ -70,7 +70,7 @@ class InOut {
   public:
 
     /// Constructor
-    InOut (Element *_e);
+    explicit InOut (Element *_e);
 
     /// Name
     const QString &name () const { return name_; };

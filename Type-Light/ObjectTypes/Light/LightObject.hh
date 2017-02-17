@@ -67,7 +67,7 @@
 //== INCLUDES =================================================================
 
 #include <OpenFlipper/common/BaseObjectData.hh>       
-#include <OpenFlipper/common/GlobalDefines.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 
 #include "LightTypes.hh"
 
@@ -75,7 +75,7 @@
 
 // //== CLASS DEFINITION =========================================================
 
-class DLLEXPORT LightObject : public BaseObjectData {
+class OBJECTTYPEDLLEXPORT LightObject : public BaseObjectData {
 
   friend class TypeLightPlugin;
   friend class LightWidget;

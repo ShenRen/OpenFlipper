@@ -516,21 +516,21 @@ int FileVTKPlugin::addTetraCellToOpenVolumeMesh(MeshT _mesh, std::vector<quint32
 
     std::vector< std::vector<OpenVolumeMesh::VertexHandle> > faces;
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[0].push_back(_indices[0]);
-    faces[0].push_back(_indices[1]);
-    faces[0].push_back(_indices[2]);
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[1].push_back(_indices[0]);
-    faces[1].push_back(_indices[3]);
-    faces[1].push_back(_indices[1]);
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[2].push_back(_indices[1]);
-    faces[2].push_back(_indices[3]);
-    faces[2].push_back(_indices[2]);
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[3].push_back(_indices[0]);
-    faces[3].push_back(_indices[2]);
-    faces[3].push_back(_indices[3]);
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
 
     std::vector<OpenVolumeMesh::HalfFaceHandle> halffacehandles;
     for (unsigned int i = 0; i < faces.size(); i++)
@@ -556,35 +556,35 @@ int FileVTKPlugin::addHexaCellToOpenVolumeMesh(MeshT _mesh, std::vector<quint32>
 
     std::vector< std::vector<OpenVolumeMesh::VertexHandle> > faces;
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[0].push_back(_indices[0]);
-    faces[0].push_back(_indices[1]);
-    faces[0].push_back(_indices[2]);
-    faces[0].push_back(_indices[3]);
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[1].push_back(_indices[0]);
-    faces[1].push_back(_indices[4]);
-    faces[1].push_back(_indices[5]);
-    faces[1].push_back(_indices[1]);
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[5]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[2].push_back(_indices[0]);
-    faces[2].push_back(_indices[3]);
-    faces[2].push_back(_indices[7]);
-    faces[2].push_back(_indices[4]);
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[7]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[3].push_back(_indices[1]);
-    faces[3].push_back(_indices[5]);
-    faces[3].push_back(_indices[6]);
-    faces[3].push_back(_indices[2]);
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[5]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[6]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[4].push_back(_indices[2]);
-    faces[4].push_back(_indices[6]);
-    faces[4].push_back(_indices[7]);
-    faces[4].push_back(_indices[3]);
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[6]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[7]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[5].push_back(_indices[4]);
-    faces[5].push_back(_indices[7]);
-    faces[5].push_back(_indices[6]);
-    faces[5].push_back(_indices[5]);
+    faces[5].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
+    faces[5].push_back(OpenVolumeMesh::VertexHandle(_indices[7]));
+    faces[5].push_back(OpenVolumeMesh::VertexHandle(_indices[6]));
+    faces[5].push_back(OpenVolumeMesh::VertexHandle(_indices[5]));
 
     std::vector<OpenVolumeMesh::HalfFaceHandle> halffacehandles;
     for (unsigned int i = 0; i < faces.size(); i++)
@@ -609,28 +609,28 @@ int FileVTKPlugin::addWedgeCellToOpenVolumeMesh(MeshT _mesh, std::vector<quint32
 
     std::vector< std::vector<OpenVolumeMesh::VertexHandle> > faces;
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[0].push_back(_indices[0]);
-    faces[0].push_back(_indices[1]);
-    faces[0].push_back(_indices[4]);
-    faces[0].push_back(_indices[3]);
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[1].push_back(_indices[0]);
-    faces[1].push_back(_indices[2]);
-    faces[1].push_back(_indices[1]);
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[2].push_back(_indices[3]);
-    faces[2].push_back(_indices[4]);
-    faces[2].push_back(_indices[5]);
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[5]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[3].push_back(_indices[0]);
-    faces[3].push_back(_indices[3]);
-    faces[3].push_back(_indices[5]);
-    faces[3].push_back(_indices[2]);
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[5]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[4].push_back(_indices[1]);
-    faces[4].push_back(_indices[2]);
-    faces[4].push_back(_indices[5]);
-    faces[4].push_back(_indices[4]);
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[5]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
 
     std::vector<OpenVolumeMesh::HalfFaceHandle> halffacehandles;
     for (unsigned int i = 0; i < faces.size(); i++)
@@ -655,26 +655,26 @@ int FileVTKPlugin::addPyramidCellToOpenVolumeMesh(MeshT _mesh, std::vector<quint
 
     std::vector< std::vector<OpenVolumeMesh::VertexHandle> > faces;
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[0].push_back(_indices[0]);
-    faces[0].push_back(_indices[1]);
-    faces[0].push_back(_indices[2]);
-    faces[0].push_back(_indices[3]);
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
+    faces[0].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[1].push_back(_indices[0]);
-    faces[1].push_back(_indices[4]);
-    faces[1].push_back(_indices[1]);
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
+    faces[1].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[2].push_back(_indices[0]);
-    faces[2].push_back(_indices[3]);
-    faces[2].push_back(_indices[4]);
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[0]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
+    faces[2].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[3].push_back(_indices[2]);
-    faces[3].push_back(_indices[4]);
-    faces[3].push_back(_indices[3]);
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
+    faces[3].push_back(OpenVolumeMesh::VertexHandle(_indices[3]));
     faces.push_back(std::vector<OpenVolumeMesh::VertexHandle>());
-    faces[4].push_back(_indices[1]);
-    faces[4].push_back(_indices[4]);
-    faces[4].push_back(_indices[2]);
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[1]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[4]));
+    faces[4].push_back(OpenVolumeMesh::VertexHandle(_indices[2]));
 
     std::vector<OpenVolumeMesh::HalfFaceHandle> halffacehandles;
     for (unsigned int i = 0; i < faces.size(); i++)
@@ -706,7 +706,7 @@ int FileVTKPlugin::addFaceToOpenVolumeMesh(MeshT*& _mesh, std::vector<quint32> _
     halffacehandle = _mesh->halfface(face);
     if (halffacehandle == -1) // face didn't exist
     {
-        OpenVolumeMesh::FaceHandle fh = _mesh->add_face(face).idx();
+        OpenVolumeMesh::FaceHandle fh = _mesh->add_face(face);
         halffacehandle = _mesh->halfface_handle(fh, 0);
     }
     return halffacehandle.idx();
@@ -724,7 +724,7 @@ int FileVTKPlugin::addFaceToOpenVolumeMesh(MeshT*& _mesh, quint32 _index1, quint
     halffacehandle = _mesh->halfface(face);
     if (halffacehandle == -1) // face didn't exist
     {
-        OpenVolumeMesh::FaceHandle fh = _mesh->add_face(face).idx();
+        OpenVolumeMesh::FaceHandle fh = _mesh->add_face(face);
         halffacehandle = _mesh->halfface_handle(fh, 0);
     }
     return halffacehandle.idx();
@@ -745,9 +745,9 @@ void FileVTKPlugin::addFaceNormalToOpenVolumeMesh(MeshT _mesh, quint32 _index, O
     OpenVolumeMesh::HalfFaceHandle hfh = OpenVolumeMesh::HalfFaceHandle(_index);
     OpenVolumeMesh::FaceHandle      fh = _mesh->face_handle(hfh);
     if (hfh == _mesh->halfface_handle(fh, 0))
-        faceNormals[_mesh->face_handle(_index)] = _normal;
+        faceNormals[fh] = _normal;
     else
-        faceNormals[_mesh->face_handle(_index)] = -_normal;
+        faceNormals[fh] = -_normal;
 
 }
 
@@ -1595,7 +1595,8 @@ int FileVTKPlugin::loadObject(QString _filename) {
     return -1;
   }
 
-  BaseObject* baseObj = 0;
+  BaseObjectData* baseObj = 0;
+  bool is_OpenVolumeMesh = false;
 
   if ( (forceTriangleMesh_) || (bestType == BMT_TriMesh) ){
 
@@ -1660,6 +1661,7 @@ int FileVTKPlugin::loadObject(QString _filename) {
   else if (bestType == BMT_PolyhedralMesh)
   {
     // add a Polyhedral mesh
+    is_OpenVolumeMesh = true;
     int id = -1;
     emit addEmptyObject(DATA_POLYHEDRAL_MESH, id);
 
@@ -1689,6 +1691,7 @@ int FileVTKPlugin::loadObject(QString _filename) {
   else if (bestType == BMT_HexahedralMesh)
   {
     // add a hexahedral mesh
+    is_OpenVolumeMesh = true;
     int id = -1;
     emit addEmptyObject(DATA_HEXAHEDRAL_MESH, id);
 
@@ -1717,6 +1720,7 @@ int FileVTKPlugin::loadObject(QString _filename) {
   else if (bestType == BMT_TetrahedralMesh)
   {
     // add a tetrahedral mesh
+    is_OpenVolumeMesh = true;
     int id = -1;
     emit addEmptyObject(DATA_TETRAHEDRAL_MESH, id);
 
@@ -1747,6 +1751,11 @@ int FileVTKPlugin::loadObject(QString _filename) {
     baseObj->setFromFileName(_filename);
     baseObj->setName(baseObj->filename());
 
+    if (is_OpenVolumeMesh)
+    {
+      // Go into solid flat shaded mode
+      baseObj->setObjectDrawMode(ACG::SceneGraph::DrawModes::getDrawMode("Cells (flat shaded)"));
+    }
 
     emit updatedObject(baseObj->id(), UPDATE_ALL);
 

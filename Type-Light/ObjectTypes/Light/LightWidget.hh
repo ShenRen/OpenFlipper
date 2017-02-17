@@ -46,70 +46,64 @@
 *   $Date$                     *
 *                                                                            *
 \*===========================================================================*/
+#include <ObjectTypes/Light/LightNode.hh>
+
+#include <ui_lightWidget.hh>
+#if QT_VERSION >= 0x050000 
+  #include <QtWidgets>
+#else
+  #include <QtGui>
+#endif
 
 
-
-
-//=============================================================================
-//
-//  Standard Functions
-//
-//=============================================================================
-
-/**
- * \file PluginFunctionsLight.hh
- * This file contains functions which can be used by plugins to access lights in the framework.
- */
-
-//
-#ifndef PLUGINFUNCTIONSLIGHT_HH
-#define PLUGINFUNCTIONSLIGHT_HH
-
-#include <OpenFlipper/common/Types.hh>
+#include <OpenFlipper/common/ObjectTypeDLLDefines.hh>
 #include "Light.hh"
 
+class OBJECTTYPEDLLEXPORT LightWidget : public QDialog, public Ui::LightWidgetBase
+{
+  Q_OBJECT
 
-/** The Namespace PluginFunctions contains functions for all plugins. */
-namespace PluginFunctions {
+  public:
+    LightWidget( ACG::SceneGraph::BaseNode* _node, QWidget *parent = 0);
+    
+  private slots:
+    /// The directional checkbox changed -> update object
+    void directionalToggled();
+    
+    /// The fixed position checkbox
+    void fixedPositionChanged();
+    
+    /// Color values have changed
+    void ambientChanged();
+    void diffuseChanged();
+    void specularChanged();
+    
+    /// Brightness value has changed
+    void brightnessChanged(int _newValue);
+    
+    /// Light radius has changed
+    void radiusChanged();
+    
+    /// Spot direction changed
+    void spotChanged();
+    
+  protected:
+    /// Initialize contents of widget before showing it
+    virtual void showEvent ( QShowEvent * event );
+    
+  private:
+    /// Initializes the internal object. Returns true if successfull
+    bool getObject();
+    
+    /// Called when the object has been updated
+    void updated();
+  
+  private:
+    ACG::SceneGraph::LightNode* node_;
+    
+    LightObject* object_;
+    LightSource* light_;
+    
+    bool updatingWidgets_;
+};
 
-/** This functions returns the object with the given id if it is a LightObject.
- * See get_object(  int _identifier , BaseObject*& _object ) for more details.
- */
-DLLEXPORT
-bool getObject(  int _identifier , LightObject*& _object );
-
-/** \brief Get a LightNode from an object.
- *
- * @param _object The object should be of type BaseDataObject. If the content is a light, a
- *                LightNode will be returned. Otherwise a NULL pointer is returned.
- */
-DLLEXPORT
-LightNode* lightNode( BaseObjectData* _object );
-
-/** \brief Cast an BaseObject to a LightObject if possible
- *
- * @param _object The object should be of type BaseDataObject. If the content is a light, a
- *                a LightObject is returned. Otherwise a NULL pointer is returned.
- */
-DLLEXPORT
-LightObject* lightObject( BaseObjectData* _object );
-
-/** \brief Get the lightSource in this Object
-*
-* @param _object Try to get a light source from an object. If this Object is not
-*                a light source, the function will return 0
-*/
-DLLEXPORT
-LightSource* lightSource( BaseObjectData* _object );
-
-/** \brief Get the lightSource in this Object
-*
-* @param _object Try to get a light source from an object. If this Object is not
-*                a light source or anything else goes wrong, the function will return 0
-*/
-DLLEXPORT
-LightSource* lightSource( LightObject* _object );
-
-}
-
-#endif // PLUGINFUNCTIONSLIGHT_HH

@@ -744,6 +744,30 @@ void CoreWidget::showAboutWidget( ) {
     aboutWidget_->OpenFlipperAbout->append( "\t\t Save: " + supportedTypes()[i].saveFilters );
   }
 
+  // =====================================================================================
+  // List of build-in resources
+  // =====================================================================================
+  aboutWidget_->OpenFlipperAbout->append("\n");
+
+  QDir toplevelResources(":/");
+
+  for ( auto str : toplevelResources.entryList() ) {
+    aboutWidget_->OpenFlipperAbout->append(" Namespace : " + str);
+
+    QDir firstLevel(":/" + str);
+    for ( auto firstLevelStr : firstLevel.entryList() ) {
+      aboutWidget_->OpenFlipperAbout->append(" \t" + firstLevelStr);
+
+      QDir secondLevel(":/" + str + "/" + firstLevelStr);
+
+      for ( auto secondLevelStr : secondLevel.entryList() ) {
+        aboutWidget_->OpenFlipperAbout->append(" \t\t" + secondLevelStr);
+      }
+
+    }
+
+    aboutWidget_->OpenFlipperAbout->append("\n");
+  }
 
   aboutWidget_->show();
 

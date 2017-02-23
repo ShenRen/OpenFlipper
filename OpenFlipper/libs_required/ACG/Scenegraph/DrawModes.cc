@@ -208,7 +208,7 @@ DrawMode::DrawMode() {
   layers_[0] = DrawModeProperties();
 }
     
-DrawMode::DrawMode(ModeFlagSet _flags) :
+DrawMode::DrawMode(const ModeFlagSet& _flags) :
         modeFlags_(_flags)
 {
   layers_.resize(1);
@@ -523,7 +523,7 @@ bool DrawMode::isAtomic() const {
 //----------------------------------------------------------------------------
  
 bool
-DrawMode::containsAtomicDrawMode( DrawMode _atomicDrawMode) const
+DrawMode::containsAtomicDrawMode( const DrawMode& _atomicDrawMode) const
 {
   return (*this) & _atomicDrawMode;
 }

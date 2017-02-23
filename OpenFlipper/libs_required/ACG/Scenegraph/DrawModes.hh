@@ -316,7 +316,7 @@ namespace DrawModes {
       *
       * @param _flags Flags for the new drawmode defined by a bitset
       */      
-      DrawMode( ModeFlagSet _flags );
+      DrawMode( const ModeFlagSet& _flags );
 
       /* \brief Returns a registered draw mode based on the description passed or if none could be found the default one.
        *
@@ -440,7 +440,7 @@ namespace DrawModes {
       
       /** \brief Check whether an Atomic DrawMode is active in this draw Mode
       */ 
-      bool containsAtomicDrawMode( DrawMode _atomicDrawMode ) const;
+      bool containsAtomicDrawMode( const DrawMode& _atomicDrawMode ) const;
       
       /** \brief Separates this drawMode into a list of all separate atomic draw modes
       *

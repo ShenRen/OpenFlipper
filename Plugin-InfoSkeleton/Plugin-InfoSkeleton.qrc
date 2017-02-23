@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="info" >
+  <qresource prefix="Plugin-InfoSkeleton" >
     <file>dialogIcons/info_boundingbox.png</file>
     <file>dialogIcons/info_bracketA.png</file>
     <file>dialogIcons/info_bracketB.png</file>

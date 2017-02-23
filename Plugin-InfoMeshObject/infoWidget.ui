@@ -140,7 +140,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketA.png</pixmap>
+               <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketA.png</pixmap>
               </property>
              </widget>
             </item>
@@ -193,7 +193,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketB.png</pixmap>
+               <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketB.png</pixmap>
               </property>
              </widget>
             </item>
@@ -233,7 +233,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketA.png</pixmap>
+               <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketA.png</pixmap>
               </property>
              </widget>
             </item>
@@ -286,7 +286,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketB.png</pixmap>
+               <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketB.png</pixmap>
               </property>
              </widget>
             </item>
@@ -448,7 +448,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketA.png</pixmap>
+               <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketA.png</pixmap>
               </property>
              </widget>
             </item>
@@ -501,7 +501,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketB.png</pixmap>
+               <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketB.png</pixmap>
               </property>
              </widget>
             </item>
@@ -628,7 +628,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_vertices.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_vertices.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -668,7 +668,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_edges.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_edges.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -708,7 +708,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_faces.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_faces.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -748,7 +748,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_boundaries.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_boundaries.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -788,7 +788,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_components.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_components.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -828,7 +828,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_genus.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_genus.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -910,7 +910,7 @@
                       <string/>
                      </property>
                      <property name="pixmap">
-                      <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketA.png</pixmap>
+                      <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketA.png</pixmap>
                      </property>
                     </widget>
                    </item>
@@ -963,7 +963,7 @@
                       <string/>
                      </property>
                      <property name="pixmap">
-                      <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketB.png</pixmap>
+                      <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketB.png</pixmap>
                      </property>
                     </widget>
                    </item>
@@ -1009,7 +1009,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_boundingbox.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_boundingbox.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1072,7 +1072,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketA.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketA.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1125,7 +1125,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketB.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketB.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1158,7 +1158,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketA.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketA.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1211,7 +1211,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketB.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketB.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1268,7 +1268,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketA.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketA.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1321,7 +1321,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_bracketB.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_bracketB.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1427,7 +1427,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_valence.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_valence.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1562,7 +1562,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_edge.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_edge.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1628,7 +1628,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_aspect.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_aspect.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1694,7 +1694,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_angle.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_angle.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1760,7 +1760,7 @@
                   <string/>
                  </property>
                  <property name="pixmap">
-                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/info/dialogIcons/info_dihedral.png</pixmap>
+                  <pixmap resource="Plugin-InfoMeshObject.qrc">:/Plugin-InfoMeshObject/dialogIcons/info_dihedral.png</pixmap>
                  </property>
                 </widget>
                </item>
@@ -1853,7 +1853,7 @@
  </widget>
  <resources>
   <include location="Plugin-InfoMeshObject.qrc"/>
-  <include location="icons.qrc"/>
+  <include location="Plugin-InfoMeshObject.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -747,12 +747,15 @@ void CoreWidget::showAboutWidget( ) {
   // =====================================================================================
   // List of build-in resources
   // =====================================================================================
+
   aboutWidget_->OpenFlipperAbout->append("\n");
+  aboutWidget_->OpenFlipperAbout->setCurrentFont(boldFont);
+  aboutWidget_->OpenFlipperAbout->append(tr("Currently loaded Resources (e.g. by qrc files):"));
+  aboutWidget_->OpenFlipperAbout->setCurrentFont(standardFont);
 
   QDir toplevelResources(":/");
-
   for ( auto str : toplevelResources.entryList() ) {
-    aboutWidget_->OpenFlipperAbout->append(" Namespace : " + str);
+    aboutWidget_->OpenFlipperAbout->append(str);
 
     QDir firstLevel(":/" + str);
     for ( auto firstLevelStr : firstLevel.entryList() ) {

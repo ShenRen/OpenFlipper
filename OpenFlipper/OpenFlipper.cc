@@ -408,7 +408,7 @@ CommandLineParseResult parseCommandLine(QCommandLineParser &parser, QString *err
   }
 
   if (parser.isSet("remote-port")) {
-    const QString port = parser.value("portnumber");
+    const QString port = parser.value("remote-port");
     std::cerr << "Got port option : " << port.toStdString() << std::endl;
     OpenFlipper::Options::remoteControl(port.toInt());
 

@@ -60,7 +60,8 @@
 // stdc++
 #include <csignal>
 #include <regex>
-#include <OpenFlipper/SimpleOpt/SimpleOpt.h>
+
+#include <QCommandLineParser>
 
 #if ( defined(WIN32))
   #define NO_EXECINFO
@@ -287,145 +288,133 @@ void segfaultHandling (int) {
   std::abort();
 }
 
-enum {OPT_HELP , OPT_STEREO, OPT_BATCH ,OPT_CONSOLE_LOG , OPT_DEBUGGING, OPT_FULLSCREEN,
-      OPT_HIDDDEN_LOGGER , OPT_NOSPLASH ,OPT_HIDDDEN_TOOLBOX , OPT_LOAD_POLYMESHES,
-      OPT_REMOTE, OPT_REMOTE_PORT};
-
-CSimpleOpt::SOption g_rgOptions[] = {
-    { OPT_DEBUGGING        , (char*) "--debug"          , SO_NONE    },
-    { OPT_HELP             , (char*) "-?"               , SO_NONE    },
-    { OPT_HELP             , (char*) "--help"           , SO_NONE    },
-    { OPT_HELP             , (char*) "-h"               , SO_NONE    },
-    { OPT_STEREO           , (char*) "--disable-stereo" , SO_NONE    },
-    { OPT_BATCH            , (char*) "-b"               , SO_NONE    },
-    { OPT_CONSOLE_LOG      , (char*) "-c"               , SO_NONE    },
-    { OPT_CONSOLE_LOG      , (char*) "--log-to-console" , SO_NONE    },
-    { OPT_FULLSCREEN       , (char*) "-f"               , SO_NONE    },
-    { OPT_HIDDDEN_LOGGER   , (char*) "-l"               , SO_NONE    },
-    { OPT_NOSPLASH         , (char*) "--no-splash"      , SO_NONE    },
-    { OPT_HIDDDEN_TOOLBOX  , (char*) "-t"               , SO_NONE    },
-    { OPT_LOAD_POLYMESHES  , (char*) "-p"               , SO_NONE    },
-    { OPT_REMOTE           , (char*) "--remote-control" , SO_NONE    },
-    { OPT_REMOTE_PORT      , (char*) "--remote-port"    , SO_REQ_SEP },
-    SO_END_OF_OPTIONS                       // END
+enum CommandLineParseResult
+{
+    CommandLineOk,
+    CommandLineError,
+    CommandLineVersionRequested,
+    CommandLineHelpRequested
 };
-
-void showHelp() {
-  std::cerr << "OpenFlipper [Options] <filenames> " << std::endl << std::endl;;
-  std::cerr << "Possible Options : " << std::endl;
-  std::cerr << std::endl;
-
-  std::cerr << "Load/Save Options:" << std::endl;
-  std::cerr << " -p \t: Open files as PolyMeshes" << std::endl;
-  std::cerr << std::endl;
-
-  std::cerr << "Gui Options:" << std::endl;
-  std::cerr << " -f \t\t: Start Fullscreen" << std::endl;
-  std::cerr << " -l \t\t: Start with hidden logger" << std::endl;
-  std::cerr << " -t \t\t: Start with hidden Toolbox" << std::endl;
-  std::cerr << " --no-splash \t: Disable splash screen" << std::endl;
-
-  std::cerr << " --disable-stereo \t: Disable Stereo Mode" << std::endl;
-  std::cerr << std::endl;
-
-  std::cerr << "Log options:" << std::endl;
-  std::cerr << " --log-to-console ( -c ) \t: Write logger window contents to console" << std::endl;
-  std::cerr << std::endl;
-
-  std::cerr << "Other options:" << std::endl;
-  std::cerr << " -b \t: Batch mode, you have to provide a script for execution" << std::endl;
-  std::cerr << " --remote-control \t: Batch mode accepting remote connections" << std::endl;
-
-  std::cerr << std::endl;
-
-
-  std::cerr << " -h \t: This help" << std::endl;
-}
-
-
-
-
 
 
 bool openPolyMeshes = false;
 bool remoteControl  = false;
 
-bool parseCommandLineOptions(CSimpleOpt& args){
+// Parse all options
+CommandLineParseResult parseCommandLine(QCommandLineParser &parser, QString *errorMessage) {
 
-  QString port;  
-
-#ifndef WIN32
-#ifndef __APPLE__
-  //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1 on Linux
-  int QtVersionMajor, QtVersionMinor, QtVersionPatch;
-  if(sscanf(qVersion(),"%1d.%1d.%1d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
-  {
-    if(QtVersionMajor == 5 && QtVersionMinor >= 7)
+  #ifndef WIN32
+  #ifndef __APPLE__
+    //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1 on Linux
+    int QtVersionMajor, QtVersionMinor, QtVersionPatch;
+    if(sscanf(qVersion(),"%1d.%1d.%1d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
     {
-      if(QtVersionPatch < 2)
+      if(QtVersionMajor == 5 && QtVersionMinor >= 7)
       {
-        std::cerr << "The used Qt Version does not support stereo mode. Disabling stereo mode." << std::endl;
-        OpenFlipper::Options::stereo(false);
-      }
-      else
-        std::cerr << "Stereo Mode has not been tested for the used Qt Version." << std::endl;
-    }
-  }
-#endif
-#endif
-
-  // while there are arguments left to process
-  while (args.Next()) {
-
-    if (args.LastError() == SO_SUCCESS) {
-
-      switch (args.OptionId() ) {
-        case OPT_BATCH:
-          OpenFlipper::Options::nogui(true);
-        break;
-        case OPT_CONSOLE_LOG:
-          OpenFlipper::Options::logToConsole(true);
-          break;
-        case OPT_DEBUGGING:
-          OpenFlipper::Options::debug(true);
-          break;
-        case OPT_STEREO:
+        if(QtVersionPatch < 2)
+        {
+          std::cerr << "The used Qt Version does not support stereo mode. Disabling stereo mode." << std::endl;
           OpenFlipper::Options::stereo(false);
-          break;
-        case OPT_HIDDDEN_TOOLBOX:
-          OpenFlipperSettings().setValue("Core/Gui/ToolBoxes/hidden",true);
-          break;
-        case OPT_HIDDDEN_LOGGER:
-          OpenFlipper::Options::loggerState(OpenFlipper::Options::Hidden);
-          break;
-        case OPT_FULLSCREEN:
-          OpenFlipperSettings().setValue("Core/Gui/fullscreen",false);
-          break;
-        case OPT_LOAD_POLYMESHES:
-          openPolyMeshes = true;
-          break;
-        case OPT_NOSPLASH:
-          OpenFlipperSettings().setValue("Core/Gui/splash",false);
-          break;
-        case OPT_REMOTE:
-          OpenFlipper::Options::remoteControl(true);
-          break;
-        case OPT_REMOTE_PORT:
-          port = args.OptionArg();
-          std::cerr << "Got option : " << port.toStdString() << std::endl;
-          OpenFlipper::Options::remoteControl(port.toInt());
-          break;
-        case OPT_HELP:
-          showHelp();
-          return 0;
+        }
+        else
+          std::cerr << "Stereo Mode has not been tested for the used Qt Version." << std::endl;
       }
-    } else {
-      std::cerr << "Invalid argument: " << args.OptionText() << std::endl;
-      showHelp();
-      return false;
     }
+  #endif
+  #endif
+
+
+ parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
+
+ parser.addOptions({
+        {{"d", "debug"},
+            QCoreApplication::translate("main", "Enable debugging mode")},
+        {"disable-stereo",
+            QCoreApplication::translate("main", "Disable stereo mode")},
+        {{"b", "batch"},
+            QCoreApplication::translate("main", "Batch mode, you have to provide a script for execution")},
+        {{"c", "log-to-console"},
+            QCoreApplication::translate("main", "Write logger window contents to console")},
+        {"remote-control",
+            QCoreApplication::translate("main", "Batch mode accepting remote connections")},
+        {{"f", "fullscreen"},
+            QCoreApplication::translate("main", "Start in fulscreen mode")},
+        {{"l", "hide-logger"},
+            QCoreApplication::translate("main", "Start with hidden log window")},
+        {{"t", "hide-toolbox"},
+            QCoreApplication::translate("main", "Start with hidden toolbox")},
+        {"no-splash",
+            QCoreApplication::translate("main", "Hide splash screen")},
+        {"p",
+            QCoreApplication::translate("main", "Open files as PolyMeshes")},
+        {"remote-port",
+            QCoreApplication::translate("main", "Remote port"),"portnumber"},
+  });
+
+  const QCommandLineOption helpOption = parser.addHelpOption();
+  const QCommandLineOption versionOption = parser.addVersionOption();
+
+
+  // Now parse the command line
+  if (!parser.parse(QCoreApplication::arguments())) {
+    *errorMessage = parser.errorText();
+    return CommandLineError;
   }
-  return true;
+
+  if (parser.isSet(helpOption))
+      return CommandLineHelpRequested;
+
+  if (parser.isSet(versionOption))
+      return CommandLineVersionRequested;
+
+  if (parser.isSet("debug")) {
+    OpenFlipper::Options::debug(true);
+  }
+
+  if (parser.isSet("disable-stereo")) {
+    OpenFlipper::Options::stereo(false);
+  }
+
+  if (parser.isSet("batch")) {
+    OpenFlipper::Options::nogui(true);
+  }
+
+  if (parser.isSet("log-to-console")) {
+    OpenFlipper::Options::logToConsole(true);
+  }
+
+  if (parser.isSet("remote-control")) {
+    OpenFlipper::Options::remoteControl(true);
+  }
+
+  if (parser.isSet("fullscreen")) {
+    OpenFlipperSettings().setValue("Core/Gui/fullscreen",true);
+  }
+
+  if (parser.isSet("hide-logger")) {
+    OpenFlipper::Options::loggerState(OpenFlipper::Options::Hidden);
+  }
+
+  if (parser.isSet("hide-toolbox")) {
+    OpenFlipperSettings().setValue("Core/Gui/ToolBoxes/hidden",true);
+  }
+
+  if (parser.isSet("no-splash")) {
+    OpenFlipperSettings().setValue("Core/Gui/splash",false);
+  }
+
+  if (parser.isSet("p")) {
+    openPolyMeshes = true;
+  }
+
+  if (parser.isSet("remote-port")) {
+    const QString port = parser.value("portnumber");
+    std::cerr << "Got port option : " << port.toStdString() << std::endl;
+    OpenFlipper::Options::remoteControl(port.toInt());
+
+  }
+
+  return CommandLineOk;
 }
 
 int main(int argc, char **argv)
@@ -448,16 +437,23 @@ int main(int argc, char **argv)
   OpenFlipper::Options::argc(&argc);
   OpenFlipper::Options::argv(&argv);
 
-  CSimpleOpt argBatch(argc, argv, g_rgOptions);
+  // Ugly command line parse to check if we run in batch mode or not.
+  // Qt parser needs either QApplication or QCoreApplication to work.
+  // But we need that option to decide which one to choose so ...
+  for (int i = 1; i < argc; i++) {
+     QString option = QString(argv[i]);
+     if (option.contains("batch") || option.contains("-b") ||
+         option.contains("--batch") || option.contains("/b") ||
+         option.contains("/batch" )) {
+       std::cerr << "Batch Mode started" << std::endl;
+       OpenFlipper::Options::nogui(true);
+     }
 
-  //check only batchMode before the core is created
-  while (argBatch.Next())
-    if (argBatch.OptionId() == OPT_BATCH ){
-      OpenFlipper::Options::nogui(true);
-      break;
-    }
+   }
 
-  CSimpleOpt args(argc, argv, g_rgOptions);
+  QCommandLineParser parser;
+  QString errorMessage;
+
 
 #ifndef NO_CATCH_SIGSEGV
   // Set a handler for segfaults
@@ -490,9 +486,23 @@ int main(int argc, char **argv)
     // create core ( this also reads the ini files )
     Core * w = new Core( );
 
-    if ( !parseCommandLineOptions(args) ) {
-      delete w;
-      return 1;
+
+    switch (parseCommandLine(parser, &errorMessage)) {
+      case CommandLineOk:
+        break;
+      case CommandLineError:
+        fputs(qPrintable(errorMessage), stderr);
+        fputs("\n\n", stderr);
+        fputs(qPrintable(parser.helpText()), stderr);
+        delete w;
+        return 1;
+      case CommandLineVersionRequested:
+        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()),
+            qPrintable(QCoreApplication::applicationVersion()));
+        return 0;
+      case CommandLineHelpRequested:
+        parser.showHelp();
+        Q_UNREACHABLE();
     }
 
 #ifdef WIN32
@@ -549,8 +559,11 @@ int main(int argc, char **argv)
     initGlew();
     #endif
  
-    for ( int i = 0 ; i < args.FileCount(); ++i )
-      w->commandLineOpen(args.File(i), openPolyMeshes);    
+    const QStringList positionalArguments = parser.positionalArguments();
+
+    for ( auto file: positionalArguments ) {
+      w->commandLineOpen(file, openPolyMeshes);
+    }
 
     return app.exec();
 
@@ -567,16 +580,32 @@ int main(int argc, char **argv)
     // create widget ( this also reads the ini files )
     Core * w = new Core( );
 
-    if ( !parseCommandLineOptions(args) ) {
-      delete w;
-      return 1;
+    switch (parseCommandLine(parser, &errorMessage)) {
+      case CommandLineOk:
+        break;
+      case CommandLineError:
+        fputs(qPrintable(errorMessage), stderr);
+        fputs("\n\n", stderr);
+        fputs(qPrintable(parser.helpText()), stderr);
+        delete w;
+        return 1;
+      case CommandLineVersionRequested:
+        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()),
+            qPrintable(QCoreApplication::applicationVersion()));
+        return 0;
+      case CommandLineHelpRequested:
+        parser.showHelp();
+        Q_UNREACHABLE();
     }
 
     // After setting all Options from command line, build the real gui
     w->init();
 
-    for ( int i = 0 ; i < args.FileCount(); ++i )
-      w->commandLineScript(args.File(i));
+    const QStringList positionalArguments = parser.positionalArguments();
+
+    for ( auto file: positionalArguments ) {
+      w->commandLineOpen(file, openPolyMeshes);
+    }
 
     return app.exec();
   }

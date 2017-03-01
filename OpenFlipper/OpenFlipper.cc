@@ -326,95 +326,104 @@ CommandLineParseResult parseCommandLine(QCommandLineParser &parser, QString *err
 
  parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
- parser.addOptions({
-        {{"d", "debug"},
-            QCoreApplication::translate("main", "Enable debugging mode")},
-        {"disable-stereo",
-            QCoreApplication::translate("main", "Disable stereo mode")},
-        {{"b", "batch"},
-            QCoreApplication::translate("main", "Batch mode, you have to provide a script for execution")},
-        {{"c", "log-to-console"},
-            QCoreApplication::translate("main", "Write logger window contents to console")},
-        {"remote-control",
-            QCoreApplication::translate("main", "Batch mode accepting remote connections")},
-        {{"f", "fullscreen"},
-            QCoreApplication::translate("main", "Start in fulscreen mode")},
-        {{"l", "hide-logger"},
-            QCoreApplication::translate("main", "Start with hidden log window")},
-        {{"t", "hide-toolbox"},
-            QCoreApplication::translate("main", "Start with hidden toolbox")},
-        {"no-splash",
-            QCoreApplication::translate("main", "Hide splash screen")},
-        {"p",
-            QCoreApplication::translate("main", "Open files as PolyMeshes")},
-        {"remote-port",
-            QCoreApplication::translate("main", "Remote port"),"portnumber"},
-  });
 
-  const QCommandLineOption helpOption = parser.addHelpOption();
-  const QCommandLineOption versionOption = parser.addVersionOption();
+ QCommandLineOption debugOption(QStringList() << "d" << "debug",QCoreApplication::translate("main", "Enable debugging mode"));
+ parser.addOption(debugOption);
+
+ QCommandLineOption stereoOption("disable-stereo",QCoreApplication::translate("main", "Disable stereo mode"));
+ parser.addOption(stereoOption);
+
+ QCommandLineOption batchOption(QStringList() << "b" << "batch",QCoreApplication::translate("main", "Batch mode, you have to provide a script for execution"));
+ parser.addOption(batchOption);
+
+ QCommandLineOption logConsoleOption(QStringList() << "c" << "log-to-console",QCoreApplication::translate("main", "Write logger window contents to console"));
+ parser.addOption(logConsoleOption);
+
+ QCommandLineOption remoteControlOption("remote-control",QCoreApplication::translate("main", "Batch mode accepting remote connections"));
+ parser.addOption(remoteControlOption);
+
+ QCommandLineOption fulscreenOption(QStringList() << "f" << "fulscreen",QCoreApplication::translate("main", "Start in fulscreen mode"));
+ parser.addOption(fulscreenOption);
+
+ QCommandLineOption hideLoggerOption(QStringList() << "l" << "hide-logger",QCoreApplication::translate("main", "Start with hidden log window"));
+ parser.addOption(hideLoggerOption);
+
+ QCommandLineOption hideToolboxOption(QStringList() << "t" << "hide-toolbox",QCoreApplication::translate("main", "Start with hidden toolbox"));
+ parser.addOption(hideToolboxOption);
+
+ QCommandLineOption noSplashOption("no-splash",QCoreApplication::translate("main", "Hide splash screen"));
+ parser.addOption(noSplashOption);
+
+ QCommandLineOption polyMeshOption("p",QCoreApplication::translate("main", "Open files as PolyMeshes"));
+ parser.addOption(polyMeshOption);
+
+ QCommandLineOption remotePortOption("remote-port",QCoreApplication::translate("main", "Remote port"),"portnumber");
+ parser.addOption(remotePortOption);
+
+ const QCommandLineOption helpOption = parser.addHelpOption();
+ const QCommandLineOption versionOption = parser.addVersionOption();
 
 
-  // Now parse the command line
-  if (!parser.parse(QCoreApplication::arguments())) {
-    *errorMessage = parser.errorText();
-    return CommandLineError;
-  }
+ // Now parse the command line
+ if (!parser.parse(QCoreApplication::arguments())) {
+   *errorMessage = parser.errorText();
+   return CommandLineError;
+ }
 
-  if (parser.isSet(helpOption))
-      return CommandLineHelpRequested;
+ if (parser.isSet(helpOption))
+   return CommandLineHelpRequested;
 
-  if (parser.isSet(versionOption))
-      return CommandLineVersionRequested;
+ if (parser.isSet(versionOption))
+   return CommandLineVersionRequested;
 
-  if (parser.isSet("debug")) {
-    OpenFlipper::Options::debug(true);
-  }
+ if (parser.isSet(debugOption)) {
+   OpenFlipper::Options::debug(true);
+ }
 
-  if (parser.isSet("disable-stereo")) {
-    OpenFlipper::Options::stereo(false);
-  }
+ if (parser.isSet(stereoOption)) {
+   OpenFlipper::Options::stereo(false);
+ }
 
-  if (parser.isSet("batch")) {
-    OpenFlipper::Options::nogui(true);
-  }
+ if (parser.isSet(batchOption)) {
+   OpenFlipper::Options::nogui(true);
+ }
 
-  if (parser.isSet("log-to-console")) {
-    OpenFlipper::Options::logToConsole(true);
-  }
+ if (parser.isSet(logConsoleOption)) {
+   OpenFlipper::Options::logToConsole(true);
+ }
 
-  if (parser.isSet("remote-control")) {
-    OpenFlipper::Options::remoteControl(true);
-  }
+ if (parser.isSet(remoteControlOption)) {
+   OpenFlipper::Options::remoteControl(true);
+ }
 
-  if (parser.isSet("fullscreen")) {
-    OpenFlipperSettings().setValue("Core/Gui/fullscreen",true);
-  }
+ if (parser.isSet(fulscreenOption)) {
+   OpenFlipperSettings().setValue("Core/Gui/fullscreen",true);
+ }
 
-  if (parser.isSet("hide-logger")) {
-    OpenFlipper::Options::loggerState(OpenFlipper::Options::Hidden);
-  }
+ if (parser.isSet(hideLoggerOption)) {
+   OpenFlipper::Options::loggerState(OpenFlipper::Options::Hidden);
+ }
 
-  if (parser.isSet("hide-toolbox")) {
-    OpenFlipperSettings().setValue("Core/Gui/ToolBoxes/hidden",true);
-  }
+ if (parser.isSet(hideToolboxOption)) {
+   OpenFlipperSettings().setValue("Core/Gui/ToolBoxes/hidden",true);
+ }
 
-  if (parser.isSet("no-splash")) {
-    OpenFlipperSettings().setValue("Core/Gui/splash",false);
-  }
+ if (parser.isSet(noSplashOption)) {
+   OpenFlipperSettings().setValue("Core/Gui/splash",false);
+ }
 
-  if (parser.isSet("p")) {
-    openPolyMeshes = true;
-  }
+ if (parser.isSet(polyMeshOption)) {
+   openPolyMeshes = true;
+ }
 
-  if (parser.isSet("remote-port")) {
-    const QString port = parser.value("remote-port");
-    std::cerr << "Got port option : " << port.toStdString() << std::endl;
-    OpenFlipper::Options::remoteControl(port.toInt());
+ if (parser.isSet(remotePortOption)) {
+   const QString port = parser.value("remote-port");
+   std::cerr << "Got port option : " << port.toStdString() << std::endl;
+   OpenFlipper::Options::remoteControl(port.toInt());
 
-  }
+ }
 
-  return CommandLineOk;
+ return CommandLineOk;
 }
 
 int main(int argc, char **argv)

@@ -47,8 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #ifndef OVM_PROPERTY_VISUALIZER_DOUBLE_HH
 #define OVM_PROPERTY_VISUALIZER_DOUBLE_HH
 
@@ -58,10 +56,9 @@
 
 #include <OpenFlipper/BasePlugin/PluginFunctions.hh>
 
-#include <ACG/Utils/ColorCoder.hh>
+#include <ACG/Utils/IColorCoder.hh>
 
-
-
+#include <memory>
 #include <iostream>
 
 template <typename MeshT>
@@ -72,7 +69,6 @@ public:
     virtual ~OVMPropertyVisualizerDouble(){}
 
 protected:
-
     template <typename PropType, typename EntityIterator>
     void visualizeProp(PropType prop, EntityIterator e_begin, EntityIterator e_end);
     virtual void duplicateProperty();
@@ -92,6 +88,8 @@ protected:
     virtual void setEdgePropertyFromText(unsigned int index, QString text);
     virtual void setHalfedgePropertyFromText(unsigned int index, QString text);
     virtual void setVertexPropertyFromText(unsigned int index, QString text);
+
+    std::unique_ptr<ACG::IColorCoder> buildColorCoder() override;
 };
 
 #if defined(INCLUDE_TEMPLATES) && !defined(OVM_PROPERTY_VISUALIZER_DOUBLE_CC)
@@ -100,4 +98,3 @@ protected:
 
 #endif /* OVM_PROPERTY_VISUALIZER_DOUBLE_HH */
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

@@ -59,7 +59,7 @@
 
 // stdc++
 #include <csignal>
-
+#include <regex>
 #include <OpenFlipper/SimpleOpt/SimpleOpt.h>
 
 #if ( defined(WIN32))
@@ -140,7 +140,7 @@
        if (check) {
          std::cerr << "Error reopening stdin" << std::endl;
        }
-       ckeck = freopen("CONOUT$", "w", stdout);
+       check = freopen("CONOUT$", "w", stdout);
        if (check) {
          std::cerr << "Error reopening stdout" << std::endl;
        }
@@ -178,18 +178,65 @@
  *
  * ==========================================================*/
 #ifndef NO_EXECINFO
+
+#if defined(__GLIBCXX__) || defined(__GLIBCPP__)
+// GCC: implement demangling using cxxabi
+#include <cxxabi.h>
+std::string demangle(const std::string& _symbol)
+{
+    int status;
+    char* demangled = abi::__cxa_demangle(_symbol.c_str(), nullptr, nullptr, &status);
+    if (demangled) {
+        std::string result{demangled};
+        free(demangled);
+        if (status == 0) {
+            return result;
+        }
+        else {
+            return _symbol;
+        }
+    }
+    else {
+        return _symbol;
+    }
+}
+#else
+// other compiler environment: no demangling
+std::string demangle(const std::string& _symbol)
+{
+    return _symbol;
+}
+#endif
+
 void backtrace()
 {
-  void *addresses[20];
-  char **strings;
+    void *addresses[20];
+    char **strings;
 
-  int size = backtrace(addresses, 20);
-  strings = backtrace_symbols(addresses, size);
-  std::cerr << "Stack frames: " << size << std::endl;
-  for(int i = 0; i < size; i++)
-    std::cerr << i << ": " << strings[i] << std::endl;
-  free(strings);
-
+    int size = backtrace(addresses, 20);
+    strings = backtrace_symbols(addresses, size);
+    std::cerr << "Stack frames: " << size << std::endl;
+    // line format:
+    // <path>(<mangled_name>+<offset>) [<address>]
+    std::regex line_format{R"(^\s*(.+)\((([^()]+)?\+(0x[0-9a-f]+))?\)\s+\[(0x[0-9a-f]+)\]\s*$)"};
+    for(int i = 0; i < size; i++) {
+        std::string line{strings[i]};
+        std::smatch match;
+        std::regex_match(line, match, line_format);
+        if (!match.empty()) {
+            auto file_name = match[1].str();
+            auto symbol = demangle(match[3].str());
+            auto offset = match[4].str();
+            auto address = match[5].str();
+            std::cerr << i << ":";
+            if (!file_name.empty()) std::cerr << " " << file_name << " ::";
+            if (!symbol.empty()) std::cerr << " " << symbol;
+            if (!offset.empty()) std::cerr << " (+" << offset << ")";
+            if (!address.empty()) std::cerr << " [" << address << "]";
+            std::cerr << std::endl;
+        }
+    }
+    free(strings);
 }
 #endif
 
@@ -305,7 +352,27 @@ bool remoteControl  = false;
 
 bool parseCommandLineOptions(CSimpleOpt& args){
 
-  QString port;
+  QString port;  
+
+#ifndef WIN32
+#ifndef __APPLE__
+  //workaround for bug with stereo mode on Qt5.7.0 and Qt5.7.1 on Linux
+  int QtVersionMajor, QtVersionMinor, QtVersionPatch;
+  if(sscanf(qVersion(),"%1d.%1d.%1d",&QtVersionMajor, &QtVersionMinor, &QtVersionPatch) == 3)
+  {
+    if(QtVersionMajor == 5 && QtVersionMinor >= 7)
+    {
+      if(QtVersionPatch < 2)
+      {
+        std::cerr << "The used Qt Version does not support stereo mode. Disabling stereo mode." << std::endl;
+        OpenFlipper::Options::stereo(false);
+      }
+      else
+        std::cerr << "Stereo Mode has not been tested for the used Qt Version." << std::endl;
+    }
+  }
+#endif
+#endif
 
   // while there are arguments left to process
   while (args.Next()) {

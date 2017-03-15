@@ -1,3 +1,3 @@
 include (plugin)
 
-openflipper_plugin (  )
+openflipper_plugin ( TYPES POLYMESH TRIANGLEMESH LIGHT )

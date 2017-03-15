@@ -59,7 +59,7 @@ class RendererObjectWidget : public QDialog, public Ui::RendererObjectWidget
   Q_OBJECT
 
   public:
-  RendererObjectWidget(QWidget *parent = 0);
+  explicit RendererObjectWidget(QWidget *parent = 0);
 
 
   protected:

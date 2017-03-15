@@ -47,10 +47,10 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
 
 #define OVM_PROPERTY_VISUALIZER_BOOLEAN_CC
 
+#include <ACG/Utils/ColorConversion.hh>
 #include "OVMPropertyVisualizerBoolean.hh"
 
 template <typename MeshT>
@@ -74,8 +74,8 @@ void OVMPropertyVisualizerBoolean<MeshT>::visualizeProp(PropType prop, EntityIte
     BooleanWidget* booleanWidget = static_cast<BooleanWidget*>(PropertyVisualizer::widget);
     ACG::Vec4f colorTrue, colorFalse;
 
-    colorTrue  = OVMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorTrue->color());
-    colorFalse = OVMPropertyVisualizer<MeshT>::convertColor(booleanWidget->colorFalse->color());
+    colorTrue  = ACG::to_Vec4f(booleanWidget->colorTrue->color());
+    colorFalse = ACG::to_Vec4f(booleanWidget->colorFalse->color());
 
     VolumeMeshObject<MeshT>* object;
     PluginFunctions::getObject(OVMPropertyVisualizer<MeshT>::mObjectID, object);
@@ -203,4 +203,3 @@ QString OVMPropertyVisualizerBoolean<MeshT>::getPropertyText(unsigned int index)
     return OVMPropertyVisualizer<MeshT>::template getPropertyText_<bool>(index);
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

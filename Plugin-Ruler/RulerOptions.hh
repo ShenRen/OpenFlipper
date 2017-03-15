@@ -61,6 +61,6 @@ class RulerOptions : public QWidget, public Ui::rulerOptions
   Q_OBJECT
 
   public:
-    RulerOptions(QWidget *parent = 0);
+    explicit RulerOptions(QWidget *parent = 0);
 };
 

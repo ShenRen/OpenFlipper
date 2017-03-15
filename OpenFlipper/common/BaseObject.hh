@@ -91,7 +91,7 @@
  * This is the basic Data class providing the functions common to all objects.
  * If the Datacontrol Plugin is available, a Tree structure will be generated allowing groups of objects.
  */
-class DLLEXPORTONLY BaseObject : public QObject {
+class DLLEXPORT BaseObject : public QObject {
   
   Q_OBJECT 
   
@@ -109,7 +109,7 @@ class DLLEXPORTONLY BaseObject : public QObject {
     * If the objectroot exists and parent is 0, it will be appended to the objectroot.
     * If a parent is given, it is appended to this object.
     */
-    BaseObject( BaseObject *_parent = 0);
+    explicit BaseObject( BaseObject *_parent = 0);
 
     virtual ~BaseObject();
 

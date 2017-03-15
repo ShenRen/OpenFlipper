@@ -54,6 +54,9 @@
 
 #include <OpenFlipper/BasePlugin/BaseInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
+#include <ACG/QtWidgets/QtHistogramWidget.hh>
+#include <ACG/Utils/IColorCoder.hh>
+#include <ACG/Utils/SmartPointer.hh>
 
 #include "OpenMesh/Core/Geometry/VectorT.hh"
 
@@ -65,7 +68,7 @@
 
 class VizException : public std::logic_error {
     public:
-        VizException(const std::string &msg) : std::logic_error(msg) {}
+        explicit VizException(const std::string &msg) : std::logic_error(msg) {}
 };
 
 
@@ -91,7 +94,7 @@ public:
      *
      * @param _propertyInfo Information about the property this visualizer should visualize.
      */
-    PropertyVisualizer(PropertyInfo _propertyInfo)
+    explicit PropertyVisualizer(PropertyInfo _propertyInfo)
         :
           propertyInfo(_propertyInfo),
           widget(0)
@@ -156,7 +159,6 @@ public:
     /// Returns the header for saving.
     virtual QString getHeader() = 0;
 
-
     static inline QString toStr(bool b)               { return b ? QObject::tr("True") : QObject::tr("False"); }
     static inline QString toStr(double d)             { return QObject::tr("%1").arg(d); }
     static inline QString toStr(int i)                { return QObject::tr("%1").arg(i); }
@@ -179,12 +181,27 @@ public:
 
 
 protected:
+    virtual std::unique_ptr<ACG::IColorCoder> buildColorCoder();
+
+    template<typename PropType, typename Iterable>
+    void showHistogramT(ACG::QtWidgets::QtHistogramWidget *widget,
+                       Iterable data);
 
     PropertyInfo propertyInfo;
 
 public:
     QWidget* widget;
-
 };
+
+template<typename PropType, typename Iterable>
+void PropertyVisualizer::showHistogramT(
+        ACG::QtWidgets::QtHistogramWidget *widget,
+        Iterable data)
+{
+    const size_t max_bins = 50; // TODO: expose in GUI?
+    widget->setMinimumHeight(300);
+    widget->setColorCoder(buildColorCoder());
+    widget->setHistogram(ptr::make_unique<ACG::HistogramT<PropType>>(data.begin(), data.end(), max_bins));
+}
 
 #endif /* PROPERTY_VISUALIZER_HH */

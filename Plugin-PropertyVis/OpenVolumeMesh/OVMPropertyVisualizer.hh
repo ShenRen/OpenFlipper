@@ -47,7 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
 
 #ifndef OVM_PROPERTY_VISUALIZER_HH
 #define OVM_PROPERTY_VISUALIZER_HH
@@ -59,6 +58,8 @@
 #include <OpenFlipper/BasePlugin/PluginFunctionsViewControls.hh>
 
 #include <ObjectTypes/VolumeMeshObject/VolumeMeshDrawModesContainer.hh>
+
+#include <ACG/QtWidgets/QtHistogramWidget.hh>
 
 #include <iostream>
 
@@ -97,6 +98,10 @@ public:
     /// Returns the ID of the closest primitive.
     unsigned int getClosestPrimitiveId(unsigned int _face, ACG::Vec3d &_hitPoint);
 
+protected slots:
+    template <typename Type>
+    void showHistogram(ACG::QtWidgets::QtHistogramWidget *histogramWidget);
+
 protected:
     MeshT* mesh;
 
@@ -109,8 +114,6 @@ protected:
 
     template<typename PropType>
     void duplicateProperty_stage1();
-
-    OpenMesh::Vec4f convertColor(QColor color);
 
     template <typename InnerType>
     QString getPropertyText_(unsigned int index);
@@ -241,4 +244,4 @@ void Classname::visualizeVertexProp(bool _setDrawMode)\
 
 #endif /* OVM_PROPERTY_VISUALIZER_HH */
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */
+

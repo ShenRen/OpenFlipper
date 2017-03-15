@@ -47,10 +47,10 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
 
 #define OVM_PROPERTY_VISUALIZER_VECTOR_CC
 
+#include <ACG/Utils/ColorConversion.hh>
 #include "OVMPropertyVisualizerVector.hh"
 
 
@@ -222,7 +222,7 @@ void OVMPropertyVisualizerVector<MeshT>::visualizeFacePropAsStrokes()
 
     lineNode->clear();
 
-    ACG::Vec4f color = OVMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    ACG::Vec4f color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     OpenVolumeMesh::FacePropertyT<ACG::Vec3d> prop = OVMPropertyVisualizer<MeshT>::mesh->template request_face_property<ACG::Vec3d>(PropertyVisualizer::propertyInfo.propName());
 
@@ -263,7 +263,7 @@ void OVMPropertyVisualizerVector<MeshT>::visualizeEdgePropAsStrokes()
 
     lineNode->clear();
 
-    ACG::Vec4f color = OVMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    ACG::Vec4f color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     OpenVolumeMesh::EdgePropertyT<ACG::Vec3d> prop = OVMPropertyVisualizer<MeshT>::mesh->template request_edge_property<ACG::Vec3d>(OVMPropertyVisualizer<MeshT>::propertyInfo.propName());
     if ( !prop )
@@ -299,7 +299,7 @@ void OVMPropertyVisualizerVector<MeshT>::visualizeHalfedgePropAsStrokes()
 
     lineNode->clear();
 
-    ACG::Vec4f color = OVMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    ACG::Vec4f color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     OpenVolumeMesh::HalfEdgePropertyT<ACG::Vec3d> prop = OVMPropertyVisualizer<MeshT>::mesh->template request_halfedge_property<ACG::Vec3d>(OVMPropertyVisualizer<MeshT>::propertyInfo.propName());
     if ( !prop )
@@ -334,7 +334,7 @@ void OVMPropertyVisualizerVector<MeshT>::visualizeVertexPropAsStrokes()
 
     lineNode->clear();
 
-    ACG::Vec4f color = OVMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    ACG::Vec4f color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     OpenVolumeMesh::VertexPropertyT<ACG::Vec3d> prop = OVMPropertyVisualizer<MeshT>::mesh->template request_vertex_property<ACG::Vec3d>(OVMPropertyVisualizer<MeshT>::propertyInfo.propName());
     if ( !prop )
@@ -365,7 +365,7 @@ void OVMPropertyVisualizerVector<MeshT>::visualizeCellPropAsStrokes()
 
     lineNode->clear();
 
-    ACG::Vec4f color = OVMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    ACG::Vec4f color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     OpenVolumeMesh::CellPropertyT<ACG::Vec3d> prop = OVMPropertyVisualizer<MeshT>::mesh->template request_cell_property<ACG::Vec3d>(PropertyVisualizer::propertyInfo.propName());
 
@@ -402,7 +402,7 @@ void OVMPropertyVisualizerVector<MeshT>::visualizeHalffacePropAsStrokes()
 
     lineNode->clear();
 
-    ACG::Vec4f color = OVMPropertyVisualizer<MeshT>::convertColor(vectorWidget->lineColor->color());
+    ACG::Vec4f color = ACG::to_Vec4f(vectorWidget->lineColor->color());
 
     OpenVolumeMesh::HalfFacePropertyT<ACG::Vec3d> prop = OVMPropertyVisualizer<MeshT>::mesh->template request_halfface_property<ACG::Vec3d>(PropertyVisualizer::propertyInfo.propName());
 
@@ -544,4 +544,3 @@ void OVMPropertyVisualizerVector<MeshT>::setVertexPropertyFromText(unsigned int 
     prop[vh] = this->strToVec3d(text);
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

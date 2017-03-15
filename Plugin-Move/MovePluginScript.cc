@@ -57,13 +57,13 @@
 #endif
 #include <MeshTools/MeshFunctions.hh>
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
 #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
 
@@ -208,7 +208,7 @@ void MovePlugin::translate( int _objectId , Vector _vector) {
       line.point(i) = line.point(i)  + _vector; 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_HEXAHEDRAL_MESH) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -218,7 +218,7 @@ void MovePlugin::translate( int _objectId , Vector _vector) {
       mesh.set_vertex(*v_it, mesh.vertex(*v_it) + _vector );
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -228,7 +228,7 @@ void MovePlugin::translate( int _objectId , Vector _vector) {
       mesh.set_vertex(*v_it, mesh.vertex(*v_it) + _vector );
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
@@ -309,7 +309,7 @@ void MovePlugin::translate( int _objectId , IdList _vHandles, Vector _vector ){
         line.point( _vHandles[i] ) = line.point( _vHandles[i] )  + _vector; 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_HEXAHEDRAL_MESH) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -319,7 +319,7 @@ void MovePlugin::translate( int _objectId , IdList _vHandles, Vector _vector ){
     }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -329,7 +329,7 @@ void MovePlugin::translate( int _objectId , IdList _vHandles, Vector _vector ){
     }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
@@ -419,7 +419,7 @@ void MovePlugin::translateVertexSelection( int _objectId , Vector _vector) {
       }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_HEXAHEDRAL_MESH) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -433,7 +433,7 @@ void MovePlugin::translateVertexSelection( int _objectId , Vector _vector) {
       }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -447,7 +447,7 @@ void MovePlugin::translateVertexSelection( int _objectId , Vector _vector) {
       }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
@@ -833,7 +833,7 @@ void MovePlugin::transform( int _objectId , Matrix4x4 _matrix ){
       line.point(i) = _matrix.transform_point( line.point(i) ); 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_HEXAHEDRAL_MESH) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -846,7 +846,7 @@ void MovePlugin::transform( int _objectId , Matrix4x4 _matrix ){
     }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -859,7 +859,7 @@ void MovePlugin::transform( int _objectId , Matrix4x4 _matrix ){
     }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
@@ -956,7 +956,7 @@ void MovePlugin::transform( int _objectId , IdList _vHandles, Matrix4x4 _matrix 
     
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_HEXAHEDRAL_MESH) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -968,7 +968,7 @@ void MovePlugin::transform( int _objectId , IdList _vHandles, Matrix4x4 _matrix 
     }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -980,7 +980,7 @@ void MovePlugin::transform( int _objectId , IdList _vHandles, Matrix4x4 _matrix 
     }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
@@ -1091,7 +1091,7 @@ bool MovePlugin::transformVertexSelection( int _objectId , Matrix4x4 _matrix ){
     std::cerr << "Todo : transform BSplineCurve" << std::endl;
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_HEXAHEDRAL_MESH) ) {
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
     OpenVolumeMesh::NormalAttrib<HexahedralMesh>& normalAttrib = ((HexahedralMeshObject*)object)->normals();
@@ -1107,7 +1107,7 @@ bool MovePlugin::transformVertexSelection( int _objectId , Matrix4x4 _matrix ){
       }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_TETRAHEDRAL_MESH) ) {
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
     OpenVolumeMesh::NormalAttrib<TetrahedralMesh>& normalAttrib = ((TetrahedralMeshObject*)object)->normals();
@@ -1123,7 +1123,7 @@ bool MovePlugin::transformVertexSelection( int _objectId , Matrix4x4 _matrix ){
       }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType(DATA_POLYHEDRAL_MESH) ) {
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
     OpenVolumeMesh::NormalAttrib<PolyhedralMesh>& normalAttrib = ((PolyhedralMeshObject*)object)->normals();
@@ -1256,7 +1256,7 @@ bool MovePlugin::transformFaceSelection( int _objectId , Matrix4x4 _matrix ){
       }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   if ( object->dataType( DATA_HEXAHEDRAL_MESH ) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -1288,7 +1288,7 @@ bool MovePlugin::transformFaceSelection( int _objectId , Matrix4x4 _matrix ){
 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   if ( object->dataType( DATA_TETRAHEDRAL_MESH ) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -1320,7 +1320,7 @@ bool MovePlugin::transformFaceSelection( int _objectId , Matrix4x4 _matrix ){
 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType( DATA_POLYHEDRAL_MESH ) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
@@ -1474,7 +1474,7 @@ bool MovePlugin::transformEdgeSelection( int _objectId , Matrix4x4 _matrix ){
       }
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   if ( object->dataType( DATA_HEXAHEDRAL_MESH ) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -1507,7 +1507,7 @@ bool MovePlugin::transformEdgeSelection( int _objectId , Matrix4x4 _matrix ){
 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   if ( object->dataType( DATA_TETRAHEDRAL_MESH ) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -1540,7 +1540,7 @@ bool MovePlugin::transformEdgeSelection( int _objectId , Matrix4x4 _matrix ){
 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   if ( object->dataType( DATA_POLYHEDRAL_MESH ) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));
@@ -1624,7 +1624,7 @@ bool MovePlugin::transformCellSelection( int _objectId , Matrix4x4 _matrix ){
 
   bool noneSelected = true;
 
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
   if ( object->dataType( DATA_HEXAHEDRAL_MESH ) ) {
 
     HexahedralMesh& mesh = (*PluginFunctions::hexahedralMesh(object));
@@ -1656,7 +1656,7 @@ bool MovePlugin::transformCellSelection( int _objectId , Matrix4x4 _matrix ){
 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
   if ( object->dataType( DATA_TETRAHEDRAL_MESH ) ) {
 
     TetrahedralMesh& mesh = (*PluginFunctions::tetrahedralMesh(object));
@@ -1688,7 +1688,7 @@ bool MovePlugin::transformCellSelection( int _objectId , Matrix4x4 _matrix ){
 
   }
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   else if ( object->dataType( DATA_POLYHEDRAL_MESH ) ) {
 
     PolyhedralMesh& mesh = (*PluginFunctions::polyhedralMesh(object));

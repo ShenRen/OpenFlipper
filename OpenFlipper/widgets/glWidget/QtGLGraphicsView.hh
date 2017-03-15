@@ -75,7 +75,7 @@ class DLLEXPORT QtGLGraphicsView : public QGraphicsView
  Q_OBJECT
 
 public:
-  QtGLGraphicsView(QWidget* _parent);
+  explicit QtGLGraphicsView(QWidget* _parent);
 
 signals:
   void sceneRectChanged(const QRectF &rect);

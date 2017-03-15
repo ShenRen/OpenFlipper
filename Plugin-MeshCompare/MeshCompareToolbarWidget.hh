@@ -61,6 +61,6 @@ class MeshCompareToolbarWidget : public QWidget, public Ui::MeshCompareToolbar
   Q_OBJECT
 
   public:
-  MeshCompareToolbarWidget(QWidget *parent = 0);
+  explicit MeshCompareToolbarWidget(QWidget *parent = 0);
 };
 

@@ -61,6 +61,6 @@ class MeshRepairToolbarWidget : public QWidget, public Ui::MeshRepairControls
   Q_OBJECT
 
   public:
-    MeshRepairToolbarWidget(QWidget *parent = 0);
+    explicit MeshRepairToolbarWidget(QWidget *parent = 0);
 };
 

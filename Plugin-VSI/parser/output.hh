@@ -68,7 +68,7 @@ class Output : public InOut {
   public:
 
     /// Constructor
-    Output (Element *_f);
+    explicit Output (Element *_f);
 
     friend class Context;
 };

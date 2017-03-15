@@ -97,7 +97,7 @@ class ProcessManagerWidget : public QWidget, public Ui::ProcessManagerWidget
 
   public:
 
-    ProcessManagerWidget(QWidget* parent = 0) : QWidget(parent) {
+    explicit ProcessManagerWidget(QWidget* parent = 0) : QWidget(parent) {
         
         setupUi(this);
     };

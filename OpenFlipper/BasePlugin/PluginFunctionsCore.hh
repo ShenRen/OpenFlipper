@@ -84,6 +84,7 @@
 #include <OpenFlipper/common/ViewerProperties.hh>
 
 #include <ACG/QtWidgets/QtSceneGraphWidget.hh>
+#include <OpenFlipper/BasePlugin/PluginFunctionsSceneGraphWidget.hh>
 
 namespace PluginFunctions {
 
@@ -168,10 +169,6 @@ void removeObjectFromMap(int _objectId);
 /** @name Internal container for scenegraph widget generators
 * @{ */
 //=======================================
-
-/// Add a scenegraph generator ( the handled type will be extracted from the generator)
-DLLEXPORT 
-void addSceneGraphGenerator(ACG::QtWidgets::SceneGraphWidgetGenerator* _generator);
 
 DLLEXPORT
 QMap< std::string ,ACG::QtWidgets::SceneGraphWidgetGenerator* > getSceneGraphGeneratorList();

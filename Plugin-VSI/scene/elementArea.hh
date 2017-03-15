@@ -73,7 +73,7 @@ class ElementArea : public QObject, public QGraphicsItem
   public:
 
     /// Constructor
-    ElementArea (GraphicsScene *_scene);
+    explicit ElementArea (GraphicsScene *_scene);
 
     /// Destructor
     ~ElementArea ();

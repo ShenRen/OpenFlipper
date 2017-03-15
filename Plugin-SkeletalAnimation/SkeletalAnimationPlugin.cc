@@ -683,7 +683,7 @@ class GuiUpdatingScopeGuard
 {
   bool& v_;
 public:
-  GuiUpdatingScopeGuard(bool &_in):v_(_in){v_ = true;}
+  explicit GuiUpdatingScopeGuard(bool &_in):v_(_in){v_ = true;}
   ~GuiUpdatingScopeGuard(){v_ = false;}
 };
 
@@ -738,7 +738,7 @@ void SkeletalAnimationPlugin::UpdateUI()
 
     while ( animations ) {
       AnimationHandle anim = *animations;
-      pToolbox_->cbAnimation->addItem(skeleton->animationName(anim.animationIndex()).c_str(),QVariant(anim.animationIndex()));
+      pToolbox_->cbAnimation->addItem(skeleton->animationName(anim.animationIndex()).c_str(),QVariant::fromValue(anim.animationIndex()));
       ++animations;
     }
 

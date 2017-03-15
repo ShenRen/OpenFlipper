@@ -61,6 +61,6 @@ class subdividerToolbarWidget : public QWidget, public Ui::SubdividerControls
   Q_OBJECT
 
   public:
-    subdividerToolbarWidget(QWidget *parent = 0);
+    explicit subdividerToolbarWidget(QWidget *parent = 0);
 };
 

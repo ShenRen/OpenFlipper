@@ -131,10 +131,11 @@ void MergePlugin::initializePlugin() {
    connect(tool_->mergeButton, SIGNAL( clicked() ), this, SLOT( mergeObjects() ) );
    tool_->mergeButton->setStatusTip("Merge all target objects into one without changing geometry");
    tool_->mergeButton->setToolTip( tool_->mergeButton->statusTip() );
+   QIcon* toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"merge.png");
 
    connect(this,SIGNAL(cleanup(DataType, bool)),this,SLOT(slotCleanup(DataType, bool)),Qt::QueuedConnection);
 
-   emit addToolbox( tr("Merge") , tool_ );
+   emit addToolbox( tr("Merge") , tool_, toolIcon_ );
 }
 
 void MergePlugin::pluginsInitialized()

@@ -8,12 +8,14 @@ ScriptSettingsDouble::ScriptSettingsDouble()
 ScriptSettingsDouble::ScriptSettingsDouble(
         DoubleWidget *widget)
     : widget_(widget)
-{}
+{
+    connect(widget_, &QWidget::destroyed,
+            this, &QObject::deleteLater);
+}
 
 ScriptSettingsDouble::ScriptSettingsDouble(
             const ScriptSettingsDouble &other)
-    : QObject(),
-      widget_(other.widget_)
+    : ScriptSettingsDouble(other.widget_)
 {}
 
 ScriptSettingsDouble::~ScriptSettingsDouble()

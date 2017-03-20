@@ -47,12 +47,24 @@
 
 namespace ACG {
 
-inline Vec4f to_Vec4f(const QColor _color){
+inline Vec4f to_Vec4f(const QColor &_color){
   return Vec4f(_color.redF(),
                _color.greenF(),
                _color.blueF(),
                _color.alphaF());
 }
+
+inline Vec4d to_Vec4d(const QColor &_color){
+  return Vec4d(_color.redF(),
+               _color.greenF(),
+               _color.blueF(),
+               _color.alphaF());
+}
+
+inline QColor to_QColor(const Vec4d &c) {
+  return QColor::fromRgbF(c[0], c[1], c[2], c[3]);
+}
+
 
 } // namespace ACG
 

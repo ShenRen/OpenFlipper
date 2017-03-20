@@ -48,6 +48,7 @@
 \*===========================================================================*/
 
 #include "SingleObjectPropertyModel.hh"
+#include "ScriptObjects/ScriptObject.hh"
 
 SingleObjectPropertyModel::SingleObjectPropertyModel(QObject *parent)
     : PropertyModel(parent),
@@ -377,5 +378,11 @@ bool SingleObjectPropertyModel::isPropertyFree(QString propName, PropertyInfo::E
 
 PropertyInfo SingleObjectPropertyModel::getPropertyInfo(const QModelIndex index) const
 {
-	return propertyVisualizers[index.row()]->getPropertyInfo();
+    return propertyVisualizers[index.row()]->getPropertyInfo();
+}
+
+QScriptValue SingleObjectPropertyModel::getScriptObject(const QModelIndex index, QScriptContext *ctx)
+{
+    PropertyVisualizer* vis = propertyVisualizers[index.row()];
+    return createSettingsScriptObject(ctx, vis->getWidget());
 }

@@ -2,17 +2,16 @@
 #define SCRIPTSETTINGSDOUBLE_HH
 
 #include <QObject>
+#include "ScriptSettings.hh"
 
 #include "Widgets/DoubleWidget.hh"
 #include "ACG/Math/VectorT.hh"
 #include "OpenFlipper/common/DataTypes.hh"
 
-class ScriptSettingsDouble : public QObject {
+class ScriptSettingsDouble : public ScriptSettings {
     Q_OBJECT
     // We use Vector4 instead of a proper color type as those are not (yet)
     // exposed to the scripting environment.
-
-
     Q_PROPERTY(bool useColorCoder READ useColorCoder WRITE setUseColorCoder)
     Q_PROPERTY(Vector4 colorMin READ colorMin WRITE setColorMin)
     Q_PROPERTY(Vector4 colorMax READ colorMax WRITE setColorMax)
@@ -48,6 +47,7 @@ public slots:
     void setRangeMax(double val);
     void setMapOutsideRange(bool mapOutsideRange);
     void setAbsolute(bool absolute);
+
 private:
     DoubleWidget *widget_;
 };

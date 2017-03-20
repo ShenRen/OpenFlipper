@@ -48,7 +48,7 @@
 \*===========================================================================*/
 
 #include "SingleObjectPropertyModel.hh"
-#include "ScriptObjects/ScriptObject.hh"
+#include "ScriptObjects/ScriptSettings.hh"
 
 SingleObjectPropertyModel::SingleObjectPropertyModel(QObject *parent)
     : PropertyModel(parent),

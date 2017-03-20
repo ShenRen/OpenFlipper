@@ -2,12 +2,13 @@
 #define SCRIPTSETTINGSBOOLEAN_HH
 
 #include <QObject>
+#include "ScriptSettings.hh"
 
 #include "Widgets/BooleanWidget.hh"
 #include "ACG/Math/VectorT.hh"
 #include "OpenFlipper/common/DataTypes.hh"
 
-class ScriptSettingsBoolean : public QObject {
+class ScriptSettingsBoolean : public ScriptSettings {
     Q_OBJECT
     // We use Vector4 instead of a proper color type as those are not (yet)
     // exposed to the scripting environment.

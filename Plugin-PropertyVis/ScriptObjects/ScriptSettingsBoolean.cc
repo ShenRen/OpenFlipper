@@ -2,16 +2,19 @@
 #include "ACG/Utils/ColorConversion.hh"
 
 ScriptSettingsBoolean::ScriptSettingsBoolean()
-    : widget_(nullptr)
-{}
+    : ScriptSettings(nullptr),
+      widget_(nullptr)
+{
+    assert(false);
+}
 
 ScriptSettingsBoolean::ScriptSettingsBoolean(BooleanWidget *widget)
-    : widget_(widget)
+    : ScriptSettings(widget),
+      widget_(widget)
 {}
 
 ScriptSettingsBoolean::ScriptSettingsBoolean(const ScriptSettingsBoolean &other)
-    : QObject(),
-      widget_(other.widget_)
+    : ScriptSettingsBoolean(other.widget_)
 {}
 
 ScriptSettingsBoolean::~ScriptSettingsBoolean() {}

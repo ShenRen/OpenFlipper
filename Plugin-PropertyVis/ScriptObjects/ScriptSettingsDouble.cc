@@ -2,16 +2,17 @@
 #include "ACG/Utils/ColorConversion.hh"
 
 ScriptSettingsDouble::ScriptSettingsDouble()
-    : widget_(nullptr)
-{}
+    : ScriptSettings(nullptr),
+      widget_(nullptr)
+{
+    assert(false);
+}
 
 ScriptSettingsDouble::ScriptSettingsDouble(
         DoubleWidget *widget)
-    : widget_(widget)
-{
-    connect(widget_, &QWidget::destroyed,
-            this, &QObject::deleteLater);
-}
+    : ScriptSettings(widget),
+      widget_(widget)
+{}
 
 ScriptSettingsDouble::ScriptSettingsDouble(
             const ScriptSettingsDouble &other)
@@ -70,7 +71,6 @@ void ScriptSettingsDouble::setUseColorCoder(bool useColorCoder)
 {
     return widget_->doubleColorCoder->setChecked(useColorCoder);
 }
-
 
 void ScriptSettingsDouble::setUseFixedRange(bool useFixedRange)
 {

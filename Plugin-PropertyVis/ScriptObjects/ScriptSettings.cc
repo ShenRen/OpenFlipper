@@ -15,21 +15,33 @@
 
 ScriptSettings::ScriptSettings(QWidget *widget)
 {
-    if (widget == nullptr)
-        return;
-    connect(widget, &QWidget::destroyed,
-            this,   &QObject::deleteLater);
+    if (widget) {
+        connect(widget, &QWidget::destroyed,
+                this,   &QObject::deleteLater);
+    }
 }
 
 QScriptValue createSettingsScriptObject(QScriptContext *ctx, QWidget *widget)
 {
     QScriptEngine *engine = ctx->engine();
-    auto bw = dynamic_cast<BooleanWidget*>(widget);
-    if (bw) {return engine->newQObject(new ScriptSettingsBoolean(bw)); }
-    auto dw = dynamic_cast<DoubleWidget*>(widget);
-    if (dw) {return engine->newQObject(new ScriptSettingsDouble(dw)); }
-    auto dv = dynamic_cast<VectorWidget*>(widget);
-    if (dv) {return engine->newQObject(new ScriptSettingsVector(dv)); }
-    // not implemented:
-    return QScriptValue::SpecialValue::NullValue;
+    ScriptSettings *obj = nullptr;
+    if (auto w = dynamic_cast<BooleanWidget*>(widget)) {
+        obj = new ScriptSettingsBoolean(w);
+    }
+    else if (auto w = dynamic_cast<DoubleWidget*>(widget)) {
+        obj = new ScriptSettingsDouble(w);
+    }
+    else if (auto w = dynamic_cast<VectorWidget*>(widget)) {
+        obj = new ScriptSettingsVector(w);
+    }
+
+    if (!obj) { // no ScriptSettings class implemented for this widget
+        return QScriptValue::SpecialValue::NullValue;
+    }
+    return engine->newQObject(obj,
+                              QScriptEngine::QtOwnership,
+                              QScriptEngine::ExcludeSuperClassMethods
+                              | QScriptEngine::ExcludeSuperClassProperties
+                              | QScriptEngine::ExcludeChildObjects
+                              );
 }

@@ -101,6 +101,9 @@ private slots:
     void initializePlugin();
     void pluginsInitialized();
 
+    /// Tell system that this plugin runs without ui
+    void noguiSupported( ) {} ;
+
 private:
 
     QToolBar* toolbar;

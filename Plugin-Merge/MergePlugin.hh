@@ -63,6 +63,10 @@ private :
 
   DataType checkType(const std::vector< BaseObjectData* > &);
 
+private slots :
+  // Tell system that this plugin runs without ui
+  void noguiSupported( ) {} ;
+
 public slots:
   // BaseInterface
   void initializePlugin();
@@ -77,7 +81,17 @@ public slots:
    * @param _deleteSeparateObjects flag to determine if the separate objects shall be deleted after merging (default is true)
    * @return
    */
-  int mergeObjects(const std::vector< BaseObjectData* > & _objects, QString _name = "merged object", bool _deleteSeparateObjects = true);
+  int mergeObjects(const std::vector< BaseObjectData* > & _objects, QString _name = "merged object", bool _deleteSeparateObjects = true, DataType type_ = typeId("TriangleMesh"));
+
+  /**
+   * @brief mergeObjects
+   * @param _objects
+   * @param _name
+   * @param _deleteSeparateObjects
+   * @param type_
+   * @return
+   */
+  int mergeObjects(IdList _objects, QString _name = "merged object", bool _deleteSeparateObjects = true, DataType type_ = typeId("TriangleMesh"));
 
   /**
    * @brief slotCleanup is called when the cleanup event is processed at the end of mergeObjects.

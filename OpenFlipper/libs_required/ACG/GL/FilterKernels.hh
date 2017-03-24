@@ -59,6 +59,13 @@
 #include <vector>
 
 
+
+// Forward Declaration
+namespace GLSL
+{
+  class Program;
+}
+
 namespace ACG
 {
 
@@ -363,8 +370,10 @@ public:
    * @param _radius radius of poisson disk
    * @param _sampleDistance min distance between two samples
    * @param _numTries number of tries per sample to find the next sample
+   * @param _disk should samples lie inside a disk of radius r or inside square [-r/2, -r/2] x [r/2, r/2]
+   * @param _tilingCheck check min distance also across borders in a repeat-tiled kernel grid
   */
-  PoissonBlurFilter(float _radius, float _sampleDistance, int _numTries = 30);
+  PoissonBlurFilter(float _radius, float _sampleDistance, int _numTries = 30, bool _disk = true, bool _tilingCheck = false);
 
   /// Class destructor
   virtual ~PoissonBlurFilter();
@@ -391,6 +400,9 @@ public:
   /// number of iterations per sample
   int numTries() const {return numTries_;}
 
+  /// samples inside disk or square area
+  bool disk() const { return disk_; }
+
   /// disk sample offsets
   const std::vector<ACG::Vec2f>& samples() const {return samples_;}
 
@@ -406,6 +418,7 @@ private:
   float radius_;
   float sampleDistance_;
   int numTries_;
+  bool disk_;
 
   // poisson disk
   std::vector<ACG::Vec2f> samples_;

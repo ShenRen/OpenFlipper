@@ -342,7 +342,7 @@ CommandLineParseResult parseCommandLine(QCommandLineParser &parser, QString *err
  QCommandLineOption remoteControlOption("remote-control",QCoreApplication::translate("main", "Batch mode accepting remote connections"));
  parser.addOption(remoteControlOption);
 
- QCommandLineOption fulscreenOption(QStringList() << "f" << "fulscreen",QCoreApplication::translate("main", "Start in fulscreen mode"));
+ QCommandLineOption fulscreenOption(QStringList() << "f" << "fullscreen",QCoreApplication::translate("main", "Start in fullscreen mode"));
  parser.addOption(fulscreenOption);
 
  QCommandLineOption hideLoggerOption(QStringList() << "l" << "hide-logger",QCoreApplication::translate("main", "Start with hidden log window"));

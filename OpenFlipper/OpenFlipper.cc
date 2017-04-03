@@ -477,11 +477,10 @@ int main(int argc, char **argv)
     QApplication::setColorSpec( QApplication::CustomColor );
     QApplication app(argc,argv);
 
-#ifdef __APPLE__
     // Set organization and application names
     QCoreApplication::setOrganizationName("rwth-aachen.de");
-    QCoreApplication::setApplicationName("graphics.openflipper");
-#endif
+    QCoreApplication::setApplicationName(TOSTRING(PRODUCT_STRING));
+    QCoreApplication::setApplicationVersion(OpenFlipper::Options::coreVersion());
 
     if ( !QGLFormat::hasOpenGL() ) {
       std::cerr << "This system has no OpenGL support.\n";
@@ -580,11 +579,10 @@ int main(int argc, char **argv)
 
     QCoreApplication app(argc,argv);
 
-#ifdef __APPLE__
     // Set organization and application names
     QCoreApplication::setOrganizationName("rwth-aachen.de");
-    QCoreApplication::setApplicationName("graphics.openflipper");
-#endif
+    QCoreApplication::setApplicationName(TOSTRING(PRODUCT_STRING));
+    QCoreApplication::setApplicationVersion(OpenFlipper::Options::coreVersion());
 
     // create widget ( this also reads the ini files )
     Core * w = new Core( );

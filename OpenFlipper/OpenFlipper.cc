@@ -463,6 +463,10 @@ int main(int argc, char **argv)
   QCommandLineParser parser;
   QString errorMessage;
 
+#ifdef WIN32
+  //attach a console if necessary
+  attachConsole();
+#endif
 
 #ifndef NO_CATCH_SIGSEGV
   // Set a handler for segfaults
@@ -512,11 +516,6 @@ int main(int argc, char **argv)
         parser.showHelp();
         Q_UNREACHABLE();
     }
-
-#ifdef WIN32
-	//attach a console if necessary
-	attachConsole();
-#endif
 
     QString tLang = OpenFlipperSettings().value("Core/Language/Translation","en_US").toString();
 

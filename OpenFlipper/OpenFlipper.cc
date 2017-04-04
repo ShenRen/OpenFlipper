@@ -452,8 +452,7 @@ int main(int argc, char **argv)
   for (int i = 1; i < argc; i++) {
      QString option = QString(argv[i]);
      if (option.contains("batch") || option.contains("-b") ||
-         option.contains("--batch") || option.contains("/b") ||
-         option.contains("/batch" )) {
+         option.contains("--batch")) {
        std::cerr << "Batch Mode started" << std::endl;
        OpenFlipper::Options::nogui(true);
      }

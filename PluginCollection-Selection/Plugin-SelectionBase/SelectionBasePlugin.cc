@@ -141,8 +141,6 @@ void SelectionBasePlugin::initializePlugin() {
     connect(tool_->loadSelection, SIGNAL(clicked()), this, SLOT(slotLoadSelectionButton()));
     connect(tool_->saveSelection, SIGNAL(clicked()), this, SLOT(slotSaveSelectionButton()));
     
-    connect(tool_->minDihedralAngle, SIGNAL(valueChanged(double)), this, SLOT(slotMinDihedralAngleChanged(double)));
-
     // Add toolbox to OpenFlipper main window
     toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"selection_base.png");
     emit addToolbox("Selections", tool_, toolIcon_ );
@@ -725,13 +723,6 @@ void SelectionBasePlugin::updateActivePrimitiveTypes(bool _checked) {
     
     // Update pick modes bar
     updatePickModeToolBar();
-}
-
-//============================================================================================
-
-void SelectionBasePlugin::slotMinDihedralAngleChanged(double _angle)
-{
-  OpenFlipperQSettings().setValue("SelectionBasePlugin/MinDihedralAngle", double(_angle/180.0*M_PI));
 }
 
 //============================================================================================

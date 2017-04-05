@@ -226,8 +226,6 @@ Q_INTERFACES(SelectionInterface)
 
         void updateActivePrimitiveTypes(bool _checked);
 
-        void slotMinDihedralAngleChanged(double _angle);
-
     public slots:
         QString version() { return QString("1.0"); };
 

@@ -111,19 +111,21 @@
 
 #ifdef WIN32
 
-#define CONNECT_CONSOLE                                 \
-  FILE* check = freopen("CONIN$", "r", stdin);          \
-  if (check) {                                          \
-    std::cerr << "Error reopening stdin" << std::endl;  \
-  }                                                     \
-  check = freopen("CONOUT$", "w", stdout);              \
-  if (check) {                                          \
-    std::cerr << "Error reopening stdout" << std::endl; \
-  }                                                     \
-  check = freopen("CONOUT$", "w", stderr);              \
-  if (check) {                                          \
-    std::cerr << "Error reopening stderr" << std::endl; \
+void connect_console()
+{
+  FILE* check = freopen("CONIN$", "r", stdin);
+  if (check) {
+    std::cerr << "Error reopening stdin" << std::endl;
   }
+  check = freopen("CONOUT$", "w", stdout);
+  if (check) {
+    std::cerr << "Error reopening stdout" << std::endl;
+  }
+  check = freopen("CONOUT$", "w", stderr);
+  if (check) {
+    std::cerr << "Error reopening stderr" << std::endl;
+  }
+}
 
   void attachConsole()
    {
@@ -131,7 +133,7 @@
      if (AttachConsole(-1))
      {
        //if the console was attached change stdinput and output
-       CONNECT_CONSOLE
+       connect_console();
      }
      else
      {
@@ -139,14 +141,14 @@
  #ifndef NDEBUG
        //always open a console in debug mode
        AllocConsole();     
-       CONNECT_CONSOLE
+       connect_console();
 
        return;
  #endif
        if (OpenFlipper::Options::logToConsole())
        {
          AllocConsole();
-         CONNECT_CONSOLE
+         connect_console();
        }
      }
    }

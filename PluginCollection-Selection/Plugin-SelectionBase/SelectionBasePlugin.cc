@@ -718,6 +718,7 @@ void SelectionBasePlugin::updateActivePrimitiveTypes(bool _checked) {
     // Hide and show selection functions that are associated
     // with the currently active primitive types
     slotShowAndHideOperations();
+    slotShowAndHideParameters();
     
     // Update pick modes bar
     updatePickModeToolBar();
@@ -821,6 +822,42 @@ void SelectionBasePlugin::slotAddSelectionOperations(QString _handleName, QStrin
 
 //============================================================================================
 
+void SelectionBasePlugin::slotAddSelectionParameters(QString _handleName, QWidget* _widget, QString _category, PrimitiveType _type)
+{
+  // Get selection environment
+  SelectionEnvironment* env = nullptr;
+  if(!getSelectionEnvironment(env,_handleName)) {
+      emit log(LOGERR, QString("Could not find selection environment with handle '%1'!").arg(_handleName));
+      return;
+  }
+
+  // Find associated layout from category
+  std::map<QString,std::pair<FillingLayout*,QGroupBox*> >::iterator it = env->categories.find(_category);
+  if(it == env->categories.end()) {
+      // Create new category
+      FillingLayout* fillLayout = new FillingLayout(2);
+      QGroupBox* group = new QGroupBox(_category);
+      group->setLayout(fillLayout);
+      // Insert newly created fillLayout into map
+      std::pair<std::map<QString,std::pair<FillingLayout*,QGroupBox*> >::iterator,bool> ret;
+      ret = env->categories.insert(std::pair<QString,std::pair<FillingLayout*,QGroupBox*> >(_category,
+                                          std::pair<FillingLayout*,QGroupBox*>(fillLayout,group)));
+      it = ret.first;
+      // Add group box to vertical operations layout
+      env->operationsBar->addWidget(group);
+  }
+
+  // Add widget to local list
+  env->parameters.insert(std::pair<PrimitiveType,QWidget*>(_type, _widget));
+  // Add widget to operations widget in tool box
+  (*it).second.first->addWidget(_widget);
+
+  // Show operations if in supported primitive type mode
+  slotShowAndHideParameters();
+}
+
+//============================================================================================
+
 void SelectionBasePlugin::slotOperationRequested() {
     
     QObject* sender = QObject::sender();
@@ -847,6 +884,27 @@ void SelectionBasePlugin::slotShowAndHideOperations() {
                 (*it).second->setDisabled(false);
             } else {
                 // Type is currently not active -> hide button
+                (*it).second->setDisabled(true);
+            }
+        }
+    }
+}
+
+//============================================================================================
+
+void SelectionBasePlugin::slotShowAndHideParameters() {
+
+    for(std::map<QString,SelectionEnvironment>::iterator e_it = selectionEnvironments_.begin();
+        e_it != selectionEnvironments_.end(); ++e_it) {
+
+        for(std::multimap<PrimitiveType,QWidget*>::iterator it = (*e_it).second.parameters.begin();
+            it != (*e_it).second.parameters.end(); ++it) {
+
+            if((currentPrimitiveType_ & (*it).first) || (*it).first == 0u) {
+                // Type is currently active -> show widget
+                (*it).second->setDisabled(false);
+            } else {
+                // Type is currently not active -> hide widget
                 (*it).second->setDisabled(true);
             }
         }

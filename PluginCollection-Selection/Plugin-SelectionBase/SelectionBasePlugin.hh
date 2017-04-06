@@ -173,6 +173,7 @@ Q_INTERFACES(SelectionInterface)
                                         DataType _objectTypeRestriction);
 
         void slotAddSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type = 0u);
+        void slotAddSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type = 0u);
 
         void slotShowToggleSelectionMode(QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes);
         void slotShowLassoSelectionMode(QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes);
@@ -217,6 +218,7 @@ Q_INTERFACES(SelectionInterface)
 
         void slotOperationRequested();
         void slotShowAndHideOperations();
+        void slotShowAndHideParameters();
 
         // ==================== GUI =======================
 
@@ -288,6 +290,9 @@ Q_INTERFACES(SelectionInterface)
             // Map that stores for each primitive type a set of
             // operations that are supported on it
             std::multimap<PrimitiveType, QPushButton*> operations;
+            // Map that stores for each primitive type a widget
+            // that provides parameters
+            std::multimap<PrimitiveType, QWidget*> parameters;
             // Keep name of tab for selection environment
             QWidget* tabWidget;
         };

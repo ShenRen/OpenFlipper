@@ -298,6 +298,9 @@ Q_INTERFACES(SelectionInterface)
         /// Get a unique handle name
         QString getUniqueHandleName(QString _name, int _num = 0);
 
+        /// Get a selectionEnvironment by a given name
+        bool getSelectionEnvironment(SelectionEnvironment*& env, const QString& _handleName);
+
         /// Test if at least one object of type _type is in the scene graph
         bool typeExists(DataType _type, int _excludeId = -1);
 
@@ -309,6 +312,13 @@ Q_INTERFACES(SelectionInterface)
         void showSelectionMode(QString _mode, QString _icon, QString _desc,
                                QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes,
                                QString& _customIdentifier, bool _custom = false, DataType _objectTypeRestriction = DATA_ALL);
+
+        /// helper function for showSelectionMode
+        void selectionModeShowSwitch(bool _show, SelectionEnvironment*& env, HandleAction* toggleSelectionAction_,
+                                                          SelectionInterface::PrimitiveType& _associatedTypes);
+
+        /// helper function to find a baseObjectData and selection environment given a specific id
+        bool findObjectType(BaseObjectData*& obj, bool& found, SelectionEnvironment*& env, int _id);
 
         /// Create new type frame for tabs widget
         SelectionTypeFrameWidget* createNewTypeFrame(SelectionEnvironment& _env);

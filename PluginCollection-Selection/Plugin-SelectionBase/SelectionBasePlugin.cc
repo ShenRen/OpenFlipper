@@ -447,32 +447,33 @@ void SelectionBasePlugin::slotRegisterType(QString _handleName, DataType _type) 
     Register new data type under the selection environment with
     handle name _handleName.
     */
-    std::map<QString,SelectionEnvironment>::iterator it =
-        selectionEnvironments_.find(_handleName);
+    SelectionEnvironment* env;
         
     // If the associated selection environment has been found,
     // we add the specified data type to the list of supported data types
-    if(it != selectionEnvironments_.end()) {
+    if(getSelectionEnvironment(env, _handleName)) {
         // Search if the data type has already been added before...
-        for(std::vector<DataType>::iterator t_it = (*it).second.types.begin();
-            t_it != (*it).second.types.end(); ++t_it) {
+        for(std::vector<DataType>::iterator t_it = env->types.begin();
+            t_it != env->types.end(); ++t_it) {
             // If the type already exists in the list -> return
             if ((*t_it) == _type) return;
         }
         // ...if not, add it.
-        (*it).second.types.push_back(_type);
+        env->types.push_back(_type);
         // And show selection environment button if at least one object
         // of the associated type already exists in the scenegraph
         if(typeExists(_type)) {
             // Show selection environment's tab widget
-            tool_->typeTabWidget->setTabEnabled(tool_->typeTabWidget->indexOf((*it).second.tabWidget), true);
-            (*it).second.tabWidget->setEnabled(true);
+            tool_->typeTabWidget->setTabEnabled(tool_->typeTabWidget->indexOf(env->tabWidget), true);
+            env->tabWidget->setEnabled(true);
         }
         
     } else {
         emit log(LOGERR, "The specified selection environment has not been found! The data type could not be registered.");
     }
 }
+
+//============================================================================================
 
 void SelectionBasePlugin::updatePickModeToolBar() {
 
@@ -586,16 +587,13 @@ void SelectionBasePlugin::slotAddPrimitiveType(QString _handleName, QString _nam
   if (  !OpenFlipper::Options::gui() )
     return;
 
-  // Get selection environment
-  std::map<QString,SelectionEnvironment>::iterator it =
-      selectionEnvironments_.find(_handleName);
-
-  if(it == selectionEnvironments_.end()) {
+  // Get selection environment  
+  SelectionEnvironment* env;
+  if(! getSelectionEnvironment(env,_handleName))
+  {
     emit log(LOGERR, QString("Could not find selection environment width handle '%1'!").arg(_handleName));
     return;
   }
-
-  SelectionEnvironment& env = (*it).second;
 
   // Test if there's a free primitive type available
   // Note: This is actually limited to 31
@@ -605,8 +603,8 @@ void SelectionBasePlugin::slotAddPrimitiveType(QString _handleName, QString _nam
   }
 
   // Test if there's a custom type with the same name already
-  QList<QAction*>::const_iterator a_it = env.primitiveActions->actions().constBegin();
-  for(; a_it != env.primitiveActions->actions().constEnd(); ++a_it) {
+  QList<QAction*>::const_iterator a_it = env->primitiveActions->actions().constBegin();
+  for(; a_it != env->primitiveActions->actions().constEnd(); ++a_it) {
     if((*a_it)->text() == _name) {
       emit log(LOGERR, QString("A custom primitive type with name \"%1\" already exists!").arg(_name));
       return;
@@ -614,7 +612,7 @@ void SelectionBasePlugin::slotAddPrimitiveType(QString _handleName, QString _nam
   }
 
   // Add custom primitive type
-  PrimitiveAction* action = new PrimitiveAction(QIcon(_icon), _name, env.primitiveActions);
+  PrimitiveAction* action = new PrimitiveAction(QIcon(_icon), _name, env->primitiveActions);
   action->setCheckable(true);
   action->selectionEnvironmentHandle(_handleName);
   primitivesBarGroup_->addAction(action);
@@ -627,13 +625,13 @@ void SelectionBasePlugin::slotAddPrimitiveType(QString _handleName, QString _nam
   ActionButton* button = new ActionButton(action);
   button->setMinimumSize(QSize(32,32));
   button->setMaximumSize(QSize(64,64));
-  env.primitivesBar->addWidget(button);
+  env->primitivesBar->addWidget(button);
 
   _typeHandle = nextFreePrimitiveType_;
   action->primitiveType(_typeHandle);
 
   // Add primitive type to environment
-  env.primitiveTypes |= _typeHandle;
+  env->primitiveTypes |= _typeHandle;
 
   primitiveTypeButtons_.insert(std::pair<PrimitiveType,QAction*>(_typeHandle,action));
 
@@ -706,10 +704,10 @@ void SelectionBasePlugin::updateActivePrimitiveTypes(bool _checked) {
         toggleSelectionAction_->trigger();
     }
 
-    // Automatically show tab widget associated to this primitive type
-    std::map<QString,SelectionEnvironment>::iterator sit = selectionEnvironments_.find(clickedAction->selectionEnvironmentHandle());
-    if(sit != selectionEnvironments_.end() && _checked) {
-        tool_->typeTabWidget->setCurrentIndex(tool_->typeTabWidget->indexOf((*sit).second.tabWidget));
+    // Automatically show tab widget associated to this primitive type    
+    SelectionEnvironment* env = nullptr;
+    if(getSelectionEnvironment(env, clickedAction->selectionEnvironmentHandle()) && _checked) {
+        tool_->typeTabWidget->setCurrentIndex(tool_->typeTabWidget->indexOf(env->tabWidget));
     }
     
     // Clear lines
@@ -780,30 +778,26 @@ void SelectionBasePlugin::setSelectionPrimitiveType(QString _primitive) {
 void SelectionBasePlugin::slotAddSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, PrimitiveType _type) {
     
     // Get selection environment
-    std::map<QString,SelectionEnvironment>::iterator e_it =
-        selectionEnvironments_.find(_handleName);
-        
-    if(e_it == selectionEnvironments_.end()) {
+    SelectionEnvironment* env = nullptr;
+    if(!getSelectionEnvironment(env,_handleName)) {
         emit log(LOGERR, QString("Could not find selection environment with handle '%1'!").arg(_handleName));
         return;
     }
     
-    SelectionEnvironment& env = (*e_it).second;
-    
     // Find associated layout from category
-    std::map<QString,std::pair<FillingLayout*,QGroupBox*> >::iterator it = env.categories.find(_category);
-    if(it == env.categories.end()) {
+    std::map<QString,std::pair<FillingLayout*,QGroupBox*> >::iterator it = env->categories.find(_category);
+    if(it == env->categories.end()) {
         // Create new category
         FillingLayout* fillLayout = new FillingLayout(2);
         QGroupBox* group = new QGroupBox(_category);
         group->setLayout(fillLayout);
         // Insert newly created fillLayout into map
         std::pair<std::map<QString,std::pair<FillingLayout*,QGroupBox*> >::iterator,bool> ret;
-        ret = env.categories.insert(std::pair<QString,std::pair<FillingLayout*,QGroupBox*> >(_category,
+        ret = env->categories.insert(std::pair<QString,std::pair<FillingLayout*,QGroupBox*> >(_category,
                                             std::pair<FillingLayout*,QGroupBox*>(fillLayout,group)));
         it = ret.first;
         // Add group box to vertical operations layout
-        env.operationsBar->addWidget(group);
+        env->operationsBar->addWidget(group);
     }
     
     // Add buttons with function names to operations widget
@@ -817,7 +811,7 @@ void SelectionBasePlugin::slotAddSelectionOperations(QString _handleName, QStrin
 
         connect(button, SIGNAL(clicked()), this, SLOT(slotOperationRequested()));
         // Add operation to local list
-        env.operations.insert(std::pair<PrimitiveType,QPushButton*>(_type, button));
+        env->operations.insert(std::pair<PrimitiveType,QPushButton*>(_type, button));
         // Add button to operations widget in tool box
         (*it).second.first->addWidget(button);
     }
@@ -1000,100 +994,27 @@ void SelectionBasePlugin::showSelectionMode(QString _mode, QString _icon, QStrin
     return;
 
   // Find selection environment that is associated to _handleName
-  std::map<QString,SelectionEnvironment>::iterator it = selectionEnvironments_.find(_handleName);
-
   // Return if the requested selection environment was not found
-  if(it == selectionEnvironments_.end()) return;
+  SelectionEnvironment* env = nullptr;
+  if(!getSelectionEnvironment(env,_handleName) ) return;
 
   if(!_custom) {
     if(_mode == SB_TOGGLE) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(toggleSelectionAction_);
-        toggleSelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(toggleSelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          toggleSelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,toggleSelectionAction_,_associatedTypes);
     } else if (_mode == SB_LASSO) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(lassoSelectionAction_);
-        lassoSelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(lassoSelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          lassoSelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,lassoSelectionAction_,_associatedTypes);
     } else if (_mode == SB_VOLUME_LASSO) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(volumeLassoSelectionAction_);
-        volumeLassoSelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(volumeLassoSelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          volumeLassoSelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,volumeLassoSelectionAction_,_associatedTypes);
     } else if (_mode == SB_SURFACE_LASSO) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(surfaceLassoSelectionAction_);
-        surfaceLassoSelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(surfaceLassoSelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          surfaceLassoSelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,surfaceLassoSelectionAction_,_associatedTypes);
     } else if (_mode == SB_SPHERE) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(sphereSelectionAction_);
-        sphereSelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(sphereSelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          sphereSelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,sphereSelectionAction_,_associatedTypes);
     } else if (_mode == SB_BOUNDARY) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(boundarySelectionAction_);
-        boundarySelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(boundarySelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          boundarySelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,boundarySelectionAction_,_associatedTypes);
     } else if (_mode == SB_FLOODFILL) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(floodFillSelectionAction_);
-        floodFillSelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(floodFillSelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          floodFillSelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,floodFillSelectionAction_,_associatedTypes);
     } else if (_mode == SB_COMPONENTS) {
-      if(_show) {
-        (*it).second.defaultSelectionModes.insert(componentsSelectionAction_);
-        componentsSelectionAction_->addAssociatedType(_associatedTypes);
-      } else {
-        std::set<HandleAction*>::iterator e = (*it).second.defaultSelectionModes.find(componentsSelectionAction_);
-        if(e != (*it).second.defaultSelectionModes.end()) {
-          (*it).second.defaultSelectionModes.erase(e);
-          componentsSelectionAction_->removeAssociatedType(_associatedTypes);
-        }
-      }
+      selectionModeShowSwitch(_show,env,componentsSelectionAction_,_associatedTypes);
     }
   } else {
     if(_show) {
@@ -1116,21 +1037,21 @@ void SelectionBasePlugin::showSelectionMode(QString _mode, QString _icon, QStrin
       pickModeToolBar_->addActions(selectionModesGroup_->actions());
 
       // Add pickmode name and button to selection environment's container
-      (*it).second.customSelectionModes.insert(action);
+      env->customSelectionModes.insert(action);
 
       connect(action, SIGNAL(triggered(bool)), this, SLOT(slotEnterSelectionMode(bool)));
     } else {
       // Search custom selection mode
-      std::set<HandleAction*>::iterator e = (*it).second.customSelectionModes.begin();
-      for(; e != (*it).second.customSelectionModes.end(); ++e) {
+      std::set<HandleAction*>::iterator e = env->customSelectionModes.begin();
+      for(; e != env->customSelectionModes.end(); ++e) {
         if((*e)->selectionEnvironmentHandle() == _handleName)
           break;
       }
 
       // Delete action from list
-      if(e != (*it).second.customSelectionModes.end()) {
+      if(e != env->customSelectionModes.end()) {
         (*e)->removeAssociatedType(_associatedTypes);
-        (*it).second.customSelectionModes.erase(e);
+        env->customSelectionModes.erase(e);
       }
     }
   }
@@ -1515,29 +1436,11 @@ void SelectionBasePlugin::addedEmptyObject (int _id) {
     object type. If so and if this selection environment is
     not yet available, we will make it available from now on.
     */
-    std::map<QString,SelectionEnvironment>::iterator it = selectionEnvironments_.begin();
+    SelectionEnvironment* env = nullptr;
     bool found = false;
-    
-    BaseObjectData* obj;
-    PluginFunctions::getObject(_id, obj);
-    if (obj) {
-        DataType t = obj->dataType();
-        
-        // Iterate over all selection environments
-        for(;it != selectionEnvironments_.end(); ++it) {
-            
-            // Iterate over all supported data types per selection environment
-            for(std::vector<DataType>::iterator t_it = (*it).second.types.begin();
-                t_it != (*it).second.types.end(); ++t_it) {
-                
-                if(t == (*t_it)) {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(found) break;
-        }
+    BaseObjectData* obj = nullptr;
+    if(findObjectType(obj,found, env, _id))
+    {
 
         // Keep track of all data types in the scene
         availableObjectTypes_ |= obj->dataType();
@@ -1550,15 +1453,13 @@ void SelectionBasePlugin::addedEmptyObject (int _id) {
       if (bObject && !bObject->isGroup()) {
         emit log(LOGERR, "Could not retrieve object type! Maybe a selection environment will be missing.");
       }
-
       return;
-    }
-    
+    }    
     if(found) {
       // We have found a selection environment for the
       // recently loaded data type -> show tab widget
-      tool_->typeTabWidget->setTabEnabled(tool_->typeTabWidget->indexOf((*it).second.tabWidget), true);
-      (*it).second.tabWidget->setEnabled(true);
+      tool_->typeTabWidget->setTabEnabled(tool_->typeTabWidget->indexOf(env->tabWidget), true);
+      env->tabWidget->setEnabled(true);
     }
     
     // Increase the number of available objects for that type
@@ -1584,33 +1485,12 @@ void SelectionBasePlugin::objectDeleted (int _id) {
     available, we will remove it if there's no object
     of the given data type left in the scenegraph.
     */
-    std::map<QString,SelectionEnvironment>::iterator it = selectionEnvironments_.begin();
+    SelectionEnvironment* env = nullptr;
     bool found = false;
-    DataType t;
-    
-    BaseObjectData* obj;
-    PluginFunctions::getObject(_id, obj);
-    if (obj) {
-        t = obj->dataType();
-        
-        // Iterate over all selection environments
-        for(;it != selectionEnvironments_.end(); ++it) {
-            
-            // Iterate over all supported data types of a selection environment
-            for(std::vector<DataType>::iterator t_it = (*it).second.types.begin();
-                t_it != (*it).second.types.end(); ++t_it) {
-                
-                if(t == (*t_it)) {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(found) break;
-        }
-
+    BaseObjectData* obj = nullptr;
+    if(findObjectType(obj,found, env, _id))
+    {
         availableObjectTypes_ = (availableObjectTypes_ & ~obj->dataType().value());
-
     } else {
         emit log(LOGERR, "Could not retrieve object type!");
         return;
@@ -1618,14 +1498,14 @@ void SelectionBasePlugin::objectDeleted (int _id) {
     
     if(found) {
         // If we have found a selection environment for the
-        // recently loaded data type AND if there's no
+        // recently deleted data type AND if there's no
         // other object with the same data type in the
         // scene graph -> hide button
                 
         // Search for other objects for *all* supported data types
         bool atLeastOne = false;
-        for(std::vector<DataType>::iterator t_it = (*it).second.types.begin();
-                t_it != (*it).second.types.end(); ++t_it) {
+        for(std::vector<DataType>::iterator t_it = env->types.begin();
+                t_it != env->types.end(); ++t_it) {
             
             if(typeExists(*t_it, _id)) {
                 atLeastOne = true;
@@ -1634,8 +1514,8 @@ void SelectionBasePlugin::objectDeleted (int _id) {
         }
         // Show tab widget if at least one object of supported data type was found
         // Hide it otherwise
-        tool_->typeTabWidget->setTabEnabled(tool_->typeTabWidget->indexOf((*it).second.tabWidget), atLeastOne);
-        (*it).second.tabWidget->setEnabled(atLeastOne);
+        tool_->typeTabWidget->setTabEnabled(tool_->typeTabWidget->indexOf(env->tabWidget), atLeastOne);
+        env->tabWidget->setEnabled(atLeastOne);
     }
     
     // Decrease the number of available objects for that type
@@ -1668,7 +1548,7 @@ void SelectionBasePlugin::updateTabsOrder() {
         if(tool_->typeTabWidget->isTabEnabled(i)) {
             tool_->typeTabWidget->insertTab(firstFree, tool_->typeTabWidget->widget(i), tool_->typeTabWidget->tabText(i));
             newMappings.insert(std::pair<int,int>(i,firstFree));
-            firstFree++;
+            ++firstFree;
         } else {
             // Tab remains in old order
             newMappings.insert(std::pair<int,int>(i,i));
@@ -1833,6 +1713,66 @@ void SelectionBasePlugin::slotRegisterKeyShortcut(int _key, Qt::KeyboardModifier
 }
 
 //============================================================================================
+
+bool SelectionBasePlugin::getSelectionEnvironment(SelectionEnvironment*& env, const QString& _handleName)
+{
+  // Find selection environment that is associated to _handleName
+  std::map<QString,SelectionEnvironment>::iterator it = selectionEnvironments_.find(_handleName);
+
+  // Return if the requested selection environment was not found
+  if(it == selectionEnvironments_.end()) return false;
+  env = &(it->second);
+  return true;
+}
+
+//============================================================================================
+
+void SelectionBasePlugin::selectionModeShowSwitch(bool _show, SelectionEnvironment*& env,
+                                                  HandleAction* toggleSelectionAction_, PrimitiveType& _associatedTypes)
+{
+  if(_show) {
+    env->defaultSelectionModes.insert(toggleSelectionAction_);
+    toggleSelectionAction_->addAssociatedType(_associatedTypes);
+  } else {
+    std::set<HandleAction*>::iterator e = env->defaultSelectionModes.find(toggleSelectionAction_);
+    if(e != env->defaultSelectionModes.end()) {
+      env->defaultSelectionModes.erase(e);
+      toggleSelectionAction_->removeAssociatedType(_associatedTypes);
+    }
+  }
+}
+
+//============================================================================================
+
+bool SelectionBasePlugin::findObjectType(BaseObjectData*& obj, bool& found, SelectionEnvironment*& env, int _id)
+{
+  std::map<QString,SelectionEnvironment>::iterator it = selectionEnvironments_.begin();
+  found = false;
+  DataType t;
+  PluginFunctions::getObject(_id, obj);
+  if (obj) {
+      t = obj->dataType();
+
+      // Iterate over all selection environments
+      for(;it != selectionEnvironments_.end(); ++it) {
+
+          // Iterate over all supported data types of a selection environment
+          for(std::vector<DataType>::iterator t_it = (*it).second.types.begin();
+              t_it != (*it).second.types.end(); ++t_it) {
+
+              if(t == (*t_it)) {
+                  found = true;
+                  break;
+              }
+          }
+          if(found) break;
+      }
+      env = &it->second;
+      return true;
+  }
+  else
+      return false;
+}
 
 #if QT_VERSION < 0x050000
   Q_EXPORT_PLUGIN2(selectionbaseplugin, SelectionBasePlugin);

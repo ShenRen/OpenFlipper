@@ -40,6 +40,7 @@ signals:
   
   // ToolboxInterface
   void addToolbox( QString _name  , QWidget* _widget );
+  void addToolbox( QString _name  , QWidget* _widget , QIcon* _icon );
 
   // ScriptInterface
   void setSlotDescription(QString     _slotName,   QString     _slotDescription,

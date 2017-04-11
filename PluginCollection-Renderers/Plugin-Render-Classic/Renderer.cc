@@ -90,8 +90,9 @@ void Renderer::render(ACG::GLState* _glState, Viewer::ViewerProperties& _propert
 
     if (oM)
     {
-      glClear (GL_STENCIL_BUFFER_BIT);
-      ACG::GLState::enable (GL_STENCIL_TEST);
+      ACG::GLState::enable(GL_STENCIL_TEST);
+      glClearStencil(0);
+      glClear(GL_STENCIL_BUFFER_BIT);
       glStencilOp (GL_KEEP, GL_KEEP, GL_ZERO);
       glStencilFunc (GL_ALWAYS, 0, ~0);
 

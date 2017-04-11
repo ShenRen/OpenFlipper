@@ -20,8 +20,8 @@ file (
 
 
 FIND_PATH(PHYSIM_INCLUDE_DIR PhySim/Config/PhySimDefines.hh
-           PATHS "${_libdirs}" 
-                 "${CMAKE_SOURCE_DIR}/libs" )
+           PATHS ${_libdirs} 
+                 ${CMAKE_SOURCE_DIR}/libs )
 
 add_definitions (-DPHYSIMDLL -DUSEPHYSIM )
 

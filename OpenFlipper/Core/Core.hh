@@ -835,7 +835,7 @@ private slots:
   *                  the current path will be prepended.
   * @param _asPolyMesh Load as a polymesh ( yes/no)
   */
-  void commandLineOpen(const char* _filename, bool _asPolyMesh );
+  void commandLineOpen(const QString& _filename, bool _asPolyMesh );
 
   /** \brief Load a script from the commandline on application start
   *
@@ -847,7 +847,7 @@ private slots:
   * @param _filename filename of the script to be opened. If it does not contain a full path,
   *                  the current path will be prepended.
   */
-  void commandLineScript(const char* _filename );
+  void commandLineScript(const QString& _filename );
 
   private slots:
 
@@ -861,10 +861,10 @@ private slots:
 
   private:
     /// Vector storing filenames from commandline to be opened after application startup (objects)
-    std::vector< std::pair < std::string , bool >  > commandLineFileNames_;
+    std::vector< std::pair < QString , bool >  > commandLineFileNames_;
     
     /// Vector storing filenames from commandline to be opened after application startup (script files)
-    std::vector< std::string > commandLineScriptNames_;
+    std::vector< QString > commandLineScriptNames_;
 
   public:
 

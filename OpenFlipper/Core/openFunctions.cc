@@ -99,9 +99,9 @@ void Core::slotGetAllFilters ( QStringList& _list){
   }
 }
 
-void Core::commandLineOpen(const char* _filename, bool _asPolyMesh ){
+void Core::commandLineOpen(const QString& _filename, bool _asPolyMesh ){
 
-  QString file(_filename);
+  QString file = _filename;
 
   // Modify filename to contain full paths if they were given as relative paths
   if ( !file.startsWith("/") && !file.contains(":") ) {
@@ -111,12 +111,12 @@ void Core::commandLineOpen(const char* _filename, bool _asPolyMesh ){
   }
 
   // Add to the open list
-  commandLineFileNames_.push_back(std::pair< std::string , bool >(file.toStdString(), _asPolyMesh));
+  commandLineFileNames_.push_back(std::pair< QString , bool >(file, _asPolyMesh));
 }
 
-void Core::commandLineScript(const char* _filename ) {
+void Core::commandLineScript(const QString& _filename ) {
 
-  QString file(_filename);
+  QString file = _filename;
   
   // Modify filename to contain full paths if they were given as relative paths
   if ( !file.startsWith("/") && !file.contains(":") ) {
@@ -126,7 +126,7 @@ void Core::commandLineScript(const char* _filename ) {
   }
   
   // Add to the open list
-  commandLineScriptNames_.push_back(file.toStdString());
+  commandLineScriptNames_.push_back(file);
 }
 
 void Core::slotExecuteAfterStartup() {
@@ -168,7 +168,7 @@ void Core::slotExecuteAfterStartup() {
   for ( uint i = 0 ; i < commandLineFileNames_.size() ; ++i ) {
 
     // Skip scripts here as they will be handled by a different function
-    QString tmp = QString::fromStdString(commandLineFileNames_[i].first);
+    QString tmp = commandLineFileNames_[i].first;
     if ( tmp.endsWith("ofs",Qt::CaseInsensitive) ) {
       commandLineScriptNames_.push_back(commandLineFileNames_[i].first);
       continue;
@@ -176,9 +176,9 @@ void Core::slotExecuteAfterStartup() {
 
     // If the file was given with the polymesh option, open them as polymeshes.
     if (commandLineFileNames_[i].second)
-      loadObject(typeId("PolyMesh"), QString::fromStdString(commandLineFileNames_[i].first));
+      loadObject(typeId("PolyMesh"), commandLineFileNames_[i].first);
     else {
-      loadObject(QString::fromStdString(commandLineFileNames_[i].first));
+      loadObject(commandLineFileNames_[i].first);
     }
   }
 
@@ -190,7 +190,7 @@ void Core::slotExecuteAfterStartup() {
   // If we have scripting support, execute the scripts given at the commandline.
   if ( scriptingSupport )
     for ( uint i = 0 ; i < commandLineScriptNames_.size() ; ++i ) {
-      emit executeFileScript(QString::fromStdString(commandLineScriptNames_[i]));
+      emit executeFileScript(commandLineScriptNames_[i]);
     }
 
   // If we don't have a gui and we are not under remote control,

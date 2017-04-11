@@ -111,62 +111,44 @@
 
 #ifdef WIN32
 
+void connect_console()
+{
+  FILE* check = freopen("CONIN$", "r", stdin);
+  if (check) {
+    std::cerr << "Error reopening stdin" << std::endl;
+  }
+  check = freopen("CONOUT$", "w", stdout);
+  if (check) {
+    std::cerr << "Error reopening stdout" << std::endl;
+  }
+  check = freopen("CONOUT$", "w", stderr);
+  if (check) {
+    std::cerr << "Error reopening stderr" << std::endl;
+  }
+}
+
   void attachConsole()
    {
      //try to attach the console of the parent process
      if (AttachConsole(-1))
      {
        //if the console was attached change stdinput and output
-       FILE* check = freopen("CONIN$", "r", stdin);
-       if (check) {
-         std::cerr << "Error reopening stdin" << std::endl;
-       }
-       check = freopen("CONOUT$", "w", stdout);
-       if (check) {
-         std::cerr << "Error reopening stdout" << std::endl;
-       }
-       check = freopen("CONOUT$", "w", stderr);
-       if (check) {
-         std::cerr << "Error reopening stderr" << std::endl;
-       }
+       connect_console();
      }
      else
      {
        //create and attach a new console if needed
  #ifndef NDEBUG
        //always open a console in debug mode
-       AllocConsole();
+       AllocConsole();     
+       connect_console();
 
-       FILE* check = freopen("CONIN$", "r", stdin);
-       if (check) {
-         std::cerr << "Error reopening stdin" << std::endl;
-       }
-       check = freopen("CONOUT$", "w", stdout);
-       if (check) {
-         std::cerr << "Error reopening stdout" << std::endl;
-       }
-       check = freopen("CONOUT$", "w", stderr);
-       if (check) {
-         std::cerr << "Error reopening stderr" << std::endl;
-       }
        return;
  #endif
        if (OpenFlipper::Options::logToConsole())
        {
          AllocConsole();
-
-         FILE* check = freopen("CONIN$", "r", stdin);
-         if (check) {
-           std::cerr << "Error reopening stdin" << std::endl;
-         }
-         check = freopen("CONOUT$", "w", stdout);
-         if (check) {
-           std::cerr << "Error reopening stdout" << std::endl;
-         }
-         check = freopen("CONOUT$", "w", stderr);
-         if (check) {
-           std::cerr << "Error reopening stderr" << std::endl;
-         }
+         connect_console();
        }
      }
    }
@@ -452,8 +434,7 @@ int main(int argc, char **argv)
   for (int i = 1; i < argc; i++) {
      QString option = QString(argv[i]);
      if (option.contains("batch") || option.contains("-b") ||
-         option.contains("--batch") || option.contains("/b") ||
-         option.contains("/batch" )) {
+         option.contains("--batch")) {
        std::cerr << "Batch Mode started" << std::endl;
        OpenFlipper::Options::nogui(true);
      }

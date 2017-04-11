@@ -463,9 +463,8 @@ void RadialBlurFilter::setKernel( int _numSamples )
 
 // ----------------------------------------------------------------------------
 
-
-PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int _numTris /*= 30*/ )
-  : radius_(_radius), sampleDistance_(_sampleDistance), numTries_(_numTris)
+PoissonBlurFilter::PoissonBlurFilter(float _radius, float _sampleDistance, int _numTris, bool _disk, bool _tilingCheck)
+  : radius_(_radius), sampleDistance_(_sampleDistance), numTries_(_numTris), disk_(_disk)
 {
   // "Fast Poisson Disk Sampling in Arbitrary Dimensions"
   // http://people.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
@@ -489,13 +488,13 @@ PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int 
   // step 1.
 
   ACG::Vec2f x0(0.0f, 0.0f);
-  
+
   // initial uniform sample in disk
-  do 
+  do
   {
     x0 = ACG::Vec2f(float(rand()) / float(RAND_MAX), float(rand()) / float(RAND_MAX));
   } while ((x0 * 2.0f - ACG::Vec2f(1.0f, 1.0f)).sqrnorm() > _radius*_radius);
-  
+
   x0 = x0 * 2.0f * _radius;
 
   std::list<int> activeList;
@@ -562,7 +561,10 @@ PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int 
         continue;
 
       // disk check
-      if ( (x_s - ACG::Vec2f(_radius, _radius)).sqrnorm() > _radius*_radius)
+      if (_disk && (x_s - ACG::Vec2f(_radius, _radius)).sqrnorm() > _radius*_radius)
+        continue;
+      // box check
+      else if (!_disk && (x_s[0] > _radius * 2.0f || x_s[1] > _radius * 2.0f))
         continue;
 
       // neighborhood check
@@ -573,17 +575,33 @@ PoissonBlurFilter::PoissonBlurFilter( float _radius, float _sampleDistance, int 
       {
         for (int y = -1; y <= 1 && !tooClose; ++y)
         {
-          ACG::Vec2i gridPos_t = gridPos_s + ACG::Vec2i(x,y);
+          ACG::Vec2i gridPos_t = gridPos_s + ACG::Vec2i(x, y);
+
+          // position correction for sample in neighboring kernel (repeated Poisson kernel)
+          ACG::Vec2f wrapShift(0.0f, 0.0f);
 
           // oob check
           if (gridPos_t[0] < 0 || gridPos_t[0] >= gridSize || gridPos_t[1] < 0 || gridPos_t[1] >= gridSize)
-            continue;
+          {
+            if (_tilingCheck)
+            {
+              // check in repeated neighbor kernel
+
+              wrapShift[0] = _radius * 2.0f * float(x);
+              wrapShift[1] = _radius * 2.0f * float(y);
+
+              for (int k = 0; k < 2; ++k)
+                gridPos_t[k] = (gridPos_t[k] + gridSize) % gridSize;
+            }
+            else
+              continue; // skip: don't check across kernel border
+          }
 
           int gridValue = grid[gridPos_t[1] * gridSize + gridPos_t[0]];
 
           if (gridValue >= 0)
           {
-            ACG::Vec2f delta_t = samples_[gridValue] - x_s;
+            ACG::Vec2f delta_t = samples_[gridValue] + wrapShift - x_s;
             float d2 = delta_t | delta_t;
 
             if (d2 < sampleDistance2)
@@ -683,12 +701,15 @@ void PoissonBlurFilter::plotSamples( QImage* _image )
 
     _image->fill(qRgb(255,255,255));
 
-    // draw outer circle
-    QPainter plotter;
-    plotter.begin(_image);
-    plotter.setPen(QPen(qRgb(0,0,0)));
-    plotter.drawEllipse(0, 0, _image->width()-1, _image->height()-1);
-    plotter.end();
+    if (disk_)
+    {
+      // draw outer circle
+      QPainter plotter;
+      plotter.begin(_image);
+      plotter.setPen(QPen(qRgb(0, 0, 0)));
+      plotter.drawEllipse(0, 0, _image->width() - 1, _image->height() - 1);
+      plotter.end();
+    }
 
     // draw samples
     for (int i = 0; i < numSamples(); ++i)

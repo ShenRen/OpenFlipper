@@ -16,7 +16,8 @@ ScriptSettingsVector::ScriptSettingsVector(
 
 ScriptSettingsVector::ScriptSettingsVector(
             const ScriptSettingsVector &other)
-    : ScriptSettingsVector(other.widget_)
+    : ScriptSettings(other.widget_),
+      widget_(other.widget_)
 {}
 
 ScriptSettingsVector::~ScriptSettingsVector()

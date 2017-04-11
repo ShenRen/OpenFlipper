@@ -14,7 +14,8 @@ ScriptSettingsBoolean::ScriptSettingsBoolean(BooleanWidget *widget)
 {}
 
 ScriptSettingsBoolean::ScriptSettingsBoolean(const ScriptSettingsBoolean &other)
-    : ScriptSettingsBoolean(other.widget_)
+    : ScriptSettings(other.widget_),
+      widget_(other.widget_)
 {}
 
 ScriptSettingsBoolean::~ScriptSettingsBoolean() {}

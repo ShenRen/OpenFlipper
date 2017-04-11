@@ -16,7 +16,8 @@ ScriptSettingsDouble::ScriptSettingsDouble(
 
 ScriptSettingsDouble::ScriptSettingsDouble(
             const ScriptSettingsDouble &other)
-    : ScriptSettingsDouble(other.widget_)
+    : ScriptSettings(other.widget_),
+      widget_(other.widget_)
 {}
 
 ScriptSettingsDouble::~ScriptSettingsDouble()

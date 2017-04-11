@@ -48,6 +48,7 @@
 \*===========================================================================*/
 
 #include "MeshObjectSelectionPlugin.hh"
+#include "ParameterWidget.hh"
 
 #include <MeshTools/MeshSelectionT.hh>
 
@@ -117,6 +118,7 @@ halfedgeType_(0),
 faceType_(0),
 allSupportedTypes_(0u),
 conversionDialog_(0),
+parameterWidget_(nullptr),
 colorButtonSelection_(0),
 colorButtonArea_(0),
 colorButtonHandle_(0),
@@ -128,6 +130,7 @@ dihedral_angle_threshold_(0.0)
 MeshObjectSelectionPlugin::~MeshObjectSelectionPlugin() {
     
     delete conversionDialog_;
+    delete parameterWidget_;
 }
 
 void MeshObjectSelectionPlugin::initializePlugin() {
@@ -151,6 +154,8 @@ void MeshObjectSelectionPlugin::initializePlugin() {
         conversionDialog_->convertToBox->addItems(
             QString("Vertex Selection;Edge Selection;Halfedge Selection;Face Selection;" \
                     "Feature Vertices;Feature Edges;Feature Faces;Handle Region;Modeling Region").split(";"));
+
+        parameterWidget_ = new ParameterWidget(nullptr);
 
     }
 }
@@ -254,6 +259,9 @@ void MeshObjectSelectionPlugin::pluginsInitialized() {
     emit addSelectionOperations(environmentHandle_, hedgeOperations,   "Halfedge Operations", halfedgeType_);
     emit addSelectionOperations(environmentHandle_, faceOperations,    "Face Operations",     faceType_);
     emit addSelectionOperations(environmentHandle_, colorOperations, "Highlight Operations");
+
+    if(!OpenFlipper::Options::nogui())
+      emit addSelectionParameters(environmentHandle_, parameterWidget_, "Selection Parameters");
     
     // Register key shortcuts:
     
@@ -2265,8 +2273,8 @@ double MeshObjectSelectionPlugin::get_dihedral_angle_threshold()
 }
 
 void MeshObjectSelectionPlugin::update_dihedral_angle_threshold_from_ui()
-{
-  dihedral_angle_threshold_ = OpenFlipperQSettings().value("SelectionBasePlugin/MinDihedralAngle", double()).toDouble();
+{  
+  dihedral_angle_threshold_ = parameterWidget_->minDihedralAngle->value();
 }
 
 #if QT_VERSION < 0x050000

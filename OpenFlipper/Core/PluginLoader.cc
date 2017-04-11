@@ -1359,6 +1359,15 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
     if ( checkSlot( plugin , "slotAddSelectionOperations(QString,QStringList,QString,SelectionInterface::PrimitiveType)" ) )
       connect(this   , SIGNAL(addSelectionOperations(QString,QStringList,QString,SelectionInterface::PrimitiveType)),
               plugin , SLOT(slotAddSelectionOperations(QString,QStringList,QString,SelectionInterface::PrimitiveType)),Qt::DirectConnection);
+
+    if ( checkSignal(plugin,"addSelectionParameters(QString,QWidget*,QString,SelectionInterface::PrimitiveType)") )
+      connect(plugin , SIGNAL(addSelectionParameters(QString,QWidget*,QString,SelectionInterface::PrimitiveType)),
+              this   , SLOT(slotAddSelectionParameters(QString,QWidget*,QString,SelectionInterface::PrimitiveType)),Qt::DirectConnection);
+
+    if ( checkSlot( plugin , "slotAddSelectionParameters(QString,QWidget*,QString,SelectionInterface::PrimitiveType)" ) )
+      connect(this   , SIGNAL(addSelectionParameters(QString,QWidget*,QString,SelectionInterface::PrimitiveType)),
+              plugin , SLOT(slotAddSelectionParameters(QString,QWidget*,QString,SelectionInterface::PrimitiveType)),Qt::DirectConnection);
+
               
     if ( checkSignal(plugin,"selectionOperation(QString)") )
       connect(plugin , SIGNAL(selectionOperation(QString)),

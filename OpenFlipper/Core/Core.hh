@@ -274,6 +274,9 @@ signals:
    
    /// SelectionInterface: This signal is used to add non-interactive operations for a specific primitive type
    void addSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type);
+
+   /// SelectionInterface: This signal is used to add interactive selection parameters for a specific primitive type
+   void addSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type);
    
    /// SelectionInterface: This signal is emitted when a non-interactive operation has been performed
    void selectionOperation(QString _operation);
@@ -538,6 +541,9 @@ signals:
       
       /// SelectionInterface: Called in order to add non-interactive operations for a specific primitive type
       void slotAddSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type);
+
+      /// SelectionInterface: Called in order to add interactive parameters for a specific primitive type
+      void slotAddSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type);
        
       /// SelectionInterface: Called when a non-interactive operation has been performed
       void slotSelectionOperation(QString _operation);

@@ -173,6 +173,7 @@ Q_INTERFACES(SelectionInterface)
                                         DataType _objectTypeRestriction);
 
         void slotAddSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type = 0u);
+        void slotAddSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type = 0u);
 
         void slotShowToggleSelectionMode(QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes);
         void slotShowLassoSelectionMode(QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes);
@@ -217,6 +218,7 @@ Q_INTERFACES(SelectionInterface)
 
         void slotOperationRequested();
         void slotShowAndHideOperations();
+        void slotShowAndHideParameters();
 
         // ==================== GUI =======================
 
@@ -225,8 +227,6 @@ Q_INTERFACES(SelectionInterface)
         void slotEnterSelectionMode(bool _checked);
 
         void updateActivePrimitiveTypes(bool _checked);
-
-        void slotMinDihedralAngleChanged(double _angle);
 
     public slots:
         QString version() { return QString("1.0"); };
@@ -290,6 +290,9 @@ Q_INTERFACES(SelectionInterface)
             // Map that stores for each primitive type a set of
             // operations that are supported on it
             std::multimap<PrimitiveType, QPushButton*> operations;
+            // Map that stores for each primitive type a widget
+            // that provides parameters
+            std::multimap<PrimitiveType, QWidget*> parameters;
             // Keep name of tab for selection environment
             QWidget* tabWidget;
         };
@@ -299,6 +302,9 @@ Q_INTERFACES(SelectionInterface)
 
         /// Get a unique handle name
         QString getUniqueHandleName(QString _name, int _num = 0);
+
+        /// Get a selectionEnvironment by a given name
+        bool getSelectionEnvironment(SelectionEnvironment*& env, const QString& _handleName);
 
         /// Test if at least one object of type _type is in the scene graph
         bool typeExists(DataType _type, int _excludeId = -1);
@@ -311,6 +317,13 @@ Q_INTERFACES(SelectionInterface)
         void showSelectionMode(QString _mode, QString _icon, QString _desc,
                                QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes,
                                QString& _customIdentifier, bool _custom = false, DataType _objectTypeRestriction = DATA_ALL);
+
+        /// helper function for showSelectionMode
+        void selectionModeShowSwitch(bool _show, SelectionEnvironment*& env, HandleAction* toggleSelectionAction_,
+                                                          SelectionInterface::PrimitiveType& _associatedTypes);
+
+        /// helper function to find a baseObjectData and selection environment given a specific id
+        bool findObjectType(BaseObjectData*& obj, bool& found, SelectionEnvironment*& env, int _id);
 
         /// Create new type frame for tabs widget
         SelectionTypeFrameWidget* createNewTypeFrame(SelectionEnvironment& _env);

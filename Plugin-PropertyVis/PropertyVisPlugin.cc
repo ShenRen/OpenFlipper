@@ -58,6 +58,7 @@
 #include "PropertyVisPlugin.hh"
 
 #include "PropertyModelFactory.hh"
+#include "SingleObjectPropertyModel.hh"
 
 #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
@@ -141,7 +142,30 @@ void PropertyVisPlugin::slotVisualizeProperty( int _id, const QString& _propname
 			emit updateView();
 			emit updatedObject( _id, UPDATE_COLOR );
 		}
-	}
+    }
+}
+
+QScriptValue PropertyVisPlugin::getPropertyVisualizer(int _id, const QString &_propname)
+{
+    PropertyModel* model = PropertyModelFactory::Instance().getModel(_id);
+
+    if (model == nullptr) { return QScriptValue::SpecialValue::NullValue; }
+
+    model->gatherProperties();
+    QModelIndex idx = model->indexFromPlainPropName(_propname);
+    if (!idx.isValid()) { return QScriptValue::SpecialValue::NullValue; }
+
+    QScriptEngine *engine;
+    emit getScriptingEngine (engine);
+    if (engine == nullptr) { return QScriptValue::SpecialValue::NullValue; }
+
+    QScriptContext *ctx = engine->currentContext();
+    if (ctx == nullptr) { return QScriptValue::SpecialValue::NullValue; }
+
+    auto sopm = dynamic_cast<SingleObjectPropertyModel*>(model);
+    if (!sopm) { return QScriptValue::SpecialValue::NullValue; }
+
+    return sopm->getScriptObject(idx, ctx);
 }
 
 //-----------------------------------------------------------------------------

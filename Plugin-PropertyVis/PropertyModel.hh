@@ -64,7 +64,7 @@ public:
 	virtual void pickModeChanged(const std::string& _mode) {}
     virtual void mouseEvent(QMouseEvent* _event) {}
 
-	PropertyModel(QObject *parent = 0) : QAbstractListModel(parent) {}
+	explicit PropertyModel(QObject *parent = 0) : QAbstractListModel(parent) {}
 	virtual ~PropertyModel() {}
 
     virtual int rowCount(const QModelIndex & parent = QModelIndex()) const = 0;

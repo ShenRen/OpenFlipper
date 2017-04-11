@@ -76,6 +76,8 @@
 
 #include "ConversionDialog.hh"
 
+class ParameterWidget;
+
 class MeshObjectSelectionPlugin : public QObject, BaseInterface, KeyInterface, LoadSaveInterface,
             INIInterface, BackupInterface, ScriptInterface, LoggingInterface, SelectionInterface,
             MouseInterface, OptionsInterface
@@ -126,6 +128,7 @@ signals:
     void registerType(QString _handleName, DataType _type);
     void addPrimitiveType(QString _handleName, QString _name, QString _icon, SelectionInterface::PrimitiveType& _typeHandle);
     void addSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type = 0u);
+    void addSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type = 0u);
     
     void showToggleSelectionMode(QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes);
 
@@ -588,6 +591,8 @@ private:
     QVector<QPoint> volumeLassoPoints_;
 
     ConversionDialog* conversionDialog_;
+
+    ParameterWidget* parameterWidget_;
 
     /// Options
     QtColorChooserButton*       colorButtonSelection_;

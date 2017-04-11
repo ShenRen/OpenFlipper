@@ -251,7 +251,7 @@ class DrawMeshFaceInput : public MeshCompilerFaceInput
 
 public:
 
-  DrawMeshFaceInput(Mesh& _mesh) :
+  explicit DrawMeshFaceInput(Mesh& _mesh) :
   mesh_(_mesh)
   {
   };

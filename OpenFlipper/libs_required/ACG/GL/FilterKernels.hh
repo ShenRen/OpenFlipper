@@ -326,7 +326,7 @@ public:
    *
    * @param _numSamples number of kernel samples
   */
-  RadialBlurFilter(int _numSamples);
+  explicit RadialBlurFilter(int _numSamples);
 
   /// Class destructor
   virtual ~RadialBlurFilter() {}

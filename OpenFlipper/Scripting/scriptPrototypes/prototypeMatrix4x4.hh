@@ -93,7 +93,7 @@ class prototypeMatrix4x4 : public QObject , public QScriptable
   Q_OBJECT
 
   public:
-    prototypeMatrix4x4(QObject *parent = 0);
+    explicit prototypeMatrix4x4(QObject *parent = 0);
 
   public slots:
 

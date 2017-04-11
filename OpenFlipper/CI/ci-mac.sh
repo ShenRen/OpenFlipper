@@ -1,7 +1,7 @@
 ########################################
 # Build daemon cleanup code
 ########################################
-rm -rf libs_required/OpenMesh
+rm -rf libs_required
 
 
 ########################################

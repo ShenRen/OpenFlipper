@@ -68,7 +68,7 @@
 
 #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
 #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 

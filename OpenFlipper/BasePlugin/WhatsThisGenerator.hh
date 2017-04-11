@@ -78,7 +78,7 @@ class DLLEXPORT WhatsThisGenerator: public QObject {
   const QString plugin_name_;
 
 public:
-  WhatsThisGenerator(const QString &_plugin_name);
+  explicit WhatsThisGenerator(const QString &_plugin_name);
 
   QString generateLink(const QString &_ref = "", const QString &_site = "index.html") const;
 

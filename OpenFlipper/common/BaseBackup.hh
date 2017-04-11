@@ -63,7 +63,7 @@ class DLLEXPORT BaseBackup
 {
 
   public:
-    BaseBackup(QString _name);
+    explicit BaseBackup(QString _name);
 
     /** \brief constructor
      *

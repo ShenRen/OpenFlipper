@@ -326,7 +326,7 @@ class QListWidgetRowCmp
 {
   QListWidget* list_;
 public:
-  QListWidgetRowCmp(QListWidget* _list):list_(_list){}
+  explicit QListWidgetRowCmp(QListWidget* _list):list_(_list){}
   bool operator()(QListWidgetItem* left, QListWidgetItem* right)
   {
     return TCmp()(list_->row(left) , list_->row(right));

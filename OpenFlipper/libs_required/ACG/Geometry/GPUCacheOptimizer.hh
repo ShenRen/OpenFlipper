@@ -297,7 +297,7 @@ private:
 		}
 
 	public:
-		RingStack(unsigned int _uiSize) :
+		explicit RingStack(unsigned int _uiSize) :
 		  uiStart(0),
 		  uiLen(0),
 		  uiSize(_uiSize)

@@ -61,8 +61,6 @@
 #include "OpenFlipper/widgets/loadWidget/loadWidget.hh"
 #include "OpenFlipper/widgets/addEmptyWidget/addEmptyWidget.hh"
 
-#include <ObjectTypes/PolyMesh/PolyMesh.hh>
-
 #include "OpenFunctionThread.hh"
 
 void Core::resetScenegraph( bool _resetTrackBall  ) {
@@ -178,7 +176,7 @@ void Core::slotExecuteAfterStartup() {
 
     // If the file was given with the polymesh option, open them as polymeshes.
     if (commandLineFileNames_[i].second)
-      loadObject(DATA_POLY_MESH, QString::fromStdString(commandLineFileNames_[i].first));
+      loadObject(typeId("PolyMesh"), QString::fromStdString(commandLineFileNames_[i].first));
     else {
       loadObject(QString::fromStdString(commandLineFileNames_[i].first));
     }

@@ -102,7 +102,7 @@ void CoreWidget::showAboutWidget( ) {
     while (it != additionalAboutTabs_.constEnd()) {
       QTextEdit* tmp =  new QTextEdit();
       tmp->insertHtml( it.value() );
-
+      tmp->setReadOnly(true);
       aboutWidget_->About->addTab( tmp, it.key()  );
       ++it;
     }
@@ -744,6 +744,33 @@ void CoreWidget::showAboutWidget( ) {
     aboutWidget_->OpenFlipperAbout->append( "\t\t Save: " + supportedTypes()[i].saveFilters );
   }
 
+  // =====================================================================================
+  // List of build-in resources
+  // =====================================================================================
+
+  aboutWidget_->OpenFlipperAbout->append("\n");
+  aboutWidget_->OpenFlipperAbout->setCurrentFont(boldFont);
+  aboutWidget_->OpenFlipperAbout->append(tr("Currently loaded Resources (e.g. by qrc files):"));
+  aboutWidget_->OpenFlipperAbout->setCurrentFont(standardFont);
+
+  QDir toplevelResources(":/");
+  for ( auto str : toplevelResources.entryList() ) {
+    aboutWidget_->OpenFlipperAbout->append(str);
+
+    QDir firstLevel(":/" + str);
+    for ( auto firstLevelStr : firstLevel.entryList() ) {
+      aboutWidget_->OpenFlipperAbout->append(" \t" + firstLevelStr);
+
+      QDir secondLevel(":/" + str + "/" + firstLevelStr);
+
+      for ( auto secondLevelStr : secondLevel.entryList() ) {
+        aboutWidget_->OpenFlipperAbout->append(" \t\t" + secondLevelStr);
+      }
+
+    }
+
+    aboutWidget_->OpenFlipperAbout->append("\n");
+  }
 
   aboutWidget_->show();
 

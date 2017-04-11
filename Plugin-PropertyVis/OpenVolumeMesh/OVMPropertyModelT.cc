@@ -47,12 +47,7 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
-
 #define OVM_PROPERTY_MODEL_CC
-
-#include "OVMPropertyModel.hh"
-
 
 template <typename MeshT>
 OVMPropertyModel<MeshT>::OVMPropertyModel(MeshT* mesh, int objectID, QObject *parent)
@@ -961,4 +956,3 @@ supportedPropertyTypes.insert(proptype_##primitive##_Vec3f);  \
 
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

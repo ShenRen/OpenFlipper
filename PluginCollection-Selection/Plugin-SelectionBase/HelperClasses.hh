@@ -174,7 +174,7 @@ class ActionButton : public QPushButton {
 class FillingLayout : public QGridLayout {
     public:
         /// Default Constructor
-        FillingLayout(int _numColumns) :
+        explicit FillingLayout(int _numColumns) :
             QGridLayout(),
             currentRow_(0),
             currentColumn_(0),

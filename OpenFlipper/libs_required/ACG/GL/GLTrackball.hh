@@ -80,7 +80,7 @@ class ACGDLLEXPORT GLTrackball
 {
 public:
    
-  GLTrackball(GLState& _state);
+  explicit GLTrackball(GLState& _state);
   ~GLTrackball() {}
 
   void set_center(const Vec3f& _center) { center_ = _center; }

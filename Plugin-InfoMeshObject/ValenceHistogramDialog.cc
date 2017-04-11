@@ -57,7 +57,7 @@ namespace {
 
 class ValenceHistogram : public ACG::Histogram {
 public:
-    ValenceHistogram(const std::vector<size_t> &bins)
+    explicit ValenceHistogram(const std::vector<size_t> &bins)
     {
         std::vector<size_t>::const_iterator nonzero_begin = bins.begin();
         for (; nonzero_begin != bins.end() && *nonzero_begin == 0;

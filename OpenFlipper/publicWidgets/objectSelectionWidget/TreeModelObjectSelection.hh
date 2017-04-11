@@ -67,7 +67,7 @@ class TreeModelObjectSelection : public QAbstractItemModel
   public:
 
     /// Constructor
-    TreeModelObjectSelection(QObject *_parent = 0);
+    explicit TreeModelObjectSelection(QObject *_parent = 0);
 
     /// Destructor
     ~TreeModelObjectSelection();

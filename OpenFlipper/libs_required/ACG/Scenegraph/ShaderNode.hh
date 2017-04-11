@@ -132,8 +132,8 @@ public:
   */
 
   void setShader( DrawModes::DrawMode _drawmode ,
-                  std::string         _vertexShader,
-                  std::string         _fragmentShader,
+                  const std::string&  _vertexShader,
+                  const std::string&  _fragmentShader,
                   std::string         _pickVertexShader = "",
                   std::string         _pickFragmentShader = "");
 

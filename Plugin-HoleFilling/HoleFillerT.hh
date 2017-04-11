@@ -100,7 +100,7 @@ public:
 
 
   // Ctors
-  HoleFiller( Mesh & _mesh );
+  explicit HoleFiller( Mesh & _mesh );
   ~HoleFiller();
 
   // Identify and fill all holes of the mesh.

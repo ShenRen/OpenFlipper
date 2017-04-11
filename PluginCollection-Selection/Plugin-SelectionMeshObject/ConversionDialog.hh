@@ -61,6 +61,6 @@ class ConversionDialog : public QWidget, public Ui::ConversionDialog
   Q_OBJECT
 
   public:
-    ConversionDialog(QWidget* _parent = 0);
+    explicit ConversionDialog(QWidget* _parent = 0);
 };
 

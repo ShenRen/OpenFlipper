@@ -57,7 +57,7 @@ class IsotropicRemesher{
 
 public:
 
-  IsotropicRemesher(ProgressEmitter* _prgEmt = NULL) : prgEmt_(_prgEmt)  {};
+  explicit IsotropicRemesher(ProgressEmitter* _prgEmt = NULL) : prgEmt_(_prgEmt)  {};
   ~IsotropicRemesher() {};
 
   void remesh( MeshT& _mesh, const double _targetEdgeLength );

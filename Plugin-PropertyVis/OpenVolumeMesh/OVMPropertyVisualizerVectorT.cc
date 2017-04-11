@@ -47,7 +47,6 @@
 *                                                                            *
 \*===========================================================================*/
 
-#ifdef ENABLE_OPENVOLUMEMESH_SUPPORT
 
 #define OVM_PROPERTY_VISUALIZER_VECTOR_CC
 
@@ -545,4 +544,3 @@ void OVMPropertyVisualizerVector<MeshT>::setVertexPropertyFromText(unsigned int 
     prop[vh] = this->strToVec3d(text);
 }
 
-#endif /* ENABLE_OPENVOLUMEMESH_SUPPORT */

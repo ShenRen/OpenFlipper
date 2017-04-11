@@ -278,10 +278,7 @@ endmacro ()
 macro (acg_drop_templates list)
   foreach (_file ${${list}})
     if (_file MATCHES "T.cc$")
-      list (REMOVE_ITEM ${list} ${_file})
-
-      # Append removed sources to a dummy target to make them available in qtcreator
-      target_sources(_qtcreator_add_files PUBLIC ${_file})
+      set_source_files_properties(${_file} PROPERTIES HEADER_FILE_ONLY TRUE)
     endif ()
   endforeach ()
 endmacro ()

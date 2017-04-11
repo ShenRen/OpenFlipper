@@ -68,7 +68,7 @@
 
 class VizException : public std::logic_error {
     public:
-        VizException(const std::string &msg) : std::logic_error(msg) {}
+        explicit VizException(const std::string &msg) : std::logic_error(msg) {}
 };
 
 
@@ -94,7 +94,7 @@ public:
      *
      * @param _propertyInfo Information about the property this visualizer should visualize.
      */
-    PropertyVisualizer(PropertyInfo _propertyInfo)
+    explicit PropertyVisualizer(PropertyInfo _propertyInfo)
         :
           propertyInfo(_propertyInfo),
           widget(0)

@@ -61,6 +61,6 @@ class AddAnimationDialog : public QDialog, public Ui::AddAnimation
   Q_OBJECT
 
   public:
-    AddAnimationDialog(QWidget *parent = 0);
+    explicit AddAnimationDialog(QWidget *parent = 0);
 };
 

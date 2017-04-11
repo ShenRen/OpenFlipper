@@ -80,8 +80,6 @@ macro_requestTexcoord("#define SG_REQUEST_TEXCOORD"),
 macro_requestVertexColor("#define SG_REQUEST_VERTEXCOLOR"),
 macro_requestNormalVS("#define SG_REQUEST_NORMALVS"),
 macro_requestNormalOS("#define SG_REQUEST_NORMALOS"),
-// // renormalize normal-vec before lighting in fragment shader
-macro_requestRenormalize("#define SG_REQUEST_RENORMARLIZE"),
 
 // generic default attribute input keywords
 //  these are extended by the correct input name by the generator for each stage
@@ -831,44 +829,44 @@ QStringList ShaderProgGenerator::lightingCode_;
 
 
 ShaderProgGenerator::ShaderProgGenerator( const ShaderGenDesc* _desc )
-  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0), renormalizeLighting_(false)
+  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0)
 {
   init(_desc, (ShaderModifier**)0, 0);
 }
 
 ShaderProgGenerator::ShaderProgGenerator( const ShaderGenDesc* _desc, const unsigned int* _modifierIDs, unsigned int _numActiveMods )
-  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0), renormalizeLighting_(false)
+  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0)
 {
   init(_desc, _modifierIDs, _numActiveMods);
 }
 
 ShaderProgGenerator::ShaderProgGenerator(const ShaderGenDesc* _desc, const std::vector<unsigned int>& _modifierIDs)
-  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0), renormalizeLighting_(false)
+  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0)
 {
   init(_desc, _modifierIDs.empty() ? 0 : &_modifierIDs[0], (unsigned int)_modifierIDs.size());
 }
 
 ShaderProgGenerator::ShaderProgGenerator(const ShaderGenDesc* _desc, const std::vector<unsigned int>* _modifierIDs)
-  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0), renormalizeLighting_(false)
+  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0)
 {
   unsigned int numMods = !_modifierIDs || _modifierIDs->empty() ? 0 : (unsigned int)_modifierIDs->size();
   init(_desc, numMods ? &((*_modifierIDs)[0]) : 0, numMods);
 }
 
 ShaderProgGenerator::ShaderProgGenerator(const ShaderGenDesc* _desc, ShaderModifier* const* _modifiers, unsigned int _numActiveMods)
-  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0), renormalizeLighting_(false)
+  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0)
 {
   init(_desc, _modifiers, _numActiveMods);
 }
 
 ShaderProgGenerator::ShaderProgGenerator(const ShaderGenDesc* _desc, const std::vector<ShaderModifier*>& _modifierIDs)
-  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0), renormalizeLighting_(false)
+  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0)
 {
   init(_desc, _modifierIDs.empty() ? 0 : &(_modifierIDs[0]), (unsigned int)_modifierIDs.size());
 }
 
 ShaderProgGenerator::ShaderProgGenerator(const ShaderGenDesc* _desc, const std::vector<ShaderModifier*>* _modifierIDs)
-  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0), renormalizeLighting_(false)
+  : vertex_(0), tessControl_(0), tessEval_(0), geometry_(0), fragment_(0)
 {
   unsigned int numMods = !_modifierIDs || _modifierIDs->empty() ? 0 : (unsigned int)_modifierIDs->size();
   init(_desc, numMods ? &((*_modifierIDs)[0]) : 0, numMods);
@@ -1798,8 +1796,7 @@ void ShaderProgGenerator::addFragmentBeginCode(QStringList* _code)
 
   _code->push_back(QString("#ifdef ") + ShaderGenerator::keywords.macro_inputNormalVS);
   _code->push_back(QString("vec3 sg_vNormalVS = ") + ShaderGenerator::keywords.macro_inputNormalVS + QString(";"));
-  if (renormalizeLighting_)
-    _code->push_back("sg_vNormalVS = normalize(sg_vNormalVS);");
+  _code->push_back("sg_vNormalVS = normalize(sg_vNormalVS);");
   _code->push_back("#endif");
 
 
@@ -2199,8 +2196,6 @@ void ShaderProgGenerator::generateShaders()
   if (dummy.hasDefine(ShaderGenerator::keywords.macro_requestPosOS))
     ioDesc_.passPosOS_ = true;
   
-  if (dummy.hasDefine(ShaderGenerator::keywords.macro_requestRenormalize))
-    renormalizeLighting_ = true;
 
 
 
@@ -2334,7 +2329,6 @@ void ShaderProgGenerator::scanShaderTemplate(QStringList& _templateSrc, QString 
       // scan and adjust glsl version
       QByteArray lineBytes = trimmedLine.toUtf8();
 
-      int templateVersion = 0;
       if (trimmedLine.startsWith("#version "))
       {
         QStringList tokens = trimmedLine.split(' ');
@@ -2343,7 +2337,7 @@ void ShaderProgGenerator::scanShaderTemplate(QStringList& _templateSrc, QString 
         {
           // templateVersion
           bool convOk = false;
-          templateVersion = tokens.at(1).toInt(&convOk);
+          int templateVersion = tokens.at(1).toInt(&convOk);
 
           if (convOk)
           {
@@ -2393,8 +2387,6 @@ void ShaderProgGenerator::scanShaderTemplate(QStringList& _templateSrc, QString 
         }
         else if (trimmedLine.startsWith(ShaderGenerator::keywords.macro_requestPosOS))
           ioDesc_.passPosOS_ = true;
-        else if (trimmedLine.startsWith(ShaderGenerator::keywords.macro_requestRenormalize))
-          renormalizeLighting_ = true;
         else if (trimmedLine.startsWith("SG_FRAGMENT_LIGHTING"))
         {
           // shader template performs lighting in fragment shader

@@ -105,7 +105,7 @@ class KeyGenWidget : public QMainWindow, public Ui::keyWindow
   Q_OBJECT
 
 public:
-  KeyGenWidget(QMainWindow *parent);
+  explicit KeyGenWidget(QMainWindow *parent);
   virtual ~KeyGenWidget();
 
 public slots:

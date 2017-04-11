@@ -89,7 +89,7 @@ class ACGDLLEXPORT QtLasso : public QObject
 
 public:
 
-  QtLasso(GLState& _glstate);
+  explicit QtLasso(GLState& _glstate);
   ~QtLasso();
 
   void reset() { is_active_ = false; free_mask(); }

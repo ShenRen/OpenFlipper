@@ -83,7 +83,7 @@ class ShortcutButton : public QPushButton
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
   public:
-    ShortcutButton(QWidget* _parent = 0);
+    explicit ShortcutButton(QWidget* _parent = 0);
 
     void setCurrentShortcut(int _key, Qt::KeyboardModifiers _modifiers);
 

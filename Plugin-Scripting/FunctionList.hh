@@ -73,7 +73,7 @@ class FunctionList : public QListWidget
     void mouseMoveEvent(QMouseEvent *event);
 
   public:
-    FunctionList(QWidget *parent = 0);
+    explicit FunctionList(QWidget *parent = 0);
 
     void filter(QString _filter);
     void reset();

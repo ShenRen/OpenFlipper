@@ -247,7 +247,7 @@ class ACGDLLEXPORT MeshCompiler
 {
 public:
 
-  MeshCompiler(const VertexDeclaration& _decl);
+  explicit MeshCompiler(const VertexDeclaration& _decl);
 
   virtual ~MeshCompiler();
 

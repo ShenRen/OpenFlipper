@@ -53,7 +53,6 @@
 //
 //=============================================================================
 
-
 //== INCLUDES =================================================================
 
 #include "Core.hh"
@@ -89,6 +88,10 @@ void Core::slotAddCustomSelectionMode(QString _handleName, QString _modeName, QS
 
 void Core::slotAddSelectionOperations(QString _handleName,QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type) {
     emit addSelectionOperations(_handleName, _operationsList, _category, _type);
+}
+
+void Core::slotAddSelectionParameters(QString _handleName,QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type) {
+    emit addSelectionParameters(_handleName, _widget, _category, _type);
 }
    
 void Core::slotSelectionOperation(QString _operation) {

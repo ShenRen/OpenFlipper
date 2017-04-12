@@ -104,6 +104,13 @@ void LineNode::set_line_mode(LineMode _mode)
 
 //----------------------------------------------------------------------------
 
+LineNode::LineMode LineNode::get_line_mode() const
+{
+    return line_mode_;
+}
+
+//----------------------------------------------------------------------------
+
 void LineNode::clear()
 {
   clear_points();

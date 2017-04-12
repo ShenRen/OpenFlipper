@@ -172,6 +172,9 @@ public:
     // Set whether to update the selectopm in next render pass
     void set_selection_changed(bool _selection_changed);
 
+    /// get the internal mesh
+    const VolumeMesh &mesh() const { return mesh_; }
+
 private:
 
     /// renders the cells of the mesh

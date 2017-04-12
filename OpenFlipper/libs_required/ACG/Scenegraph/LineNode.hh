@@ -119,6 +119,7 @@ public:
 
   /// set line mode (see LineNode::LineMode)
   void set_line_mode(LineMode _mode);
+  LineMode get_line_mode() const;
 
 
   /// static name of this class

@@ -49,6 +49,10 @@ namespace
   }
 }
 
+/**
+ * Member functions
+ */
+
 void MergePlugin::slotCleanup( DataType _type, bool _deleteSeparateObjects )
 {
   //clean up conversion objects
@@ -123,6 +127,8 @@ MergePlugin::MergePlugin() :
 
 /// init the Toolbox
 void MergePlugin::initializePlugin() {
+  if ( ! OpenFlipper::Options::gui())
+    return;
    tool_ = new MergeToolBox();
 
    QSize size(300, 300);
@@ -131,21 +137,38 @@ void MergePlugin::initializePlugin() {
    connect(tool_->mergeButton, SIGNAL( clicked() ), this, SLOT( mergeObjects() ) );
    tool_->mergeButton->setStatusTip("Merge all target objects into one without changing geometry");
    tool_->mergeButton->setToolTip( tool_->mergeButton->statusTip() );
+   QIcon* toolIcon_ = new QIcon(OpenFlipper::Options::iconDirStr()+OpenFlipper::Options::dirSeparator()+"merge.png");
 
    connect(this,SIGNAL(cleanup(DataType, bool)),this,SLOT(slotCleanup(DataType, bool)),Qt::QueuedConnection);
 
-   emit addToolbox( tr("Merge") , tool_ );
+   emit addToolbox( tr("Merge") , tool_, toolIcon_ );
 }
 
 void MergePlugin::pluginsInitialized()
 {
   //populate scripting function
-  emit setSlotDescription("mergeObjects(const std::vector< BaseObjectData* >,QString,bool)", "Merges multiple meshes into one mesh. returns the ID of the new mesh or -1 in case of error.",
+  emit setSlotDescription("mergeObjects(const std::vector< BaseObjectData* >,QString,bool,DataType)", "Merges multiple meshes into one mesh. returns the ID of the new mesh or -1 in case of error.",
                           QString("objects,mergedName,deleteSeparateObjects").split(","),
-                          QString(" vector of BaseObjectData* containing Poly or TriMeshes to be merged, name for the merged object, flag to remove separated objects default is true").split(","));
+                          QString(" vector of BaseObjectData* containing Poly or TriMeshes to be merged, name for the merged object, flag to remove separated objects default is true, DataType for the new mesh if used in nogui mode").split(","));
+
+  emit setSlotDescription("mergeObjects(IdList,QString,bool,DataType)", "Merges multiple meshes into one mesh. returns the ID of the new mesh or -1 in case of error.",
+                          QString("objects,mergedName,deleteSeparateObjects").split(","),
+                          QString(" vector of Object Ids of Poly or TriMeshes to be merged, name for the merged object, flag to remove separated objects default is true, DataType for the new mesh if used in nogui mode").split(","));
 }
 
-int MergePlugin::mergeObjects(const std::vector< BaseObjectData* > & _objects, QString _name, bool _deleteSeparateObjects)
+int MergePlugin::mergeObjects(IdList _objects, QString _name, bool _deleteSeparateObjects, DataType _type)
+{
+  std::vector< BaseObjectData* > objects;
+    for(int i : _objects)
+    {
+      BaseObject* obj;
+      PluginFunctions::getObject(i,obj);
+      objects.push_back(PluginFunctions::baseObjectData(obj));
+    }
+    return mergeObjects(objects, _name, _deleteSeparateObjects, _type);
+}
+
+int MergePlugin::mergeObjects(const std::vector< BaseObjectData* > & _objects, QString _name, bool _deleteSeparateObjects, DataType _type)
 {
   int result = -1;
   if (_objects.size() < 2)
@@ -153,8 +176,11 @@ int MergePlugin::mergeObjects(const std::vector< BaseObjectData* > & _objects, Q
 
   objects = _objects;
 
-  //check dataType
-  DataType type = checkType(objects);
+  DataType type;
+  if ( OpenFlipper::Options::gui())
+    type = checkType(objects);
+  else
+    type = _type;
 
   //user pushed the cancel button
   if(type != DATA_TRIANGLE_MESH && type != DATA_POLY_MESH)

@@ -140,6 +140,9 @@ public slots:
   int addPyramid(const Vector& _position = Vector(0.0,0.0,0.0),
                  const double _length = 2.0);
 
+  int addCube(const Vector& _position = Vector(0.0,0.0,0.0),
+              const double _length = 2.0);
+
   int addTriangulatedCube(const Vector& _position = Vector(0.0,0.0,0.0),
                           const double _length = 2.0);
 
@@ -180,8 +183,9 @@ private:
 #ifdef ENABLE_POLYHEDRALMESH_SUPPORT
   int addPolyhedralMesh();
 #endif
+  inline void add_face(int _vh1 , int _vh2, int _vh3);
 
-  inline void add_face( int _vh1 , int _vh2, int _vh3 );
+  inline void add_face(int _vh1 , int _vh2, int _vh3 , int _vh4);
 
   inline void add_face( int _vh1 , int _vh2, int _vh3, int _vh4 , int _vh5 );
 

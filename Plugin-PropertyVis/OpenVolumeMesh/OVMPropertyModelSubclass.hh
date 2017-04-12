@@ -62,7 +62,7 @@ class OVMPropertyModelSubclass: public SingleObjectPropertyModel
 {
 Q_OBJECT
 public:
-    OVMPropertyModelSubclass(QObject *parent = 0);
+    explicit OVMPropertyModelSubclass(QObject *parent = 0);
 
 
 public slots:

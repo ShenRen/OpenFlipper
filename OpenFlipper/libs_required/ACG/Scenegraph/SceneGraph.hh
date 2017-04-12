@@ -647,7 +647,7 @@ public:
   * @param _mode  The draw mode set for the traversed nodes
   * @param _force If true, the mode is set ignoring if its supported by the nodes
   */
-  SetDrawModesAction(DrawModes::DrawMode _mode, bool _force = false ) : newModes_(_mode),force_(_force) {}
+  SetDrawModesAction(const DrawModes::DrawMode& _mode, bool _force = false ) : newModes_(_mode),force_(_force) {}
 
   bool operator()(BaseNode* _node)
   {
@@ -695,7 +695,7 @@ class DrawAction
 public:
 
   /// Constructor: draws the scenegraph using _drawMode
-  DrawAction(DrawModes::DrawMode _drawMode, GLState& _state, bool _blending) : 
+  DrawAction(const DrawModes::DrawMode& _drawMode, GLState& _state, bool _blending) :
      state_(_state),
      drawMode_(_drawMode), 
      blending_(_blending) {}
@@ -754,7 +754,7 @@ class ACGDLLEXPORT PickAction
 public:
 
   /// constructor: what picking target to use
-  PickAction(GLState &_state, PickTarget _target, DrawModes::DrawMode _drawmode) :
+  PickAction(GLState &_state, PickTarget _target, const DrawModes::DrawMode& _drawmode) :
     state_(_state),
     pickTarget_(_target),
     drawmode_(_drawmode) {}

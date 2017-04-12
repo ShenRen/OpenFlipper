@@ -20,6 +20,8 @@ A detailed compilation manual is available [here](http://openflipper.org/Documen
 Latest NEWS
 ===========
 
+- 02/28/2017: Removed SimpleOpt Command Line parser and switched to Qt parser
+    - Breaking Change: Commandline parameter have to start with a dash, the slash is not recognized as parameter prefix anymore.
 - 12/28/2016: Moved ObjectTypes into separate Libraries
     - Plugins have to specify their used types in the cmake file (TYPES / OPT_TYPES e.g. TYPES TRIANGLEMESH ), defines (e.g. ENABLE_TRIANGLEMESH_SUPPORT) are added automatically
     - Plugins will not be compiled if an ObjectType is missing (Excluding OPT_TYPES of course)

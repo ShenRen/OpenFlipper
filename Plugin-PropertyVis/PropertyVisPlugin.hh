@@ -112,9 +112,9 @@ signals:
 
   //PickingInterface
   void addHiddenPickMode( const std::string& _mode );
-  
-public slots:
-  void slotVisualizeProperty( int _id, const QString& _propname );
+
+  // Script Interface
+  void getScriptingEngine( QScriptEngine*& _engine  ) override;
 
 private slots:
 
@@ -154,8 +154,13 @@ private slots:
   void slotLog(Logtype _type, QString _message){ emit log(_type, _message); }
   void slotLog(QString _message){ emit log(_message); }
 
-public :
 
+public slots:
+  void slotVisualizeProperty( int _id, const QString& _propname );
+  QScriptValue getPropertyVisualizer( int _id, const QString& _propname );
+
+
+public :
   PropertyVisPlugin();
   ~PropertyVisPlugin() {}
 

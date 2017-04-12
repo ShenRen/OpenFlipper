@@ -96,7 +96,8 @@ Highlighter::Highlighter(QTextEdit *parent)
    keywordPatterns_ << "while" << "for" << "print" << "var" << "break" << "if";
 
    // Types which are accepted by the scripting system
-   typePatterns_ << "int" << "Matrix4x4" << "QString" << "idList" << "bool" << "Vector" << "double";
+   typePatterns_ << "int" << "Matrix4x4" << "QString" << "idList"
+                 << "bool" << "Vector" << "Vector4" << "double";
 
    update();
 

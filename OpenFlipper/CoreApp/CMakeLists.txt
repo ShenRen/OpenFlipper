@@ -54,7 +54,6 @@ set (directories
   ../Scripting
   ../Scripting/scriptPrototypes
   ../Scripting/scriptWrappers
-  ../SimpleOpt
   ../widgets/aboutWidget 
   ../widgets/addEmptyWidget
   ../widgets/loggerWidget

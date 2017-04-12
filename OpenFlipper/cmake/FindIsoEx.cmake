@@ -22,8 +22,8 @@ file (
 
 
 FIND_PATH( ISOEX_INCLUDE_DIRS IsoEx/Extractors/MarchingCubesT.hh
-           PATHS "${_libdirs}"
-                 "${CMAKE_SOURCE_DIR}/libs" )
+           PATHS ${_libdirs}
+                 ${CMAKE_SOURCE_DIR}/libs )
 
 add_definitions (-DISOEXDLL -DUSEISOEX )
 

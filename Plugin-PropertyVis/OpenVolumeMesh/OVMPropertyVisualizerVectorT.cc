@@ -63,7 +63,9 @@ OVMPropertyVisualizerVector<MeshT>::OVMPropertyVisualizerVector(MeshT* _mesh, in
     w->paramVector->setTitle(QString("3D Vector Parameters of ").append(PropertyVisualizer::propertyInfo.propName().c_str()));
     PropertyVisualizer::widget = w;
 
-    lineNode = new ACG::SceneGraph::LineNode( ACG::SceneGraph::LineNode::LineSegmentsMode, dynamic_cast < ACG::SceneGraph::SeparatorNode* >( PluginFunctions::getRootNode() ) );
+    BaseObjectData *bod;
+    PluginFunctions::getObject(objectID, bod);
+    lineNode = new ACG::SceneGraph::LineNode(ACG::SceneGraph::LineNode::LineSegmentsMode, bod->baseNode());
 
     w->vectors_edges_rb->hide();
 }

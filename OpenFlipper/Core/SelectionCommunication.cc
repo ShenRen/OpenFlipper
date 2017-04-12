@@ -154,8 +154,8 @@ void Core::slotClosestBoundarySelection(QMouseEvent* _event, SelectionInterface:
     emit closestBoundarySelection(_event, _currentType, _deselect);
 }
 
-void Core::slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, SelectionInterface::PrimitiveType _currentType, bool _deselect) {
-    emit floodFillSelection(_event, _maxAngle, _currentType, _deselect);
+void Core::slotFloodFillSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect) {
+    emit floodFillSelection(_event, _currentType, _deselect);
 }
 
 void Core::slotComponentsSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect) {

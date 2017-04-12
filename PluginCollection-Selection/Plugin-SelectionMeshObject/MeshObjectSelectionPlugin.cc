@@ -123,7 +123,8 @@ colorButtonSelection_(0),
 colorButtonArea_(0),
 colorButtonHandle_(0),
 colorButtonFeature_(0),
-dihedral_angle_threshold_(0.0)
+dihedral_angle_threshold_(0.0),
+max_angle_( 2*M_PI)
 {
 }
       
@@ -1393,13 +1394,16 @@ void MeshObjectSelectionPlugin::slotClosestBoundarySelection(QMouseEvent* _event
     }
 }
 
-void MeshObjectSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, PrimitiveType _currentType, bool _deselect) {
+void MeshObjectSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event, PrimitiveType _currentType, bool _deselect) {
     
     // Return if none of the currently active types is handled by this plugin
     if((_currentType & allSupportedTypes_) == 0) return;
     
     size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
+
+    if(!OpenFlipper::Options::nogui())
+      max_angle_ = parameterWidget_->maxAngle->value();
 
     // pick Anything to find all possible objects
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_ANYTHING,
@@ -1419,7 +1423,7 @@ void MeshObjectSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event, doub
                         if(object->dataType(DATA_TRIANGLE_MESH)) {
                             floodFillSelection(
                                     PluginFunctions::triMesh(object),
-                                    object->id(), target_idx, _maxAngle,
+                                    object->id(), target_idx, max_angle_,
                                     _currentType, _deselect);
                             emit updatedObject(object->id(), UPDATE_SELECTION);
                             emit  createBackup(object->id(), "FloodFill Selection", UPDATE_SELECTION);
@@ -1437,7 +1441,7 @@ void MeshObjectSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event, doub
                         if(object->dataType(DATA_POLY_MESH)) {
                             floodFillSelection(
                                     PluginFunctions::polyMesh(object),
-                                    object->id(), target_idx, _maxAngle,
+                                    object->id(), target_idx, max_angle_,
                                     _currentType, _deselect);
                             emit updatedObject(object->id(), UPDATE_SELECTION);
                             emit  createBackup(object->id(), "FloodFill Selection", UPDATE_SELECTION);
@@ -2270,6 +2274,16 @@ void MeshObjectSelectionPlugin::set_dihedral_angle_threshold(const double _a)
 double MeshObjectSelectionPlugin::get_dihedral_angle_threshold()
 {
   return dihedral_angle_threshold_;
+}
+
+void MeshObjectSelectionPlugin::set_max_angle(const double _a)
+{
+  max_angle_ = _a;
+}
+
+double MeshObjectSelectionPlugin::get_max_angle()
+{
+  return max_angle_;
 }
 
 void MeshObjectSelectionPlugin::update_dihedral_angle_threshold_from_ui()

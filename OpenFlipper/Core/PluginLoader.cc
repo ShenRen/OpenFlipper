@@ -1489,13 +1489,13 @@ void Core::loadPlugin(const QString& _filename,const bool _silent, QString& _lic
       connect(this   , SIGNAL(closestBoundarySelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)),
               plugin , SLOT(slotClosestBoundarySelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)),Qt::DirectConnection);
               
-    if ( checkSignal(plugin,"floodFillSelection(QMouseEvent*,double,SelectionInterface::PrimitiveType,bool)") )
-      connect(plugin , SIGNAL(floodFillSelection(QMouseEvent*,double,SelectionInterface::PrimitiveType,bool)),
-              this   , SLOT(slotFloodFillSelection(QMouseEvent*,double,SelectionInterface::PrimitiveType,bool)),Qt::DirectConnection);
+    if ( checkSignal(plugin,"floodFillSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)") )
+      connect(plugin , SIGNAL(floodFillSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)),
+              this   , SLOT(slotFloodFillSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)),Qt::DirectConnection);
 
-    if ( checkSlot( plugin , "slotFloodFillSelection(QMouseEvent*,double,SelectionInterface::PrimitiveType,bool)" ) )
-      connect(this   , SIGNAL(floodFillSelection(QMouseEvent*,double,SelectionInterface::PrimitiveType,bool)),
-              plugin , SLOT(slotFloodFillSelection(QMouseEvent*,double,SelectionInterface::PrimitiveType,bool)),Qt::DirectConnection);
+    if ( checkSlot( plugin , "slotFloodFillSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)" ) )
+      connect(this   , SIGNAL(floodFillSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)),
+              plugin , SLOT(slotFloodFillSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)),Qt::DirectConnection);
 
     if ( checkSignal(plugin,"componentsSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)") )
       connect(plugin , SIGNAL(componentsSelection(QMouseEvent*,SelectionInterface::PrimitiveType,bool)),

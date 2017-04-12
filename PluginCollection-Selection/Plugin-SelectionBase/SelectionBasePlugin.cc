@@ -1456,12 +1456,7 @@ void SelectionBasePlugin::slotMouseFloodFillSelection(QMouseEvent* _event) {
         
         if (_event->button() == Qt::RightButton) return;
         
-        double maxAngle = 2*M_PI;
-        
-        if(!OpenFlipper::Options::nogui())
-            maxAngle = tool_->maxFloodFillAngle->value();
-        
-        emit floodFillSelection(_event, maxAngle, currentPrimitiveType_, deselection_);
+        emit floodFillSelection(_event, currentPrimitiveType_, deselection_);
     }
 }
 

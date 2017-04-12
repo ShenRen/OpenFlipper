@@ -814,11 +814,10 @@ class SelectionInterface {
     *  the specified angle.
     *
     *  @param _event               The mouse event that currently is performed
-    *  @param _maxAngle            The maximum angle used for flood filling
     *  @param _currentType         The currently active primitive type
     *  @param _deselect            True if entities should be deselected
     */
-   virtual void slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, PrimitiveType _currentType, bool _deselect) {};
+   virtual void slotFloodFillSelection(QMouseEvent* _event, PrimitiveType _currentType, bool _deselect) {};
 
    /** \brief Called whenever the user performs a connected components selection
     *
@@ -942,11 +941,10 @@ class SelectionInterface {
     *  by each type selection plugin if this interactive selection mode should be provided.
     *
     *  @param _event               The mouse event that currently is performed
-    *  @param _maxAngle            The maximum angle used for flood filling
     *  @param _currentType         The currently active primitive type
     *  @param _deselect            True if entities should be deselected
     */
-   virtual void floodFillSelection(QMouseEvent* _event, double _maxAngle, PrimitiveType _currentType, bool _deselect) {};
+   virtual void floodFillSelection(QMouseEvent* _event, PrimitiveType _currentType, bool _deselect) {};
 
    /** \brief Emitted by selection base plugin whenever the user performs a connected components selection
     *

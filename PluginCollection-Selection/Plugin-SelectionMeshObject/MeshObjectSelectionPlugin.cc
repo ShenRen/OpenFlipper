@@ -1243,6 +1243,19 @@ void MeshObjectSelectionPlugin::slotToggleSelection(QMouseEvent* _event, Selecti
                 if (object->dataType(DATA_TRIANGLE_MESH)) {
                     toggleMeshSelection(object->id(), PluginFunctions::triMesh(object), target_idx, hit_point, _currentType);
                 }
+            } else if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_VERTEX, _event->pos(), node_idx, target_idx, &hit_point)) {
+              
+              // Pick point cloud
+              TriMesh* mesh = PluginFunctions::triMesh(object);
+
+              TriMesh::VertexHandle vh = mesh->vertex_handle(target_idx);
+              mesh->status(vh).set_selected(!mesh->status(vh).selected());
+
+              if (mesh->status(vh).selected())
+                emit scriptInfo("selectVertices(ObjectId(" + QString::number(object->id()) + ") , [" + QString::number(vh.idx()) + "])");
+              else
+                emit scriptInfo("unselectVertices(ObjectId(" + QString::number(object->id()) + ") , [" + QString::number(vh.idx()) + "])");
+              emit updatedObject(object->id(), UPDATE_SELECTION_VERTICES);
             }
         } else if (object->dataType() == DATA_POLY_MESH) {
             // Pick poly meshes

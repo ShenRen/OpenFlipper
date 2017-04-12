@@ -176,7 +176,7 @@ private slots:
     void slotVolumeLassoSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
     void slotSphereSelection(QMouseEvent* _event, double _radius, SelectionInterface::PrimitiveType _currentType, bool _deselect);
     void slotClosestBoundarySelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
-    void slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, SelectionInterface::PrimitiveType _currentType, bool _deselect);
+    void slotFloodFillSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
     void slotComponentsSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
 
     void slotLoadSelection(const INIFile& _file);
@@ -491,6 +491,11 @@ public:
     /// get dihedral angle threshold for edge selection
     double get_dihedral_angle_threshold();
 
+    /// set max angle for flood fill selection
+    void   set_max_angle(const double _a);
+    /// get max angle for flood fill selection
+    double get_max_angle();
+
 private:
     void update_dihedral_angle_threshold_from_ui();
 
@@ -606,6 +611,7 @@ private:
     ACG::Vec4f featureColor_;
 
     double dihedral_angle_threshold_;
+    double max_angle_;
 
     /** @} */
 

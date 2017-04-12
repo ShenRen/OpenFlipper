@@ -72,6 +72,8 @@
 #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 
+class ParameterWidget;
+
 class VolumeMeshSelectionPlugin : public QObject, BaseInterface, KeyInterface,
             INIInterface, BackupInterface, LoggingInterface, ScriptInterface, SelectionInterface
 {
@@ -98,6 +100,11 @@ public:
     
     friend class SelectVolumeAction;
 
+    /// set max angle for flood fill selection
+    void   set_max_angle(const double _a);
+    /// get max angle for flood fill selection
+    double get_max_angle();
+
 signals:
 
     // BaseInterface
@@ -119,6 +126,7 @@ signals:
     void registerType(QString _handleName, DataType _type);
     void addPrimitiveType(QString _handleName, QString _name, QString _icon, SelectionInterface::PrimitiveType& _typeHandle);
     void addSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type = 0u);
+    void addSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type = 0u);
 
     void showToggleSelectionMode(QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes);
 
@@ -149,7 +157,7 @@ private slots:
     void slotToggleSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
 
     void slotVolumeLassoSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
-    void slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, SelectionInterface::PrimitiveType _currentType, bool _deselect);
+    void slotFloodFillSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
     void slotCustomSelection(QMouseEvent *_event, SelectionInterface::PrimitiveType _currentType, QString _customIdentifier, bool _deselect);
 
     void slotLoadSelection(const INIFile& _file);
@@ -366,6 +374,10 @@ private:
     
     PrimitiveType allSupportedTypes_;
     PrimitiveType floodFillSupportedTypes_;
+
+    ParameterWidget* parameterWidget_;
+
+    double max_angle_;
     
     /// Keep volume lasso points
     QVector<QPoint> volumeLassoPoints_;

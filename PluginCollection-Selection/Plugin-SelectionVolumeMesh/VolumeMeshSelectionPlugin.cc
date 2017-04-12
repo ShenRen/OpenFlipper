@@ -48,6 +48,7 @@
  \*===========================================================================*/
 
 #include "VolumeMeshSelectionPlugin.hh"
+#include "ParameterWidget.hh"
 
 // Primitive type icons
 #define VERTEX_TYPE         "selection_vertex.png"
@@ -83,8 +84,8 @@
 
 /// Default constructor
 VolumeMeshSelectionPlugin::VolumeMeshSelectionPlugin() :
-    vertexType_(0), edgeType_(0), allSupportedTypes_(0), lastPickedCell_(HexahedralMesh::InvalidCellHandle),
-            lastPickedOrientation_(0) {
+    vertexType_(0), edgeType_(0), allSupportedTypes_(0), parameterWidget_(nullptr), max_angle_(2*M_PI),
+    lastPickedCell_(HexahedralMesh::InvalidCellHandle), lastPickedOrientation_(0) {
 }
 
 //==============================================================================================
@@ -98,6 +99,8 @@ void VolumeMeshSelectionPlugin::initializePlugin() {
 
     // Tell core about all scriptable slots
     updateSlotDescriptions();
+    if(!OpenFlipper::Options::nogui())
+       parameterWidget_ = new ParameterWidget(nullptr);
 }
 
 //==============================================================================================
@@ -176,6 +179,9 @@ void VolumeMeshSelectionPlugin::pluginsInitialized() {
     addSelectionOperations(environmentHandle_, faceOperations, "Face Operations", faceType_);
     emit
     addSelectionOperations(environmentHandle_, cellOperations, "Cell Operations", cellType_);
+
+    if(!OpenFlipper::Options::nogui())
+      emit addSelectionParameters(environmentHandle_, parameterWidget_, "Selection Parameters");
 
     // Register key shortcuts:
 
@@ -488,7 +494,7 @@ void VolumeMeshSelectionPlugin::slotVolumeLassoSelection(QMouseEvent* _event,
 }
 
 void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
-        double _maxAngle, PrimitiveType _currentType, bool _deselect)
+        PrimitiveType _currentType, bool _deselect)
 {
     // Return if none of the currently active types is handled by this plugin
     if ((_currentType & floodFillSupportedTypes_) == 0)
@@ -497,6 +503,8 @@ void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
     size_t node_idx, target_idx;
     ACG::Vec3d hit_point;
 
+    if(!OpenFlipper::Options::nogui())
+      max_angle_ = parameterWidget_->maxAngle->value();
     // pick Anything to find all possible objects
     if (PluginFunctions::scenegraphPick(ACG::SceneGraph::PICK_ANYTHING,
                                         _event->pos(), node_idx, target_idx, &hit_point))
@@ -515,7 +523,7 @@ void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
                         if (object->dataType(DATA_POLYHEDRAL_MESH))
                         {
                             floodFillSelection(PluginFunctions::polyhedralMesh(object),
-                                    target_idx, _maxAngle, _currentType, _deselect);
+                                    target_idx, max_angle_, _currentType, _deselect);//TODO max angle
 
                             emit updatedObject(object->id(), UPDATE_SELECTION);
                         }
@@ -532,7 +540,7 @@ void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
                         if(object->dataType(DATA_HEXAHEDRAL_MESH))
                         {
                             floodFillSelection(PluginFunctions::hexahedralMesh(object),
-                                    target_idx, _maxAngle, _currentType, _deselect);
+                                    target_idx, max_angle_, _currentType, _deselect);
 
                             emit updatedObject(object->id(), UPDATE_SELECTION);
                         }
@@ -550,7 +558,7 @@ void VolumeMeshSelectionPlugin::slotFloodFillSelection(QMouseEvent* _event,
                         if(object->dataType(DATA_TETRAHEDRAL_MESH))
                         {
                             floodFillSelection(PluginFunctions::tetrahedralMesh(object),
-                                    target_idx, _maxAngle, _currentType, _deselect);
+                                    target_idx, max_angle_, _currentType, _deselect);
 
                             emit updatedObject(object->id(), UPDATE_SELECTION);
                         }
@@ -845,6 +853,16 @@ OpenVolumeMesh::StatusAttrib* VolumeMeshSelectionPlugin::getStatus(BaseObjectDat
 
     emit log(LOGERR, tr("Neither polyhedral nor hexahedral nor tetrahedral mesh!"));
     return NULL;
+}
+
+void VolumeMeshSelectionPlugin::set_max_angle(const double _a)
+{
+  max_angle_ = _a;
+}
+
+double VolumeMeshSelectionPlugin::get_max_angle()
+{
+  return max_angle_;
 }
 
 //==============================================================================================

@@ -85,7 +85,7 @@
  * Iterating over all objects is managed via the ObjectIterator.
  *
  * \code
- * for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::SOURCE_OBJECTS);<br />
+ * for ( PluginFunctions::ObjectIterator o_it(PluginFunctions::SOURCE_OBJECTS);
  * o_it != PluginFunctions::objectsEnd(); ++o_it) { ... }
  * \endcode
  * 

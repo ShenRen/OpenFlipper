@@ -40,7 +40,7 @@
 #include "OpenFlipper/BasePlugin/PluginFunctions.hh"
 
 SmootherPlugin::SmootherPlugin() :
-        iterationsSpinbox_(0)
+        iterationsSpinbox_(nullptr)
 {
 
 }
@@ -95,13 +95,13 @@ void SmootherPlugin::simpleLaplace()
       for (int i = 0; i < iterationsSpinbox_->value(); ++i) {
 
         // Copy original positions to backup ( in vertex property )
-        TriMesh::VertexIter v_it, v_end = mesh->vertices_end();
-        for (v_it = mesh->vertices_begin(); v_it != v_end; ++v_it) {
-          mesh->property(origPositions, v_it) = mesh->point(v_it);
+
+        for (auto v: mesh->vertices()) {
+          mesh->property(origPositions, v) = mesh->point(v);
         }
 
         // Do one smoothing step (For each point of the mesh ... )
-        for (v_it = mesh->vertices_begin(); v_it != v_end; ++v_it) {
+        for (auto v: mesh->vertices()) {
 
           TriMesh::Point point = TriMesh::Point(0.0, 0.0, 0.0);
 
@@ -109,7 +109,7 @@ void SmootherPlugin::simpleLaplace()
           bool skip = false;
 
           // ( .. for each outgoing halfedge .. )
-          TriMesh::VertexOHalfedgeIter voh_it(*mesh, v_it);
+          TriMesh::VertexOHalfedgeIter voh_it(*mesh, v);
 
           for (; voh_it; ++voh_it) {
 
@@ -125,11 +125,11 @@ void SmootherPlugin::simpleLaplace()
           }
 
           // Devide by the valence of the current vertex
-          point /= mesh->valence(v_it);
+          point /= mesh->valence(v);
 
           if (!skip) {
             // Set new position for the mesh if its not on the boundary
-            mesh->point(v_it) = point;
+            mesh->point(v) = point;
           }
         }
 
@@ -156,13 +156,12 @@ void SmootherPlugin::simpleLaplace()
       for (int i = 0; i < iterationsSpinbox_->value(); ++i) {
 
         // Copy original positions to backup ( in Vertex property )
-        PolyMesh::VertexIter v_it, v_end = mesh->vertices_end();
-        for (v_it = mesh->vertices_begin(); v_it != v_end; ++v_it) {
-          mesh->property(origPositions, v_it) = mesh->point(v_it);
+        for (auto v: mesh->vertices()) {
+          mesh->property(origPositions, v) = mesh->point(v);
         }
 
         // Do one smoothing step (For each point of the mesh ... )
-        for (v_it = mesh->vertices_begin(); v_it != v_end; ++v_it) {
+        for (auto v: mesh->vertices()) {
 
           PolyMesh::Point point = PolyMesh::Point(0.0, 0.0, 0.0);
 
@@ -170,7 +169,7 @@ void SmootherPlugin::simpleLaplace()
           bool skip = false;
 
           // ( .. for each Outoing halfedge .. )
-          PolyMesh::VertexOHalfedgeIter voh_it(*mesh, v_it);
+          PolyMesh::VertexOHalfedgeIter voh_it(*mesh, v);
           for (; voh_it; ++voh_it) {
             // .. add the (original) position of the Neighbour ( end of the outgoing halfedge )
             point += mesh->property(origPositions, mesh->to_vertex_handle(voh_it));
@@ -185,11 +184,11 @@ void SmootherPlugin::simpleLaplace()
           }
 
           // Devide by the valence of the current vertex
-          point /= mesh->valence(v_it);
+          point /= mesh->valence(v);
 
           if (!skip) {
             // Set new position for the mesh if its not on the boundary
-            mesh->point(v_it) = point;
+            mesh->point(v) = point;
           }
         }
 

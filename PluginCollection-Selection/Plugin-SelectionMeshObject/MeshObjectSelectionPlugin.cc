@@ -2268,7 +2268,7 @@ void MeshObjectSelectionPlugin::addedEmptyObject(int _id )
 
 void MeshObjectSelectionPlugin::set_dihedral_angle_threshold(const double _a)
 {
-  dihedral_angle_threshold_ = _a;
+  dihedral_angle_threshold_ = OpenMesh::deg_to_rad(_a);
 }
 
 double MeshObjectSelectionPlugin::get_dihedral_angle_threshold()
@@ -2288,7 +2288,7 @@ double MeshObjectSelectionPlugin::get_max_angle()
 
 void MeshObjectSelectionPlugin::update_dihedral_angle_threshold_from_ui()
 {  
-  dihedral_angle_threshold_ = parameterWidget_->minDihedralAngle->value();
+  set_dihedral_angle_threshold( parameterWidget_->minDihedralAngle->value());
 }
 
 #if QT_VERSION < 0x050000

@@ -43,6 +43,12 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="maxAngle">
+             <property name="toolTip">
+              <string>Minimum dihedral angle of selected (Half)Edges (unit is degree)</string>
+             </property>
+             <property name="statusTip">
+              <string>Minimum dihedral angle of selected (Half)Edges (unit is degree)</string>
+             </property>
              <property name="maximum">
               <double>180.000000000000000</double>
              </property>

@@ -274,6 +274,9 @@ signals:
    
    /// SelectionInterface: This signal is used to add non-interactive operations for a specific primitive type
    void addSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type);
+
+   /// SelectionInterface: This signal is used to add interactive selection parameters for a specific primitive type
+   void addSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type);
    
    /// SelectionInterface: This signal is emitted when a non-interactive operation has been performed
    void selectionOperation(QString _operation);
@@ -321,7 +324,7 @@ signals:
    void closestBoundarySelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
    
    /// SelectionInterface: This signal is emitted when standard flood fill selection has been performed
-   void floodFillSelection(QMouseEvent* _event, double _maxAngle, SelectionInterface::PrimitiveType _currentType, bool _deselect);
+   void floodFillSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
    
    /// SelectionInterface: This signal is emitted when standard connected components selection has been performed
    void componentsSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
@@ -538,6 +541,9 @@ signals:
       
       /// SelectionInterface: Called in order to add non-interactive operations for a specific primitive type
       void slotAddSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type);
+
+      /// SelectionInterface: Called in order to add interactive parameters for a specific primitive type
+      void slotAddSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type);
        
       /// SelectionInterface: Called when a non-interactive operation has been performed
       void slotSelectionOperation(QString _operation);
@@ -585,7 +591,7 @@ signals:
       void slotClosestBoundarySelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
 
       /// SelectionInterface: Called when flood fill selection operation has been performed
-      void slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, SelectionInterface::PrimitiveType _currentType, bool _deselect);
+      void slotFloodFillSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
 
       /// SelectionInterface: Called when connected components selection operation has been performed
       void slotComponentsSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);

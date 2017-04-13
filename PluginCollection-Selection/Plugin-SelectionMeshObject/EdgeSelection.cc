@@ -55,7 +55,8 @@
 //==== Edge selections
 //=========================================================
 
-void MeshObjectSelectionPlugin::selectEdges( int objectId , IdList _edgeList ) {
+void MeshObjectSelectionPlugin::selectEdges( int objectId , IdList _edgeList, const double _dihedral_angle_threshold ) {
+    update_dihedral_angle_threshold_from_ui();
     
     if(_edgeList.empty() ) return;
     
@@ -66,9 +67,9 @@ void MeshObjectSelectionPlugin::selectEdges( int objectId , IdList _edgeList ) {
     }
 
     if ( object->dataType() == DATA_TRIANGLE_MESH )
-        MeshSelection::selectEdges(PluginFunctions::triMesh(object), _edgeList);
+        MeshSelection::selectEdges(PluginFunctions::triMesh(object), _edgeList, _dihedral_angle_threshold);
     else if ( object->dataType() == DATA_POLY_MESH )
-        MeshSelection::selectEdges(PluginFunctions::polyMesh(object), _edgeList);
+        MeshSelection::selectEdges(PluginFunctions::polyMesh(object), _edgeList, _dihedral_angle_threshold);
     else {
         emit log(LOGERR,tr("selectEdges : Unsupported object Type") );
         return;

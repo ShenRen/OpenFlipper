@@ -521,13 +521,14 @@ std::vector< int > getArea(MeshT* _mesh, unsigned int _type , bool& _invert) {
 
 template< typename MeshT >
 inline
-void selectEdges(MeshT* _mesh, const std::vector< int >& _edges) {
+void selectEdges(MeshT* _mesh, const std::vector< int >& _edges, const double _dihedral_angle_threshold) {
   const int n_edges = (int)_mesh->n_edges();
 
   for ( uint i = 0 ; i < _edges.size() ; ++i )
     if ( (_edges[i] >= 0) && ( _edges[i] < n_edges ) )  {
       typename MeshT::EdgeHandle eh(_edges[i]);
-      _mesh->status(eh).set_selected(true);
+      if(!_mesh->has_face_normals() || std::abs(_mesh->calc_dihedral_angle_fast(eh)) >= _dihedral_angle_threshold)
+        _mesh->status(eh).set_selected(true);
     }
 }
 

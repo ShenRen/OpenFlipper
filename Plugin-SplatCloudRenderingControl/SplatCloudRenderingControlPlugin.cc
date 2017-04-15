@@ -126,14 +126,20 @@ void SplatCloudRenderingControlPlugin::initializePlugin()
   toolboxPointsizeScaleLayout->addWidget( toolboxPointsizeScale_                    );
 
   // buttons
-  QPushButton *toolboxEnableBackfaceCullingButton  = new QPushButton( "Enable Backface Culling"  );
-  QPushButton *toolboxDisableBackfaceCullingButton = new QPushButton( "Disable Backface Culling" );
-  QPushButton *toolboxReloadShadersButton          = new QPushButton( "Reload Shaders"           );
-  QPushButton *toolboxRebuildVBOsButton            = new QPushButton( "Rebuild VBOs"             );
+  QPushButton  *toolboxEnableBackfaceCullingButton  = new QPushButton ( "Enable Backface Culling"  );
+  QPushButton  *toolboxDisableBackfaceCullingButton = new QPushButton ( "Disable Backface Culling" );
+  QPushButton  *toolboxReloadShadersButton          = new QPushButton ( "Reload Shaders"           );
+  QPushButton  *toolboxRebuildVBOsButton            = new QPushButton ( "Rebuild VBOs"             );
+  QRadioButton *toolboxPointSizeButton              = new QRadioButton( "Use gl_PointSize"         );
+  QRadioButton *toolboxGeometryShaderButton         = new QRadioButton( "Use Geometry Shader"      );
   toolboxEnableBackfaceCullingButton->setToolTip ( "Enable the culling of backfaces"       );
   toolboxDisableBackfaceCullingButton->setToolTip( "Disable the culling of backfaces"      );
   toolboxReloadShadersButton->setToolTip         ( "Reload all shader files"           );
   toolboxRebuildVBOsButton->setToolTip           ( "Rebuild all vertex-buffer-objects" );
+  toolboxPointSizeButton->setToolTip             ( "Set gl_PointSize in vertex shader" );
+  toolboxGeometryShaderButton->setToolTip        ( "Create quads in geometry shader"   );
+
+  toolboxPointSizeButton->setChecked(true);
 
   // buttonsA layout
   QHBoxLayout *toolboxButtonsALayout = new QHBoxLayout();
@@ -152,6 +158,17 @@ void SplatCloudRenderingControlPlugin::initializePlugin()
   toolboxButtonsBLayout->addWidget( toolboxReloadShadersButton );
   toolboxButtonsBLayout->addWidget( toolboxRebuildVBOsButton   );
 
+  // separator frame
+  QFrame *toolboxSeparatorFrameBC = new QFrame();
+  toolboxSeparatorFrameBC->setFrameShape(QFrame::HLine);
+  toolboxSeparatorFrameBC->setFrameShadow(QFrame::Sunken);
+
+  // buttonsC layout
+  QHBoxLayout *toolboxButtonsCLayout = new QHBoxLayout();
+  toolboxButtonsCLayout->setSpacing(6);
+  toolboxButtonsCLayout->addWidget(toolboxPointSizeButton);
+  toolboxButtonsCLayout->addWidget(toolboxGeometryShaderButton);
+
   // options layout
   QVBoxLayout *toolboxOptionsLayout = new QVBoxLayout();
   toolboxOptionsLayout->setAlignment( Qt::AlignTop );
@@ -161,12 +178,15 @@ void SplatCloudRenderingControlPlugin::initializePlugin()
   toolboxOptionsLayout->addItem  ( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
   toolboxOptionsLayout->addWidget( toolboxSeparatorFrame       );
   toolboxOptionsLayout->addItem  ( toolboxButtonsBLayout       );
+  toolboxOptionsLayout->addItem  ( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+  toolboxOptionsLayout->addWidget( toolboxSeparatorFrameBC       );
+  toolboxOptionsLayout->addItem  ( toolboxButtonsCLayout       );
 
   // options widget
   QWidget *toolboxOptionsWidget = new QWidget();
   toolboxOptionsWidget->setLayout( toolboxOptionsLayout );
   toolboxOptionsWidget->setToolTip( "Rendering options" );
-
+  
   // ---- defaults tab ----
 
   // default color
@@ -283,6 +303,8 @@ void SplatCloudRenderingControlPlugin::initializePlugin()
   connect( toolboxDisableBackfaceCullingButton, SIGNAL( clicked()            ), this, SLOT( slotToolboxDisableBackfaceCullingButtonClicked() ) );
   connect( toolboxReloadShadersButton,          SIGNAL( clicked()            ), this, SLOT( slotToolboxReloadShadersButtonClicked()          ) );
   connect( toolboxRebuildVBOsButton,            SIGNAL( clicked()            ), this, SLOT( slotToolboxRebuildVBOsButtonClicked()            ) );
+  connect( toolboxPointSizeButton,              SIGNAL( toggled(bool)        ), this, SLOT( slotToolboxPointSizeButtonClicked()              ) );
+  connect( toolboxGeometryShaderButton,         SIGNAL( toggled(bool)        ), this, SLOT( slotToolboxGeometryShaderButtonClicked()         ) );
 
   // emit signal to add the new toolbox
   emit addToolbox( tr("SplatCloud Rendering Control") , toolbox , toolboxIcon );
@@ -318,7 +340,7 @@ void SplatCloudRenderingControlPlugin::initializePlugin()
   connect( contextDefaultsAction_,      SIGNAL( triggered() ), this, SLOT( slotContextDefaultsActionTriggered()      ) );
   connect( contextReloadShadersAction_, SIGNAL( triggered() ), this, SLOT( slotContextReloadShadersActionTriggered() ) );
   connect( contextRebuildVBOAction_,    SIGNAL( triggered() ), this, SLOT( slotContextRebuildVBOActionTriggered()    ) );
-
+  
   // emit signal to add the new context menu
   emit addContextMenuItem( contextMenu->menuAction(), DATA_SPLATCLOUD, CONTEXTOBJECTMENU );
 
@@ -723,6 +745,40 @@ void SplatCloudRenderingControlPlugin::slotToolboxRebuildVBOsButtonClicked()
 
     // emit signal that object has to be updated
     emit updatedObject( objIter->id(), UPDATE_ALL );
+  }
+}
+
+//----------------------------------------------------------------
+
+
+void SplatCloudRenderingControlPlugin::slotToolboxPointSizeButtonClicked()
+{
+  // for all splatcloud-objects...
+  PluginFunctions::ObjectIterator objIter(PluginFunctions::ALL_OBJECTS, DATA_SPLATCLOUD);
+  for (; objIter != PluginFunctions::objectsEnd(); ++objIter)
+  {
+    // get splatcloud-object
+    SplatCloudObject *splatCloudObject = PluginFunctions::splatCloudObject(*objIter);
+
+    // apply update
+    splatCloudObject->enableGeometryShaderQuads(false);
+  }
+}
+
+//----------------------------------------------------------------
+
+
+void SplatCloudRenderingControlPlugin::slotToolboxGeometryShaderButtonClicked()
+{
+  // for all splatcloud-objects...
+  PluginFunctions::ObjectIterator objIter(PluginFunctions::ALL_OBJECTS, DATA_SPLATCLOUD);
+  for (; objIter != PluginFunctions::objectsEnd(); ++objIter)
+  {
+    // get splatcloud-object
+    SplatCloudObject *splatCloudObject = PluginFunctions::splatCloudObject(*objIter);
+
+    // apply update
+    splatCloudObject->enableGeometryShaderQuads(true);
   }
 }
 

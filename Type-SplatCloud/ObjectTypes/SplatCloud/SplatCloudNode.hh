@@ -183,6 +183,7 @@ public:
 
   inline void setPointsizeScale(float _scale) { pointsizeScale_ = _scale; }
   inline void setBackfaceCulling(bool _enable) { backfaceCulling_ = _enable; }
+  inline void setGeometryShaderQuads(bool _enable) { geometryShaderQuads_ = _enable; }
 
   //----------------------------------------------------------------
 
@@ -282,6 +283,7 @@ private:
 
   float pointsizeScale_;
   bool  backfaceCulling_;
+  bool  geometryShaderQuads_;
 };
 
 

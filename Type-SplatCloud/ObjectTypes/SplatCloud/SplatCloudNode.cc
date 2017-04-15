@@ -114,7 +114,8 @@ SplatCloudNode::SplatCloudNode( const SplatCloud &_splatCloud, BaseNode *_parent
   vboSelectionsOffset_( -1 ), 
   vboPickColorsOffset_( -1 ),
   pointsizeScale_     ( 1.0f ),
-  backfaceCulling_    ( false )
+  backfaceCulling_    ( false ),
+  geometryShaderQuads_( false )
 {
   // create a new VBO (will be invalid and rebuilt the next time drawn (or picked))
   createVBO();
@@ -324,7 +325,7 @@ void SplatCloudNode::draw( GLState &_state, const DrawModes::DrawMode &_drawMode
 
 void SplatCloudNode::getRenderObjects( IRenderer* _renderer, GLState& _state, const DrawModes::DrawMode& _drawMode, const Material* _mat )
 {
-
+  static const int RENDERMODE_POINTS = 0;
   static const int RENDERMODE_DOTS = 1;
   static const int RENDERMODE_SPLATS = 2;
 
@@ -335,7 +336,6 @@ void SplatCloudNode::getRenderObjects( IRenderer* _renderer, GLState& _state, co
   else if (_drawMode.containsAtomicDrawMode(dotsDrawMode_))
     rendermode = RENDERMODE_DOTS;
   else if (_drawMode.containsAtomicDrawMode(pointsDrawMode_)) {
-    static const int RENDERMODE_POINTS = 0;
     rendermode = RENDERMODE_POINTS;
   }
   else
@@ -347,6 +347,9 @@ void SplatCloudNode::getRenderObjects( IRenderer* _renderer, GLState& _state, co
   obj.setMaterial(_mat);
 
   obj.depthTest = true;
+
+  // backface culling is done manually in shader
+  obj.culling = false;
 
   // if VBO is invalid or was (partially) modified, then rebuild
   if ((vboData_ == 0) || vboModified())
@@ -419,21 +422,63 @@ void SplatCloudNode::getRenderObjects( IRenderer* _renderer, GLState& _state, co
     // render:
     // -------
 
-    // enable "pointsize by program" depending on current rendermode
-    if (rendermode == RENDERMODE_SPLATS || rendermode == RENDERMODE_DOTS)
-    {
-      ACG::Vec2f screenSize(_state.viewport_width(), _state.viewport_height());
-//      obj.setupPointRendering(defaultPointsize_, screenSize);
-    }
-
     // setup shader
     obj.shaderDesc.shadeMode = SG_SHADE_UNLIT;
-//     obj.shaderDesc.vertexTemplateFile = "SplatCloud_Splats/Vertex_shadergen.glsl";
-//     obj.shaderDesc.fragmentTemplateFile = "SplatCloud_Splats/Fragment_shadergen.glsl";
 
-    obj.shaderDesc.vertexTemplateFile = "SplatCloud_ShaderGen/splat_vs.glsl";
-    obj.shaderDesc.geometryTemplateFile = "SplatCloud_ShaderGen/splat_gs.glsl";
-    obj.shaderDesc.fragmentTemplateFile = "SplatCloud_ShaderGen/splat_fs.glsl";
+
+
+    obj.programPointSize = false;
+
+    // test gl_PointSize performance
+    if (rendermode == RENDERMODE_DOTS)
+    {
+      
+    }
+
+
+    switch (rendermode)
+    {
+    case RENDERMODE_SPLATS:
+      {
+        if (geometryShaderQuads_)
+        {
+          obj.shaderDesc.vertexTemplateFile = "SplatCloud_ShaderGen/splats_quad_vs.glsl";
+          obj.shaderDesc.geometryTemplateFile = "SplatCloud_ShaderGen/splats_quad_gs.glsl";
+          obj.shaderDesc.fragmentTemplateFile = "SplatCloud_ShaderGen/splats_quad_fs.glsl";
+          obj.programPointSize = false;
+        }
+        else
+        {
+          obj.shaderDesc.vertexTemplateFile = "SplatCloud_ShaderGen/splats_psize_vs.glsl";
+          obj.shaderDesc.fragmentTemplateFile = "SplatCloud_ShaderGen/splats_psize_fs.glsl";
+          obj.programPointSize = true;
+        }
+      } break;
+
+    case RENDERMODE_DOTS:
+      {
+        if (geometryShaderQuads_)
+        {
+          obj.shaderDesc.vertexTemplateFile = "SplatCloud_ShaderGen/dots_quad_vs.glsl";
+          obj.shaderDesc.geometryTemplateFile = "SplatCloud_ShaderGen/splats_quad_gs.glsl";
+          obj.shaderDesc.fragmentTemplateFile = "SplatCloud_ShaderGen/splats_quad_fs.glsl";
+          obj.programPointSize = false;
+        }
+        else
+        {
+          obj.shaderDesc.vertexTemplateFile = "SplatCloud_ShaderGen/dots_psize_vs.glsl";
+          obj.programPointSize = true;
+        }
+      } break;
+
+    case RENDERMODE_POINTS:
+      {
+        obj.shaderDesc.vertexTemplateFile = "SplatCloud_ShaderGen/points_vs.glsl";
+        obj.programPointSize = false;
+      } break;
+    
+    default: break;
+    }
 
     // setup uniforms
     /*
@@ -512,8 +557,6 @@ void SplatCloudNode::getRenderObjects( IRenderer* _renderer, GLState& _state, co
     obj.setUniform("backfaceCulling", backfaceCulling_);
     obj.setUniform("defaultPointsize", defaultPointsize_);
     obj.setUniform("defaultNormal", defaultNormal_);
-    
-    obj.programPointSize = true;
     
     if (vboColorsOffset_ != -1)
       obj.shaderDesc.vertexColors = true;
@@ -658,7 +701,7 @@ void SplatCloudNode::rebuildVBO( GLState &_state )
     if( _state.color_picking() )
     {
       // store picking base index
-      pickingBaseIndex_ = _state.pick_current_index();
+      pickingBaseIndex_ = static_cast<unsigned int>(_state.pick_current_index());
     }
 
     // rebuild data blocks if needed

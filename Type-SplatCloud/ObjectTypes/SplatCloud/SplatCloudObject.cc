@@ -342,6 +342,18 @@ void SplatCloudObject::enableBackfaceCulling( bool _enable )
 
 //----------------------------------------------------------------
 
+/**
+ * Enable or disable quad extrusion in geometry shader.
+ * This only affects the shader pipeline renderers.
+ */
+void SplatCloudObject::enableGeometryShaderQuads(bool _enable)
+{
+  splatCloudNode_->setGeometryShaderQuads(_enable);
+}
+
+
+//----------------------------------------------------------------
+
 
 /**
  * Set scale for point sizes

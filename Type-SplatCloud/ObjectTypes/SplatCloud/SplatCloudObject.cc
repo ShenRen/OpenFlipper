@@ -267,6 +267,8 @@ void SplatCloudObject::reloadShaders()
  */
 void SplatCloudObject::enableBackfaceCulling( bool _enable )
 {
+  splatCloudNode_->setBackfaceCulling(_enable);
+
   // get drawmodes
   ACG::SceneGraph::DrawModes::DrawMode splatsDrawMode = ACG::SceneGraph::DrawModes::getDrawMode( "Splats" );
   ACG::SceneGraph::DrawModes::DrawMode dotsDrawMode   = ACG::SceneGraph::DrawModes::getDrawMode( "Dots"   );
@@ -340,12 +342,26 @@ void SplatCloudObject::enableBackfaceCulling( bool _enable )
 
 //----------------------------------------------------------------
 
+/**
+ * Enable or disable quad extrusion in geometry shader.
+ * This only affects the shader pipeline renderers.
+ */
+void SplatCloudObject::enableGeometryShaderQuads(bool _enable)
+{
+  splatCloudNode_->setGeometryShaderQuads(_enable);
+}
+
+
+//----------------------------------------------------------------
+
 
 /**
  * Set scale for point sizes
  */
 void SplatCloudObject::setPointsizeScale( float _scale )
 {
+  splatCloudNode_->setPointsizeScale(_scale);
+
   // get drawmodes
   ACG::SceneGraph::DrawModes::DrawMode splatsDrawMode = ACG::SceneGraph::DrawModes::getDrawMode( "Splats" );
   ACG::SceneGraph::DrawModes::DrawMode dotsDrawMode   = ACG::SceneGraph::DrawModes::getDrawMode( "Dots"   );

@@ -4,6 +4,11 @@ rmdir libs_required /s /q
 git submodule init
 git submodule update --remote
 
+::########################################
+::# Fetch test data
+::########################################
+rmdir /Q /S TestData
+git clone git@roosevelt:moebius/OpenFlipper-Test-Data.git TestData
 
 mkdir rel
 cd rel

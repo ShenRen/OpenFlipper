@@ -45,21 +45,57 @@
 #include <ACG/Math/VectorT.hh>
 #include <ACG/Config/ACGDefines.hh>
 #include <QColor>
+#include <algorithm>
 
+namespace {
+// With C++17, we can use std::clamp() instead
+template<class T>
+const T clamp( const T v, const T lo, const T hi)
+{
+    if (v < lo)
+        return lo;
+    if (v > hi)
+        return hi;
+    return v;
+}
+}
 namespace ACG {
 
 class ACGDLLEXPORT IColorCoder {
 public:
     virtual ~IColorCoder() = default;
 
-    virtual ACG::Vec4uc color4(float _v) const = 0;
-    virtual ACG::Vec4f color_float4(float _v) const = 0;
+    // "raw" refers to directly using the value,
+    // assuming it to be inside [min(),max()] without any checks,
+    // those are implemented in color4() and color_float4()
+
+    virtual ACG::Vec4uc color4_raw(float _v) const = 0;
+    virtual ACG::Vec4f  color_float4_raw(float _v) const = 0;
 
     /// min scalar value
     virtual float min() const = 0;
 
     /// max scalar value
     virtual float max() const = 0;
+
+    virtual ACG::Vec4uc color4(float _v) const
+    {
+        auto clamped = clamp(_v, min(), max());
+        auto col = color4_raw(clamped);
+        if (mapOutsideRangeToAlpha0_ && clamped != _v) {
+            col[3] = 0;
+        }
+        return col;
+    }
+
+    virtual ACG::Vec4f  color_float4(float _v) const {
+        auto clamped = clamp(_v, min(), max());
+        auto col = color_float4_raw(clamped);
+        if (mapOutsideRangeToAlpha0_ && clamped != _v) {
+            col[3] = 0.0f;
+        }
+        return col;
+    }
 
     inline ACG::Vec3uc color(float _v) const {
         ACG::Vec4uc c = color4(_v);
@@ -82,7 +118,24 @@ public:
     inline ACG::Vec4f operator() (float _v) const {
         return color_float4(_v);
     }
+
+    void setMapOutsideRangeToAlpha0(bool value)
+    {
+        mapOutsideRangeToAlpha0_ = value;
+    }
+
+    bool getMapOutsideRangeToAlpha0() const
+    {
+        return mapOutsideRangeToAlpha0_;
+    }
+
+protected:
+    bool mapOutsideRangeToAlpha0_ = false;
 };
+
+
+
+
 
 } // namespace ACG
 

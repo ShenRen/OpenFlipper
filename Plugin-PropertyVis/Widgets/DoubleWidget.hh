@@ -81,13 +81,16 @@ public:
    */
   std::unique_ptr<ACG::IColorCoder> buildColorCoder()
   {
+      std::unique_ptr<ACG::IColorCoder> cc;
       if (doubleColorCoder->isChecked()) {
-          return ptr::make_unique<ACG::ColorCoder>();
+          cc = ptr::make_unique<ACG::ColorCoder>();
       } else {
-          return ptr::make_unique<ACG::LinearTwoColorCoder>(
+          cc = ptr::make_unique<ACG::LinearTwoColorCoder>(
                       ACG::to_Vec4f(doubleMin->color()),
                       ACG::to_Vec4f(doubleMax->color()));
       }
+      cc->setMapOutsideRangeToAlpha0(doubleMapOutsideRange->isChecked());
+      return cc;
   }
   
   signals:

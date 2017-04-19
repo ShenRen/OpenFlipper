@@ -130,21 +130,8 @@ void OVMPropertyVisualizerDouble<MeshT>::visualizeProp(PropType prop, EntityIter
             if ( doubleWidget->doubleAbsolute->isChecked())
                 value = fabs(value);
 
-            // clamping
-            value = std::max(min,value);
-            value = std::min(max,value);
-
             double t = (value-min)/range;
-
-            ACG::Vec4f color = cc->color_float4(t);
-
-            if (doubleWidget->doubleMapOutsideRange->isChecked()) {
-              if (prop[*e_it] < min || prop[*e_it] > max)
-                color[3] = 0.f;
-            }
-
-            // set color
-            object->colors()[*e_it] = color;
+            object->colors()[*e_it] = cc->color_float4(t);
         }
     }
 }

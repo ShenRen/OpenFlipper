@@ -88,15 +88,15 @@ void ColorCoder::set_range(float _min, float _max, bool _signed)
 }
 
 /// color coding
-ACG::Vec4uc ColorCoder::color4(float _v) const
+ACG::Vec4uc ColorCoder::color4_raw(float _v) const
 {
   return signed_mode_ ? color_signed(_v) : color_unsigned(_v);
 }
 
 /// color coding
-ACG::Vec4f ColorCoder::color_float4(float _v) const
+ACG::Vec4f ColorCoder::color_float4_raw(float _v) const
 {
-  ACG::Vec4uc c = color4(_v);
+  ACG::Vec4uc c = color4_raw(_v);
   return (ACG::Vec4f(c[0], c[1], c[2], c[3]) / 255.f);
 }
 

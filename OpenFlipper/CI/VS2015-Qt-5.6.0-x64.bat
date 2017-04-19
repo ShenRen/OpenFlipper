@@ -4,6 +4,13 @@ rmdir libs_required /s /q
 git submodule init
 git submodule update --remote
 
+::########################################
+::# Fetch test data
+::########################################
+rmdir /Q /S TestData
+:: clone libraries git (set env variable to GIT_SSH_COMMAND maybe use setx once as this key won't change) 
+set GIT_SSH_COMMAND=ssh -i E:\\\gitlab\\\id_rsa 
+git clone git@roosevelt:moebius/OpenFlipper-Test-Data.git TestData
 
 mkdir rel
 cd rel

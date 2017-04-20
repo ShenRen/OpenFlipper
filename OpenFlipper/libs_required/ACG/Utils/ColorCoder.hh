@@ -83,10 +83,10 @@ public:
   void set_range(float _min, float _max, bool _signed);
 
   /// color coding
-  ACG::Vec4uc color4(float _v) const override;
+  ACG::Vec4uc color4_raw(float _v) const override;
 
   /// color coding
-  ACG::Vec4f color_float4(float _v) const override;
+  ACG::Vec4f color_float4_raw(float _v) const override;
 \
   /// min scalar value
   float min() const override;

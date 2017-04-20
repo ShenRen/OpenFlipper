@@ -129,10 +129,6 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeFaceProp(bool _setDrawMode)
             if ( doubleWidget->doubleAbsolute->isChecked())
                 v = fabs(v);
 
-            // clamping
-            v = std::max(min,v);
-            v = std::min(max,v);
-
             double t = (v-min)/range;
             typename MeshT::Color color = cc->color_float4(t);
 
@@ -212,10 +208,6 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeEdgeProp(bool _setDrawMode)
             if ( doubleWidget->doubleAbsolute->isChecked())
             v = fabs(v);
 
-            // clamping
-            v = std::max(min,v);
-            v = std::min(max,v);
-
             double t = (v-min)/range;
             typename MeshT::Color color = cc->color_float4(t);
 
@@ -294,10 +286,6 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeHalfedgeProp(bool _setDrawMode)
             if ( doubleWidget->doubleAbsolute->isChecked())
             v = fabs(v);
 
-            // clamping
-            v = std::max(min,v);
-            v = std::min(max,v);
-
             double t = (v-min)/range;
             typename MeshT::Color color = cc->color_float4(t);
 
@@ -373,10 +361,6 @@ void OMPropertyVisualizerDouble<MeshT>::visualizeVertexProp(bool _setDrawMode)
             // absolut value?
             if ( doubleWidget->doubleAbsolute->isChecked())
             v = fabs(v);
-
-            // clamping
-            v = std::max(min,v);
-            v = std::min(max,v);
 
             double t = (v-min)/range;
             typename MeshT::Color color = cc->color_float4(t);

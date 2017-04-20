@@ -53,8 +53,8 @@ public:
           maxColor_(maxColor)
     {}
 
-    ACG::Vec4uc color4(float _v) const override;
-    ACG::Vec4f color_float4(float _v) const override;
+    ACG::Vec4uc color4_raw(float _v) const override;
+    ACG::Vec4f color_float4_raw(float _v) const override;
 
 
     float min() const override { return 0.0; }

@@ -721,6 +721,13 @@ void ViewControlPlugin::slotDrawModeSelected( QAction * _action) {
   bool useGlobalDrawMode = false;
   bool contextMenuStaysOpen = false;
   if ( _action->text() != USEGLOBALDRAWMODE ) {
+
+    // extract global draw mode in case we want to combine it with another draw mode
+    if(activeDrawModes_ == ACG::SceneGraph::DrawModes::DEFAULT) {
+        ACG::SceneGraph::DrawModes::DrawMode widgetDrawMode = PluginFunctions::drawMode();
+        activeDrawModes_.combine(widgetDrawMode);
+    }
+
     // As this is not the global draw mode, filter out default as draw mode or it will interfere with the other modes!
     activeDrawModes_.filter(ACG::SceneGraph::DrawModes::DEFAULT);
     
@@ -728,7 +735,7 @@ void ViewControlPlugin::slotDrawModeSelected( QAction * _action) {
     // Otherwise we directly take the new mode
     if ( qApp->keyboardModifiers() & Qt::ShiftModifier ) {
         if (activateDrawMode) {
-            activeDrawModes_ |= mode;
+            activeDrawModes_.combine(mode);     // explicit call to combine() states intent more clearly
         } else {
             if (activeDrawModes_ == mode) {
                 activeDrawModes_ = ACG::SceneGraph::DrawModes::DEFAULT;
@@ -1275,7 +1282,7 @@ ViewControlPlugin::setDrawMode(QString _mode, int _viewer)
   for ( int i = 0 ; i < list.size() ; ++i )
     drawModeList.push_back(list[i]);
 
-  ACG::SceneGraph::DrawModes::DrawMode mode = listToDrawMode(drawModeList);
+  ACG::SceneGraph::DrawModes::DrawMode mode     = listToDrawMode(drawModeList);
 
   PluginFunctions::setDrawMode( mode , _viewer );
   emit updateView();

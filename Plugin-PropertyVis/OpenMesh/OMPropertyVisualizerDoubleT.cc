@@ -53,8 +53,8 @@
 #include "OMPropertyVisualizerDouble.hh"
 
 template <typename MeshT>
-OMPropertyVisualizerDouble<MeshT>::OMPropertyVisualizerDouble(MeshT* _mesh, PropertyInfo _propertyInfo)
-    : OMPropertyVisualizer<MeshT>(_mesh, _propertyInfo)
+OMPropertyVisualizerDouble<MeshT>::OMPropertyVisualizerDouble(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo)
+    : OMPropertyVisualizer<MeshT>(_mesh, _objectID, _propertyInfo)
 {
     if (PropertyVisualizer::widget) delete PropertyVisualizer::widget;
     DoubleWidget* w = new DoubleWidget();

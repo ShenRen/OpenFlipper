@@ -54,8 +54,8 @@
 #include "OMPropertyVisualizerInteger.hh"
 
 template <typename MeshT, typename T>
-OMPropertyVisualizerInteger<MeshT, T>::OMPropertyVisualizerInteger(MeshT* _mesh, PropertyInfo _propertyInfo, bool isUnsigned)
-    : OMPropertyVisualizer<MeshT>(_mesh, _propertyInfo)
+OMPropertyVisualizerInteger<MeshT, T>::OMPropertyVisualizerInteger(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo, bool isUnsigned)
+    : OMPropertyVisualizer<MeshT>(_mesh, _objectID, _propertyInfo)
 {
     if (PropertyVisualizer::widget) delete PropertyVisualizer::widget;
     IntegerWidget* w = new IntegerWidget();

@@ -66,7 +66,7 @@ template <typename MeshT>
 class OMPropertyVisualizerVectorFieldDifference: public OMPropertyVisualizer<MeshT>{
 
 public:
-    OMPropertyVisualizerVectorFieldDifference(MeshT* _mesh, PropertyInfo _propertyInfo1, PropertyInfo _propertyInfo2);
+    OMPropertyVisualizerVectorFieldDifference(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo1, PropertyInfo _propertyInfo2);
     virtual ~OMPropertyVisualizerVectorFieldDifference(){}
 
     virtual QString getName() { return QObject::tr("Combination of %1 and %2").arg(PropertyVisualizer::propertyInfo.propName().c_str()).arg(propertyInfo2.propName().c_str()); }

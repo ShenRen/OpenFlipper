@@ -183,7 +183,7 @@ void OMPropertyModel<MeshT>::combine()
 {
     beginResetModel();
     if (isVectorType(mCombineProperty1->typeinfo()))
-        propertyVisualizers.push_back(new OMPropertyVisualizerVectorFieldDifference<MeshT>(mesh_, *mCombineProperty1, *mCombineProperty2));
+        propertyVisualizers.push_back(new OMPropertyVisualizerVectorFieldDifference<MeshT>(mesh_, objectID_, *mCombineProperty1, *mCombineProperty2));
     endResetModel();
 }
 
@@ -542,24 +542,24 @@ void OMPropertyModel<MeshT>::addPropertyVisualizer(OpenMesh::BaseProperty* const
 {
     PropertyInfo propInfo = PropertyInfo(baseProp->name(), getSupportedTypeInfoWrapper(baseProp) , filter);
     if (propInfo.typeinfo() == proptype_bool)
-        propertyVisualizers.push_back(new OMPropertyVisualizerBoolean<MeshT>(mesh, propInfo));
+        propertyVisualizers.push_back(new OMPropertyVisualizerBoolean<MeshT>(mesh, objectID_, propInfo));
     else if (propInfo.typeinfo() == proptype_int)
-        propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, int>(mesh, propInfo, false));
+        propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, int>(mesh, objectID_, propInfo, false));
     else if (propInfo.typeinfo() == proptype_uint)
-        propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, unsigned int>(mesh, propInfo, true));
+        propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, unsigned int>(mesh, objectID_, propInfo, true));
     else if (propInfo.typeinfo() == proptype_uint8_t)
-        propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, uint8_t>(mesh, propInfo, true));
+        propertyVisualizers.push_back(new OMPropertyVisualizerInteger<MeshT, uint8_t>(mesh, objectID_, propInfo, true));
     else if (propInfo.typeinfo() == proptype_double)
-        propertyVisualizers.push_back(new OMPropertyVisualizerDouble<MeshT>(mesh, propInfo));
+        propertyVisualizers.push_back(new OMPropertyVisualizerDouble<MeshT>(mesh, objectID_, propInfo));
     else if ((propInfo.typeinfo() == proptype_Vec3d) || (propInfo.typeinfo() == proptype_Vec3f))
-        propertyVisualizers.push_back(new OMPropertyVisualizerVector<MeshT>(mesh, propInfo));
+        propertyVisualizers.push_back(new OMPropertyVisualizerVector<MeshT>(mesh, objectID_, propInfo));
     else if ((propInfo.typeinfo() == proptype_Vec2d))
-        propertyVisualizers.push_back(new OMPropertyVisualizerVector2<MeshT, ACG::Vec2d>(mesh, propInfo));
+        propertyVisualizers.push_back(new OMPropertyVisualizerVector2<MeshT, ACG::Vec2d>(mesh, objectID_, propInfo));
     else if ((propInfo.typeinfo() == proptype_Vec2f))
-        propertyVisualizers.push_back(new OMPropertyVisualizerVector2<MeshT, ACG::Vec2f>(mesh, propInfo));
+        propertyVisualizers.push_back(new OMPropertyVisualizerVector2<MeshT, ACG::Vec2f>(mesh, objectID_, propInfo));
 #ifdef ENABLE_SKELETON_SUPPORT
     else if (propInfo.typeinfo() == proptype_SkinWeights)
-        propertyVisualizers.push_back(new OMPropertyVisualizerSkinWeights<MeshT>(mesh, propInfo));
+        propertyVisualizers.push_back(new OMPropertyVisualizerSkinWeights<MeshT>(mesh, objectID_, propInfo));
 #endif
     connectLogs(propertyVisualizers.back());
 }

@@ -61,9 +61,10 @@ template <typename MeshT>
 class OMPropertyVisualizer: public PropertyVisualizer{
 
 public:
-    OMPropertyVisualizer(MeshT* _mesh, PropertyInfo _propertyInfo)
+    OMPropertyVisualizer(MeshT* _mesh, int objectID, PropertyInfo _propertyInfo)
         : PropertyVisualizer(_propertyInfo),
-          mesh(_mesh)
+          mesh(_mesh),
+          mObjectID(objectID)
     { }
 
     virtual ~OMPropertyVisualizer(){clear();}
@@ -97,6 +98,7 @@ public:
 
 protected:
     MeshT* mesh;
+    int mObjectID;
 
     virtual void visualizeFaceProp(bool _setDrawMode = true);
     virtual void visualizeEdgeProp(bool _setDrawMode = true);

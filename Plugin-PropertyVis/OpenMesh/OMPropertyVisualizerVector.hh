@@ -66,7 +66,7 @@ template <typename MeshT>
 class OMPropertyVisualizerVector: public OMPropertyVisualizer<MeshT>{
 
 public:
-    OMPropertyVisualizerVector(MeshT* _mesh, PropertyInfo _propertyInfo);
+    OMPropertyVisualizerVector(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo);
     virtual ~OMPropertyVisualizerVector(){clear();}
 
     virtual void clear();

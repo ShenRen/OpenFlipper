@@ -60,7 +60,7 @@ template <typename MeshT>
 class OMPropertyVisualizerBoolean: public OMPropertyVisualizer<MeshT>{
 
 public:
-    OMPropertyVisualizerBoolean(MeshT* _mesh, PropertyInfo _propertyInfo);
+    OMPropertyVisualizerBoolean(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo);
     virtual ~OMPropertyVisualizerBoolean(){}
 
 protected:

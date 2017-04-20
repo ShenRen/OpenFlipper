@@ -64,7 +64,7 @@ template <typename MeshT>
 class OMPropertyVisualizerSkinWeights: public OMPropertyVisualizer<MeshT>{
 
 public:
-    OMPropertyVisualizerSkinWeights(MeshT* _mesh, PropertyInfo _propertyInfo);
+    OMPropertyVisualizerSkinWeights(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo);
     virtual ~OMPropertyVisualizerSkinWeights(){}
 
 protected:

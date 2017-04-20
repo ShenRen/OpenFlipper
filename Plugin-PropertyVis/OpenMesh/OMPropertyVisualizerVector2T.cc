@@ -54,8 +54,8 @@
 #include <ACG/Utils/ColorConversion.hh>
 
 template <typename MeshT, typename VectorType>
-OMPropertyVisualizerVector2<MeshT, VectorType>::OMPropertyVisualizerVector2(MeshT* _mesh, PropertyInfo _propertyInfo)
-    : OMPropertyVisualizer<MeshT>(_mesh, _propertyInfo)
+OMPropertyVisualizerVector2<MeshT, VectorType>::OMPropertyVisualizerVector2(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo)
+    : OMPropertyVisualizer<MeshT>(_mesh, _objectID, _propertyInfo)
 {
     if (PropertyVisualizer::widget) delete PropertyVisualizer::widget;
     VectorWidget* w = new VectorWidget();

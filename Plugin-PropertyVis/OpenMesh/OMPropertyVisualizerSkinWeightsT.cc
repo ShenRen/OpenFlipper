@@ -55,8 +55,8 @@
 #include "OMPropertyVisualizerSkinWeights.hh"
 
 template <typename MeshT>
-OMPropertyVisualizerSkinWeights<MeshT>::OMPropertyVisualizerSkinWeights(MeshT* _mesh, PropertyInfo _propertyInfo)
-    : OMPropertyVisualizer<MeshT>(_mesh, _propertyInfo)
+OMPropertyVisualizerSkinWeights<MeshT>::OMPropertyVisualizerSkinWeights(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo)
+    : OMPropertyVisualizer<MeshT>(_mesh, _objectID, _propertyInfo)
 {
     if (PropertyVisualizer::widget) delete PropertyVisualizer::widget;
     SkinWeightsWidget* w = new SkinWeightsWidget();

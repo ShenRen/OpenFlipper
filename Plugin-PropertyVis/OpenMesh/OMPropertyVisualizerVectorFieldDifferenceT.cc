@@ -53,8 +53,8 @@
 #include "OMPropertyVisualizerVectorFieldDifference.hh"
 
 template <typename MeshT>
-OMPropertyVisualizerVectorFieldDifference<MeshT>::OMPropertyVisualizerVectorFieldDifference(MeshT* _mesh, PropertyInfo _propertyInfo1, PropertyInfo _propertyInfo2)
-    : OMPropertyVisualizer<MeshT>(_mesh, _propertyInfo1),
+OMPropertyVisualizerVectorFieldDifference<MeshT>::OMPropertyVisualizerVectorFieldDifference(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo1, PropertyInfo _propertyInfo2)
+    : OMPropertyVisualizer<MeshT>(_mesh, _objectID, _propertyInfo1),
       propertyInfo2(_propertyInfo2)
 {
     if (PropertyVisualizer::widget) delete PropertyVisualizer::widget;

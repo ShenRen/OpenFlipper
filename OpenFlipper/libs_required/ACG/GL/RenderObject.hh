@@ -261,6 +261,14 @@ struct ACGDLLEXPORT RenderObject
   //  default: all zero (disabled)
   GLuint clipDistanceMask;
 
+  // GL_PROGRAM_POINT_SIZE : default false
+  //  if true, use gl_PointSize from shader
+  //  otherwise, use pointSize from render object
+  bool programPointSize; 
+  
+  // glPointSize(), default: 0.1
+  float pointSize;
+
   // ---------------------------
   // default tessellation lod, if only a tess-eval, but no tess-control shader is specified
   // this is ignored otherwise

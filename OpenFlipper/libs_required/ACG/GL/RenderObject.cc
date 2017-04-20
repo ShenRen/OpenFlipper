@@ -74,6 +74,8 @@ void RenderObject::initFromState( GLState* _glState )
   depthWrite = true;
   alphaTest = false;
 
+  programPointSize = false;
+
   colorWriteMask[0] = colorWriteMask[1] = colorWriteMask[2] = colorWriteMask[3] = 1;
 
   fillMode = GL_FILL;
@@ -86,6 +88,7 @@ void RenderObject::initFromState( GLState* _glState )
 
   alpha = 1.0f;
 
+  pointSize = 0.1f;
 
   if (_glState)
   {
@@ -113,6 +116,13 @@ void RenderObject::initFromState( GLState* _glState )
       emissive[i] = _glState->base_color()[i];
     }
     shininess = _glState->shininess();
+
+
+#ifdef GL_PROGRAM_POINT_SIZE
+    programPointSize = _glState->isStateEnabled(GL_PROGRAM_POINT_SIZE);
+#endif
+
+    pointSize = _glState->point_size();
   }
 
 
@@ -194,23 +204,26 @@ void RenderObject::setMaterial( const SceneGraph::Material* _mat )
 
 
 RenderObject::RenderObject()
-: priority(0),
+  : priority(0),
   overlay(false),
-  modelview(GLMatrixf(ACG::Vec3f(1.0,0.0,0.0),ACG::Vec3f(0.0,1.0,0.0),ACG::Vec3f(0.0,0.0,1.0))),
+  modelview(GLMatrixf(ACG::Vec3f(1.0, 0.0, 0.0), ACG::Vec3f(0.0, 1.0, 0.0), ACG::Vec3f(0.0, 0.0, 1.0))),
   proj(modelview),
   vertexArrayObject(0),
   vertexBuffer(0), indexBuffer(0), sysmemIndexBuffer(0),
   primitiveMode(GL_TRIANGLES), patchVertices(0), numIndices(0), indexOffset(0), indexType(GL_UNSIGNED_INT),
   numInstances(0),
-  vertexDecl(0), 
+  vertexDecl(0),
   culling(true), blending(false), alphaTest(false),
   depthTest(true), depthWrite(true),
-  fillMode(GL_FILL), depthFunc(GL_LESS), 
+  fillMode(GL_FILL), depthFunc(GL_LESS),
   alphaFunc(GL_ALWAYS), alphaRef(0.0f),
   blendSrc(GL_SRC_ALPHA), blendDest(GL_ONE_MINUS_SRC_ALPHA),
-  depthRange(0.0f, 1.0f), 
+  depthRange(0.0f, 1.0f),
 
   clipDistanceMask(0),
+
+  programPointSize(false),
+  pointSize(0.1f),
 
   patchDefaultInnerLevel(1.0f, 1.0f),
   patchDefaultOuterLevel(1.0f, 1.0f, 1.0f, 1.0f),

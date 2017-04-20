@@ -315,16 +315,19 @@ void MeshObjectSelectionPlugin::paintSphereSelection(MeshT*                _mesh
 
 
     if( (_primitiveType & edgeType_) || (_primitiveType & halfedgeType_)) {
-
+      update_dihedral_angle_threshold_from_ui();
 
       for( size_t i=0; i < edge_handles.size(); i++) {
-        if  (_primitiveType & halfedgeType_) {
-          _mesh->status( _mesh->halfedge_handle(edge_handles[i],0) ).set_selected(sel) ;
-          _mesh->status( _mesh->halfedge_handle(edge_handles[i],1) ).set_selected(sel) ;
-        }
+        if  (_primitiveType & halfedgeType_)
+          if(!_mesh->has_face_normals() || std::abs(_mesh->calc_dihedral_angle_fast(edge_handles[i])) >= dihedral_angle_threshold_)
+          {
+            _mesh->status( _mesh->halfedge_handle(edge_handles[i],0) ).set_selected(sel) ;
+            _mesh->status( _mesh->halfedge_handle(edge_handles[i],1) ).set_selected(sel) ;
+          }
 
         if (_primitiveType & edgeType_)
-          _mesh->status(edge_handles[i]).set_selected(sel);
+          if(!_mesh->has_face_normals() || std::abs(_mesh->calc_dihedral_angle_fast(edge_handles[i])) >= dihedral_angle_threshold_)
+            _mesh->status(edge_handles[i]).set_selected(sel);
       }
 
     }
@@ -410,6 +413,7 @@ bool MeshObjectSelectionPlugin::volumeSelection(MeshT* _mesh, int _objectId, ACG
     }
     
     if( (_primitiveType & edgeType_) || (_primitiveType & halfedgeType_) ) {
+        update_dihedral_angle_threshold_from_ui();
         typename MeshT::EdgeIter e_it, e_end(_mesh->edges_end());
         for(e_it=_mesh->edges_begin(); e_it!=e_end; ++e_it) {
             
@@ -417,13 +421,15 @@ bool MeshObjectSelectionPlugin::volumeSelection(MeshT* _mesh, int _objectId, ACG
                     _mesh->status(_mesh->to_vertex_handle(_mesh->halfedge_handle(*e_it, 1))).tagged()) {
                 
                 if(_primitiveType & edgeType_)
-                    _mesh->status(*e_it).set_selected(!_deselection);
+                  if(!_mesh->has_face_normals() || std::abs(_mesh->calc_dihedral_angle_fast(*e_it)) >= dihedral_angle_threshold_)
+                      _mesh->status(*e_it).set_selected(!_deselection);
 
-                if(_primitiveType & halfedgeType_) {
-                    
+                if(_primitiveType & halfedgeType_)
+                  if(!_mesh->has_face_normals() || std::abs(_mesh->calc_dihedral_angle_fast(*e_it)) >= dihedral_angle_threshold_)
+                  {
                     _mesh->status(_mesh->halfedge_handle(*e_it,0)).set_selected(!_deselection);
                     _mesh->status(_mesh->halfedge_handle(*e_it,1)).set_selected(!_deselection);
-                }
+                  }
             }
         }
     }

@@ -115,6 +115,10 @@ public:
    */
   void enableBackfaceCulling( bool _enable );
 
+  /** \brief Enable or disable quad extrusion in geometry shader (shader pipeline)
+  */
+  void enableGeometryShaderQuads( bool _enable );
+
   /** \brief Set the scaling factor for pointsizes for all Shaders
    */
   void setPointsizeScale( float _scale );

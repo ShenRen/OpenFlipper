@@ -1,6 +1,6 @@
 /*===========================================================================*\
- *                                                                           *
- *                              OpenFlipper                                  *
+*                                                                            *
+*                              OpenFlipper                                   *
  *           Copyright (c) 2001-2015, RWTH-Aachen University                 *
  *           Department of Computer Graphics and Multimedia                  *
  *                          All rights reserved.                             *
@@ -36,78 +36,31 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING      *
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS        *
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.              *
- *                                                                           *
- \*===========================================================================*/
+*                                                                            *
+\*===========================================================================*/
 
 /*===========================================================================*\
- *                                                                           *
- *   $Revision$                                                      *
- *   $Author$                                                      *
- *   $Date$                   *
- *                                                                           *
- \*===========================================================================*/
+*                                                                            *
+*   $Revision$                                                       *
+*   $LastChangedBy$                                                 *
+*   $Date$                    *
+*                                                                            *
+\*===========================================================================*/
 
-//=============================================================================
-//
-//  CLASS ColorCoder
-//
-//=============================================================================
+#include "ui_ParameterWidget.hh"
 
-#ifndef ACG_COLORCODER_HH
-#define ACG_COLORCODER_HH
+#if QT_VERSION >= 0x050000 
+  #include <QtWidgets>
+#else
+  #include <QtGui>
+#endif
 
-//== INCLUDES =================================================================
 
-#include <ACG/Math/VectorT.hh>
-#include <ACG/Config/ACGDefines.hh>
-#include <QColor>
-#include "IColorCoder.hh"
+class ParameterWidget : public QWidget, public Ui::ParameterWidget
+{
+  Q_OBJECT
 
-//== NAMESPACES ===============================================================
-
-namespace ACG {
-
-//== CLASS DEFINITION =========================================================
-
-/** \brief Class for generating nice colors for doubles
- *
- *
- */
-class ACGDLLEXPORT ColorCoder : public IColorCoder {
-public:
-
-  /// Default constructor.
-  ColorCoder(float _min = 0.0, float _max = 1.0, bool _signed = false);
-
-  /// set the color coding range for unsigned coding
-  void set_range(float _min, float _max, bool _signed);
-
-  /// color coding
-  ACG::Vec4uc color4_raw(float _v) const override;
-
-  /// color coding
-  ACG::Vec4f color_float4_raw(float _v) const override;
-\
-  /// min scalar value
-  float min() const override;
-
-  /// max scalar value
-  float max() const override;
-
-private:
-
-  ACG::Vec4uc color_unsigned(float _v) const;
-  ACG::Vec4uc color_signed(float _v) const;
-
-  float val0_, val1_, val2_, val3_, val4_;
-  bool signed_mode_;
+  public:
+    explicit ParameterWidget(QWidget* _parent = 0);
 };
-
-
-
-//=============================================================================
-}// namespace ACG
-//=============================================================================
-#endif // ACG_COLORCODER_HH defined
-//=============================================================================
 

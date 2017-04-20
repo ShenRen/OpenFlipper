@@ -76,6 +76,8 @@
 
 #include "ConversionDialog.hh"
 
+class ParameterWidget;
+
 class MeshObjectSelectionPlugin : public QObject, BaseInterface, KeyInterface, LoadSaveInterface,
             INIInterface, BackupInterface, ScriptInterface, LoggingInterface, SelectionInterface,
             MouseInterface, OptionsInterface
@@ -126,6 +128,7 @@ signals:
     void registerType(QString _handleName, DataType _type);
     void addPrimitiveType(QString _handleName, QString _name, QString _icon, SelectionInterface::PrimitiveType& _typeHandle);
     void addSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type = 0u);
+    void addSelectionParameters(QString _handleName, QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type = 0u);
     
     void showToggleSelectionMode(QString _handleName, bool _show, SelectionInterface::PrimitiveType _associatedTypes);
 
@@ -173,7 +176,7 @@ private slots:
     void slotVolumeLassoSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
     void slotSphereSelection(QMouseEvent* _event, double _radius, SelectionInterface::PrimitiveType _currentType, bool _deselect);
     void slotClosestBoundarySelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
-    void slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, SelectionInterface::PrimitiveType _currentType, bool _deselect);
+    void slotFloodFillSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
     void slotComponentsSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect);
 
     void slotLoadSelection(const INIFile& _file);
@@ -358,10 +361,10 @@ public slots:
     //==========================================
 
     /// Select given Edges
-    void selectEdges(int objectId, IdList _vertexList);
+    void selectEdges(int objectId, IdList _edgeList, const double _dihedral_angle_threshold = 0.0);
 
     /// Unselect given Edges
-    void unselectEdges(int objectId, IdList _vertexList);
+    void unselectEdges(int objectId, IdList _edgeList);
 
     /// Select all Edges
     void selectAllEdges(int objectId);
@@ -481,6 +484,21 @@ public slots:
     /// Convert the selection on all target objects
     void conversion(const QString& _from, const QString& _to, bool _deselect);
 
+
+public:
+    /// set dihedral angle threshold for edge selection
+    void   set_dihedral_angle_threshold(const double _a);
+    /// get dihedral angle threshold for edge selection
+    double get_dihedral_angle_threshold();
+
+    /// set max angle for flood fill selection
+    void   set_max_angle(const double _a);
+    /// get max angle for flood fill selection
+    double get_max_angle();
+
+private:
+    void update_dihedral_angle_threshold_from_ui();
+
     /** @} */
 
     //===========================================================================
@@ -579,6 +597,8 @@ private:
 
     ConversionDialog* conversionDialog_;
 
+    ParameterWidget* parameterWidget_;
+
     /// Options
     QtColorChooserButton*       colorButtonSelection_;
     QtColorChooserButton*       colorButtonArea_;
@@ -589,6 +609,9 @@ private:
     ACG::Vec4f areaColor_;
     ACG::Vec4f handleColor_;
     ACG::Vec4f featureColor_;
+
+    double dihedral_angle_threshold_;
+    double max_angle_;
 
     /** @} */
 

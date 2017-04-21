@@ -1,7 +1,3 @@
-[submodule "libs_required/OpenMesh"]
-	path = OpenFlipper/libs_required/OpenMesh
-	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
-	branch = master
 [submodule "libs_required/OpenVolumeMesh"]
 	path = Type-OpenVolumeMesh/libs/OpenVolumeMesh
 	url = https://www.graphics.rwth-aachen.de:9000/OpenVolumeMesh/OpenVolumeMesh.git
@@ -173,4 +169,8 @@
 [submodule "Plugin-VSI"]
 	path = Plugin-VSI
 	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-VSI.git
+	branch = master
+[submodule "OpenFlipper"]
+	path = OpenFlipper
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/OpenFlipper
 	branch = master

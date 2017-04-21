@@ -1,5 +1,0 @@
-<RCC>
-  <qresource prefix="Plugin-DeserializeScreenshotMetadata">
-    <file>Icons/restore_from_screenshot.png</file>
-  </qresource>
-</RCC>

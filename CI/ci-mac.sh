@@ -2,6 +2,9 @@
 # Build daemon cleanup code
 ########################################
 rm -rf libs_required
+rm -rf OpenFlipper
+rm -rf Type-OpenVolumeMesh
+
 
 
 ########################################

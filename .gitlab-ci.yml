@@ -3,7 +3,7 @@ gcc-c++11-Qt5:
     COMPILER:       "gcc"     
     LANGUAGE:       "C++11"     
     QTVERSION:      "QT5"     
-  script: "OpenFlipper/CI/ci-linux.sh"
+  script: " git submodule update --init --remote ; OpenFlipper/CI/ci-linux.sh"
   tags:
     - Linux
 
@@ -12,13 +12,13 @@ clang-c++11-Qt5:
     COMPILER:       "clang"     
     LANGUAGE:       "C++11"   
     QTVERSION:      "QT5"     
-  script: "OpenFlipper/CI/ci-linux.sh"
+  script: " git submodule update --init --remote ; OpenFlipper/CI/ci-linux.sh"
   tags:
     - Linux
     - MultiThreads
 
 cppcheck:
-  script: "OpenFlipper/CI/ci-cppcheck.sh"
+  script: " git submodule update --init --remote ; OpenFlipper/CI/ci-cppcheck.sh"
   tags:
     - Linux
     - MultiThreads
@@ -55,7 +55,7 @@ VS2013-Qt-5.5.1-x64:
       - rel/*.exe
 
 Mac-Cpp11:
-  script: "OpenFlipper/CI/ci-mac.sh"
+  script: " git submodule update --init --remote ; OpenFlipper/CI/ci-mac.sh"
   tags:
     - Apple
   artifacts:
@@ -65,7 +65,7 @@ Mac-Cpp11:
 Doc-publish:
   only:
      - master
-  script: "OpenFlipper/CI/ci-doc.sh"
+  script: " git submodule update --init --remote ; OpenFlipper/CI/ci-doc.sh"
   tags:
      - Linux
   artifacts:

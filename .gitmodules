@@ -1,7 +1,3 @@
-[submodule "libs_required/OpenVolumeMesh"]
-	path = Type-OpenVolumeMesh/libs/OpenVolumeMesh
-	url = https://www.graphics.rwth-aachen.de:9000/OpenVolumeMesh/OpenVolumeMesh.git
-	branch = master
 [submodule "Plugin-AlignMeshes"]
 	path = Plugin-AlignMeshes
 	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-AlignMeshes.git
@@ -173,4 +169,52 @@
 [submodule "OpenFlipper"]
 	path = OpenFlipper
 	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/OpenFlipper
+	branch = master
+[submodule "Type-BSpline"]
+	path = Type-BSpline
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-BSpline.git
+	branch = master
+[submodule "Type-Camera"]
+	path = Type-Camera
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Camera.git
+	branch = master
+[submodule "Type-Coordsys"]
+	path = Type-Coordsys
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Coordsys.git
+	branch = master
+[submodule "Type-Light"]
+	path = Type-Light
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Light.git
+	branch = master
+[submodule "Type-OpenMesh"]
+	path = Type-OpenMesh
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-OpenMesh.git
+	branch = master
+[submodule "Type-OpenVolumeMesh"]
+	path = Type-OpenVolumeMesh
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-OpenVolumeMesh.git
+	branch = master
+[submodule "Type-Plane"]
+	path = Type-Plane
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Plane.git
+	branch = master
+[submodule "Type-PolyLine"]
+	path = Type-PolyLine
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-PolyLine.git
+	branch = master
+[submodule "Type-QtWidget"]
+	path = Type-QtWidget
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-QtWidget.git
+	branch = master
+[submodule "Type-Skeleton"]
+	path = Type-Skeleton
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Skeleton.git
+	branch = master
+[submodule "Type-Sphere"]
+	path = Type-Sphere
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Sphere.git
+	branch = master
+[submodule "Type-SplatCloud"]
+	path = Type-SplatCloud
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-SplatCloud.git
 	branch = master

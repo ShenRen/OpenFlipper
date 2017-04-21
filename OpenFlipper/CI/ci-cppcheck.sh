@@ -10,6 +10,13 @@ NC='\033[0m'
 OUTPUT='\033[0;32m'
 WARNING='\033[0;93m'
 
+########################################
+# Fetch submodules
+########################################
+git submodule init
+git submodule update --remote
+
+
 echo -e "${OUTPUT}"
 echo "=============================================================================="
 echo "Running cppcheck"

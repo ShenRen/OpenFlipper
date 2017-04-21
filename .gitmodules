@@ -218,3 +218,7 @@
 	path = Type-SplatCloud
 	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-SplatCloud.git
 	branch = master
+[submodule "PluginCollection-FilePlugins"]
+	path = PluginCollection-FilePlugins
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-FilePlugins
+	branch = master

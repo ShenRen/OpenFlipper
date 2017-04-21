@@ -1,5 +1,0 @@
-include (plugin)
-
-openflipper_plugin (DEPS OpenVolumeMesh
-                    TYPES POLYMESH TRIANGLEMESH
-                    OPT_TYPES BSPLINECURVE BSPLINESURFACE TETRAHEDRALMESH POLYHEDRALMESH HEXAHEDRALMESH)

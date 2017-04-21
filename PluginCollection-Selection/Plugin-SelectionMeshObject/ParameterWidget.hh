@@ -55,6 +55,8 @@
   #include <QtGui>
 #endif
 
+#include <iostream>
+
 
 class ParameterWidget : public QWidget, public Ui::ParameterWidget
 {
@@ -62,5 +64,6 @@ class ParameterWidget : public QWidget, public Ui::ParameterWidget
 
   public:
     explicit ParameterWidget(QWidget* _parent = 0);
+    virtual ~ParameterWidget() { std::cerr << "~ParameterWidget @ " << this << std::endl;}
 };
 

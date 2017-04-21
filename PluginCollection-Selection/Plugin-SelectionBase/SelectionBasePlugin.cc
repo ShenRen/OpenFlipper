@@ -1815,16 +1815,13 @@ bool SelectionBasePlugin::findObjectType(BaseObjectData*& obj, bool& found, Sele
 
               if(t == (*t_it)) {
                   found = true;
-                  break;
+                  env = &it->second;
+                  return found;
               }
           }
-          if(found) break;
       }
-      env = &it->second;
-      return true;
   }
-  else
-      return false;
+  return found;
 }
 
 #if QT_VERSION < 0x050000

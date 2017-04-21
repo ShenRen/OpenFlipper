@@ -129,9 +129,12 @@ max_angle_( 2*M_PI)
 }
       
 MeshObjectSelectionPlugin::~MeshObjectSelectionPlugin() {
-    
+    std::cerr << "~MeshObjectSelectionPlugin @ " << this << std::endl;
     delete conversionDialog_;
-    delete parameterWidget_;
+    parameterWidget_->disconnect();
+    std::cerr << "disconnected widget" << std::endl;
+    //delete parameterWidget_;
+    //std::cerr << "deleted widget " << std::endl;
 }
 
 void MeshObjectSelectionPlugin::initializePlugin() {

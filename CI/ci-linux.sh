@@ -61,20 +61,14 @@ echo "Full cmake options: $OPTIONS  "
 ########################################
 # Build daemon cleanup code
 ########################################
-rm -rf OpenFlipper
-rm -rf Type-OpenVolumeMesh
 
 ########################################
 # Fetch submodules
 ########################################
-git submodule init
-git submodule update --remote
 
 ########################################
 # Show information for easier debugging
 ########################################
-git submodule status
-ls OpenFlipper/libs_required/
 
 ########################################
 # Fetch test data

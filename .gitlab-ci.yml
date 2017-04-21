@@ -3,6 +3,7 @@ gcc-c++11-Qt5:
     COMPILER:       "gcc"     
     LANGUAGE:       "C++11"     
     QTVERSION:      "QT5"     
+    GIT_SUBMODULE_STRATEGY: recursive
   script: "CI/ci-linux.sh"
   tags:
     - Linux
@@ -12,6 +13,7 @@ clang-c++11-Qt5:
     COMPILER:       "clang"     
     LANGUAGE:       "C++11"   
     QTVERSION:      "QT5"     
+    GIT_SUBMODULE_STRATEGY: recursive
   script: "CI/ci-linux.sh"
   tags:
     - Linux
@@ -19,6 +21,8 @@ clang-c++11-Qt5:
 
 cppcheck:
   script: "CI/ci-cppcheck.sh"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - Linux
     - MultiThreads
@@ -28,6 +32,8 @@ cppcheck:
 
 VS2015-Qt-5.6.0-x64:
   script: "CI\\VS2015-Qt-5.6.0-x64.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags: 
     - VS2015
     - Qt56
@@ -37,6 +43,8 @@ VS2015-Qt-5.6.0-x64:
 
 VS2015-Qt-5.6.0-x32:
   script: "CI\\VS2015-Qt-5.6.0-x32.bat"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   tags: 
     - VS2015
     - Qt56
@@ -47,6 +55,8 @@ VS2015-Qt-5.6.0-x32:
 
 VS2013-Qt-5.5.1-x64:
   script: "CI\\VS2013-Qt-5.5.1-x64.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - VS2013
     - Qt551
@@ -56,6 +66,8 @@ VS2013-Qt-5.5.1-x64:
 
 Mac-Cpp11:
   script: "CI/ci-mac.sh"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - Apple
   artifacts:
@@ -68,6 +80,8 @@ Doc-publish:
   script: "CI/ci-doc.sh"
   tags:
      - Linux
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   artifacts:
     paths:
        - build-release/Doxygen-warning.log 

@@ -53,8 +53,8 @@
 #include <ACG/Utils/ColorConversion.hh>
 
 template <typename MeshT>
-OMPropertyVisualizerBoolean<MeshT>::OMPropertyVisualizerBoolean(MeshT* _mesh, PropertyInfo _propertyInfo)
-    : OMPropertyVisualizer<MeshT>(_mesh, _propertyInfo)
+OMPropertyVisualizerBoolean<MeshT>::OMPropertyVisualizerBoolean(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo)
+    : OMPropertyVisualizer<MeshT>(_mesh, _objectID, _propertyInfo)
 {
     if (PropertyVisualizer::widget) delete PropertyVisualizer::widget;
     BooleanWidget* w = new BooleanWidget();

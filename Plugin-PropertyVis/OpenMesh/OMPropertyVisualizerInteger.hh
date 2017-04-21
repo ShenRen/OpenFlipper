@@ -62,7 +62,7 @@ template <typename MeshT, typename T>
 class OMPropertyVisualizerInteger: public OMPropertyVisualizer<MeshT>{
 
 public:
-    OMPropertyVisualizerInteger(MeshT* _mesh, PropertyInfo _propertyInfo, bool isUnsigned);
+    OMPropertyVisualizerInteger(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo, bool isUnsigned);
     virtual ~OMPropertyVisualizerInteger(){}
 
 protected:

@@ -54,15 +54,18 @@
 #include <ACG/Utils/ColorConversion.hh>
 
 template <typename MeshT, typename VectorType>
-OMPropertyVisualizerVector2<MeshT, VectorType>::OMPropertyVisualizerVector2(MeshT* _mesh, PropertyInfo _propertyInfo)
-    : OMPropertyVisualizer<MeshT>(_mesh, _propertyInfo)
+OMPropertyVisualizerVector2<MeshT, VectorType>::OMPropertyVisualizerVector2(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo)
+    : OMPropertyVisualizer<MeshT>(_mesh, _objectID, _propertyInfo)
 {
     if (PropertyVisualizer::widget) delete PropertyVisualizer::widget;
     VectorWidget* w = new VectorWidget();
     w->paramVector->setTitle(QString("2D Vector Parameters of ").append(PropertyVisualizer::propertyInfo.propName().c_str()));
     PropertyVisualizer::widget = w;
 
-    lineNode = new ACG::SceneGraph::LineNode( ACG::SceneGraph::LineNode::LineSegmentsMode, dynamic_cast < ACG::SceneGraph::SeparatorNode* >( PluginFunctions::getRootNode() ) );
+    BaseObjectData *bod;
+    PluginFunctions::getObject(_objectID, bod);
+
+    lineNode = new ACG::SceneGraph::LineNode( ACG::SceneGraph::LineNode::LineSegmentsMode, bod->baseNode());
 
     if (!_propertyInfo.isFaceProp())
     {

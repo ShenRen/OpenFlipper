@@ -65,7 +65,7 @@ template <typename MeshT>
 class OMPropertyVisualizerDouble: public OMPropertyVisualizer<MeshT>{
 
 public:
-    OMPropertyVisualizerDouble(MeshT* _mesh, PropertyInfo _propertyInfo);
+    OMPropertyVisualizerDouble(MeshT* _mesh, int _objectID, PropertyInfo _propertyInfo);
     virtual ~OMPropertyVisualizerDouble(){}
 
 protected:

@@ -222,3 +222,15 @@
 	path = PluginCollection-FilePlugins
 	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-FilePlugins
 	branch = master
+[submodule "PluginCollection-PostProcessors"]
+	path = PluginCollection-PostProcessors
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-PostProcessors
+	branch = master
+[submodule "PluginCollection-Renderers"]
+	path = PluginCollection-Renderers
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-Renderers
+	branch = master
+[submodule "PluginCollection-Selection"]
+	path = PluginCollection-Selection
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-Selection
+	branch = master

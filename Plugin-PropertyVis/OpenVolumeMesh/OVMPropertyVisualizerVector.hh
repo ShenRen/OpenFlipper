@@ -75,6 +75,8 @@ protected:
 
     template<typename PropType, typename EntityIterator>
     void visualizeVectorAsColorForEntity(PropType prop, EntityIterator e_begin, EntityIterator e_end);
+    template<typename PropType, typename EntityIterator>
+    void visualizeVectorLengthAsColorForEntity(PropType prop, EntityIterator e_begin, EntityIterator e_end);
     virtual void duplicateProperty();
 
     virtual void visualizeFacePropAsStrokes();

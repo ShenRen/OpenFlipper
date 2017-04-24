@@ -96,6 +96,33 @@ void OVMPropertyVisualizerVector<MeshT>::visualizeVectorAsColorForEntity(PropTyp
     }
 }
 
+template<typename MeshT>
+template<typename PropType, typename EntityIterator>
+void OVMPropertyVisualizerVector<MeshT>::visualizeVectorLengthAsColorForEntity(
+        PropType prop, EntityIterator e_begin, EntityIterator e_end)
+{
+    if (!prop)
+        throw VizException("Getting PropHandle from mesh for selected property failed.");
+    VolumeMeshObject<MeshT>* object;
+    PluginFunctions::getObject(OVMPropertyVisualizer<MeshT>::mObjectID, object);
+
+    // XXX code dupliction with OMPropertyVisualizerVector::visualizeVectorLengthAsColorForEntity
+    double min =  std::numeric_limits<double>::infinity();
+    double max = -std::numeric_limits<double>::infinity();
+
+    for (EntityIterator e_it = e_begin; e_it != e_end; ++e_it) {
+        const double val = prop[*e_it].norm();
+        min = std::min(min, val);
+        max = std::max(max, val);
+    }
+
+    ACG::ColorCoder color_coder(min, max);
+
+    for (EntityIterator e_it = e_begin; e_it != e_end; ++e_it) {
+        object->colors()[*e_it] = color_coder(prop[*e_it].norm());
+    }
+}
+
 template <typename MeshT>
 void OVMPropertyVisualizerVector<MeshT>::visualizeCellProp(bool _setDrawMode)
 {
@@ -201,12 +228,20 @@ template <typename MeshT>
 void OVMPropertyVisualizerVector<MeshT>::visualizeVertexProp(bool _setDrawMode)
 {
     VectorWidget* w = (VectorWidget*)PropertyVisualizer::widget;
-    if (w->vectors_colors_rb->isChecked())
+    if (w->vectors_colors_rb->isChecked() ||
+        w->vectors_length_color_rb->isChecked())
     {
         OpenVolumeMesh::VertexPropertyT<ACG::Vec3d> prop = OVMPropertyVisualizer<MeshT>::mesh->template request_vertex_property<ACG::Vec3d>(OVMPropertyVisualizer<MeshT>::propertyInfo.propName());
-        visualizeVectorAsColorForEntity(prop,
-                                        OVMPropertyVisualizer<MeshT>::mesh->vertices_begin(),
-                                        OVMPropertyVisualizer<MeshT>::mesh->vertices_end());
+
+        if (w->vectors_colors_rb->isChecked()) {
+            visualizeVectorAsColorForEntity(prop,
+                                            OVMPropertyVisualizer<MeshT>::mesh->vertices_begin(),
+                                            OVMPropertyVisualizer<MeshT>::mesh->vertices_end());
+        } else {
+            visualizeVectorLengthAsColorForEntity(prop,
+                                            OVMPropertyVisualizer<MeshT>::mesh->vertices_begin(),
+                                            OVMPropertyVisualizer<MeshT>::mesh->vertices_end());
+        }
         if (_setDrawMode)
         {
             VolumeMeshObject<MeshT>* object;

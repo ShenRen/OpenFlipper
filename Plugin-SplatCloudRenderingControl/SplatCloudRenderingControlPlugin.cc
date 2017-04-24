@@ -589,9 +589,6 @@ void SplatCloudRenderingControlPlugin::slotToolboxPointsizeScaleValueChanged()
 
     // apply update
     splatCloudObject->setPointsizeScale( scale );
-
-    // emit signal that the object has to be updated
-    emit updatedObject( objIter->id(), UPDATE_ALL );
   }
 }
 
@@ -612,9 +609,6 @@ void SplatCloudRenderingControlPlugin::slotToolboxDefaultColorValueChanged()
     splatCloudNode->setDefaultColor( SplatCloudNode::Color( toolboxDefaultColorR_->value(), 
                                                             toolboxDefaultColorG_->value(), 
                                                             toolboxDefaultColorB_->value() ) );
-
-    // emit signal that object has to be updated
-    emit updatedObject( objIter->id(), UPDATE_ALL );
   }
 }
 
@@ -635,9 +629,6 @@ void SplatCloudRenderingControlPlugin::slotToolboxDefaultNormalValueChanged()
     splatCloudNode->setDefaultNormal( SplatCloudNode::Normal( toolboxDefaultNormalX_->value(), 
                                                               toolboxDefaultNormalY_->value(), 
                                                               toolboxDefaultNormalZ_->value() ) );
-
-    // emit signal that object has to be updated
-    emit updatedObject( objIter->id(), UPDATE_ALL );
   }
 }
 
@@ -677,9 +668,6 @@ void SplatCloudRenderingControlPlugin::slotToolboxEnableBackfaceCullingButtonCli
 
     // apply update
     splatCloudObject->enableBackfaceCulling( true );
-
-    // emit signal that the object has to be updated
-    emit updatedObject( objIter->id(), UPDATE_ALL );
   }
 }
 
@@ -698,9 +686,6 @@ void SplatCloudRenderingControlPlugin::slotToolboxDisableBackfaceCullingButtonCl
 
     // apply update
     splatCloudObject->enableBackfaceCulling( false );
-
-    // emit signal that the object has to be updated
-    emit updatedObject( objIter->id(), UPDATE_ALL );
   }
 }
 
@@ -721,9 +706,6 @@ void SplatCloudRenderingControlPlugin::slotToolboxReloadShadersButtonClicked()
     splatCloudObject->reloadShaders();
     splatCloudObject->setPointsizeScale    ( splatCloudObject->pointsizeScale()           );
     splatCloudObject->enableBackfaceCulling( splatCloudObject->isBackfaceCullingEnabled() );
-
-    // emit signal that object has to be updated
-    emit updatedObject( objIter->id(), UPDATE_ALL );
   }
 }
 
@@ -843,9 +825,6 @@ void SplatCloudRenderingControlPlugin::slotContextScaleWidgetPointsizeScaleValue
 
     // apply update (set pointsize scale)
     splatCloudObject->setPointsizeScale( scale );
-
-    // emit signal that object has to be updated
-    emit updatedObject( object->id(), UPDATE_ALL );
   }
 }
 

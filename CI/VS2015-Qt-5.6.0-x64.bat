@@ -1,12 +1,3 @@
-rmdir libs_required /s /q
-rmdir OpenFlipper /s /q
-rmdir Type-OpenVolumeMesh /s /q
-
-
-
-git submodule init
-git submodule update --remote
-
 ::########################################
 ::# Fetch test data
 ::########################################

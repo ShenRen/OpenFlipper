@@ -185,6 +185,11 @@ public:
   inline void setBackfaceCulling(bool _enable) { backfaceCulling_ = _enable; }
   inline void setGeometryShaderQuads(bool _enable) { geometryShaderQuads_ = _enable; }
 
+  inline float getPointsizeScale() const { return pointsizeScale_; }
+  inline bool  getBackfaceCulling() const { return backfaceCulling_; }
+  inline bool  getGeometryShaderQuads() const { return geometryShaderQuads_; }
+
+
   //----------------------------------------------------------------
 
 private:

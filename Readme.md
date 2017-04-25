@@ -20,6 +20,7 @@ A detailed compilation manual is available [here](http://openflipper.org/Documen
 Latest NEWS
 ===========
 
+- 04/21/2017: Moved all toplevel plugins to separate repositories.
 - 02/28/2017: Removed SimpleOpt Command Line parser and switched to Qt parser
     - Breaking Change: Commandline parameter have to start with a dash, the slash is not recognized as parameter prefix anymore.
 - 12/28/2016: Moved ObjectTypes into separate Libraries

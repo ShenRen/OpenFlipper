@@ -1,8 +1,236 @@
-[submodule "libs_required/OpenMesh"]
-	path = OpenFlipper/libs_required/OpenMesh
-	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
+[submodule "Plugin-AlignMeshes"]
+	path = Plugin-AlignMeshes
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-AlignMeshes.git
 	branch = master
-[submodule "libs_required/OpenVolumeMesh"]
-	path = Type-OpenVolumeMesh/libs/OpenVolumeMesh
-	url = https://www.graphics.rwth-aachen.de:9000/OpenVolumeMesh/OpenVolumeMesh.git
+[submodule "Plugin-Backup"]
+	path = Plugin-Backup
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Backup.git
+	branch = master
+[submodule "Plugin-Color"]
+	path = Plugin-Color
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Color.git
+	branch = master
+[submodule "Plugin-Components"]
+	path = Plugin-Components
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Components.git
+	branch = master
+[submodule "Plugin-Datacontrol"]
+	path = Plugin-Datacontrol
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Datacontrol.git
+	branch = master
+[submodule "Plugin-Decimater"]
+	path = Plugin-Decimater
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Decimater.git
+	branch = master
+[submodule "Plugin-DeserializeScreenshotMetadata"]
+	path = Plugin-DeserializeScreenshotMetadata
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-DeserializeScreenshotMetadata.git
+	branch = master
+[submodule "Plugin-GaussCurvature"]
+	path = Plugin-GaussCurvature
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-GaussCurvature.git
+	branch = master
+[submodule "Plugin-HoleFilling"]
+	path = Plugin-HoleFilling
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-HoleFilling.git
+	branch = master
+[submodule "Plugin-InfoMeshObject"]
+	path = Plugin-InfoMeshObject
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-InfoMeshObject.git
+	branch = master
+[submodule "Plugin-InfoSkeleton"]
+	path = Plugin-InfoSkeleton
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-InfoSkeleton.git
+	branch = master
+[submodule "Plugin-InfoVolumeMeshObject"]
+	path = Plugin-InfoVolumeMeshObject
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-InfoVolumeMeshObject.git
+	branch = master
+[submodule "Plugin-INI"]
+	path = Plugin-INI
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-INI.git
+	branch = master
+[submodule "Plugin-IsotropicRemesher"]
+	path = Plugin-IsotropicRemesher
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-IsotropicRemesher.git
+	branch = master
+[submodule "Plugin-Laplace"]
+	path = Plugin-Laplace
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Laplace.git
+	branch = master
+[submodule "Plugin-MaterialPicker"]
+	path = Plugin-MaterialPicker
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-MaterialPicker.git
+	branch = master
+[submodule "Plugin-MeanCurvature"]
+	path = Plugin-MeanCurvature
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-MeanCurvature.git
+	branch = master
+[submodule "Plugin-MemInfo"]
+	path = Plugin-MemInfo
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-MemInfo.git
+	branch = master
+[submodule "Plugin-Merge"]
+	path = Plugin-Merge
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Merge.git
+	branch = master
+[submodule "Plugin-MeshCompare"]
+	path = Plugin-MeshCompare
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-MeshCompare.git
+	branch = master
+[submodule "Plugin-MeshConvert"]
+	path = Plugin-MeshConvert
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-MeshConvert.git
+	branch = master
+[submodule "Plugin-MeshRepair"]
+	path = Plugin-MeshRepair
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-MeshRepair.git
+	branch = master
+[submodule "Plugin-Move"]
+	path = Plugin-Move
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Move.git
+	branch = master
+[submodule "Plugin-PolyLine"]
+	path = Plugin-PolyLine
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-PolyLine.git
+	branch = master
+[submodule "Plugin-PrimitivesGenerator"]
+	path = Plugin-PrimitivesGenerator
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-PrimitivesGenerator.git
+	branch = master
+[submodule "Plugin-Print"]
+	path = Plugin-Print
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Print.git
+	branch = master
+[submodule "Plugin-PropertyVis"]
+	path = Plugin-PropertyVis
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-PropertyVis.git
+	branch = master
+[submodule "Plugin-Remesher"]
+	path = Plugin-Remesher
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Remesher.git
+	branch = master
+[submodule "Plugin-Ruler"]
+	path = Plugin-Ruler
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Ruler.git
+	branch = master
+[submodule "Plugin-Scripting"]
+	path = Plugin-Scripting
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Scripting.git
+	branch = master
+[submodule "Plugin-SimpleSmoother"]
+	path = Plugin-SimpleSmoother
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-SimpleSmoother.git
+	branch = master
+[submodule "Plugin-SkeletalAnimation"]
+	path = Plugin-SkeletalAnimation
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-SkeletalAnimation.git
+	branch = master
+[submodule "Plugin-SkeletonEditing"]
+	path = Plugin-SkeletonEditing
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-SkeletonEditing.git
+	branch = master
+[submodule "Plugin-Slice"]
+	path = Plugin-Slice
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Slice.git
+	branch = master
+[submodule "Plugin-Smoother"]
+	path = Plugin-Smoother
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Smoother.git
+	branch = master
+[submodule "Plugin-SplatCloudRenderingControl"]
+	path = Plugin-SplatCloudRenderingControl
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-SplatCloudRenderingControl.git
+	branch = master
+[submodule "Plugin-Subdivider"]
+	path = Plugin-Subdivider
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Subdivider.git
+	branch = master
+[submodule "Plugin-Test"]
+	path = Plugin-Test
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Test.git
+	branch = master
+[submodule "Plugin-TextureControl"]
+	path = Plugin-TextureControl
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-TextureControl.git
+	branch = master
+[submodule "Plugin-Topology"]
+	path = Plugin-Topology
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-Topology.git
+	branch = master
+[submodule "Plugin-ViewControl"]
+	path = Plugin-ViewControl
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-ViewControl.git
+	branch = master
+[submodule "Plugin-VSI"]
+	path = Plugin-VSI
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Plugin-VSI.git
+	branch = master
+[submodule "OpenFlipper"]
+	path = OpenFlipper
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/OpenFlipper
+	branch = master
+[submodule "Type-BSpline"]
+	path = Type-BSpline
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-BSpline.git
+	branch = master
+[submodule "Type-Camera"]
+	path = Type-Camera
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Camera.git
+	branch = master
+[submodule "Type-Coordsys"]
+	path = Type-Coordsys
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Coordsys.git
+	branch = master
+[submodule "Type-Light"]
+	path = Type-Light
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Light.git
+	branch = master
+[submodule "Type-OpenMesh"]
+	path = Type-OpenMesh
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-OpenMesh.git
+	branch = master
+[submodule "Type-OpenVolumeMesh"]
+	path = Type-OpenVolumeMesh
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-OpenVolumeMesh.git
+	branch = master
+[submodule "Type-Plane"]
+	path = Type-Plane
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Plane.git
+	branch = master
+[submodule "Type-PolyLine"]
+	path = Type-PolyLine
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-PolyLine.git
+	branch = master
+[submodule "Type-QtWidget"]
+	path = Type-QtWidget
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-QtWidget.git
+	branch = master
+[submodule "Type-Skeleton"]
+	path = Type-Skeleton
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Skeleton.git
+	branch = master
+[submodule "Type-Sphere"]
+	path = Type-Sphere
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-Sphere.git
+	branch = master
+[submodule "Type-SplatCloud"]
+	path = Type-SplatCloud
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-SplatCloud.git
+	branch = master
+[submodule "PluginCollection-FilePlugins"]
+	path = PluginCollection-FilePlugins
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-FilePlugins
+	branch = master
+[submodule "PluginCollection-PostProcessors"]
+	path = PluginCollection-PostProcessors
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-PostProcessors
+	branch = master
+[submodule "PluginCollection-Renderers"]
+	path = PluginCollection-Renderers
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-Renderers
+	branch = master
+[submodule "PluginCollection-Selection"]
+	path = PluginCollection-Selection
+	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/PluginCollection-Selection
 	branch = master

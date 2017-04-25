@@ -3,7 +3,8 @@ gcc-c++11-Qt5:
     COMPILER:       "gcc"     
     LANGUAGE:       "C++11"     
     QTVERSION:      "QT5"     
-  script: "OpenFlipper/CI/ci-linux.sh"
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux.sh"
   tags:
     - Linux
 
@@ -12,13 +13,16 @@ clang-c++11-Qt5:
     COMPILER:       "clang"     
     LANGUAGE:       "C++11"   
     QTVERSION:      "QT5"     
-  script: "OpenFlipper/CI/ci-linux.sh"
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux.sh"
   tags:
     - Linux
     - MultiThreads
 
 cppcheck:
-  script: "OpenFlipper/CI/ci-cppcheck.sh"
+  script: "CI/ci-cppcheck.sh"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - Linux
     - MultiThreads
@@ -27,7 +31,9 @@ cppcheck:
       - cppcheck.log
 
 VS2015-Qt-5.6.0-x64:
-  script: "OpenFlipper\\CI\\VS2015-Qt-5.6.0-x64.bat"
+  script: "CI\\VS2015-Qt-5.6.0-x64.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags: 
     - VS2015
     - Qt56
@@ -36,7 +42,9 @@ VS2015-Qt-5.6.0-x64:
       - rel/*.exe
 
 VS2015-Qt-5.6.0-x32:
-  script: "OpenFlipper\\CI\\VS2015-Qt-5.6.0-x32.bat"
+  script: "CI\\VS2015-Qt-5.6.0-x32.bat"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   tags: 
     - VS2015
     - Qt56
@@ -46,7 +54,9 @@ VS2015-Qt-5.6.0-x32:
 
 
 VS2013-Qt-5.5.1-x64:
-  script: "OpenFlipper\\CI\\VS2013-Qt-5.5.1-x64.bat"
+  script: "CI\\VS2013-Qt-5.5.1-x64.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - VS2013
     - Qt551
@@ -55,7 +65,9 @@ VS2013-Qt-5.5.1-x64:
       - rel/*.exe
 
 Mac-Cpp11:
-  script: "OpenFlipper/CI/ci-mac.sh"
+  script: "CI/ci-mac.sh"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - Apple
   artifacts:
@@ -65,9 +77,11 @@ Mac-Cpp11:
 Doc-publish:
   only:
      - master
-  script: "OpenFlipper/CI/ci-doc.sh"
+  script: "CI/ci-doc.sh"
   tags:
      - Linux
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
   artifacts:
     paths:
        - build-release/Doxygen-warning.log 

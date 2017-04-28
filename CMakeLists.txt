@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 file(SHA512 ${CMAKE_SOURCE_DIR}/CMakeLists.txt HASH_TOPLEVEL_CMAKEFILE)
 file(SHA512 ${CMAKE_SOURCE_DIR}/OpenFlipper/cmake/CMakeLists.txt HASH_LATEST_CMAKEFILE)
 
-if ( NOT ${HASH_TOPLEVEL_CMAKEFILE} EQUAL ${HASH_LATEST_CMAKEFILE} ) 
+if ( NOT ${HASH_TOPLEVEL_CMAKEFILE} STREQUAL ${HASH_LATEST_CMAKEFILE} )
   message(WARNING "WARNING! Possibly Outdated toplevel CMakeLists.txt. Please update the toplevel copy by the file OpenFlipper/cmake/CMakeLists.txt .")
 endif()
 
@@ -189,7 +189,7 @@ endif()
 # Configure the executables path for tests
 # ========================================================================
 if (APPLE)
-  SET( OPENFLIPPER_EXECUTABLE "${CMAKE_BINARY_DIR}/Build/OpenFlipper.app/Contents/MacOS/${OPENFLIPPER_PRODUCT_STRING}" )
+  SET( OPENFLIPPER_EXECUTABLE "${CMAKE_BINARY_DIR}/Build/${OPENFLIPPER_PRODUCT_STRING}.app/Contents/MacOS/${OPENFLIPPER_PRODUCT_STRING}" )
 elseif( WIN32 )
   SET( OPENFLIPPER_EXECUTABLE "${CMAKE_BINARY_DIR}/Build/${OPENFLIPPER_PRODUCT_STRING}.exe" )
 else()
@@ -463,7 +463,7 @@ if ( APPLE )
   add_dependencies (fixbundle ${OPENFLIPPER_PRODUCT_STRING} OpenFlipperPluginLib ${OPENFLIPPER_PLUGINS})
 
   # install bundle
-  install (DIRECTORY ${CMAKE_BINARY_DIR}/Build/OpenFlipper.app DESTINATION .
+  install (DIRECTORY ${CMAKE_BINARY_DIR}/Build/${OPENFLIPPER_PRODUCT_STRING}.app DESTINATION .
            USE_SOURCE_PERMISSIONS)
 
   # Extra target for building an OpenFlipper package on mac

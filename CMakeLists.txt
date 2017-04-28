@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 file(SHA512 ${CMAKE_SOURCE_DIR}/CMakeLists.txt HASH_TOPLEVEL_CMAKEFILE)
 file(SHA512 ${CMAKE_SOURCE_DIR}/OpenFlipper/cmake/CMakeLists.txt HASH_LATEST_CMAKEFILE)
 
-if ( NOT ${HASH_TOPLEVEL_CMAKEFILE} EQUAL ${HASH_LATEST_CMAKEFILE} ) 
+if ( NOT ${HASH_TOPLEVEL_CMAKEFILE} STREQUAL ${HASH_LATEST_CMAKEFILE} )
   message(WARNING "WARNING! Possibly Outdated toplevel CMakeLists.txt. Please update the toplevel copy by the file OpenFlipper/cmake/CMakeLists.txt .")
 endif()
 

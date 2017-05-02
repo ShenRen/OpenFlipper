@@ -11,6 +11,9 @@ cd rel
 
 del *.exe
 
+:: use 4 threads for parallel compilation of the project
+set CL=/MP4
+
 set ARCHITECTURE=x32
 set ARCH_VS=
 set STRING_ARCH=32-Bit

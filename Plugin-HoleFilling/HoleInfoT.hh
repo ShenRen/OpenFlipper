@@ -76,7 +76,7 @@ class HoleInfo : public PerObjectData
   public :
 
     /// Konstruktor
-    HoleInfo(MeshT* _mesh);
+    explicit HoleInfo(MeshT* _mesh);
   
     /// Destruktor
     ~HoleInfo();

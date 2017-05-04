@@ -77,7 +77,7 @@ class Button : public Text
   public:
 
     /// Constructor
-    Button (QGraphicsItem *_parent = 0);
+    explicit Button (QGraphicsItem *_parent = 0);
     Button (const QString &_text, QGraphicsItem *_parent = 0);
 
     /// Destructor

@@ -81,7 +81,7 @@ UpdateType::UpdateType(const UpdateType& _type)
   
 }
 
-UpdateType::UpdateType(UpdateTypeSet _set)
+UpdateType::UpdateType(const UpdateTypeSet& _set)
 : type_(_set)
 {
   
@@ -140,7 +140,7 @@ class UpdateTypeInfo {
 
   public:
 
-  UpdateTypeInfo(UpdateType _type, QString _name, bool _needsScenegraphReset ) :
+  UpdateTypeInfo(const UpdateType& _type, QString _name, bool _needsScenegraphReset ) :
     type(_type),
     name(_name),
     resetNeeded(_needsScenegraphReset)

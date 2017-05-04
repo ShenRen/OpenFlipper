@@ -61,6 +61,6 @@ class SmootherToolbarWidget : public QWidget, public Ui::SmootherToolbar
   Q_OBJECT
 
   public:
-    SmootherToolbarWidget(QWidget *parent = 0);
+    explicit SmootherToolbarWidget(QWidget *parent = 0);
 };
 

@@ -53,7 +53,6 @@
 //
 //=============================================================================
 
-
 //== INCLUDES =================================================================
 
 #include "Core.hh"
@@ -89,6 +88,10 @@ void Core::slotAddCustomSelectionMode(QString _handleName, QString _modeName, QS
 
 void Core::slotAddSelectionOperations(QString _handleName,QStringList _operationsList, QString _category, SelectionInterface::PrimitiveType _type) {
     emit addSelectionOperations(_handleName, _operationsList, _category, _type);
+}
+
+void Core::slotAddSelectionParameters(QString _handleName,QWidget* _widget, QString _category, SelectionInterface::PrimitiveType _type) {
+    emit addSelectionParameters(_handleName, _widget, _category, _type);
 }
    
 void Core::slotSelectionOperation(QString _operation) {
@@ -151,8 +154,8 @@ void Core::slotClosestBoundarySelection(QMouseEvent* _event, SelectionInterface:
     emit closestBoundarySelection(_event, _currentType, _deselect);
 }
 
-void Core::slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, SelectionInterface::PrimitiveType _currentType, bool _deselect) {
-    emit floodFillSelection(_event, _maxAngle, _currentType, _deselect);
+void Core::slotFloodFillSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect) {
+    emit floodFillSelection(_event, _currentType, _deselect);
 }
 
 void Core::slotComponentsSelection(QMouseEvent* _event, SelectionInterface::PrimitiveType _currentType, bool _deselect) {

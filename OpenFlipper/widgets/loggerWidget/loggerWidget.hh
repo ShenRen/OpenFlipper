@@ -73,7 +73,7 @@ class LoggerWidget : public QWidget
   Q_OBJECT
 
   public:
-    LoggerWidget( QWidget *parent = 0 );
+    explicit LoggerWidget( QWidget *parent = 0 );
     
     ~LoggerWidget();
 

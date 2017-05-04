@@ -659,6 +659,18 @@ class SelectionInterface {
      */
     virtual void addSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, PrimitiveType _type = 0u) {};
 
+    /** \brief Add interactive selection parameters for a specific primitive type
+     *
+     *  One can add interactive selection parameters for each primitive type
+     *  that will appear as widgets in the selection base toolbar.
+     *
+     *  @param _handleName      The handle of the selection environment in which this operation should be available
+     *  @param _widget          The widget that shall be added for parameters enabled for a given primitive type
+     *  @param _category        The category under which the specified operations will be listed
+     *  @param _type            The primitive type for which the specified operations will be available (0u if operation should always be available)
+     */
+    virtual void addSelectionParameters(QString _handleName, QWidget* _widget, QString _category, PrimitiveType _type = 0u) {};
+
     private slots:
 
     /** \brief A specific operation is requested
@@ -802,11 +814,10 @@ class SelectionInterface {
     *  the specified angle.
     *
     *  @param _event               The mouse event that currently is performed
-    *  @param _maxAngle            The maximum angle used for flood filling
     *  @param _currentType         The currently active primitive type
     *  @param _deselect            True if entities should be deselected
     */
-   virtual void slotFloodFillSelection(QMouseEvent* _event, double _maxAngle, PrimitiveType _currentType, bool _deselect) {};
+   virtual void slotFloodFillSelection(QMouseEvent* _event, PrimitiveType _currentType, bool _deselect) {};
 
    /** \brief Called whenever the user performs a connected components selection
     *
@@ -930,11 +941,10 @@ class SelectionInterface {
     *  by each type selection plugin if this interactive selection mode should be provided.
     *
     *  @param _event               The mouse event that currently is performed
-    *  @param _maxAngle            The maximum angle used for flood filling
     *  @param _currentType         The currently active primitive type
     *  @param _deselect            True if entities should be deselected
     */
-   virtual void floodFillSelection(QMouseEvent* _event, double _maxAngle, PrimitiveType _currentType, bool _deselect) {};
+   virtual void floodFillSelection(QMouseEvent* _event, PrimitiveType _currentType, bool _deselect) {};
 
    /** \brief Emitted by selection base plugin whenever the user performs a connected components selection
     *
@@ -1155,6 +1165,15 @@ class SelectionInterface {
     * @param _type             primitive types
     */
    virtual void slotAddSelectionOperations(QString _handleName, QStringList _operationsList, QString _category, PrimitiveType _type) {};
+
+   /** Do not use. Implemented in SelectionBasePlugin
+    *
+    * @param _handleName       handle of the mode
+    * @param _widget           The widget that controls the parameters
+    * @param _category         Category
+    * @param _type             primitive types
+    */
+   virtual void slotAddSelectionParameters(QString _handleName, QWidget* _widget, QString _category, PrimitiveType _type = 0u) {};
 
 
    /** @} */

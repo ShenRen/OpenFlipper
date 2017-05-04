@@ -63,7 +63,7 @@ class DataControlTreeView : public QTreeView
     void keyEvent( QKeyEvent* _event );
 
   public:
-    DataControlTreeView(QWidget* _parent = 0);
+    explicit DataControlTreeView(QWidget* _parent = 0);
 
   protected:
     virtual void keyPressEvent ( QKeyEvent * event );

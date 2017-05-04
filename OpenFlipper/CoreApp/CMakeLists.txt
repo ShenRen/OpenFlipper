@@ -3,6 +3,7 @@ include (ACGCommon)
 include_directories (
   ..
   ${OPENMESH_INCLUDE_DIRS}
+  ${ACG_INCLUDE_DIR}
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
@@ -53,7 +54,6 @@ set (directories
   ../Scripting
   ../Scripting/scriptPrototypes
   ../Scripting/scriptWrappers
-  ../SimpleOpt
   ../widgets/aboutWidget 
   ../widgets/addEmptyWidget
   ../widgets/loggerWidget

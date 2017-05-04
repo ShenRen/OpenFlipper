@@ -5,6 +5,7 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/libs/PhySim)
 
   openflipper_plugin ( DEPS PhySim CGAL Boost GMP CoMISo BLAS
     		       INSTALLDATA Icons
+                       TYPES POLYLINE PLANE TRIANGLEMESH POLYMESH
  		      )
 
   if ( WIN32 )
@@ -15,6 +16,7 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/libs/PhySim)
   endif ( WIN32 )
 
 else()
-  openflipper_plugin ( INSTALLDATA 
-                       Icons )
+  openflipper_plugin ( INSTALLDATA Icons 
+                       TYPES POLYLINE PLANE TRIANGLEMESH POLYMESH
+                     )
 endif ()

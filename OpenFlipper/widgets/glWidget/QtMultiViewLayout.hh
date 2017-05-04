@@ -119,7 +119,7 @@ class DLLEXPORT QtMultiViewLayout : public QGraphicsLayout
       HSplit
     };
 
-    QtMultiViewLayout (QGraphicsLayoutItem * _parent = 0);
+    explicit QtMultiViewLayout (QGraphicsLayoutItem * _parent = 0);
 
     /// Adds Widget to Layout
     void addItem (QGraphicsWidget *_item, unsigned int _pos);

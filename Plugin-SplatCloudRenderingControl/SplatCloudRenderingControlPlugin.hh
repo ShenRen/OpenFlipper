@@ -179,6 +179,8 @@ private slots:
   void slotToolboxDisableBackfaceCullingButtonClicked();
   void slotToolboxReloadShadersButtonClicked();
   void slotToolboxRebuildVBOsButtonClicked();
+  void slotToolboxPointSizeButtonClicked();
+  void slotToolboxGeometryShaderButtonClicked();
 
   // slots called when a context menu action was triggered
   void slotContextScaleActionTriggered();

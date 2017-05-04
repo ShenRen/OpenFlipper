@@ -60,6 +60,6 @@ class ScriptWidget : public QMainWindow, public Ui::ScriptWidget
   Q_OBJECT
 
   public:
-    ScriptWidget(QWidget *parent = 0);
+    explicit ScriptWidget(QWidget *parent = 0);
 };
 

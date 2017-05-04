@@ -63,6 +63,8 @@
 #include <typeinfo>
 
 #include <QPushButton>
+#include <QScriptValue>
+#include <QScriptContext>
 
 #include <Widgets/VectorWidget.hh>
 
@@ -130,8 +132,11 @@ public:
     /// Connects the PropertyVisualizer log signals with the log slot.
     void connectLogs(PropertyVisualizer* propViz);
 
-	/// Returns the property info for the property with the given index.
-	virtual PropertyInfo getPropertyInfo(const QModelIndex index) const;
+    /// Returns the property info for the property with the given index.
+    virtual PropertyInfo getPropertyInfo(const QModelIndex index) const;
+
+    /// Returns a qscript object that can be used to access visualisation parameters
+    virtual QScriptValue getScriptObject(const QModelIndex index, QScriptContext *ctx);
 
 
 protected:

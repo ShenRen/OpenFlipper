@@ -69,7 +69,7 @@ class PhilipsStereoSettingsWidget : public QWidget, public Ui::PhilipsStereoSett
   Q_OBJECT
 
   public:
-  PhilipsStereoSettingsWidget(QWidget *parent = 0);
+  explicit PhilipsStereoSettingsWidget(QWidget *parent = 0);
 
   private slots:
 

@@ -60,6 +60,6 @@ class moveToolbarWidget : public QWidget, public Ui::moveControls
   Q_OBJECT
 
   public:
-    moveToolbarWidget(QWidget *parent = 0);
+    explicit moveToolbarWidget(QWidget *parent = 0);
 };
 

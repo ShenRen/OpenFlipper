@@ -58,14 +58,15 @@
 #include "PropertyVisPlugin.hh"
 
 #include "PropertyModelFactory.hh"
+#include "SingleObjectPropertyModel.hh"
 
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
     #include <ObjectTypes/PolyhedralMesh/PolyhedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
     #include <ObjectTypes/HexahedralMesh/HexahedralMesh.hh>
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
     #include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 #endif
 
@@ -141,7 +142,30 @@ void PropertyVisPlugin::slotVisualizeProperty( int _id, const QString& _propname
 			emit updateView();
 			emit updatedObject( _id, UPDATE_COLOR );
 		}
-	}
+    }
+}
+
+QScriptValue PropertyVisPlugin::getPropertyVisualizer(int _id, const QString &_propname)
+{
+    PropertyModel* model = PropertyModelFactory::Instance().getModel(_id);
+
+    if (model == nullptr) { return QScriptValue::SpecialValue::NullValue; }
+
+    model->gatherProperties();
+    QModelIndex idx = model->indexFromPlainPropName(_propname);
+    if (!idx.isValid()) { return QScriptValue::SpecialValue::NullValue; }
+
+    QScriptEngine *engine;
+    emit getScriptingEngine (engine);
+    if (engine == nullptr) { return QScriptValue::SpecialValue::NullValue; }
+
+    QScriptContext *ctx = engine->currentContext();
+    if (ctx == nullptr) { return QScriptValue::SpecialValue::NullValue; }
+
+    auto sopm = dynamic_cast<SingleObjectPropertyModel*>(model);
+    if (!sopm) { return QScriptValue::SpecialValue::NullValue; }
+
+    return sopm->getScriptObject(idx, ctx);
 }
 
 //-----------------------------------------------------------------------------
@@ -198,13 +222,13 @@ void PropertyVisPlugin::slotObjectUpdated( int _identifier, const UpdateType& _t
 void PropertyVisPlugin::updateGUI()
 {
 	DataType datatype = DataType(DATA_TRIANGLE_MESH | DATA_POLY_MESH);
-#ifdef ENABLE_OPENVOLUMEMESH_POLYHEDRAL_SUPPORT
+#ifdef ENABLE_POLYHEDRALMESH_SUPPORT
 	datatype |= DataType(DATA_POLYHEDRAL_MESH);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_HEXAHEDRAL_SUPPORT
+#ifdef ENABLE_HEXAHEDRALMESH_SUPPORT
         datatype |= DataType(DATA_HEXAHEDRAL_MESH);
 #endif
-#ifdef ENABLE_OPENVOLUMEMESH_TETRAHEDRAL_SUPPORT
+#ifdef ENABLE_TETRAHEDRALMESH_SUPPORT
         datatype |= DataType(DATA_TETRAHEDRAL_MESH);
 #endif
         objectListItemModel_.refresh(datatype);

@@ -55,6 +55,6 @@ class HoleFillerToolbarWidget : public QWidget, public Ui::HoleFillerControls
   Q_OBJECT
 
   public:
-    HoleFillerToolbarWidget(QWidget *parent = 0);
+    explicit HoleFillerToolbarWidget(QWidget *parent = 0);
 };
 

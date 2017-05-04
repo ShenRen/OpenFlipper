@@ -352,6 +352,7 @@ void addGlobalNode(ACG::SceneGraph::BaseNode* _node);
 * The node will be added at the top of the scenegraph, before all other nodes except
 * The scenegraphs real node. It will therefore influence all nodes in the scenegraph.
 */
+DLLEXPORT
 void addGlobalStatusNode(ACG::SceneGraph::BaseNode* _node);
 
 /** \brief Add scenegraph node modifing object rendering

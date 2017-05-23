@@ -64,35 +64,8 @@ file (
   GLOB _more_macro_directories
        "${CMAKE_SOURCE_DIR}/Package-*/cmake"
 )
+
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_more_macro_directories})
-
-# ========================================================================
-# QT Setup 
-# ========================================================================
-
-# Qt setup
-include(ACGQt)
-
-acg_qt5 ()
-
-if (NOT QT5_FOUND)
-  message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5")
-endif()
-
-set (OF_MAX_QT_VERSION "5.6.0")
-
-if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
-  message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n" "OpenFlipper has not been tested with this QT Version.")
-endif()
-
-# ========================================================================
-# ========================================================================
-
-# include our cmake files
-include (ACGCommon)
-include (MSVCMacros)
-
-acg_get_version (OpenFlipper)
 
 # ========================================================================
 # Branding 
@@ -144,6 +117,36 @@ endif ()
 
 add_definitions(-DPRODUCT_STRING=${OPENFLIPPER_PRODUCT_STRING})
 add_definitions(-DPRODUCT_NAME=${OPENFLIPPER_PRODUCT_NAME})
+
+# ========================================================================
+# QT Setup 
+# ========================================================================
+
+# Qt setup
+include(ACGQt)
+
+acg_qt5 ()
+
+if (NOT QT5_FOUND)
+  message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5")
+endif()
+
+set (OF_MAX_QT_VERSION "5.6.0")
+
+if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})
+  message(WARNING "Detected QT Version higher than ${OF_MAX_QT_VERSION}!\n" "OpenFlipper has not been tested with this QT Version.")
+endif()
+
+# ========================================================================
+# ========================================================================
+
+# include our cmake files
+include (ACGCommon)
+include (MSVCMacros)
+
+acg_get_version (OpenFlipper)
+
+
 
 # ========================================================================
 # ========================================================================

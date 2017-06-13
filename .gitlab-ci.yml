@@ -93,7 +93,7 @@ INTEL-Qt-5.5.1-x64:
   tags:
     - VS2013
     - Qt551
-	- Intel
+    - Intel
   artifacts:
     paths:
       - rel/*.exe

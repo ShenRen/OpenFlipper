@@ -87,7 +87,7 @@ VS2013-Qt-5.5.1-x64:
       - rel/*.exe
 
 INTEL-Qt-5.5.1-x64:
-  script: "CI\\VS2013-Qt-5.5.1-x64.bat"
+  script: "CI\\VS2013-intel-Qt-5.5.1-x64.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
   tags:

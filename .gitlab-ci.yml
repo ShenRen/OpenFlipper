@@ -8,6 +8,16 @@ gcc-c++11-Qt5:
   tags:
     - Linux
 
+gcc-c++11-Qt5.9.0:
+  variables:     
+    COMPILER:       "gcc"     
+    LANGUAGE:       "C++11"     
+    QTVERSION:      "QT5.9.0"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux.sh"
+  tags:
+    - Linux
+
 clang-c++11-Qt5:
   variables:
     COMPILER:       "clang"     
@@ -18,6 +28,18 @@ clang-c++11-Qt5:
   tags:
     - Linux
     - MultiThreads
+
+clang-c++11-Qt5.9.0:
+  variables:
+    COMPILER:       "clang"     
+    LANGUAGE:       "C++11"   
+    QTVERSION:      "QT5.9.0"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux.sh"
+  tags:
+    - Linux
+    - MultiThreads
+
 
 cppcheck:
   script: "CI/ci-cppcheck.sh"

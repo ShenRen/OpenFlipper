@@ -52,10 +52,13 @@ cppcheck:
     paths:
       - cppcheck.log
 
-VS2015-Qt-5.6.0-x64:
-  script: "CI\\VS2015-Qt-5.6.0-x64.bat"
+VS2015-Qt-5.6.2-x64:
+  script: "CI\\ci-windows.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.6.2"
+     COMPILER: "VS2015"
   tags: 
     - VS2015
     - Qt56
@@ -63,10 +66,13 @@ VS2015-Qt-5.6.0-x64:
     paths:
       - rel/*.exe
 
-VS2015-Qt-5.6.0-x32:
-  script: "CI\\VS2015-Qt-5.6.0-x32.bat"
+VS2015-Qt-5.6.2-x32:
+  script: "CI\\ci-windows.bat"
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+    ARCHITECTURE: "x32"
+    QT_VERSION: "Qt5.6.2"
+    COMPILER: "VS2015"
   tags: 
     - VS2015
     - Qt56

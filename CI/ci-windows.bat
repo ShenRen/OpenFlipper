@@ -27,16 +27,15 @@ set BUILD_PLATFORM=%COMPILER%
 :: determine architecture and set variables
 if "%ARCHITECTURE%" == "x64" (
 set ARCHBITS=64
-set ARCH_VS=Win64
+set ARCH_VS= Win64
 set STRING_ARCH=64-Bit
-)
-else (
+) else (
 set ARCHBITS=
 set ARCH_VS=
 set STRING_ARCH=32-Bit
 )
 
-set GENERATOR=Visual Studio %VS_COMPILERVERSION_SHORT% %VS_EDITION_YEAR% %ARCH_VS%
+set GENERATOR=Visual Studio %VS_COMPILERVERSION_SHORT% %VS_EDITION_YEAR%%ARCH_VS%
 set VS_PATH="C:\Program Files (x86)\Microsoft Visual Studio %VS_COMPILERVERSION_LONG%\Common7\IDE\devenv.com"
 
 :: determine Qt Version and set variables

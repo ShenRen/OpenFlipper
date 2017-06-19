@@ -26,7 +26,7 @@ set BUILD_PLATFORM=%COMPILER%
 
 :: determine architecture and set variables
 if "%ARCHITECTURE%" == "x64" (
-set ARCHBITS=64
+set ARCHBITS=_64
 set ARCH_VS= Win64
 set STRING_ARCH=64-Bit
 ) else (
@@ -42,9 +42,18 @@ set VS_PATH="C:\Program Files (x86)\Microsoft Visual Studio %VS_COMPILERVERSION_
 if "%QT_VERSION%" == "Qt5.6.2" (
 set QT_REV=5.6
 )
+if "%QT_VERSION%" == "Qt5.7.0" (
+set QT_REV=5.7
+)
+if "%QT_VERSION%" == "Qt5.8.0" (
+set QT_REV=5.8
+)
+if "%QT_VERSION%" == "Qt5.9.0" (
+set QT_REV=5.9
+)
 
 set QT_SUFFIX=
-set QT_BASE_CONFIG=-DQT5_INSTALL_PATH=E:\Qt\%QT_VERSION%\%QT_REV%\%QT_COMPILERPREFIX%_%ARCHBITS%%QT_SUFFIX%
+set QT_BASE_CONFIG=-DQT5_INSTALL_PATH=E:\Qt\%QT_VERSION%\%QT_REV%\%QT_COMPILERPREFIX%%ARCHBITS%%QT_SUFFIX%
 
 :: set up Libraty Paths
 set LIBPATH_BASE=E:\libs\%COMPILER%

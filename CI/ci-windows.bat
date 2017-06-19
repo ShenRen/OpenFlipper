@@ -19,6 +19,7 @@ if "%COMPILER%" == "VS2015" (
 set QT_COMPILERPREFIX=msvc2015
 set VS_COMPILERVERSION_LONG=14.0
 set VS_COMPILERVERSION_SHORT=14
+set VS_EDITION_YEAR=2015
 )
 
 set BUILD_PLATFORM=%COMPILER%
@@ -35,7 +36,7 @@ set ARCH_VS=
 set STRING_ARCH=32-Bit
 )
 
-set GENERATOR=Visual Studio %VS_COMPILERVERSION_SHORT% %ARCH_VS%
+set GENERATOR=Visual Studio %VS_COMPILERVERSION_SHORT% %VS_EDITION_YEAR% %ARCH_VS%
 set VS_PATH="C:\Program Files (x86)\Microsoft Visual Studio %VS_COMPILERVERSION_LONG%\Common7\IDE\devenv.com"
 
 :: determine Qt Version and set variables

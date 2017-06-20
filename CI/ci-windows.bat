@@ -102,8 +102,8 @@ for /l %%x in (6, 1, 7) do (
 :: check for glew version 6.1.1 to 6.1.3 use the highest found version
 for /l %%x in (0, 1, 3) do (
    if exist %LIBPATH_BASE%\%ARCHITECTURE%\glew-1.1%%x.0\include (
-      set GLEW_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.13.0\include
-      set GLEW_LIBRARY_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.13.0\lib\glew32.lib
+      set GLEW_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.1%%x.0\include
+      set GLEW_LIBRARY_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.1%%x.0\lib\glew32.lib
    )
 )
 

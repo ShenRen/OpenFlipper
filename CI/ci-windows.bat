@@ -4,7 +4,7 @@
 rmdir /Q /S TestData
 :: clone libraries git (set env variable to GIT_SSH_COMMAND maybe use setx once as this key won't change) 
 set GIT_SSH_COMMAND=ssh -i E:\\\gitlab\\\id_rsa 
-git clone git@roosevelt:moebius/OpenFlipper-Test-Data.git TestData
+git clone git@www.graphics.rwth-aachen.de:moebius/OpenFlipper-Test-Data.git TestData
 
 mkdir rel
 cd rel
@@ -71,9 +71,6 @@ set QWT6_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\inc
 set QWT6_LIBRARY=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\lib\qwt.lib
 set QWT6_LIBRARY_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\lib
 )
-:: set QWT6_LIBRARY_RELEASE=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\lib\qwt.lib
-:: set QWT6_LIBRARY_DEBUG=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\lib\qwtd.lib
-
 
 set CMAKE_CONFIGURATION=%QT_BASE_CONFIG% -DGLUT_INCLUDE_DIR="%GLUT_INCLUDE_DIR%" -DGLUT_glut_LIBRARY="%GLUT_GLUT_LIBRARY%" -DGLEW_INCLUDE_DIR="%GLEW_INCLUDE_DIR%" -DGLEW_LIBRARY="%GLEW_LIBRARY_DIR%" -DQWT6_INCLUDE_DIR=%QWT6_INCLUDE_DIR% -DQWT6_LIBRARY=%QWT6_LIBRARY% -DQWT6_LIBRARY_DIR=%QWT6_LIBRARY_DIR%
 

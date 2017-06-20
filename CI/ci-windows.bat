@@ -77,16 +77,45 @@ set QT_BASE_CONFIG=-DQT5_INSTALL_PATH=E:\Qt\%QT_VERSION%\%QT_REV%\%QT_COMPILERPR
 
 :: set up Libraty Paths
 set LIBPATH_BASE=E:\libs\%COMPILER%
-set GTESTVERSION=gtest-1.7.0
-set GLUT_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\freeglut-3.0.0\include
-set GLUT_GLUT_LIBRARY=%LIBPATH_BASE%\%ARCHITECTURE%\freeglut-3.0.0\lib\freeglut.lib
-set GLEW_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.13.0\include
-set GLEW_LIBRARY_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.13.0\lib\glew32.lib
-if exist %LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\include (
-set QWT6_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\include
-set QWT6_LIBRARY=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\lib\qwt.lib
-set QWT6_LIBRARY_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.3-qt%QT_REV_LONG%\lib
+
+:: freeglut assume we use freeglut 3.0.0 if not try 2.8.1 if not sanitize the libs folder
+if exist %LIBPATH_BASE%\%ARCHITECTURE%\freeglut-3.0.0\include (
+   set GLUT_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\freeglut-3.0.0\include
+   set GLUT_GLUT_LIBRARY=%LIBPATH_BASE%\%ARCHITECTURE%\freeglut-3.0.0\lib\freeglut.lib
+) else (
+   if exist %LIBPATH_BASE%\%ARCHITECTURE%\freeglut-2.8.1\include (
+      set GLUT_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\freeglut-2.8.1\include
+      set GLUT_GLUT_LIBRARY=%LIBPATH_BASE%\%ARCHITECTURE%\freeglut-2.8.1\lib\freeglut.lib
+   ) else (
+      echo "Error: No suitable version of freeglut found!"
+	  exit
+   )
 )
+
+:: check for gtest version 1.6 or 1.7 use the highest found version
+for /l %%x in (6, 1, 7) do (
+   if exist %LIBPATH_BASE%\%ARCHITECTURE%\gtest-1.%%x.0 (
+      set GTESTVERSION=gtest-1.%%x.0
+   )
+)
+
+:: check for glew version 6.1.1 to 6.1.3 use the highest found version
+for /l %%x in (0, 1, 3) do (
+   if exist %LIBPATH_BASE%\%ARCHITECTURE%\glew-1.1%%x.0\include (
+      set GLEW_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.13.0\include
+      set GLEW_LIBRARY_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\glew-1.13.0\lib\glew32.lib
+   )
+)
+
+:: check for qwt version 6.1.1 to 6.1.3 use the highest found version
+for /l %%x in (0, 1, 3) do (
+   if exist %LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.%%x-qt%QT_REV_LONG%\include (
+      set QWT6_INCLUDE_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.%%x-qt%QT_REV_LONG%\include
+      set QWT6_LIBRARY=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.%%x-qt%QT_REV_LONG%\lib\qwt.lib
+      set QWT6_LIBRARY_DIR=%LIBPATH_BASE%\%ARCHITECTURE%\qwt-6.1.%%x-qt%QT_REV_LONG%\lib
+   )
+)
+
 
 set CMAKE_CONFIGURATION=%QT_BASE_CONFIG% -DGLUT_INCLUDE_DIR="%GLUT_INCLUDE_DIR%" -DGLUT_glut_LIBRARY="%GLUT_GLUT_LIBRARY%" -DGLEW_INCLUDE_DIR="%GLEW_INCLUDE_DIR%" -DGLEW_LIBRARY="%GLEW_LIBRARY_DIR%" -DQWT6_INCLUDE_DIR=%QWT6_INCLUDE_DIR% -DQWT6_LIBRARY=%QWT6_LIBRARY% -DQWT6_LIBRARY_DIR=%QWT6_LIBRARY_DIR%
 
@@ -124,13 +153,3 @@ cd ..
 cd Build
 
 dir
-
-
-
-
-
-
-
-
-
-

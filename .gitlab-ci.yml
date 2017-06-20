@@ -110,7 +110,7 @@ VS2013-Qt-5.5.1-x64:
   script: "CI\\ci-windows.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
-	 ARCHITECTURE: "x64"
+     ARCHITECTURE: "x64"
      QT_VERSION: "Qt5.5.1"
      COMPILER: "VS2013"
   tags:

@@ -89,7 +89,6 @@ VS2015-Qt-5.9.0-x64:
      COMPILER: "VS2015"
   tags: 
     - VS2015
-    - Qt56
   artifacts:
     paths:
       - rel/*.exe
@@ -103,15 +102,17 @@ VS2015-Qt-5.9.0-x32:
     COMPILER: "VS2015"
   tags: 
     - VS2015
-    - Qt56
   artifacts:
     paths:
       - rel/*.exe
 
 VS2013-Qt-5.5.1-x64:
-  script: "CI\\VS2013-Qt-5.5.1-x64.bat"
+  script: "CI\\ci-windows.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
+	 ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.5.1"
+     COMPILER: "VS2013"
   tags:
     - VS2013
     - Qt551

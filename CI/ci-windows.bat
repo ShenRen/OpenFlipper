@@ -5,7 +5,7 @@
 rmdir /Q /S TestData
 :: clone libraries git (set env variable to GIT_SSH_COMMAND maybe use setx once as this key won't change) 
 set GIT_SSH_COMMAND=ssh -i E:\\\gitlab\\\id_rsa 
-git clone git@www.graphics.rwth-aachen.de:moebius/OpenFlipper-Test-Data.git TestData
+git clone git@roosevelt.informatik.rwth-aachen.de:moebius/OpenFlipper-Test-Data.git TestData
 
 mkdir rel
 cd rel

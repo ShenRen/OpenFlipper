@@ -119,9 +119,16 @@ public:
         :   backend_(backend) {}
 
 public slots:
-    void print(QString message)
+    void print(QVariantList args)
     {
-        backend_->log(message);
+        QString result;
+        for(int i= 0; i < args.size(); ++i) {
+            if(i > 0) {
+               result.append(" ");
+            }
+            result.append(args[i].toString());
+        }
+        backend_->log(result);
     }
 };
 

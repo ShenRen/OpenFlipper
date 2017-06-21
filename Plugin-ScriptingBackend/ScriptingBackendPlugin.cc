@@ -82,6 +82,7 @@ ScriptingBackend::~ScriptingBackend()
     delete jsEngine_;
 }
 
+
 void ScriptingBackend::pluginsInitialized()
 {
     // NOTE: See ScriptingBackend constructor
@@ -93,8 +94,8 @@ void ScriptingBackend::pluginsInitialized()
 
     /* Register PrintHelper object and create global print() function alias */
     jsEngine_->globalObject().setProperty("PrintInterface", jsEngine_->newQObject(new PrintHelper(this)));  // TODO: Work out appr. ownership semantics for this
-    jsEngine_->evaluate("var print = PrintInterface.print");
-    QJSValue res = jsEngine_->evaluate("print(\"print() works\")");
+    QJSValue jsPrint = jsEngine_->evaluate("function() { PrintInterface.print(Array.prototype.slice.apply(arguments)); }");
+    jsEngine_->globalObject().setProperty("print", jsPrint);
 
 
 }

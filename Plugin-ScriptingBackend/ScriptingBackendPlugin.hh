@@ -60,8 +60,9 @@
 #include <OpenFlipper/BasePlugin/RPCInterface.hh>
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 
-#include <memory>
-#include <QJSEngine>
+
+
+class QJSEngine;
 
 class ScriptingBackend : public QObject, BaseInterface, MenuInterface, ScriptInterface, RPCInterface, LoggingInterface
 {
@@ -76,7 +77,7 @@ Q_INTERFACES(LoggingInterface)
   Q_PLUGIN_METADATA(IID "org.OpenFlipper.Plugins.Plugin-Scripting")
 #endif
 
-    std::unique_ptr<QJSEngine> jsEngine_;
+    QJSEngine* jsEngine_ = nullptr;
 
 public:
 signals:
@@ -94,6 +95,7 @@ private slots:
 public :
 
   ScriptingBackend();
+  virtual ~ScriptingBackend();
 
   QString name() { return (QString(tr("Scripting Backend"))); };
   QString description( ) { return (QString(tr("Provides Updated Scripting for OpenFlipper"))); };
@@ -101,7 +103,28 @@ public :
 
 public slots:
   QString version() { return QString("1.0"); };
+
+  void slotExecuteScript(QString script);
+  void slotExecuteFileScript(QString script);
 };
+
+
+class PrintHelper : public QObject
+{
+Q_OBJECT
+
+    ScriptingBackend* backend_;
+public:
+    PrintHelper(ScriptingBackend* backend)
+        :   backend_(backend) {}
+
+public slots:
+    void print(QString message)
+    {
+        backend_->log(message);
+    }
+};
+
 
 #endif //SCRIPTINGPLUGIN_HH
 

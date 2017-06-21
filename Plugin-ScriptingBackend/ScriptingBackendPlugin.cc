@@ -56,25 +56,58 @@
 #include <QtGui>
 #endif
 
+#include <QJSEngine>
 #include <QJSValue>
+
+namespace {
+    // Forces garbage collection for a QJSEngine
+    void triggerGarbageCollection(QJSEngine* engine)
+    {
+        if(engine != nullptr) {
+            engine->collectGarbage();
+        }
+    }
+}
 
 
 ScriptingBackend::ScriptingBackend()
+    :   jsEngine_(new QJSEngine())
 {
 
+}
+
+ScriptingBackend::~ScriptingBackend()
+{
+    jsEngine_->collectGarbage();
+    delete jsEngine_;
 }
 
 void ScriptingBackend::pluginsInitialized()
 {
+    // NOTE: See ScriptingBackend constructor
     // TODO: Replace with std::make_unique when we start to support c++14
-    jsEngine_.reset(new QJSEngine());
+    //jsEngine_.reset(new QJSEngine());
 
     QJSValue self = jsEngine_->newQObject(this);
     jsEngine_->globalObject().setProperty("scriptingBackend", self);
 
-    QJSValue res = jsEngine_->evaluate("scriptingBackend.log(\"Hello\")");
+    /* Register PrintHelper object and create global print() function alias */
+    jsEngine_->globalObject().setProperty("PrintInterface", jsEngine_->newQObject(new PrintHelper(this)));  // TODO: Work out appr. ownership semantics for this
+    jsEngine_->evaluate("var print = PrintInterface.print");
+    QJSValue res = jsEngine_->evaluate("print(\"print() works\")");
+
+
 }
 
+void ScriptingBackend::slotExecuteScript(QString script)
+{
+    jsEngine_->evaluate(script);
+}
+
+void ScriptingBackend::slotExecuteFileScript(QString script)
+{
+    log("executeFileScript: " + script);
+}
 
 #if QT_VERSION < 0x050000
   Q_EXPORT_PLUGIN2( skriptingbackendplugin , ScriptingBackendPlugin );

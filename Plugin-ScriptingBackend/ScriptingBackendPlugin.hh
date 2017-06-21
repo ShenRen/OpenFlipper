@@ -130,7 +130,26 @@ public slots:
         }
         backend_->log(result);
     }
+
+    void printToFile(QVariantList args)
+    {
+        QString result;
+        // first argument is the file path
+        for(int i= 1; i < args.size(); ++i) {
+            if(i > 0) {
+               result.append(" ");
+            }
+            result.append(args[i].toString());
+        }
+        QFile file(args[0].toString());
+        file.open(QIODevice::Append);
+        QTextStream stream(&file);
+        stream << result << "\n";
+        file.close();
+    }
 };
+
+
 
 
 #endif //SCRIPTINGPLUGIN_HH

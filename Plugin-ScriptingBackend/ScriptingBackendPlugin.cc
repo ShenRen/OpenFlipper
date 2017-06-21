@@ -92,12 +92,14 @@ void ScriptingBackend::pluginsInitialized()
     QJSValue self = jsEngine_->newQObject(this);
     jsEngine_->globalObject().setProperty("scriptingBackend", self);
 
-    /* Register PrintHelper object and create global print() function alias */
+    /* Register PrintHelper object and create global print() and printToFile() function aliases */
     jsEngine_->globalObject().setProperty("PrintInterface", jsEngine_->newQObject(new PrintHelper(this)));  // TODO: Work out appr. ownership semantics for this
+
     QJSValue jsPrint = jsEngine_->evaluate("function() { PrintInterface.print(Array.prototype.slice.apply(arguments)); }");
     jsEngine_->globalObject().setProperty("print", jsPrint);
 
-
+    QJSValue jsPrintToFile = jsEngine_->evaluate("function() { PrintInterface.printToFile(Array.prototype.slice.apply(arguments)); }");
+    jsEngine_->globalObject().setProperty("printToFile", jsPrintToFile);
 }
 
 void ScriptingBackend::slotExecuteScript(QString script)

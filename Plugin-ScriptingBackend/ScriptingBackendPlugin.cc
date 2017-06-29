@@ -104,12 +104,21 @@ void ScriptingBackend::pluginsInitialized()
 
 void ScriptingBackend::slotExecuteScript(QString script)
 {
-    jsEngine_->evaluate(script);
+    lastExecutionResult = jsEngine_->evaluate(script);
 }
 
 void ScriptingBackend::slotExecuteFileScript(QString script)
 {
     log("executeFileScript: " + script);
+}
+
+void ScriptingBackend::slotGetLastScriptExecutionResult(ScriptExecutionResult& result)
+{
+	result.isError = lastExecutionResult.isError();
+	result.fileName = lastExecutionResult.property("fileName").toString();
+	result.lineNumber = lastExecutionResult.property("lineNumber").toInt();
+	result.message = lastExecutionResult.property("message").toString();
+	result.stacktrace = lastExecutionResult.property("stack").toString();
 }
 
 #if QT_VERSION < 0x050000

@@ -61,7 +61,7 @@
 #include <OpenFlipper/BasePlugin/LoggingInterface.hh>
 
 
-
+#include <qjsvalue.h>
 class QJSEngine;
 
 class ScriptingBackend : public QObject, BaseInterface, MenuInterface, ScriptInterface, RPCInterface, LoggingInterface
@@ -77,7 +77,8 @@ Q_INTERFACES(LoggingInterface)
   Q_PLUGIN_METADATA(IID "org.OpenFlipper.Plugins.Plugin-Scripting")
 #endif
 
-    QJSEngine* jsEngine_ = nullptr;
+    QJSEngine*	jsEngine_ = nullptr;
+	QJSValue	lastExecutionResult;
 
 public:
 signals:
@@ -106,6 +107,7 @@ public slots:
 
   void slotExecuteScript(QString script);
   void slotExecuteFileScript(QString script);
+  void slotGetLastScriptExecutionResult(ScriptExecutionResult& result);
 };
 
 

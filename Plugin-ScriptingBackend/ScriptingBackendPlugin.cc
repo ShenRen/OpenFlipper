@@ -50,6 +50,7 @@
 #include "ScriptingBackendPlugin.hh"
 
 #include "OpenFlipper/common/GlobalOptions.hh"
+#include <qjsvalueiterator.h>
 
 #if QT_VERSION >= 0x050000
 #else
@@ -121,7 +122,26 @@ void ScriptingBackend::slotGetLastScriptExecutionResult(ScriptExecutionResult& r
 	result.stacktrace = lastExecutionResult.property("stack").toString();
 }
 
+void ScriptingBackend::slotExposeObject(QString _name, QObject* object)
+{
+	QStringList properties;
+	slotExposeObject(_name, object, properties);
+}
+
+void ScriptingBackend::slotExposeObject(QString _name, QObject* object, QStringList& properties)
+{
+	QJSValue asJsObject = jsEngine_->newQObject(object);
+	QJSValueIterator it(asJsObject);
+	while (it.hasNext()) {
+		it.next();
+		properties.push_back(it.name());
+	}
+	jsEngine_->globalObject().setProperty(_name, asJsObject);
+}
+
+
 #if QT_VERSION < 0x050000
   Q_EXPORT_PLUGIN2( skriptingbackendplugin , ScriptingBackendPlugin );
 #endif
+
 

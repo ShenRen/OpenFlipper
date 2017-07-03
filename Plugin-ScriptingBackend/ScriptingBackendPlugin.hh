@@ -86,6 +86,7 @@ signals:
     void log(Logtype _type, QString _message);
     void log(QString _message);
 
+
 private slots:
 
 
@@ -108,6 +109,8 @@ public slots:
   void slotExecuteScript(QString script);
   void slotExecuteFileScript(QString script);
   void slotGetLastScriptExecutionResult(ScriptExecutionResult& result);
+  void slotExposeObject(QString _name, QObject* object);
+  void slotExposeObject(QString _name, QObject* object, QStringList& properties);
 };
 
 

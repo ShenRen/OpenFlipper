@@ -109,8 +109,12 @@ public slots:
   void slotExecuteScript(QString script);
   void slotExecuteFileScript(QString script);
   void slotGetLastScriptExecutionResult(ScriptExecutionResult& result);
-  void slotExposeObject(QString _name, QObject* object);
-  void slotExposeObject(QString _name, QObject* object, QStringList& properties);
+  void slotExposeObject(QString _name, QObject* _object, ScriptObjectOwnership _ownership = ScriptObjectOwnership::JS_OWNERSHIP);
+  void slotExposeObject(QString _name, QObject* _object, QStringList& _properties, ScriptObjectOwnership _ownership = ScriptObjectOwnership::JS_OWNERSHIP);
+
+protected:
+  QJSValue exposeObjectImpl(QString _name, QObject* _object, ScriptObjectOwnership _ownership);
+  QJSValue exposeObjectImpl(QString _name, QObject* _object, QStringList& _properties, ScriptObjectOwnership _ownership);
 };
 
 

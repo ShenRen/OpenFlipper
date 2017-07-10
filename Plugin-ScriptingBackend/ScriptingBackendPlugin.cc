@@ -59,6 +59,7 @@
 
 #include <QJSEngine>
 #include <QJSValue>
+#include <QQmlEngine>
 
 namespace {
     // Forces garbage collection for a QJSEngine
@@ -89,12 +90,10 @@ void ScriptingBackend::pluginsInitialized()
     // NOTE: See ScriptingBackend constructor
     // TODO: Replace with std::make_unique when we start to support c++14
     //jsEngine_.reset(new QJSEngine());
-
-    QJSValue self = jsEngine_->newQObject(this);
-    jsEngine_->globalObject().setProperty("scriptingBackend", self);
+    exposeObjectImpl("scriptingBackend", this, ScriptObjectOwnership::CPP_OWNERSHIP);
 
     /* Register PrintHelper object and create global print() and printToFile() function aliases */
-    jsEngine_->globalObject().setProperty("PrintInterface", jsEngine_->newQObject(new PrintHelper(this)));  // TODO: Work out appr. ownership semantics for this
+    exposeObjectImpl("PrintInterface", new PrintHelper(this), ScriptObjectOwnership::CPP_OWNERSHIP);
 
     QJSValue jsPrint = jsEngine_->evaluate("function() { PrintInterface.print(Array.prototype.slice.apply(arguments)); }");
     jsEngine_->globalObject().setProperty("print", jsPrint);
@@ -122,21 +121,37 @@ void ScriptingBackend::slotGetLastScriptExecutionResult(ScriptExecutionResult& r
 	result.stacktrace = lastExecutionResult.property("stack").toString();
 }
 
-void ScriptingBackend::slotExposeObject(QString _name, QObject* object)
+QJSValue ScriptingBackend::exposeObjectImpl(QString _name, QObject* _object, ScriptObjectOwnership _ownership)
 {
-	QStringList properties;
-	slotExposeObject(_name, object, properties);
+    QStringList properties;
+    return exposeObjectImpl(_name, _object, properties, _ownership);
 }
 
-void ScriptingBackend::slotExposeObject(QString _name, QObject* object, QStringList& properties)
+QJSValue ScriptingBackend::exposeObjectImpl(QString _name, QObject* _object, QStringList& _properties, ScriptObjectOwnership _ownership)
 {
-	QJSValue asJsObject = jsEngine_->newQObject(object);
-	QJSValueIterator it(asJsObject);
-	while (it.hasNext()) {
-		it.next();
-		properties.push_back(it.name());
-	}
-	jsEngine_->globalObject().setProperty(_name, asJsObject);
+    QJSValue asJsObject = jsEngine_->newQObject(_object);
+    QJSValueIterator it(asJsObject);
+    while (it.hasNext()) {
+        it.next();
+        _properties.push_back(it.name());
+    }
+    jsEngine_->globalObject().setProperty(_name, asJsObject);
+
+    QQmlEngine::ObjectOwnership ownership = _ownership == ScriptObjectOwnership::CPP_OWNERSHIP ? QQmlEngine::CppOwnership : QQmlEngine::JavaScriptOwnership;
+    QQmlEngine::setObjectOwnership(_object, ownership);
+
+    return asJsObject;
+}
+
+void ScriptingBackend::slotExposeObject(QString _name, QObject* _object, ScriptObjectOwnership _ownership)
+{
+	QStringList properties;
+    exposeObjectImpl(_name, _object, properties, _ownership);
+}
+
+void ScriptingBackend::slotExposeObject(QString _name, QObject* _object, QStringList& _properties, ScriptObjectOwnership _ownership)
+{
+    exposeObjectImpl(_name, _object, _properties, _ownership);
 }
 
 

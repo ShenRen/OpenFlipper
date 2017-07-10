@@ -154,6 +154,11 @@ void ScriptingBackend::slotExposeObject(QString _name, QObject* _object, QString
     exposeObjectImpl(_name, _object, _properties, _ownership);
 }
 
+void ScriptingBackend::slotSetGlobalProperty(QString _name, QVariant _value)
+{
+    QJSValue value = _value.toString();
+    jsEngine_->globalObject().setProperty(_name, value);
+}
 
 #if QT_VERSION < 0x050000
   Q_EXPORT_PLUGIN2( skriptingbackendplugin , ScriptingBackendPlugin );

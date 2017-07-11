@@ -39,6 +39,8 @@ set BUILD_PLATFORM=%COMPILER%
 if "%TOOLSET%" == "intel" (
 set BUILD_PLATFORM=%BUILD_PLATFORM%-intel
 set TOOLSETFLAG=-T"Intel C++ Compiler 16.0"
+::enable c++11 for intel compiler manually
+set CXXFLAGS="/Qstd=c++0x"
 )
 :: determine architecture and set variables
 if "%ARCHITECTURE%" == "x64" (
@@ -150,7 +152,7 @@ del *.exe
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
-move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%CI_BUILD_REF%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
+move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%CI_BUILD_REF%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%%TOOLSET%.exe"
 
 cd tests
 copy ..\Build\Qt*.dll testBinaries

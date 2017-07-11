@@ -134,6 +134,20 @@ INTEL-Qt-5.5.1-x64:
   artifacts:
     paths:
       - rel/*.exe
+      
+INTEL-Qt-5.5.1-x64:
+  script: "CI\\ci-windows.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.9.0"
+     COMPILER: "VS2013"
+     TOOLSET: "intel"
+  tags:
+    - VS2013
+  artifacts:
+    paths:
+      - rel/*.exe
 
 Mac-Cpp11:
   script: "CI/ci-mac.sh"

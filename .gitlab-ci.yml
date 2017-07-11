@@ -135,7 +135,7 @@ INTEL-Qt-5.5.1-x64:
     paths:
       - rel/*.exe
       
-INTEL-Qt-5.5.1-x64:
+INTEL-Qt-5.9.0-x64:
   script: "CI\\ci-windows.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive

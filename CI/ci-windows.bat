@@ -82,8 +82,8 @@ set QT_SUFFIX=
 set QT_BASE_CONFIG=-DQT5_INSTALL_PATH=E:\Qt\%QT_VERSION%\%QT_REV%\%QT_COMPILERPREFIX%%ARCHBITS%%QT_SUFFIX%
 
 :: set up Libraty Paths
-set LIBPATH_BASE=E:\libs\%COMPILER%
-set CMAKE_WINDOWS_LIBS_DIR=E:\libs
+set LIBPATH_BASE=E:/libs/%COMPILER%
+set CMAKE_WINDOWS_LIBS_DIR=E:/libs
 
 :: freeglut assume we use freeglut 3.0.0 if not try 2.8.1 if not sanitize the libs folder
 if exist %LIBPATH_BASE%\%ARCHITECTURE%\freeglut-3.0.0\include (

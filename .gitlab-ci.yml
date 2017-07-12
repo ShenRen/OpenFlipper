@@ -131,8 +131,6 @@ Mac-Cpp11:
       - build-release/*.dmg
 
 Doc-publish:
-  only:
-     - master
   script: "CI/ci-doc.sh"
   tags:
      - Linux

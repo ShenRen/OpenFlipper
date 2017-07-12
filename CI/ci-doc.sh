@@ -13,5 +13,10 @@ make doc >> Doxygen-warning.log 2> Doxygen-error.log
 ls -l
 
 # Copy to webserver
-scp -r -P 2222 build-release/Build/share/OpenFlipper/Doc/DeveloperHTML/* hudson@web4-info8:OpenFlipper-Free-Daily/Doc/Free/Developer
-scp -r -P 2222 build-release/Build/share/OpenFlipper/Doc/UserHTML/* hudson@web4-info8:OpenFlipper-Free-Daily/Doc/Free/User
+scp -r -P 2222 Build/share/OpenFlipper/Doc/DeveloperHTML/* hudson@web4-info8:OpenFlipper-Free-Daily/Doc/Free/Developer
+echo "copied the following files to hudson@web4-info8:OpenFlipper-Free-Daily/Doc/Free/Developer :"
+ls Build/share/OpenFlipper/Doc/DeveloperHTML/
+
+scp -r -P 2222 Build/share/OpenFlipper/Doc/UserHTML/* hudson@web4-info8:OpenFlipper-Free-Daily/Doc/Free/User
+echo "copied the following files to hudson@web4-info8:OpenFlipper-Free-Daily/Doc/Free/User :"
+ls Build/share/OpenFlipper/Doc/DeveloperHTML/

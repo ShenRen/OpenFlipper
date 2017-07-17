@@ -51,9 +51,11 @@
 
 #include "SmootherPlugin.hh"
 
+#include <ACG/Utils/StopWatch.hh>
 
 #include <ObjectTypes/PolyMesh/PolyMesh.hh>
 #include <ObjectTypes/TriangleMesh/TriangleMesh.hh>
+#include <ObjectTypes/TetrahedralMesh/TetrahedralMesh.hh>
 
 SmootherPlugin::SmootherPlugin() :
         iterationsSpinbox_(0)
@@ -273,8 +275,52 @@ void SmootherPlugin::simpleLaplace(int _iterations) {
       // Create backup
       emit createBackup(o_it->id(), "Simple Smoothing", UPDATE_GEOMETRY);
 
-    } else {
+    } else if ( o_it->dataType( DATA_TETRAHEDRAL_MESH ) ) {
 
+      // Get the mesh to work on
+      TetrahedralMesh* mesh = PluginFunctions::tetrahedralMesh(*o_it);
+
+      TetrahedralMeshObject::StatusAttrib& status = PluginFunctions::tetrahedralMeshObject(*o_it)->status();
+
+      // Property for the active mesh to store new point positions
+      OpenVolumeMesh::VertexPropertyT<TetrahedralMesh::PointT> newPositions =
+      mesh->request_vertex_property<TetrahedralMesh::PointT>("newPositions");
+
+      ACG::StopWatch sw; sw.start();
+      for ( int i = 0 ; i < _iterations ; ++i ) {
+
+        for(OpenVolumeMesh::VertexIter v_it = mesh->vertices_begin(); v_it != mesh->vertices_end(); ++v_it)
+          if(!status[*v_it].selected())
+          {
+            newPositions[*v_it] = TetrahedralMesh::PointT(0,0,0);
+            int n = 0.0;
+            for(OpenVolumeMesh::VertexOHalfEdgeIter voh_it = mesh->voh_iter(*v_it); voh_it.valid(); ++voh_it)
+            {
+              newPositions[*v_it] += mesh->vertex(mesh->halfedge(*voh_it).to_vertex());
+              ++n;
+            }
+
+            newPositions[*v_it] /= double(n);
+          }
+
+        // set new positions
+        for(OpenVolumeMesh::VertexIter v_it = mesh->vertices_begin(); v_it != mesh->vertices_end(); ++v_it)
+          if(!status[*v_it].selected())
+          {
+            mesh->set_vertex(*v_it,newPositions[*v_it]);
+          }
+
+      }// Iterations end
+
+      std::cerr << _iterations << "smoothing iterations took " << sw.stop()/1000.0 << "s on mesh with #V = " << mesh->n_vertices() << std::endl;
+
+      emit updatedObject( o_it->id() , UPDATE_GEOMETRY);
+
+      // Create backup
+      emit createBackup(o_it->id(), "Simple Smoothing", UPDATE_GEOMETRY);
+    }
+    else
+    {
       emit log(LOGERR, "DataType not supported.");
     }
   }

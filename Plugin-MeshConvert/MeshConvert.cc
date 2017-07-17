@@ -66,6 +66,13 @@ void MeshConvertPlugin::initializePlugin()
 
 void MeshConvertPlugin::pluginsInitialized()
 {
+  //populate scripting function
+  emit setSlotDescription("convert(int,bool)", "Convert a mesh to PolyMesh or to TriMesh. returns the ID of the new mesh or -1 in case of error. The old mesh remains unchanged.",
+                          QString("object_id,toTriMesh").split(","),
+                          QString(" id of an object to convert, flag to convert to a TriMesh, if not set creates a new PolyMesh").split(","));
+
+  if(! OpenFlipper::Options::gui())
+    return;
 
   // Create your toolbar
   toolbar = new QToolBar(tr("Mesh conversion"));
@@ -94,10 +101,7 @@ void MeshConvertPlugin::pluginsInitialized()
   // Integrate the new toolbar into OpenFlipper
   emit addToolbar( toolbar );
 
-  //populate scripting function
-  emit setSlotDescription("convert(int,bool)", "Convert a mesh to PolyMesh or to TriMesh. returns the ID of the new mesh or -1 in case of error. The old mesh remains unchanged.",
-                          QString("object_id,toTriMesh").split(","),
-                          QString(" id of an object to convert, flag to convert to a TriMesh, if not set creates a new PolyMesh").split(","));
+
 
 }
 

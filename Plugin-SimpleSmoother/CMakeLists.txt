@@ -1,3 +1,4 @@
 include (plugin)
-openflipper_plugin (INSTALLDATA Icons
-                    TYPES POLYMESH TRIANGLEMESH)
+openflipper_plugin (DEPS OpenVolumeMesh
+ 					INSTALLDATA Icons
+                    TYPES POLYMESH TRIANGLEMESH TETRAHEDRALMESH POLYHEDRALMESH)

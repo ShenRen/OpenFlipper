@@ -169,7 +169,7 @@
 [submodule "OpenFlipper"]
 	path = OpenFlipper
 	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/OpenFlipper
-	branch = master
+	branch = hotFixCITestFailureIsIgnored
 [submodule "Type-BSpline"]
 	path = Type-BSpline
 	url = https://www.graphics.rwth-aachen.de:9000/OpenFlipper-Free/Type-BSpline.git

@@ -5,6 +5,8 @@
 rmdir /Q /S TestData
 :: clone libraries git (set env variable to GIT_SSH_COMMAND maybe use setx once as this key won't change) 
 set GIT_SSH_COMMAND=ssh -i E:\\\gitlab\\\id_rsa 
+:: remove ssh key of roosevelt, as it caused an issue with an older entry on Krone
+ssh-keygen -R "roosevelt.informatik.rwth-aachen.de"
 git clone git@roosevelt.informatik.rwth-aachen.de:moebius/OpenFlipper-Test-Data.git TestData
 
 mkdir rel

@@ -107,3 +107,4 @@ bash run_tests.sh
 
 cd ..
 
+exit $?

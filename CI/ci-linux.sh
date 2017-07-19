@@ -104,7 +104,13 @@ make $MAKE_OPTIONS
 # Run tests
 cd tests
 bash run_tests.sh
+echo $?
+echo "was the return value of run_tests.sh"
 
 cd ..
+
+echo $?
+echo "was the return value of run_tests.sh"
+
 
 exit $?

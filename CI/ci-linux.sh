@@ -97,14 +97,3 @@ cmake -DCMAKE_BUILD_TYPE=Release -DOPENFLIPPER_BUILD_UNIT_TESTS=TRUE -DSTL_VECTO
 
 #build it
 make $MAKE_OPTIONS
-
-#########################################
-# Run Release Unittests
-#########################################
-
-# Run tests
-cd tests
-bash run_tests.sh
-
-cd ..
-

@@ -29,7 +29,7 @@ gcc-c++11-Qt5.9.0:
   script: "CI/ci-linux.sh"
   tags:
     - Linux
-    artifacts:
+  artifacts:
     paths:
        - build-release-gcc-cpp11-qt5.9.0/
 

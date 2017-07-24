@@ -1,4 +1,11 @@
+stages:
+  - Build
+  - Test
+  - Deploy
+
 gcc-c++11-Qt5:
+  stage:
+    Build
   variables:     
     COMPILER:       "gcc"     
     LANGUAGE:       "C++11"     
@@ -9,6 +16,8 @@ gcc-c++11-Qt5:
     - Linux
 
 gcc-c++11-Qt5.9.0:
+  stage:
+    Build
   variables:     
     COMPILER:       "gcc"     
     LANGUAGE:       "C++11"     
@@ -19,6 +28,8 @@ gcc-c++11-Qt5.9.0:
     - Linux
 
 clang-c++11-Qt5:
+  stage:
+    Build
   variables:
     COMPILER:       "clang"     
     LANGUAGE:       "C++11"   
@@ -30,6 +41,8 @@ clang-c++11-Qt5:
     - MultiThreads
 
 clang-c++11-Qt5.9.0:
+  stage:
+    Build
   variables:
     COMPILER:       "clang"     
     LANGUAGE:       "C++11"   
@@ -42,6 +55,8 @@ clang-c++11-Qt5.9.0:
 
 
 cppcheck:
+  stage:
+    Test
   script: "CI/ci-cppcheck.sh"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -53,6 +68,8 @@ cppcheck:
       - cppcheck.log
 
 VS2015-Qt-5.6.2-x64:
+  stage:
+    Build
   script: "CI\\ci-windows.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -67,6 +84,8 @@ VS2015-Qt-5.6.2-x64:
       - rel/*.exe
 
 VS2015-Qt-5.6.2-x32:
+  stage:
+    Build
   script: "CI\\ci-windows.bat"
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
@@ -81,6 +100,8 @@ VS2015-Qt-5.6.2-x32:
       - rel/*.exe
 
 VS2015-Qt-5.9.0-x64:
+  stage:
+    Build
   script: "CI\\ci-windows.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -94,6 +115,8 @@ VS2015-Qt-5.9.0-x64:
       - rel/*.exe
 
 VS2015-Qt-5.9.0-x32:
+  stage:
+    Build
   script: "CI\\ci-windows.bat"
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
@@ -107,6 +130,8 @@ VS2015-Qt-5.9.0-x32:
       - rel/*.exe
 
 VS2013-Qt-5.5.1-x64:
+  stage:
+    Build
   script: "CI\\ci-windows.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -121,6 +146,8 @@ VS2013-Qt-5.5.1-x64:
       - rel/*.exe
 
 Mac-Cpp11:
+  stage:
+    Build
   script: "CI/ci-mac.sh"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -131,6 +158,8 @@ Mac-Cpp11:
       - build-release/*.dmg
 
 Doc-publish:
+  stage:
+     Deploy 
   only:
      - master
   script: "CI/ci-doc.sh"

@@ -53,7 +53,7 @@ clang-c++11-Qt5.9.0:
     - Linux
     - MultiThreads
 
-gcc-c++11-Qt5:
+test-gcc-c++11-Qt5:
   stage:
     Test
   variables:     
@@ -65,7 +65,7 @@ gcc-c++11-Qt5:
   tags:
     - Linux
 
-gcc-c++11-Qt5.9.0:
+test-gcc-c++11-Qt5.9.0:
   stage:
     Test
   variables:     
@@ -77,7 +77,7 @@ gcc-c++11-Qt5.9.0:
   tags:
     - Linux
 
-clang-c++11-Qt5:
+test-clang-c++11-Qt5:
   stage:
     Test
   variables:
@@ -90,7 +90,7 @@ clang-c++11-Qt5:
     - Linux
     - MultiThreads
 
-clang-c++11-Qt5.9.0:
+test-clang-c++11-Qt5.9.0:
   stage:
     Test
   variables:

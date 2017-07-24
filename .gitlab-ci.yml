@@ -53,6 +53,55 @@ clang-c++11-Qt5.9.0:
     - Linux
     - MultiThreads
 
+gcc-c++11-Qt5:
+  stage:
+    Test
+  variables:     
+    COMPILER:       "gcc"     
+    LANGUAGE:       "C++11"     
+    QTVERSION:      "QT5"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/test-linux.sh"
+  tags:
+    - Linux
+
+gcc-c++11-Qt5.9.0:
+  stage:
+    Test
+  variables:     
+    COMPILER:       "gcc"     
+    LANGUAGE:       "C++11"     
+    QTVERSION:      "QT5.9.0"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/test-linux.sh"
+  tags:
+    - Linux
+
+clang-c++11-Qt5:
+  stage:
+    Test
+  variables:
+    COMPILER:       "clang"     
+    LANGUAGE:       "C++11"   
+    QTVERSION:      "QT5"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/test-linux.sh"
+  tags:
+    - Linux
+    - MultiThreads
+
+clang-c++11-Qt5.9.0:
+  stage:
+    Test
+  variables:
+    COMPILER:       "clang"     
+    LANGUAGE:       "C++11"   
+    QTVERSION:      "QT5.9.0"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/test-linux.sh"
+  tags:
+    - Linux
+    - MultiThreads
 
 cppcheck:
   stage:

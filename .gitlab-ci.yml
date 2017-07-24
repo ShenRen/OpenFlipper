@@ -14,6 +14,9 @@ gcc-c++11-Qt5:
   script: "CI/ci-linux.sh"
   tags:
     - Linux
+  artifacts:
+    paths:
+       - build-release-gcc-cpp11-qt5/
 
 gcc-c++11-Qt5.9.0:
   stage:
@@ -26,6 +29,9 @@ gcc-c++11-Qt5.9.0:
   script: "CI/ci-linux.sh"
   tags:
     - Linux
+    artifacts:
+    paths:
+       - build-release-gcc-cpp11-qt5.9.0/
 
 clang-c++11-Qt5:
   stage:
@@ -39,6 +45,9 @@ clang-c++11-Qt5:
   tags:
     - Linux
     - MultiThreads
+  artifacts:
+    paths:
+       - build-release-clang-cpp11-qt5/
 
 clang-c++11-Qt5.9.0:
   stage:
@@ -52,6 +61,9 @@ clang-c++11-Qt5.9.0:
   tags:
     - Linux
     - MultiThreads
+  artifacts:
+    paths:
+       - build-release-clang-cpp11-qt5.9.0/
 
 test-gcc-c++11-Qt5:
   stage:
@@ -64,6 +76,8 @@ test-gcc-c++11-Qt5:
   script: "CI/test-linux.sh"
   tags:
     - Linux
+  dependencies:
+    - gcc-c++11-Qt5
 
 test-gcc-c++11-Qt5.9.0:
   stage:
@@ -76,6 +90,8 @@ test-gcc-c++11-Qt5.9.0:
   script: "CI/test-linux.sh"
   tags:
     - Linux
+  dependencies:
+    - gcc-c++11-Qt5.9.0
 
 test-clang-c++11-Qt5:
   stage:
@@ -89,6 +105,8 @@ test-clang-c++11-Qt5:
   tags:
     - Linux
     - MultiThreads
+  dependencies:
+    - clang-c++11-Qt5
 
 test-clang-c++11-Qt5.9.0:
   stage:
@@ -102,6 +120,8 @@ test-clang-c++11-Qt5.9.0:
   tags:
     - Linux
     - MultiThreads
+  dependencies:
+    - clang-c++11-Qt5.9.0
 
 cppcheck:
   stage:

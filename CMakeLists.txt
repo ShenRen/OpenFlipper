@@ -79,6 +79,17 @@ if (NOT QT5_FOUND)
   message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5")
 endif()
 
+if ( WIN32 )
+  SET(USE_UNSUPPORTED_QT false CACHE)
+  if ( ${Qt5Core_VERSION_STRING} STREQUALS "5.8.0" )
+    if(USE_UNSUPPORTED_QT)
+      message(WARNING "You appear to be using Qt 5.8.0 on a Windows System.\n On Windows, this version of Qt causes a problem regarding moc generation.\n You are using this Qt Version on Windows at your own risk and without support." )
+    else()
+      message(FATAL_ERROR "You appear to be using Qt 5.8.0 on a Windows System.\n On Windows, this version of Qt causes a problem regarding moc generation.\n Please use another version of Qt, or set the USE_UNSUPPORTED_QT flag")
+    endif()
+  endif()
+endif()
+
 set (OF_MAX_QT_VERSION "5.9.0")
 
 if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})

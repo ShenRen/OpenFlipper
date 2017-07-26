@@ -13,6 +13,12 @@ set -e
 MY_DIR=$(dirname $(readlink -f $0))
 source $MY_DIR/ci-options-linux.sh
 
+########################################
+# Fetch test data
+########################################
+rm -rf TestData
+git clone git@roosevelt:moebius/OpenFlipper-Test-Data.git TestData
+
 #########################################
 # Run Release Unittests
 #########################################
@@ -21,10 +27,8 @@ source $MY_DIR/ci-options-linux.sh
 cd build-release-$BUILDPATH
 
 #clean old cmake cache as the path might have changed
-if [ -f CMakeCache.txt ]
-then
-	rm CMakeCache.txt
-fi
+find . -name "CMakeCache.txt" -type f -delete
+
 #just to be safe clean the test file definitions too
 if [ -f CTestTestfile.cmake ]
 then

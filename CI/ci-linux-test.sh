@@ -11,7 +11,7 @@ set -e
 
 #include ci options script
 MY_DIR=$(dirname $(readlink -f $0))
-source $MY_DIR/ci-options-linux.sh
+source $MY_DIR/ci-linux-config.sh
 
 ########################################
 # Fetch test data

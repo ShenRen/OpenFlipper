@@ -1,3 +1,6 @@
+variables:
+  GET_SOURCES_ATTEMPTS: 3
+
 gcc-c++11-Qt5:
   variables:     
     COMPILER:       "gcc"     

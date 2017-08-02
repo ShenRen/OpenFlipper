@@ -1,59 +1,161 @@
+stages:
+  - Build
+  - Test
+  - Deploy
+
+variables:
+  GET_SOURCES_ATTEMPTS: 3
+
 gcc-c++11-Qt5:
+  stage:
+    Build
   variables:     
     COMPILER:       "gcc"     
     LANGUAGE:       "C++11"     
     QTVERSION:      "QT5"     
     GIT_SUBMODULE_STRATEGY: recursive
-  script: "CI/ci-linux.sh"
+  script: "CI/ci-linux-build.sh"
   tags:
     - Linux
+  artifacts:
+    paths:
+       - build-release-gcc-cpp11-qt5/
 
 gcc-c++11-Qt5.9.0:
+  stage:
+    Build
   variables:     
     COMPILER:       "gcc"     
     LANGUAGE:       "C++11"     
     QTVERSION:      "QT5.9.0"     
     GIT_SUBMODULE_STRATEGY: recursive
-  script: "CI/ci-linux.sh"
+  script: "CI/ci-linux-build.sh"
   tags:
     - Linux
+  artifacts:
+    paths:
+       - build-release-gcc-cpp11-qt5.9.0/
 
 clang-c++11-Qt5:
+  stage:
+    Build
   variables:
     COMPILER:       "clang"     
     LANGUAGE:       "C++11"   
     QTVERSION:      "QT5"     
     GIT_SUBMODULE_STRATEGY: recursive
-  script: "CI/ci-linux.sh"
+  script: "CI/ci-linux-build.sh"
   tags:
     - Linux
     - MultiThreads
+  artifacts:
+    paths:
+       - build-release-clang-cpp11-qt5/
 
 clang-c++11-Qt5.9.0:
+  stage:
+    Build
   variables:
     COMPILER:       "clang"     
     LANGUAGE:       "C++11"   
     QTVERSION:      "QT5.9.0"     
     GIT_SUBMODULE_STRATEGY: recursive
-  script: "CI/ci-linux.sh"
+  script: "CI/ci-linux-build.sh"
   tags:
     - Linux
     - MultiThreads
+  artifacts:
+    paths:
+       - build-release-clang-cpp11-qt5.9.0/
 
+test-gcc-c++11-Qt5:
+  stage:
+    Test
+  variables:     
+    COMPILER:       "gcc"     
+    LANGUAGE:       "C++11"     
+    QTVERSION:      "QT5"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux-test.sh"
+  tags:
+    - Linux
+  dependencies:
+    - gcc-c++11-Qt5
+  artifacts:
+    paths:
+       - build-release-gcc-cpp11-qt5/Testing/Temporary/LastTest.log
+
+test-gcc-c++11-Qt5.9.0:
+  stage:
+    Test
+  variables:     
+    COMPILER:       "gcc"     
+    LANGUAGE:       "C++11"     
+    QTVERSION:      "QT5.9.0"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux-test.sh"
+  tags:
+    - Linux
+  dependencies:
+    - gcc-c++11-Qt5.9.0
+  artifacts:
+    paths:
+       - build-release-gcc-cpp11-qt5.9.0/Testing/Temporary/LastTest.log
+
+test-clang-c++11-Qt5:
+  stage:
+    Test
+  variables:
+    COMPILER:       "clang"     
+    LANGUAGE:       "C++11"   
+    QTVERSION:      "QT5"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux-test.sh"
+  tags:
+    - Linux
+    - MultiThreads
+  dependencies:
+    - clang-c++11-Qt5
+  artifacts:
+    paths:
+       - build-release-clang-cpp11-qt5/Testing/Temporary/LastTest.log
+
+test-clang-c++11-Qt5.9.0:
+  stage:
+    Test
+  variables:
+    COMPILER:       "clang"     
+    LANGUAGE:       "C++11"   
+    QTVERSION:      "QT5.9.0"     
+    GIT_SUBMODULE_STRATEGY: recursive
+  script: "CI/ci-linux-test.sh"
+  tags:
+    - Linux
+    - MultiThreads
+  dependencies:
+    - clang-c++11-Qt5.9.0
+  artifacts:
+    paths:
+       - build-release-clang-cpp11-qt5.9.0/Testing/Temporary/LastTest.log
 
 cppcheck:
+  stage:
+    Test
   script: "CI/ci-cppcheck.sh"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - Linux
     - MultiThreads
+  dependencies:
   artifacts:
     paths:
       - cppcheck.log
 
 VS2015-Qt-5.6.2-x64:
-  script: "CI\\ci-windows.bat"
+  stage:
+    Build
+  script: "CI\\ci-windows-build.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
      ARCHITECTURE: "x64"
@@ -64,10 +166,12 @@ VS2015-Qt-5.6.2-x64:
     - Qt56
   artifacts:
     paths:
-      - rel/*.exe
+      - rel/
 
 VS2015-Qt-5.6.2-x32:
-  script: "CI\\ci-windows.bat"
+  stage:
+    Build
+  script: "CI\\ci-windows-build.bat"
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     ARCHITECTURE: "x32"
@@ -78,10 +182,12 @@ VS2015-Qt-5.6.2-x32:
     - Qt56
   artifacts:
     paths:
-      - rel/*.exe
+      - rel/
 
 VS2015-Qt-5.9.0-x64:
-  script: "CI\\ci-windows.bat"
+  stage:
+    Build
+  script: "CI\\ci-windows-build.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
      ARCHITECTURE: "x64"
@@ -91,10 +197,12 @@ VS2015-Qt-5.9.0-x64:
     - VS2015
   artifacts:
     paths:
-      - rel/*.exe
+      - rel/
 
 VS2015-Qt-5.9.0-x32:
-  script: "CI\\ci-windows.bat"
+  stage:
+    Build
+  script: "CI\\ci-windows-build.bat"
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     ARCHITECTURE: "x32"
@@ -104,10 +212,12 @@ VS2015-Qt-5.9.0-x32:
     - VS2015
   artifacts:
     paths:
-      - rel/*.exe
+      - rel/
 
 VS2013-Qt-5.5.1-x64:
-  script: "CI\\ci-windows.bat"
+  stage:
+    Build
+  script: "CI\\ci-windows-build.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
      ARCHITECTURE: "x64"
@@ -118,26 +228,253 @@ VS2013-Qt-5.5.1-x64:
     - Qt551
   artifacts:
     paths:
+      - rel/
+Test:VS2015-Qt-5.6.2-x64:
+  stage:
+    Test
+  script: "CI\\ci-windows-test.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.6.2"
+     COMPILER: "VS2015"
+  tags: 
+    - VS2015
+    - Qt56
+  dependencies:
+    - VS2015-Qt-5.6.2-x64
+  artifacts:
+    paths:
+      - rel/Testing/Temporary/LastTest.log
+
+Test:VS2015-Qt-5.6.2-x32:
+  stage:
+    Test
+  script: "CI\\ci-windows-test.bat"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    ARCHITECTURE: "x32"
+    QT_VERSION: "Qt5.6.2"
+    COMPILER: "VS2015"
+  tags: 
+    - VS2015
+    - Qt56
+  dependencies:
+    - VS2015-Qt-5.6.2-x32
+  artifacts:
+    paths:
+      - rel/Testing/Temporary/LastTest.log
+
+Test:VS2015-Qt-5.9.0-x64:
+  stage:
+    Test
+  script: "CI\\ci-windows-test.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.9.0"
+     COMPILER: "VS2015"
+  tags: 
+    - VS2015
+  dependencies:
+    - VS2015-Qt-5.9.0-x64
+  artifacts:
+    paths:
+      - rel/Testing/Temporary/LastTest.log
+
+Test:VS2015-Qt-5.9.0-x32:
+  stage:
+    Test
+  script: "CI\\ci-windows-test.bat"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    ARCHITECTURE: "x32"
+    QT_VERSION: "Qt5.9.0"
+    COMPILER: "VS2015"
+  tags: 
+    - VS2015
+  dependencies:
+    - VS2015-Qt-5.9.0-x32
+  artifacts:
+    paths:
+      - rel/Testing/Temporary/LastTest.log
+
+Test:VS2013-Qt-5.5.1-x64:
+  stage:
+    Test
+  script: "CI\\ci-windows-test.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.5.1"
+     COMPILER: "VS2013"
+  tags:
+    - VS2013
+    - Qt551
+  dependencies:
+    - VS2013-Qt-5.5.1-x64
+  artifacts:
+    paths:
+      - rel/Testing/Temporary/LastTest.log
+
+Deploy:VS2015-Qt-5.6.2-x64:
+  stage:
+    Deploy
+  only:
+    - master
+    - unstable
+  script: "CI\\ci-windows-deploy.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.6.2"
+     COMPILER: "VS2015"
+  tags: 
+    - VS2015
+    - Qt56
+  dependencies:
+    - VS2015-Qt-5.6.2-x64
+  artifacts:
+    paths:
+      - rel/*.exe
+
+Deploy:VS2015-Qt-5.6.2-x32:
+  stage:
+    Deploy
+  only:
+    - master
+    - unstable
+  script: "CI\\ci-windows-deploy.bat"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    ARCHITECTURE: "x32"
+    QT_VERSION: "Qt5.6.2"
+    COMPILER: "VS2015"
+  tags: 
+    - VS2015
+    - Qt56
+  dependencies:
+    - VS2015-Qt-5.6.2-x32
+  artifacts:
+    paths:
+      - rel/*.exe
+
+Deploy:VS2015-Qt-5.9.0-x64:
+  stage:
+    Deploy
+  only:
+    - master
+    - unstable
+  script: "CI\\ci-windows-deploy.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.9.0"
+     COMPILER: "VS2015"
+  tags: 
+    - VS2015
+  dependencies:
+    - VS2015-Qt-5.9.0-x64
+  artifacts:
+    paths:
+      - rel/*.exe
+
+Deploy:VS2015-Qt-5.9.0-x32:
+  stage:
+    Deploy
+  only:
+    - master
+    - unstable
+  script: "CI\\ci-windows-deploy.bat"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    ARCHITECTURE: "x32"
+    QT_VERSION: "Qt5.9.0"
+    COMPILER: "VS2015"
+  tags: 
+    - VS2015
+  dependencies:
+    - VS2015-Qt-5.9.0-x32
+  artifacts:
+    paths:
+      - rel/*.exe
+
+Deploy:VS2013-Qt-5.5.1-x64:
+  stage:
+    Deploy
+  only:
+    - master
+    - unstable
+  script: "CI\\ci-windows-deploy.bat"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+     ARCHITECTURE: "x64"
+     QT_VERSION: "Qt5.5.1"
+     COMPILER: "VS2013"
+  tags:
+    - VS2013
+    - Qt551
+  dependencies:
+    - VS2013-Qt-5.5.1-x64
+  artifacts:
+    paths:
       - rel/*.exe
 
 Mac-Cpp11:
-  script: "CI/ci-mac.sh"
+  stage:
+    Build
+  script: "CI/ci-mac-build.sh"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
   tags:
     - Apple
   artifacts:
     paths:
+      - build-release/
+
+Test:Mac-Cpp11:
+  stage:
+    Test
+  script: "CI/ci-mac-test.sh"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+  tags:
+    - Apple
+  dependencies:
+    - Mac-Cpp11
+  artifacts:
+    paths:
+      - build-release/Testing/Temporary/LastTest.log
+
+Deploy:Mac-Cpp11:
+  stage:
+    Deploy
+  only:
+    - master
+    - unstable
+  script: "CI/ci-mac-deploy.sh"
+  variables:
+     GIT_SUBMODULE_STRATEGY: recursive
+  tags:
+    - Apple
+  dependencies:
+    - Mac-Cpp11
+  artifacts:
+    paths:
       - build-release/*.dmg
 
 Doc-publish:
+  stage:
+     Deploy 
   only:
      - master
+     - unstable
   script: "CI/ci-doc.sh"
   tags:
      - Linux
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
+  dependencies:
   artifacts:
     paths:
        - build-release/Doxygen-warning.log 

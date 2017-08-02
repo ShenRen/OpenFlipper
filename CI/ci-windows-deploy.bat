@@ -28,7 +28,3 @@ del /s /q CMakeCache.txt
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
 
 move OpenFlipper-*.exe "OpenFlipper-Free-Git-Master-%CI_BUILD_REF%-%BUILD_PLATFORM%-%STRING_ARCH%-%QT_VERSION%.exe"
-
-cd Build
-
-dir

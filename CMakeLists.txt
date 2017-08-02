@@ -79,6 +79,25 @@ if (NOT QT5_FOUND)
   message(FATAL_ERROR "Could not found any QT Version. Please specify QT5_INSTALL_PATH (path to bin and include dir) to build with QT5")
 endif()
 
+# display warnings if a problematic qt version is used
+
+if ( APPLE )
+  if ( ${Qt5Core_VERSION_STRING} STREQUAL "5.8.0" OR ${Qt5Core_VERSION_STRING} STREQUAL "5.7.1" )
+    message(WARNING "You are using a Qt Version that might cause problems on OSX regarding GLErrors. We recommend you to use another version. If you fix any GLErrors on these versions feel free to contribute to OpenFlipper.")
+  endif()
+endif()
+
+if ( WIN32 )
+  OPTION(USE_UNSUPPORTED_QT "Build OpenFlipper with an unsupported version of Qt e.g. if you fixed the moc issue on 5.8.0 yourself" OFF)
+  if ( ${Qt5Core_VERSION_STRING} STREQUAL "5.8.0" )
+    if(USE_UNSUPPORTED_QT)
+      message(WARNING "You appear to be using Qt 5.8.0 on a Windows System.\n On Windows, this version of Qt causes a problem regarding moc generation.\n You are using this Qt Version on Windows at your own risk and without support." )
+    else()
+      message(FATAL_ERROR "You appear to be using Qt 5.8.0 on a Windows System.\n On Windows, this version of Qt causes a problem regarding moc generation.\n Please use another version of Qt, or set the USE_UNSUPPORTED_QT flag")
+    endif()
+  endif()
+endif()
+
 set (OF_MAX_QT_VERSION "5.9.0")
 
 if (${Qt5Core_VERSION_STRING} STRGREATER ${OF_MAX_QT_VERSION})

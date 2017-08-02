@@ -1,20 +1,11 @@
 #!/bin/bash
 
-# Script abort on error
-set -e
-
-# Expected Settings via environment variables:
-# COMPILER= gcc/clang
-# LANGUAGE= C++98 / C++11
-# QTVERSION= QT4/QT5
-
 OPTIONS=""
 MAKE_OPTIONS=""
-
 BUILDPATH=""
 
 if [ "$COMPILER" == "gcc" ]; then
-  echo "Building with GCC";
+  echo "Setting Compiler to GCC";
   BUILDPATH="gcc"
 
   # without icecc: no options required
@@ -33,78 +24,29 @@ elif [ "$COMPILER" == "clang" ]; then
   BUILDPATH="clang"
   MAKE_OPTIONS="-j6"
 
-  echo "Building with CLANG";
+  echo "Setting compiler to CLANG";
 fi  
 
 if [ "$LANGUAGE" == "C++98" ]; then
-  echo "Building with C++98";
+  echo "Using C++98 standard";
   BUILDPATH="$BUILDPATH-cpp98"
 elif [ "$LANGUAGE" == "C++11" ]; then
-  echo "Building with C++11";
+  echo "Using C++11 standard";
   OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS='-std=c++11' "
   BUILDPATH="$BUILDPATH-cpp11"
 fi  
 
 if [ "$QTVERSION" == "QT4" ]; then
-  echo "Building with QT4";
+  echo "Using QT4";
   OPTIONS="$OPTIONS -DFORCE_QT4=TRUE "
   BUILDPATH="$BUILDPATH-qt4"
 elif [ "$QTVERSION" == "QT5" ]; then
-  echo "Building with QT5";
+  echo "Using QT5";
   BUILDPATH="$BUILDPATH-qt5"
   OPTIONS="$OPTIONS -DFORCE_QT4=FALSE -DQWT6_INCLUDE_DIR=~/sw/qwt-6.1.2-qt5/include -DQWT6_LIBRARY_DIR=~/sw/qwt-6.1.2-qt5/lib -DQWT6_LIBRARY=~/sw/qwt-6.1.2-qt5/lib/libqwt-qt5.so -DQT5_INSTALL_PATH=~/sw/qt-5.5.1/5.5/gcc_64"
-  export LD_LIBRARY_PATH=~/sw/qt-5.5.1/5.5/gcc_64/lib
+  export LD_LIBRARY_PATH=~/sw/qt-5.5.1/5.5/gcc_64/lib:$LD_LIBRARY_PATH
 elif [ "$QTVERSION" == "QT5.9.0" ]; then
-  echo "Building with QT5.9.0";
+  echo "Using QT5.9.0";
   BUILDPATH="$BUILDPATH-qt5.9.0"
   OPTIONS="$OPTIONS -DFORCE_QT4=FALSE -DQWT6_INCLUDE_DIR=~/sw/qwt-6.1.3-qt5.9.0/include -DQWT6_LIBRARY_DIR=~/sw/qwt-6.1.3-qt5.9.0/lib -DQWT6_LIBRARY=~/sw/qwt-6.1.3-qt5.9.0/lib/libqwt.so -DQT5_INSTALL_PATH=~/sw/Qt/5.9/gcc_64"
 fi
-
-echo "Building with path: build-release-$BUILDPATH"
-echo "Full cmake options: $OPTIONS  "
-
-########################################
-# Build daemon cleanup code
-########################################
-
-########################################
-# Fetch submodules
-########################################
-
-########################################
-# Show information for easier debugging
-########################################
-
-########################################
-# Fetch test data
-########################################
-rm -rf TestData
-git clone git@roosevelt:moebius/OpenFlipper-Test-Data.git TestData
-
-
-#########################################
-# Build Release version and Unittests
-#########################################
-
-# Make release build folder
-if [ ! -d build-release-$BUILDPATH ]; then
-  mkdir build-release-$BUILDPATH
-fi
-
-cd build-release-$BUILDPATH
-
-cmake -DCMAKE_BUILD_TYPE=Release -DOPENFLIPPER_BUILD_UNIT_TESTS=TRUE -DSTL_VECTOR_CHECKS=ON $OPTIONS ../
-
-#build it
-make $MAKE_OPTIONS
-
-#########################################
-# Run Release Unittests
-#########################################
-
-# Run tests
-cd tests
-bash run_tests.sh
-
-cd ..
-

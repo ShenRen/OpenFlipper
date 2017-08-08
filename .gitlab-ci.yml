@@ -231,6 +231,8 @@ VS2013-Qt-5.5.1-x64:
       - rel/
 
 INTEL-Qt-5.5.1-x64:
+  stage:
+    Build
   script: "CI\\ci-windows-build.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -247,6 +249,8 @@ INTEL-Qt-5.5.1-x64:
       - rel/
       
 INTEL-Qt-5.9.0-x64:
+  stage:
+    Build
   script: "CI\\ci-windows-build.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -350,6 +354,8 @@ Test:VS2013-Qt-5.5.1-x64:
       - rel/Testing/Temporary/LastTest.log
 
 Test:INTEL-Qt-5.5.1-x64:
+  stage:
+    Test
   script: "CI\\ci-windows-test.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -366,6 +372,8 @@ Test:INTEL-Qt-5.5.1-x64:
       - rel/Testing/Temporary/LastTest.log
       
 Test:INTEL-Qt-5.9.0-x64:
+  stage:
+    Test
   script: "CI\\ci-windows-test.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -483,7 +491,9 @@ Deploy:VS2013-Qt-5.5.1-x64:
     paths:
       - rel/*.exe
 
-Test:INTEL-Qt-5.5.1-x64:
+Deploy:INTEL-Qt-5.5.1-x64:
+  stage:
+    Deploy
   script: "CI\\ci-windows-deploy.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive
@@ -499,7 +509,9 @@ Test:INTEL-Qt-5.5.1-x64:
     paths:
       - rel/*.exe
       
-Test:INTEL-Qt-5.9.0-x64:
+Deploy:INTEL-Qt-5.9.0-x64:
+  stage:
+    Deploy
   script: "CI\\ci-windows-deploy.bat"
   variables:
      GIT_SUBMODULE_STRATEGY: recursive

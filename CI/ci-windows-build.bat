@@ -26,3 +26,6 @@ IF %errorlevel% NEQ 0 exit /b %errorlevel%
 %VS_PATH% /Build "Release" OpenFlipper.sln /Project "ALL_BUILD"
 
 IF %errorlevel% NEQ 0 exit /b %errorlevel%
+
+:: copy all files to a new artifacts folder except the .git folder
+robocopy . artifacts /e /xd artifacts /xd .git

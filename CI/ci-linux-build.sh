@@ -54,9 +54,10 @@ if [ ! -d artifacts ]; then
   mkdir artifacts
 fi
 
-cp -R * artifacts
+#cp -R * artifacts
+rsync -a --progress --exclude=artifacts --exclude=.git . ./artifacts
 cd artifacts
-rm -rf .git
+#rm -rf .git
 
 # create an archive with all the build files so we can use them in the test script
 #tar -cvf ../buildfiles.tar .

@@ -55,7 +55,7 @@ if [ ! -d artifacts ]; then
 fi
 
 #cp -R * artifacts
-rsync -a --progress --exclude=artifacts --exclude=.git . ./artifacts
+rsync -a --exclude=artifacts --exclude=.git . ./artifacts
 cd artifacts
 #rm -rf .git
 

@@ -21,3 +21,13 @@ make
 
 # Required for the tests to build, if a package was generated
 make fixbundle
+
+cd ..
+
+#create an artifact directory
+if [ ! -d artifacts ]; then
+  mkdir artifacts
+fi
+
+#cp -R * artifacts
+rsync -a --exclude=artifacts --exclude=.git . ./artifacts

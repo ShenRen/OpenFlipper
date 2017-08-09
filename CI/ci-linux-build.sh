@@ -41,9 +41,22 @@ make $MAKE_OPTIONS
 
 # copy the used shared libraries to the lib folder
 cd Build
-mkdir systemlib
+
+if [ ! -d systemlib ]; then
+  mkdir systemlib
+fi
+
 ldd bin/OpenFlipper | grep "=> /" | awk '{print $3}' | xargs -I '{}' cp -v '{}' systemlib
-#cd ..
+cd ../..
+
+#create an artifact directory
+if [ ! -d artifacts ]; then
+  mkdir artifacts
+fi
+
+cp -R * artifacts
+cd artifacts
+rm -rf .git
 
 # create an archive with all the build files so we can use them in the test script
 #tar -cvf ../buildfiles.tar .

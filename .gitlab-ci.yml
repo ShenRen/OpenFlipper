@@ -20,7 +20,7 @@ gcc-c++11-Qt5:
   artifacts:
     expire_in: 1 week
     paths:
-       - .
+       - artifacts
 
 gcc-c++11-Qt5.9.0:
   stage:
@@ -36,7 +36,7 @@ gcc-c++11-Qt5.9.0:
   artifacts:
     expire_in: 1 week
     paths:
-       - .
+       - artifacts
 
 clang-c++11-Qt5:
   stage:
@@ -53,7 +53,7 @@ clang-c++11-Qt5:
   artifacts:
     expire_in: 1 week
     paths:
-       - .
+       - artifacts
 
 clang-c++11-Qt5.9.0:
   stage:
@@ -70,7 +70,7 @@ clang-c++11-Qt5.9.0:
   artifacts:
     expire_in: 1 week
     paths:
-       - .
+       - artifacts
 
 test-gcc-c++11-Qt5:
   stage:

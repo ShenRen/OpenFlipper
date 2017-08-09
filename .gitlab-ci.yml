@@ -80,7 +80,7 @@ test-gcc-c++11-Qt5:
     LANGUAGE:       "C++11"     
     QTVERSION:      "QT5"     
     GIT_STRATEGY: none
-  script: "CI/ci-linux-test.sh"
+  script: "artifacts/CI/ci-linux-test.sh"
   tags:
     - Linux
   dependencies:
@@ -97,7 +97,7 @@ test-gcc-c++11-Qt5.9.0:
     LANGUAGE:       "C++11"     
     QTVERSION:      "QT5.9.0"     
     GIT_STRATEGY: none
-  script: "CI/ci-linux-test.sh"
+  script: "artifacts/CI/ci-linux-test.sh"
   tags:
     - Linux
   dependencies:
@@ -114,7 +114,7 @@ test-clang-c++11-Qt5:
     LANGUAGE:       "C++11"   
     QTVERSION:      "QT5"     
     GIT_STRATEGY: none
-  script: "CI/ci-linux-test.sh"
+  script: "artifacts/CI/ci-linux-test.sh"
   tags:
     - Linux
     - MultiThreads
@@ -132,7 +132,7 @@ test-clang-c++11-Qt5.9.0:
     LANGUAGE:       "C++11"   
     QTVERSION:      "QT5.9.0"     
     GIT_STRATEGY: none
-  script: "CI/ci-linux-test.sh"
+  script: "artifacts/CI/ci-linux-test.sh"
   tags:
     - Linux
     - MultiThreads
@@ -242,7 +242,7 @@ VS2013-Qt-5.5.1-x64:
 Test:VS2015-Qt-5.6.2-x64:
   stage:
     Test
-  script: "CI\\ci-windows-test.bat"
+  script: "artifacts\\CI\\ci-windows-test.bat"
   variables:
      GIT_STRATEGY: none
      ARCHITECTURE: "x64"
@@ -260,7 +260,7 @@ Test:VS2015-Qt-5.6.2-x64:
 Test:VS2015-Qt-5.6.2-x32:
   stage:
     Test
-  script: "CI\\ci-windows-test.bat"
+  script: "artifacts\\CI\\ci-windows-test.bat"
   variables:
     GIT_STRATEGY: none
     ARCHITECTURE: "x32"
@@ -278,7 +278,7 @@ Test:VS2015-Qt-5.6.2-x32:
 Test:VS2015-Qt-5.9.0-x64:
   stage:
     Test
-  script: "CI\\ci-windows-test.bat"
+  script: "artifacts\\CI\\ci-windows-test.bat"
   variables:
      GIT_STRATEGY: none
      ARCHITECTURE: "x64"
@@ -295,7 +295,7 @@ Test:VS2015-Qt-5.9.0-x64:
 Test:VS2015-Qt-5.9.0-x32:
   stage:
     Test
-  script: "CI\\ci-windows-test.bat"
+  script: "artifacts\\CI\\ci-windows-test.bat"
   variables:
     GIT_STRATEGY: none
     ARCHITECTURE: "x32"
@@ -312,7 +312,7 @@ Test:VS2015-Qt-5.9.0-x32:
 Test:VS2013-Qt-5.5.1-x64:
   stage:
     Test
-  script: "CI\\ci-windows-test.bat"
+  script: "artifacts\\CI\\ci-windows-test.bat"
   variables:
      GIT_STRATEGY: none
      ARCHITECTURE: "x64"
@@ -333,7 +333,7 @@ Deploy:VS2015-Qt-5.6.2-x64:
   only:
     - master
     - unstable
-  script: "CI\\ci-windows-deploy.bat"
+  script: "artifacts\\CI\\ci-windows-deploy.bat"
   variables:
      GIT_STRATEGY: none
      ARCHITECTURE: "x64"
@@ -354,7 +354,7 @@ Deploy:VS2015-Qt-5.6.2-x32:
   only:
     - master
     - unstable
-  script: "CI\\ci-windows-deploy.bat"
+  script: "artifacts\\CI\\ci-windows-deploy.bat"
   variables:
     GIT_STRATEGY: none
     ARCHITECTURE: "x32"
@@ -375,7 +375,7 @@ Deploy:VS2015-Qt-5.9.0-x64:
   only:
     - master
     - unstable
-  script: "CI\\ci-windows-deploy.bat"
+  script: "artifacts\\CI\\ci-windows-deploy.bat"
   variables:
      GIT_STRATEGY: none
      ARCHITECTURE: "x64"
@@ -395,7 +395,7 @@ Deploy:VS2015-Qt-5.9.0-x32:
   only:
     - master
     - unstable
-  script: "CI\\ci-windows-deploy.bat"
+  script: "artifacts\\CI\\ci-windows-deploy.bat"
   variables:
     GIT_STRATEGY: none
     ARCHITECTURE: "x32"
@@ -415,7 +415,7 @@ Deploy:VS2013-Qt-5.5.1-x64:
   only:
     - master
     - unstable
-  script: "CI\\ci-windows-deploy.bat"
+  script: "artifacts\\CI\\ci-windows-deploy.bat"
   variables:
      GIT_STRATEGY: none
      ARCHITECTURE: "x64"
@@ -446,7 +446,7 @@ Mac-Cpp11:
 Test:Mac-Cpp11:
   stage:
     Test
-  script: "CI/ci-mac-test.sh"
+  script: "artifacts/CI/ci-mac-test.sh"
   variables:
      GIT_STRATEGY: none
   tags:
@@ -463,7 +463,7 @@ Deploy:Mac-Cpp11:
   only:
     - master
     - unstable
-  script: "CI/ci-mac-deploy.sh"
+  script: "artifacts/CI/ci-mac-deploy.sh"
   variables:
      GIT_STRATEGY: none
   tags:

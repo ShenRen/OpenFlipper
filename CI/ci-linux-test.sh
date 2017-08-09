@@ -9,6 +9,9 @@ set -e
 # QTVERSION= QT4/QT5
 
 
+# restore artifacts
+cp -R artifacts/* .
+
 #include ci options script
 MY_DIR=$(dirname $(readlink -f $0))
 source $MY_DIR/ci-linux-config.sh
